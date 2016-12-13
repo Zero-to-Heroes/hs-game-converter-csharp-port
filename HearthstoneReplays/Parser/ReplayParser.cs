@@ -14,6 +14,7 @@ using HearthstoneReplays.Parser.ReplayData;
 #endregion
 
 namespace HearthstoneReplays.Parser
+
 {
 	public class ReplayParser
 	{

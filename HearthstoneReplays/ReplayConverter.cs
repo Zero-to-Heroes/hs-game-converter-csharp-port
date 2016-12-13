@@ -1,7 +1,7 @@
 ﻿#region
 
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
 using HearthstoneReplays.Parser;
@@ -13,8 +13,8 @@ namespace HearthstoneReplays
 {
 	public class ReplayConverter
 	{
-		private static readonly XmlSerializer Serializer = new XmlSerializer(typeof(HearthstoneReplay));
-
+		//private static readonly 
+		
 		public string xmlFromLogs(string logString)
 		{
 			string replaced = logString.Replace("\r\n", "\n");
@@ -28,9 +28,11 @@ namespace HearthstoneReplays
 			Console.Write("XML from replay: " + xmlReplay);
 			return xmlReplay;
 		}
-
+		
 		public String xmlFromReplay(HearthstoneReplay replay)
 		{
+			XmlSerializer Serializer = new XmlSerializer(typeof(HearthstoneReplay));
+			//Serializer = new XmlSerializer(hsReplayType);
 			var stringwriter = new System.IO.StringWriter();
 			Serializer.Serialize(stringwriter, replay);
 			return stringwriter.ToString();
