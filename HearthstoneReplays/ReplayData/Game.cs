@@ -23,6 +23,7 @@ namespace HearthstoneReplays.Parser.ReplayData
 		[XmlElement("Choices", typeof(Choices))]
 		[XmlElement("FullEntity", typeof(FullEntity))]
 		[XmlElement("GameEntity", typeof(GameEntity))]
+		[XmlElement("ChangeEntity", typeof(ChangeEntity))]
 		[XmlElement("ShowEntity", typeof(ShowEntity))]
 		[XmlElement("HideEntity", typeof(HideEntity))]
 		[XmlElement("Options", typeof(Options))]

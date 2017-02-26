@@ -20,7 +20,7 @@ namespace HearthstoneReplays.Parser
 	{
 		public const string Version = "1.0";
 		public const int HearthstoneBuild = 15590;
-		private static readonly ParserState State = new ParserState();
+		private readonly ParserState State = new ParserState();
 
 		private DataHandler dataHandler = new DataHandler();
 		private ChoicesHandler choicesHandler = new ChoicesHandler();

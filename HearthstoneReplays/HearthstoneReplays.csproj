@@ -89,6 +89,7 @@
     <Compile Include="Parser\ReplayParser.cs" />
     <Compile Include="ReplayConverterPlugin.cs" />
     <Compile Include="ReplayData\GameActions\ChosenEntities.cs" />
+    <Compile Include="ReplayData\GameActions\ChangeEntity.cs" />
     <Compile Include="ReplayData\Meta\Info.cs" />
     <Compile Include="ReplayData\GameActions\Action.cs" />
     <Compile Include="ReplayData\Entities\BaseEntity.cs" />

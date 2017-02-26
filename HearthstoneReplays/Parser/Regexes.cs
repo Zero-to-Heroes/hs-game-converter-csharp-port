@@ -30,6 +30,7 @@ namespace HearthstoneReplays.Parser
 		public static readonly Regex ActionMetadataRegex = new Regex(string.Format(@"META_DATA - Meta=(\w+) Data={0} Info=(\d+)", Entity));
 		public static readonly Regex ActionMetaDataInfoRegex = new Regex(string.Format(@"Info\[(\d+)\] = {0}", Entity));
 
+		public static readonly Regex ActionChangeEntityRegex = new Regex(string.Format(@"CHANGE_ENTITY - Updating Entity={0} CardID=(\w+)$", Entity));
 		public static readonly Regex ActionShowEntityRegex = new Regex(string.Format(@"SHOW_ENTITY - Updating Entity={0} CardID=(\w+)$", Entity));
 		public static readonly Regex ActionHideEntityRegex = new Regex(string.Format(@"HIDE_ENTITY - Entity={0} tag=(\w+) value=(\w+)", Entity));
 		public static readonly Regex ActionFullEntityUpdatingRegex = new Regex(string.Format(@"FULL_ENTITY - Updating {0} CardID=(\w+)?$", Entity));

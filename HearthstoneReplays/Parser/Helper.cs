@@ -14,7 +14,7 @@ namespace HearthstoneReplays.Parser
 {
 	public class Helper
 	{
-		private static readonly Dictionary<GameTag, Type> TagTypes = new Dictionary<GameTag, Type>
+		private readonly Dictionary<GameTag, Type> TagTypes = new Dictionary<GameTag, Type>
 		{
 			{GameTag.CARDTYPE, typeof(CardType)},
 			{GameTag.CLASS, typeof(CardClass)},
@@ -28,7 +28,7 @@ namespace HearthstoneReplays.Parser
 			{GameTag.ZONE, typeof(Zone)}
 		};
 
-		public static int ParseEntity(string data, ParserState state)
+		public int ParseEntity(string data, ParserState state)
 		{
 		    if (string.IsNullOrEmpty(data))
 		        return 0;
@@ -36,20 +36,20 @@ namespace HearthstoneReplays.Parser
 			if(match.Success)
 				return int.Parse(match.Groups[1].Value);
 			if(data == "GameEntity")
-				return 1;
+				return 1; 
 			int numeric;
 			if(int.TryParse(data, out numeric))
 				return numeric;
 			return GetPlayerIdFromName(data, state);
 		}
 
-		public static int GetPlayerIdFromName(string data, ParserState state)
+		public int GetPlayerIdFromName(string data, ParserState state)
 		{
 			var firstPlayer = (PlayerEntity)state.CurrentGame.Data.FirstOrDefault(x => (x is PlayerEntity) && ((PlayerEntity)x).Id == state.FirstPlayerId);
-			if(firstPlayer == null) throw new Exception("Could not find first player");
+			if(firstPlayer == null) throw new Exception("Could not find first player " + data);
 
             var secondPlayer = (PlayerEntity)state.CurrentGame.Data.FirstOrDefault(x => (x is PlayerEntity) && ((PlayerEntity)x).Id != state.FirstPlayerId);
-            if(secondPlayer == null) throw new Exception("Could not find second player");
+            if(secondPlayer == null) throw new Exception("Could not find second player " + data);
 
             if(firstPlayer.Name == data) return firstPlayer.Id;
             if(secondPlayer.Name == data) return secondPlayer.Id;
@@ -80,7 +80,7 @@ namespace HearthstoneReplays.Parser
 			throw new Exception("Could not get id from player name:" + data);
 		}
 
-		public static void setName(ParserState state, int playerId, String playerName)
+		public void setName(ParserState state, int playerId, String playerName)
 		{
 			List<PlayerEntity> players = state.getPlayers();
 			String oldName = null;
@@ -109,7 +109,7 @@ namespace HearthstoneReplays.Parser
 			}
 		}
 
-		public static Tag ParseTag(string tagName, string value)
+		public Tag ParseTag(string tagName, string value)
 		{
 			Type tagType;
 			int tagValue;
@@ -126,7 +126,7 @@ namespace HearthstoneReplays.Parser
 			return tag;
 		}
 
-		public static int ParseEnum(Type type, string tag)
+		public int ParseEnum(Type type, string tag)
 		{
 			int value;
 			if(int.TryParse(tag, out value))
@@ -137,7 +137,7 @@ namespace HearthstoneReplays.Parser
 			throw new Exception("Enum not found: " + tag);
 		}
 
-		public static int ParseEnum<T>(string tag)
+		public int ParseEnum<T>(string tag)
 		{
 			return ParseEnum(typeof(T), tag);
 		}

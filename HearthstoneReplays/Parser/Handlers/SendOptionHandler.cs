@@ -10,7 +10,7 @@ namespace HearthstoneReplays.Parser.Handlers
 {
 	public class SendOptionHandler
 	{
-		public static void Handle(string timestamp, string data, ParserState state)
+		public void Handle(string timestamp, string data, ParserState state)
 		{
 			data = data.Trim();
 			var match = Regexes.SendOptionRegex.Match(data);

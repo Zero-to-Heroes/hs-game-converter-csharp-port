@@ -15,8 +15,7 @@ namespace HearthstoneReplays
 		// plugin.get().onGlobalEvent.addListener(function(first, second) {
 		//  ...
 		// });
-
-		//public event Action<object, object> onGlobalEvent;
+		public event Action<object, object> onGlobalEvent;
 
 
 		// plugin.get().convertLogsToXml(xmlLogs, function(result) {
@@ -28,6 +27,7 @@ namespace HearthstoneReplays
 		{
 			if (callback == null)
 			{
+				onGlobalEvent("No callback, returning", logs);
 				return;
 			}
 
@@ -37,30 +37,34 @@ namespace HearthstoneReplays
 					XmlSerializer Serializer = new XmlSerializer(typeof(FullEntity));
 					//Serializer = new XmlSerializer(typeof(HearthstoneReplay));
 					string replayXml = new ReplayConverter().xmlFromLogs(logs);
+					onGlobalEvent("Serialized", replayXml.Length);
 					callback(replayXml);
 				}
 				catch (Exception e)
 				{
+					onGlobalEvent("Exception when parsing game " + e.GetBaseException(), logs);
 					callback(null);
 				}
 			});
 		}
 
-		// plugin.get().onGlobalEvent.addListener(function(first, second) {
+		//plugin.get().onGlobalEvent.addListener(function(first, second)
+		//{
 		//  ...
 		// });
-		//
+		
 		// plugin.get().triggerGlobalEvent();
-		//public void triggerGlobalEvent()
-		//{
-		//	if (onGlobalEvent == null)
-		//	{
-		//		return;
-		//	}
+		public void triggerGlobalEvent(string first, string second)
+		{
+			if (onGlobalEvent == null)
+			{
+				return;
+			}
 
-		//	Task.Run(() => {
-		//		onGlobalEvent("first value", "second value");
-		//	});
-		//}
+			Task.Run(() =>
+			{
+				onGlobalEvent(first, second);
+			});
+		}
 	}
 }

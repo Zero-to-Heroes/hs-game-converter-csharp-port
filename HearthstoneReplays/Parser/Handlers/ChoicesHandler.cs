@@ -13,6 +13,8 @@ namespace HearthstoneReplays.Parser.Handlers
 {
 	public class ChoicesHandler
 	{
+		private Helper helper = new Helper();
+
 		public void Handle(string timestamp, string data, ParserState state)
 		{
 			data = data.Trim();
@@ -24,7 +26,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				var playerName = match.Groups[2].Value;
 				if (!string.IsNullOrEmpty(playerId) && !string.IsNullOrEmpty(playerName))
 				{
-					Helper.setName(state, int.Parse(playerId), playerName);
+					helper.setName(state, int.Parse(playerId), playerName);
 				}
 			}
 

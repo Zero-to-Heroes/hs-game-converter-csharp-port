@@ -28,6 +28,7 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
 		[XmlElement("Block", typeof(Action))]
 		[XmlElement("Choices", typeof(Choices))]
 		[XmlElement("FullEntity", typeof(FullEntity))]
+		[XmlElement("ChangeEntity", typeof(ChangeEntity))]
 		[XmlElement("ShowEntity", typeof(ShowEntity))]
 		[XmlElement("HideEntity", typeof(HideEntity))]
 		[XmlElement("GameEntity", typeof(GameEntity))]
