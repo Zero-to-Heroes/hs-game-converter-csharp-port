@@ -475,8 +475,9 @@ namespace HearthDb.Enums
         JADE_LOTUS = 483,
         KABAL = 484,
         ADDITIONAL_PLAY_REQS_1 = 515,
-        ADDITIONAL_PLAY_REQS_2 = 516,
-    }
+		ADDITIONAL_PLAY_REQS_2 = 516,
+		BOSS = 556,
+	}
 
     public enum GameType
     {
