@@ -3,9 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
+using System.Text;
 using System.Xml.Serialization;
 using HearthstoneReplays.Parser;
 using HearthstoneReplays.Parser.ReplayData;
+using System.IO;
 
 #endregion
 
@@ -31,11 +33,15 @@ namespace HearthstoneReplays
 		
 		public String xmlFromReplay(HearthstoneReplay replay)
 		{
-			XmlSerializer Serializer = new XmlSerializer(typeof(HearthstoneReplay));
-			//Serializer = new XmlSerializer(hsReplayType);
-			var stringwriter = new System.IO.StringWriter();
-			Serializer.Serialize(stringwriter, replay);
-			return stringwriter.ToString();
+			XmlSerializer serializer = new XmlSerializer(typeof(HearthstoneReplay));
+			
+			var memoryStream = new MemoryStream();
+			var streamWriter = new StreamWriter(memoryStream, Encoding.UTF8);
+
+			serializer.Serialize(streamWriter, replay);
+			
+			memoryStream.Position = 0;
+			return new StreamReader(memoryStream).ReadToEnd();
 		}
 
 		//public static void Serialize(HearthstoneReplay replay, string filePath)

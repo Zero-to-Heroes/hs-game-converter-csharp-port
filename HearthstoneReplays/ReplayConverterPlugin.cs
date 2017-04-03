@@ -34,8 +34,6 @@ namespace HearthstoneReplays
 			Task.Run(() => {
 				try
 				{
-					XmlSerializer Serializer = new XmlSerializer(typeof(FullEntity));
-					//Serializer = new XmlSerializer(typeof(HearthstoneReplay));
 					string replayXml = new ReplayConverter().xmlFromLogs(logs);
 					onGlobalEvent("Serialized", replayXml.Length);
 					callback(replayXml);
