@@ -35,11 +35,13 @@ namespace HearthstoneReplays.Parser.Handlers
 				var index = match.Groups[1].Value;
 				var rawType = match.Groups[2].Value;
 				var rawEntity = match.Groups[3].Value;
+				var rawError = match.Groups[4].Value;
 
 				var entity = helper.ParseEntity(rawEntity, state);
 			    var type = helper.ParseEnum<OptionType>(rawType);
+				var error = helper.ParseEnum<PlayReq>(rawError);
 
-				var option = new Option {Entity = entity, Index = int.Parse(index), Type = type, OptionItems = new List<OptionItem>()};
+				var option = new Option {Entity = entity, Index = int.Parse(index), Type = type, Error = error, OptionItems = new List<OptionItem>()};
 				state.Options.OptionList.Add(option);
 				state.CurrentOption = option;
 				state.LastOption = option;

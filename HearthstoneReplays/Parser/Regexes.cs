@@ -43,8 +43,8 @@ namespace HearthstoneReplays.Parser
 		public static readonly Regex EntitiesChosenEntitiesRegex = new Regex(string.Format(@"Entities\[(\d+)\]={0}$", Entity));
 
 		public static readonly Regex OptionsEntityRegex = new Regex(@"id=(\d+)$");
-		public static readonly Regex OptionsOptionRegex = new Regex(string.Format(@"option (\d+) type=(\w+) mainEntity={0}?$", Entity));
-		public static readonly Regex OptionsSuboptionRegex = new Regex(string.Format(@"(subOption|target) (\d+) entity={0}?$", Entity));
+		public static readonly Regex OptionsOptionRegex = new Regex(string.Format(@"option (\d+) type=(\w+) mainEntity={0}? error=(.*) errorParam=(.*)$", Entity));
+		public static readonly Regex OptionsSuboptionRegex = new Regex(string.Format(@"(subOption|target) (\d+) entity={0}? error=(.*) errorParam=(.*)$", Entity));
 
 		public static readonly Regex SendChoicesChoicetypeRegex = new Regex(@"id=(\d+) ChoiceType=(.+)$");
 		public static readonly Regex SendChoicesEntitiesRegex = new Regex(@"m_chosenEntities\[(\d+)\]=(\[.+\])$");

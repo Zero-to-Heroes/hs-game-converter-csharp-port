@@ -24,6 +24,7 @@ namespace HearthstoneReplays.Parser
 
 		private DataHandler dataHandler = new DataHandler();
 		private ChoicesHandler choicesHandler = new ChoicesHandler();
+		private OptionsHandler optionsHandler = new OptionsHandler();
 
 		//public static HearthstoneReplay FromFile(string filePath, int hsBuild = HearthstoneBuild, params GameType[] gameTypes)
 		//{
@@ -103,9 +104,9 @@ namespace HearthstoneReplays.Parser
 				//case "GameState.DebugPrintEntitiesChosen":
 				//	EntityChosenHandler.Handle(timestamp, data, State);
 				//	break;
-    //            case "GameState.DebugPrintOptions":
-				//	OptionsHandler.Handle(timestamp, data, State);
-				//	break;
+				case "GameState.DebugPrintOptions":
+					optionsHandler.Handle(timestamp, data, State);
+					break;
 				//case "GameState.SendOption":
 				//	SendOptionHandler.Handle(timestamp, data, State);
 				//	break;
@@ -117,7 +118,7 @@ namespace HearthstoneReplays.Parser
 				//	break;
 				//case "GameState.DebugPrintChoice":
 				//	Console.WriteLine("Warning: DebugPrintChoice was removed in 10357. Ignoring.");
-    //                break;
+				//                break;
 				default:
 					//if(!method.StartsWith("PowerTaskList.") && !method.StartsWith("PowerProcessor.") && !method.StartsWith("PowerSpellController"))
 					//	Console.WriteLine("Warning: Unhandled method: " + method);
