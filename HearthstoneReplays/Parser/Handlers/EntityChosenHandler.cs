@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Parser.ReplayData.Meta;
+using HearthstoneReplays.Parser.ReplayData;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Parser.Handlers
 {
@@ -25,7 +27,13 @@ namespace HearthstoneReplays.Parser.Handlers
 				var entity = helper.ParseEntity(rawEntity, state);
 				var player = helper.ParseEntity(rawPlayer, state);
 				var cEntities = new ChosenEntities {Entity = entity, PlayerId = player, Count = count, Choices = new List<Choice>(), TimeStamp = timestamp};
-				state.CurrentGame.Data.Add(cEntities);
+
+				if (state.Node.Type == typeof(Game))
+					((Game)state.Node.Object).Data.Add(cEntities);
+				else if (state.Node.Type == typeof(Action))
+					((Action)state.Node.Object).Data.Add(cEntities);
+				else
+					throw new Exception("Invalid node " + state.Node.Type + " -- " + data);
 				state.CurrentChosenEntites = cEntities;
 				return;
 			}

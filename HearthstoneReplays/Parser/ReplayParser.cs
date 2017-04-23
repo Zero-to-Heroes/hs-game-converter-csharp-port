@@ -24,6 +24,7 @@ namespace HearthstoneReplays.Parser
 
 		private DataHandler dataHandler = new DataHandler();
 		private ChoicesHandler choicesHandler = new ChoicesHandler();
+		private EntityChosenHandler entityChosenHandler = new EntityChosenHandler();
 		private OptionsHandler optionsHandler = new OptionsHandler();
 
 		//public static HearthstoneReplay FromFile(string filePath, int hsBuild = HearthstoneBuild, params GameType[] gameTypes)
@@ -101,9 +102,9 @@ namespace HearthstoneReplays.Parser
 				case "GameState.DebugPrintEntityChoices":
                     choicesHandler.Handle(timestamp, data, State);
 					break;
-				//case "GameState.DebugPrintEntitiesChosen":
-				//	EntityChosenHandler.Handle(timestamp, data, State);
-				//	break;
+				case "GameState.DebugPrintEntitiesChosen":
+					entityChosenHandler.Handle(timestamp, data, State);
+					break;
 				case "GameState.DebugPrintOptions":
 					optionsHandler.Handle(timestamp, data, State);
 					break;
