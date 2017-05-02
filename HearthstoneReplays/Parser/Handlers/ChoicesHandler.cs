@@ -40,13 +40,15 @@ namespace HearthstoneReplays.Parser.Handlers
 				previous builds, we'll change to "player" when it's fixed.*/
 				var rawEntity = match.Groups[1].Value;
 				var rawPlayer = match.Groups[2].Value;
-				var taskList = match.Groups[3].Value;
+				var rawTaskList = match.Groups[3].Value;
 				var rawType = match.Groups[4].Value;
 				var min = match.Groups[5].Value;
 				var max = match.Groups[6].Value;
 				var entity = helper.ParseEntity(rawEntity, state);
 				var player = helper.ParseEntity(rawPlayer, state);
 				var type = helper.ParseEnum<ChoiceType>(rawType);
+				int taskList = -1;
+				taskList = int.TryParse(rawTaskList, out taskList) ? taskList : -1;
 				state.Choices = new Choices
 				{
 					ChoiceList = new List<Choice>(),
@@ -54,7 +56,7 @@ namespace HearthstoneReplays.Parser.Handlers
 					Max = int.Parse(max),
 					Min = int.Parse(min),
 					PlayerId = player,
-					TaskList = int.Parse(taskList),
+					TaskList = taskList,
 					Type = type,
 					TimeStamp = timestamp
 				};
