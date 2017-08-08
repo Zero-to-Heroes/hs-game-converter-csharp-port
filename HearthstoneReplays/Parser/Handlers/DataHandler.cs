@@ -88,6 +88,86 @@ namespace HearthstoneReplays.Parser.Handlers
 			}
 
 			match = Regexes.ActionStartRegex.Match(data);
+			if (match.Success)
+			{
+				var rawType = match.Groups[1].Value;
+				var rawEntity = match.Groups[2].Value;
+				var effectId = match.Groups[3].Value;
+				var effectIndex = match.Groups[4].Value;
+				var rawTarget = match.Groups[5].Value;
+				var subOption = int.Parse(match.Groups[6].Value);
+				var rawTriggerKeyword = match.Groups[7].Value;
+
+				var entity = helper.ParseEntity(rawEntity, state);
+				var target = helper.ParseEntity(rawTarget, state);
+				var type = helper.ParseEnum<BlockType>(rawType);
+				var triggerKeyword = helper.ParseEnum<GameTag>(rawTriggerKeyword);
+				var action = new Action
+				{
+					Data = new List<GameData>(),
+					Entity = entity,
+					Target = target,
+					TimeStamp = timestamp,
+					Type = type,
+					SubOption = subOption,
+					TriggerKeyword = triggerKeyword
+				};
+				if (effectIndex != null && effectIndex.Length > 0)
+				{
+					action.EffectIndex = int.Parse(effectIndex);
+
+				}
+				state.UpdateCurrentNode(typeof(Game), typeof(Action));
+				if (state.Node.Type == typeof(Game))
+					((Game)state.Node.Object).Data.Add(action);
+				else if (state.Node.Type == typeof(Action))
+					((Action)state.Node.Object).Data.Add(action);
+				else
+					throw new Exception("Invalid node " + state.Node.Type);
+				state.Node = new Node(typeof(Action), action, indentLevel, state.Node);
+				return;
+			}
+
+
+			match = Regexes.ActionStartRegex_Short.Match(data);
+			if (match.Success)
+			{
+				var rawType = match.Groups[1].Value;
+				var rawEntity = match.Groups[2].Value;
+				var effectId = match.Groups[3].Value;
+				var effectIndex = match.Groups[4].Value;
+				var rawTarget = match.Groups[5].Value;
+				var subOption = int.Parse(match.Groups[6].Value);
+
+				var entity = helper.ParseEntity(rawEntity, state);
+				var target = helper.ParseEntity(rawTarget, state);
+				var type = helper.ParseEnum<BlockType>(rawType);
+				var action = new Action
+				{
+					Data = new List<GameData>(),
+					Entity = entity,
+					Target = target,
+					TimeStamp = timestamp,
+					Type = type,
+					SubOption = subOption
+				};
+				if (effectIndex != null && effectIndex.Length > 0)
+				{
+					action.EffectIndex = int.Parse(effectIndex);
+
+				}
+				state.UpdateCurrentNode(typeof(Game), typeof(Action));
+				if (state.Node.Type == typeof(Game))
+					((Game)state.Node.Object).Data.Add(action);
+				else if (state.Node.Type == typeof(Action))
+					((Action)state.Node.Object).Data.Add(action);
+				else
+					throw new Exception("Invalid node " + state.Node.Type);
+				state.Node = new Node(typeof(Action), action, indentLevel, state.Node);
+				return;
+			}
+
+			match = Regexes.ActionStartRegex_8_4.Match(data);
 			if(match.Success)
 			{
 				var rawType = match.Groups[1].Value;
@@ -238,57 +318,70 @@ namespace HearthstoneReplays.Parser.Handlers
 			match = Regexes.ActionTagChangeRegex.Match(data);
 			if(match.Success)
 			{
-				var rawEntity = match.Groups[1].Value;
-				var tagName = match.Groups[2].Value;
-				var value = match.Groups[3].Value;
-				var tag = helper.ParseTag(tagName, value);
+				try { 
+					var rawEntity = match.Groups[1].Value;
+					var tagName = match.Groups[2].Value;
+					var value = match.Groups[3].Value;
+					var tag = helper.ParseTag(tagName, value);
 
-                if (tag.Name == (int)GameTag.CURRENT_PLAYER)
-				{
-					if (state.FirstPlayerId == -1)
+					if (tag.Name == (int)GameTag.CURRENT_PLAYER)
 					{
-						state.FirstPlayerId = int.Parse(rawEntity);
+						if (state.FirstPlayerId == -1)
+						{
+							state.FirstPlayerId = int.Parse(rawEntity);
+						}
+						UpdateCurrentPlayer(state, rawEntity, tag);
 					}
-                    UpdateCurrentPlayer(state, rawEntity, tag);
+					var entity = helper.ParseEntity(rawEntity, state);
+					if(tag.Name == (int)GameTag.ENTITY_ID)
+						entity = UpdatePlayerEntity(state, rawEntity, tag, entity);
+
+					var tagChange = new TagChange {Entity = entity, Name = tag.Name, Value = tag.Value};
+					state.UpdateCurrentNode(typeof(Game), typeof(Action));
+
+					if(state.Node.Type == typeof(Game))
+						((Game)state.Node.Object).Data.Add(tagChange);
+					else if(state.Node.Type == typeof(Action))
+						((Action)state.Node.Object).Data.Add(tagChange);
+					else
+						throw new Exception("Invalid node " + state.Node.Type);
+					return;
 				}
-                var entity = helper.ParseEntity(rawEntity, state);
-                if(tag.Name == (int)GameTag.ENTITY_ID)
-                    entity = UpdatePlayerEntity(state, rawEntity, tag, entity);
-
-                var tagChange = new TagChange {Entity = entity, Name = tag.Name, Value = tag.Value};
-				state.UpdateCurrentNode(typeof(Game), typeof(Action));
-
-				if(state.Node.Type == typeof(Game))
-					((Game)state.Node.Object).Data.Add(tagChange);
-				else if(state.Node.Type == typeof(Action))
-					((Action)state.Node.Object).Data.Add(tagChange);
-				else
-					throw new Exception("Invalid node " + state.Node.Type);
-				return;
+				catch (Exception e)
+				{
+					Logger.Log("Exception parsing TagChange", e.Message);
+				}
 			}
 
 			match = Regexes.ActionTagRegex.Match(data);
 			if(match.Success)
 			{
-				var tagName = match.Groups[1].Value;
-				var value = match.Groups[2].Value;
-				var tag = helper.ParseTag(tagName, value);
+				try { 
+					var tagName = match.Groups[1].Value;
+					var value = match.Groups[2].Value;
+					var tag = helper.ParseTag(tagName, value);
 
-				if(tag.Name == (int)GameTag.CURRENT_PLAYER)
-					state.FirstPlayerId = ((PlayerEntity)state.Node.Object).Id;
+					if (tag.Name == (int)GameTag.CURRENT_PLAYER)
+						state.FirstPlayerId = ((PlayerEntity)state.Node.Object).Id;
 
-				if(state.Node.Type == typeof(GameEntity))
-					((GameEntity)state.Node.Object).Tags.Add(tag);
-				else if(state.Node.Type == typeof(PlayerEntity))
-					((PlayerEntity)state.Node.Object).Tags.Add(tag);
-				else if(state.Node.Type == typeof(FullEntity))
-					((FullEntity)state.Node.Object).Tags.Add(tag);
-				else if (state.Node.Type == typeof(ShowEntity))
-					((ShowEntity)state.Node.Object).Tags.Add(tag);
-				else if (state.Node.Type == typeof(ChangeEntity))
-					((ChangeEntity)state.Node.Object).Tags.Add(tag);
-				else
-					throw new Exception("Invalid node " + state.Node.Type + " -- " + data);
+					if(state.Node.Type == typeof(GameEntity))
+						((GameEntity)state.Node.Object).Tags.Add(tag);
+					else if(state.Node.Type == typeof(PlayerEntity))
+						((PlayerEntity)state.Node.Object).Tags.Add(tag);
+					else if(state.Node.Type == typeof(FullEntity))
+						((FullEntity)state.Node.Object).Tags.Add(tag);
+					else if (state.Node.Type == typeof(ShowEntity))
+						((ShowEntity)state.Node.Object).Tags.Add(tag);
+					else if (state.Node.Type == typeof(ChangeEntity))
+						((ChangeEntity)state.Node.Object).Tags.Add(tag);
+					else
+						throw new Exception("Invalid node " + state.Node.Type + " -- " + data);
+				}
+				catch (Exception e)
+				{
+					Logger.Log("Exception parsing Tag", e.Message);
+				}
+
 			}
 		}
 

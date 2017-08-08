@@ -25,6 +25,8 @@ namespace HearthstoneReplays
 		// notice how we will always call the callback on a new thread
 		public void convertLogsToXml(string logs, Action<object> callback)
 		{
+			Logger.Log = onGlobalEvent;
+
 			if (callback == null)
 			{
 				onGlobalEvent("No callback, returning", logs);

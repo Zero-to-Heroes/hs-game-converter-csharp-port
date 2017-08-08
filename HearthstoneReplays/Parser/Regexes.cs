@@ -24,8 +24,12 @@ namespace HearthstoneReplays.Parser
 		public static readonly Regex ActionCreategameRegex = new Regex(@"GameEntity EntityID=(\d+)");
 		public static readonly Regex ActionCreategamePlayerRegex =
 			new Regex(@"Player EntityID=(\d+) PlayerID=(\d+) GameAccountId=\[hi=(\d+) lo=(\d+)\]$");
-		public static readonly Regex ActionStartRegex =
+		public static readonly Regex ActionStartRegex_8_4 =
 			new Regex(string.Format(@"BLOCK_START (?:SubType|BlockType)=(\w+) Entity={0} EffectCardId=(.*) EffectIndex=(-1|\d+) Target={0}$", Entity));
+		public static readonly Regex ActionStartRegex_Short =
+			new Regex(string.Format(@"BLOCK_START (?:SubType|BlockType)=(\w+) Entity={0} EffectCardId=(.*) EffectIndex=(-1|\d+) Target={0} SubOption={0}$", Entity));
+		public static readonly Regex ActionStartRegex =
+			new Regex(string.Format(@"BLOCK_START (?:SubType|BlockType)=(\w+) Entity={0} EffectCardId=(.*) EffectIndex=(-1|\d+) Target={0} SubOption={0} TriggerKeyword={0}$", Entity));
 
 		public static readonly Regex ActionMetadataRegex = new Regex(string.Format(@"META_DATA - Meta=(\w+) Data={0} Info=(\d+)", Entity));
 		public static readonly Regex ActionMetaDataInfoRegex = new Regex(string.Format(@"Info\[(\d+)\] = {0}", Entity));
