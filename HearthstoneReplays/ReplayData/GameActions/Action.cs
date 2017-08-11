@@ -25,7 +25,7 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
 		[XmlAttribute("type")]
 		public int Type { get; set; }
 
-		[XmlAttribute("subOption")]
+		[XmlAttribute("subOption")] 
 		public int SubOption { get; set; }
 
 		[XmlAttribute("triggerKeyword")]

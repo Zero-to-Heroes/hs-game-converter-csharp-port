@@ -576,6 +576,7 @@ namespace HearthDb.Enums
 		EFFECT_TIMING = 6,
 		HISTORY_TARGET = 7,
 		OVERRIDE_HISTORY = 8,
+		HISTORY_TARGET_DONT_DUPLICATE_UNTIL_END = 8,
 	}
 
 	public enum Mulligan
