@@ -16,7 +16,7 @@ namespace HearthstoneReplays
 		//  ...
 		// });
 		public event Action<object, object> onGlobalEvent;
-
+		 
 
 		// plugin.get().convertLogsToXml(xmlLogs, function(result) {
 		//   console.log(result);
