@@ -75,7 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HearthDb\Enums\Enums.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Parser\Handlers\EntityChosenHandler.cs" />
     <Compile Include="Parser\Handlers\ChoicesHandler.cs" />

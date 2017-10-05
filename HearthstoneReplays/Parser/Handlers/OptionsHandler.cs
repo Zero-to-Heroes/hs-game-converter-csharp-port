@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using HearthDb.Enums;
+using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.Meta.Options;
 

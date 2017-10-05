@@ -16,7 +16,7 @@ namespace HearthstoneReplayTests
 	{
 		[TestMethod]
 		public void Test()
-		{
+		{ 
 			List<string> logFile = TestDataReader.GetInputFile("Power_1.log.txt");
 			HearthstoneReplay replay = new ReplayParser().FromString(logFile);
 			string xml = new ReplayConverter().xmlFromReplay(replay);

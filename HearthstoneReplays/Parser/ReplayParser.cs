@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using HearthDb.Enums;
+using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.Handlers;
 using HearthstoneReplays.Parser.ReplayData;
 

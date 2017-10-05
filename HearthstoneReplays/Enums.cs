@@ -1,4 +1,4 @@
-namespace HearthDb.Enums
+namespace HearthstoneReplays.Enums
 {
 	public enum BlockType
 	{
