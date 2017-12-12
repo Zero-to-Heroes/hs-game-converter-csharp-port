@@ -12,6 +12,7 @@ namespace HearthstoneReplays.Enums
 		PLAY = 7,
 		FATIGUE = 8,
 		RITUAL = 9,
+		REVEAL_CARD = 10,
 		ACTION = 99,
 	}
 
@@ -24,17 +25,22 @@ namespace HearthstoneReplays.Enums
 		BGT_VS_AI = 4,
 		BGT_TUTORIAL = 5,
 		BGT_ASYNC = 6,
-		BGT_CASUAL_STANDARD = 7,
-		BGT_TEST1 = 8,
-		BGT_TEST2 = 9,
 		BGT_NEWBIE = 9,
-		BGT_TEST3 = 10,
+		BGT_CASUAL_STANDARD_NEWBIE = 9,
+		BGT_CASUAL_STANDARD_NORMAL = 10,
+		BGT_CASUAL_STANDARD = 10,
+		BGT_TEST1 = 11,
+		BGT_TEST2 = 12,
+		BGT_TEST3 = 13,
 		BGT_TAVERNBRAWL_PVP = 16,
 		BGT_TAVERNBRAWL_1P_VERSUS_AI = 17,
 		BGT_TAVERNBRAWL_2P_COOP = 18,
 		BGT_RANKED_WILD = 30,
 		BGT_CASUAL_WILD = 31,
-		BGT_LAST = 32,
+		BGT_FSG_BRAWL_VS_FRIEND = 40,
+		BGT_FSG_BRAWL_PVP = 41,
+		BGT_FSG_BRAWL_1P_VERSUS_AI = 42,
+		BGT_FSG_BRAWL_2P_COOP = 43,
 	}
 
 	public enum BnetRegion
@@ -65,7 +71,10 @@ namespace HearthstoneReplays.Enums
 		SIGNUP_INCENTIVE = 18,
 		MEAN_STREETS = 19,
 		UNGORO = 20,
-		ICECROWN = 1001,
+		FROZEN_THRONE = 21,
+		GOLDEN_CLASSIC_PACK = 23,
+		KOBOLDS_AND_CATACOMBS = 30,
+		KOBOLDS_CATACOMBS = 30,
 	}
 
 	public enum CardClass
@@ -104,11 +113,11 @@ namespace HearthstoneReplays.Enums
 		NAXX = 12,
 		GVG = 13,
 		PE1 = 13,
-		FP2 = 14,
 		BRM = 14,
+		FP2 = 14,
+		PE2 = 15,
 		TGT = 15,
 		TEMP1 = 15,
-		PE2 = 15,
 		CREDITS = 16,
 		HERO_SKINS = 17,
 		TB = 18,
@@ -121,6 +130,8 @@ namespace HearthstoneReplays.Enums
 		GANGS = 25,
 		GANGS_RESERVE = 26,
 		UNGORO = 27,
+		ICECROWN = 1001,
+		LOOTAPALOOZA = 1004,
 	}
 
 	public enum CardType
@@ -176,7 +187,7 @@ namespace HearthstoneReplays.Enums
 	{
 		FT_UNKNOWN = 0,
 		FT_WILD = 1,
-		FT_STANDARD = 2,
+		FT_STANDARD = 2, 
 	}
 
 	public enum GameTag
@@ -601,6 +612,7 @@ namespace HearthstoneReplays.Enums
 		BEGIN_ARTIFICIAL_HISTORY_TILE = 10,
 		BEGIN_ARTIFICIAL_HISTORY_TRIGGER_TILE = 11,
 		END_ARTIFICIAL_HISTORY_TILE = 12,
+		START_DRAW = 13,
 	}
 
 	public enum Mulligan
@@ -702,7 +714,10 @@ namespace HearthstoneReplays.Enums
  		REQ_NOT_DISABLED_HERO_POWER = 68,
  		REQ_MUST_PLAY_OTHER_CARD_FIRST = 69,
  		REQ_HAND_NOT_FULL = 70,
- 		REQ_DRAG_TO_PLAY = 71,
+		REQ_TARGET_IF_AVAILABLE_AND_NO_3_COST_CARD_IN_DECK = 71,
+		REQ_CAN_BE_TARGETED_BY_COMBOS = 72,
+		REQ_CANNOT_PLAY_THIS = 73,
+		REQ_DRAG_TO_PLAY = 74,
 
 		// Renamed
 		REQ_ENCHANTED_TARGET = REQ_MAX_SECRETS,
@@ -768,6 +783,7 @@ namespace HearthstoneReplays.Enums
 		NERUBIAN = 22,
 		PIRATE = 23,
 		DRAGON = 24,
+		BLANK = 25,
 	}
 
 	public enum Rarity
