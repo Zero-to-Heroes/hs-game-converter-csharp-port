@@ -75,6 +75,7 @@ namespace HearthstoneReplays.Enums
 		GOLDEN_CLASSIC_PACK = 23,
 		KOBOLDS_AND_CATACOMBS = 30,
 		KOBOLDS_CATACOMBS = 30,
+		MAMMOTH_BUNDLE = 41,
 	}
 
 	public enum CardClass
@@ -543,6 +544,10 @@ namespace HearthstoneReplays.Enums
 		IGNORE_HIDE_STATS_FOR_BIG_CARD = 857,
 		REAL_TIME_TRANSFORM = 859,
 		WAIT_FOR_PLAYER_RECONNECT_PERIOD = 860,
+		PHASED_RESTART = 888,
+        HEALTH_DISPLAY = 917,
+        ENABLE_HEALTH_DISPLAY = 920,
+        SHIFTING_SPELL = 936,
 	}
 
 	public enum GameType
