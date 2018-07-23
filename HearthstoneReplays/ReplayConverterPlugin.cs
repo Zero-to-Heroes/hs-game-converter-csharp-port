@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
-using System.Threading.Tasks;
-using HearthstoneReplays;
-using HearthstoneReplays.Parser.ReplayData;
-using HearthstoneReplays.Parser.ReplayData.Entities;
+using HearthstoneReplays.Parser;
+using Newtonsoft;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace HearthstoneReplays
 {
@@ -16,7 +15,8 @@ namespace HearthstoneReplays
 		//  ...
 		// });
 		public event Action<object, object> onGlobalEvent;
-		 
+		public event Action<string> onGameEvent;
+
 
 		// plugin.get().convertLogsToXml(xmlLogs, function(result) {
 		//   console.log(result);
@@ -48,12 +48,31 @@ namespace HearthstoneReplays
 			});
 		}
 
-		//plugin.get().onGlobalEvent.addListener(function(first, second)
-		//{
-		//  ...
-		// });
+		private ReplayParser parser = new ReplayParser();
+
+		public void initRealtimeLogConversion()
+		{
+			Logger.Log = onGlobalEvent;
+			GameEventHandler.EventProvider = onGameEvent;
+			parser = new ReplayParser();
+			parser.Init();
+		}
+
+		public void realtimeLogProcessing(string[] logLines, Action<object> callback)
+		{
+			Task.Run(() => {
+				try
+				{
+					Array.ForEach(logLines, logLine => parser.ReadLine(logLine));
+					callback(null);
+				}
+				catch (Exception e)
+				{
+					onGlobalEvent("Exception when parsing game " + e.GetBaseException(), logLines);
+				}
+			});
+		}
 		
-		// plugin.get().triggerGlobalEvent();
 		public void triggerGlobalEvent(string first, string second)
 		{
 			if (onGlobalEvent == null)

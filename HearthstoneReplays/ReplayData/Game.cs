@@ -1,5 +1,6 @@
 ﻿#region
 
+using System.Linq;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using HearthstoneReplays.Parser.ReplayData.Entities;
@@ -34,5 +35,31 @@ namespace HearthstoneReplays.Parser.ReplayData
 		[XmlElement("MetaData", typeof(MetaData))]
 		[XmlElement("ChosenEntities", typeof(ChosenEntities))]
 		public List<GameData> Data { get; set; }
+
+		internal List<GameData> FilterGameData(params System.Type[] types)
+		{
+			// Build the list - could probably be built incrementally instead of rebuilding it completely every time
+			List<GameData> result = new List<GameData>();
+			foreach (GameData data in Data)
+			{
+				result.Add(data);
+				ExtractData(result, data);
+			}
+
+			// Now filter it
+			return result.Where(data => types.Contains(data.GetType())).ToList();
+		}
+
+		internal void ExtractData(List<GameData> result, GameData data)
+		{
+			if (data.GetType() == typeof(Action))
+			{
+				foreach (GameData gameData in ((Action) data).Data)
+				{
+					result.Add(gameData);
+					ExtractData(result, gameData);
+				}
+			}
+		}
 	}
 }

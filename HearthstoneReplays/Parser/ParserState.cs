@@ -8,6 +8,7 @@ using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Parser.ReplayData.Meta;
 using HearthstoneReplays.Parser.ReplayData.Meta.Options;
 using HearthstoneReplays.Parser.ReplayData.Entities;
+using HearthstoneReplays.Enums;
 
 #endregion
 
@@ -34,13 +35,44 @@ namespace HearthstoneReplays.Parser
 	    public int CurrentPlayerId { get; set; }
 		public ChosenEntities CurrentChosenEntites { get; set; }
 
+		private Player _localPlayer;
+		public Player LocalPlayer {
+			get { return _localPlayer; }
+			set
+			{
+				this._localPlayer = value;
+				//Console.WriteLine("Assigned LocalPlayer: " + LocalPlayer + ", " + EventHandler);
+				GameEventHandler.Handle(new GameEvent
+				{
+					Type = "LOCAL_PLAYER",
+					Value = this._localPlayer
+				});
+			}
+		}
+
+		private Player _opponentPlayer;
+		public Player OpponentPlayer
+		{
+			get { return _opponentPlayer; }
+			set
+			{
+				this._opponentPlayer = value;
+				//Console.WriteLine("Assigned OpponentPlayer: " + OpponentPlayer);
+				GameEventHandler.Handle(new GameEvent
+				{
+					Type = "OPPONENT_PLAYER",
+					Value = this._opponentPlayer
+				});
+			}
+		}
+
 		public void Reset()
 		{
 			Replay = new HearthstoneReplay();
 			CurrentGame = new Game();
 		}
 
-		public void UpdateCurrentNode(params Type[] types)
+		public void UpdateCurrentNode(params System.Type[] types)
 		{
 			while(Node.Parent != null && types.All(x => x != Node.Type))
 				Node = Node.Parent;
@@ -54,6 +86,93 @@ namespace HearthstoneReplays.Parser
 				if (x is PlayerEntity) players.Add((PlayerEntity)x);
 			}
 			return players;
+		}
+
+		public void TryAssignLocalPlayer()
+		{
+			// Only assign the local player once
+			if (LocalPlayer != null && OpponentPlayer != null)
+			{
+				return;
+			}
+
+			// Names are not assigned right away, so wait until all the data is present to notify
+			foreach (PlayerEntity player in getPlayers())
+			{
+				if (player.Name == null)
+				{
+					//Console.WriteLine("Player with no name: " + player);
+					return;
+				}
+				var playerEntityIdTag = player.Tags.Where(t => t.Name == (int)GameTag.HERO_ENTITY).First();
+				if (playerEntityIdTag == null)
+				{
+					return;
+				}
+				}
+
+			//Console.WriteLine("Trying to assign local player");
+			List<ShowEntity> showEntities = CurrentGame.FilterGameData(typeof(ShowEntity)).Select(data => (ShowEntity)data).ToList();
+			foreach (ShowEntity entity in showEntities)
+			{
+				//Console.WriteLine("Considering entity: " + entity);
+				if (entity.CardId != null && entity.CardId.Length > 0 && GetTag(entity.Tags, GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
+				{
+					int entityId = entity.Entity;
+					BaseEntity fullEntity = GetEntity(entityId);
+					int controllerId = GetTag(fullEntity.Tags, GameTag.CONTROLLER);
+					//Console.WriteLine("Passed first step: " + entityId + ", " + fullEntity + ", " + controllerId);
+					foreach (PlayerEntity player in getPlayers())
+					{
+						if (GetTag(player.Tags, GameTag.CONTROLLER) == controllerId)
+						{
+							var newPlayer = Player.from(player);
+							var playerEntityId = player.Tags.Where(t => t.Name == (int)GameTag.HERO_ENTITY).First().Value;
+							FullEntity playerEntity = CurrentGame.Data
+								.Where(d => d is FullEntity)
+								.Select(d => (FullEntity)d)
+								.Where(e => e.Id == playerEntityId)
+								.First();
+							newPlayer.CardID = playerEntity.CardId;
+							LocalPlayer = newPlayer;
+						}
+					}
+					if (LocalPlayer != null)
+					{
+						foreach (PlayerEntity player in getPlayers())
+						{
+							if (player.Id == LocalPlayer.Id)
+							{
+								continue;
+							}
+							var newPlayer = Player.from(player);
+							var playerEntityId = player.Tags.Where(t => t.Name == (int)GameTag.HERO_ENTITY).First().Value;
+							FullEntity playerEntity = CurrentGame.Data
+								.Where(d => d is FullEntity)
+								.Select(d => (FullEntity)d)
+								.Where(e => e.Id == playerEntityId)
+								.First();
+							newPlayer.CardID = playerEntity.CardId;
+							OpponentPlayer = newPlayer;
+						}
+						return;
+					}
+				}
+			}
+		}
+
+		private int GetTag(List<Tag> tags, GameTag tag)
+		{
+			Tag ret = tags.Where(t => t.Name == (int)tag).First();
+			return ret == null ? -1 : ret.Value;
+		}
+
+		private BaseEntity GetEntity(int id)
+		{
+			return CurrentGame.FilterGameData(typeof(FullEntity), typeof(PlayerEntity))
+				.Select(data => (BaseEntity)data).ToList()
+				.Where(e => e.Id == id)
+				.First();
 		}
 	}
 }

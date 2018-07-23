@@ -7,33 +7,41 @@ using Newtonsoft.Json;
 
 namespace HearthstoneReplays.Parser.ReplayData.Entities
 {
-	public class PlayerEntity : BaseEntity
+	public class Player
 	{
-		[XmlAttribute("accountHi")]
+		public int Id { get; set; }
+
 		public string AccountHi { get; set; }
 
-		[XmlAttribute("accountLo")]
 		public string AccountLo { get; set; }
-
-		[XmlAttribute("playerID")]
+		
 		public int PlayerId { get; set; }
-
-		[XmlAttribute("name")]
+		
 		public string Name { get; set; }
-
-		[XmlAttribute("rank")]
+		
 		public string Rank { get; set; }
-
-		[XmlAttribute("legendRank")]
+		
 		public string LegendRank { get; set; }
 
-		[XmlAttribute("cardback")]
-		public string Cardback { get; set; }
+		public string CardID { get; set; }
 
 		public override string ToString()
 		{
 			return JsonConvert.SerializeObject(this);
 			//return "PlayerEntity: " + PlayerId + ", " + Name;
+		}
+
+		public static Player from(PlayerEntity entity)
+		{
+			Player player = new Player();
+			player.Id = entity.Id;
+			player.AccountHi = entity.AccountHi;
+			player.AccountLo = entity.AccountLo;
+			player.PlayerId = entity.PlayerId;
+			player.Name = entity.Name;
+			player.Rank = entity.Rank;
+			player.LegendRank = entity.LegendRank;
+			return player;
 		}
 	}
 }

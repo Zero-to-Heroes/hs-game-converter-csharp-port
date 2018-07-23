@@ -29,14 +29,18 @@ namespace HearthstoneReplays.Parser.Handlers
 			var indentLevel = data.Length - trimmed.Length;
 			data = trimmed;
 
+
 			if (data == "CREATE_GAME")
 			{
 				state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
 				state.Replay.Games.Add(state.CurrentGame);
 				state.Node = new Node(typeof(Game), state.CurrentGame, 0, null);
+				GameEventHandler.Handle(new GameEvent
+				{
+					Type = "NEW_GAME"
+				});
 				return;
 			}
-
 
 			// TODO: special case where the CREATE_GAME tag is not present in the
 			// output log
@@ -54,16 +58,27 @@ namespace HearthstoneReplays.Parser.Handlers
 				return;
 			}
 
-
 			var match = Regexes.ActionCreategameRegex.Match(data);
-			if(match.Success)
+			if (match.Success)
 			{
 				var id = match.Groups[1].Value;
 				Debug.Assert(id == "1");
-				var gEntity = new GameEntity {Id = int.Parse(id), Tags = new List<Tag>()};
+				var gEntity = new GameEntity { Id = int.Parse(id), Tags = new List<Tag>() };
 				state.CurrentGame.Data.Add(gEntity);
 				state.Node = new Node(typeof(GameEntity), gEntity, indentLevel, state.Node);
 				return;
+			}
+
+			match = Regexes.PlayerNameAssignment.Match(data);
+			if (match.Success)
+			{
+				var playerId = int.Parse(match.Groups[1].Value);
+				var playerName = match.Groups[2].Value;
+				var matchingPlayer = state.getPlayers()
+					.Where(player => player.PlayerId == playerId)
+					.First();
+				matchingPlayer.Name = playerName;
+				state.TryAssignLocalPlayer();
 			}
 
 			match = Regexes.ActionCreategamePlayerRegex.Match(data);
@@ -376,12 +391,12 @@ namespace HearthstoneReplays.Parser.Handlers
 						((ChangeEntity)state.Node.Object).Tags.Add(tag);
 					else
 						throw new Exception("Invalid node " + state.Node.Type + " -- " + data);
+					return;
 				}
 				catch (Exception e)
 				{
 					Logger.Log("Exception parsing Tag", e.Message);
 				}
-
 			}
 		}
 
