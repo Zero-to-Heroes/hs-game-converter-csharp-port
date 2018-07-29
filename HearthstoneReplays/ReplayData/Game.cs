@@ -17,6 +17,9 @@ namespace HearthstoneReplays.Parser.ReplayData
 		[XmlAttribute("ts")]
 		public string TimeStamp { get; set; }
 
+		[XmlAttribute("buildNumber")]
+		public int BuildNumber { get; set; }
+
 		[XmlAttribute("type")]
 		public int Type { get; set; }
 
@@ -25,6 +28,9 @@ namespace HearthstoneReplays.Parser.ReplayData
 
 		[XmlAttribute("formatType")]
 		public int FormatType { get; set; }
+
+		[XmlAttribute("scenarioID")]
+		public int ScenarioID { get; set; }
 
 		[XmlElement("Block", typeof(Action))]
 		[XmlElement("Choices", typeof(Choices))]

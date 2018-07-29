@@ -81,6 +81,12 @@ namespace HearthstoneReplays.Parser.Handlers
 				state.TryAssignLocalPlayer();
 			}
 
+			match = Regexes.BuildNumber.Match(data);
+			if (match.Success)
+			{
+				state.CurrentGame.BuildNumber = int.Parse(match.Groups[1].Value);
+			}
+
 			match = Regexes.GameType.Match(data);
 			if (match.Success)
 			{
@@ -95,6 +101,12 @@ namespace HearthstoneReplays.Parser.Handlers
 				var rawFormatType = match.Groups[1].Value;
 				var formatType = helper.ParseEnum<FormatType>(rawFormatType);
 				state.CurrentGame.FormatType = formatType;
+			}
+
+			match = Regexes.ScenarioID.Match(data);
+			if (match.Success)
+			{
+				state.CurrentGame.ScenarioID = int.Parse(match.Groups[1].Value);
 			}
 
 			match = Regexes.ActionCreategamePlayerRegex.Match(data);
