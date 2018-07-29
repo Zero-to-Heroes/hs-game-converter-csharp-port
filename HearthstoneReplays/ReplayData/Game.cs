@@ -17,8 +17,14 @@ namespace HearthstoneReplays.Parser.ReplayData
 		[XmlAttribute("ts")]
 		public string TimeStamp { get; set; }
 
-        [XmlAttribute("type")]
-        public int Type { get; set; }
+		[XmlAttribute("type")]
+		public int Type { get; set; }
+
+		[XmlAttribute("gameType")]
+		public int GameType { get; set; }
+
+		[XmlAttribute("formatType")]
+		public int FormatType { get; set; }
 
 		[XmlElement("Block", typeof(Action))]
 		[XmlElement("Choices", typeof(Choices))]

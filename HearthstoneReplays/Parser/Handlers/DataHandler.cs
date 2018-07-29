@@ -81,6 +81,22 @@ namespace HearthstoneReplays.Parser.Handlers
 				state.TryAssignLocalPlayer();
 			}
 
+			match = Regexes.GameType.Match(data);
+			if (match.Success)
+			{
+				var rawGameType = match.Groups[1].Value;
+				var gameType = helper.ParseEnum<GameType>(rawGameType);
+				state.CurrentGame.GameType = gameType;
+			}
+
+			match = Regexes.FormatType.Match(data);
+			if (match.Success)
+			{
+				var rawFormatType = match.Groups[1].Value;
+				var formatType = helper.ParseEnum<FormatType>(rawFormatType);
+				state.CurrentGame.FormatType = formatType;
+			}
+
 			match = Regexes.ActionCreategamePlayerRegex.Match(data);
 			if(match.Success)
 			{
