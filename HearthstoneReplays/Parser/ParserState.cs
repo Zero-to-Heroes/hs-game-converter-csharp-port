@@ -167,7 +167,7 @@ namespace HearthstoneReplays.Parser
 			return ret == null ? -1 : ret.Value;
 		}
 
-		private BaseEntity GetEntity(int id)
+		public BaseEntity GetEntity(int id)
 		{
 			return CurrentGame.FilterGameData(typeof(FullEntity), typeof(PlayerEntity))
 				.Select(data => (BaseEntity)data).ToList()

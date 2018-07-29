@@ -107,6 +107,17 @@ namespace HearthstoneReplays.Parser.Handlers
 			if (match.Success)
 			{
 				state.CurrentGame.ScenarioID = int.Parse(match.Groups[1].Value);
+				GameEventHandler.Handle(new GameEvent
+				{
+					Type = "MATCH_METADATA",
+					Value = new
+					{
+						BuildNumber = state.CurrentGame.BuildNumber,
+						GameType = state.CurrentGame.GameType,
+						FormatType = state.CurrentGame.FormatType,
+						ScenarioID = state.CurrentGame.ScenarioID,
+					}
+				});
 			}
 
 			match = Regexes.ActionCreategamePlayerRegex.Match(data);
@@ -388,6 +399,8 @@ namespace HearthstoneReplays.Parser.Handlers
 						((Action)state.Node.Object).Data.Add(tagChange);
 					else
 						throw new Exception("Invalid node " + state.Node.Type);
+
+					RaiseTagChangeEvents(state, tagChange);
 					return;
 				}
 				catch (Exception e)
@@ -425,6 +438,41 @@ namespace HearthstoneReplays.Parser.Handlers
 				{
 					Logger.Log("Exception parsing Tag", e.Message);
 				}
+			}
+		}
+
+		private void RaiseTagChangeEvents(ParserState state, TagChange tagChange)
+		{
+			if (tagChange.Name == (int) GameTag.PLAYSTATE )
+			{
+				if (tagChange.Value == (int)PlayState.WON) {
+					var winner = (PlayerEntity) state.GetEntity(tagChange.Entity);
+					GameEventHandler.Handle(new GameEvent
+					{
+						Type = "WINNER",
+						Value = winner
+					});
+				}
+				else if (tagChange.Value == (int)PlayState.TIED) {
+					GameEventHandler.Handle(new GameEvent
+					{
+						Type = "TIE"
+					});
+				}
+			}
+
+			if (tagChange.Name == (int) GameTag.GOLD_REWARD_STATE)
+			{
+				var xmlReplay =	new ReplayConverter().xmlFromReplay(state.Replay);
+				GameEventHandler.Handle(new GameEvent
+				{
+					Type = "GAME_END",
+					Value = new
+					{
+						Game = state.CurrentGame,
+						ReplayXml = xmlReplay
+					}
+				});
 			}
 		}
 
