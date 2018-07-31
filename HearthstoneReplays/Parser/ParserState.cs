@@ -18,7 +18,6 @@ namespace HearthstoneReplays.Parser
 	{
 		public ParserState()
 		{
-			FirstPlayerId = -1;
 			Reset();
 		}
 
@@ -70,6 +69,18 @@ namespace HearthstoneReplays.Parser
 		{
 			Replay = new HearthstoneReplay();
 			CurrentGame = new Game();
+			this._localPlayer = null;
+			this._opponentPlayer = null;
+			Node = null;
+			GameData = null;
+			SendChoices = null;
+			Choices = null;
+			Options = null;
+			CurrentOption = null;
+			LastOption = null;
+			FirstPlayerId = -1;
+			CurrentPlayerId = -1;
+			CurrentChosenEntites = null;
 		}
 
 		public void UpdateCurrentNode(params System.Type[] types)
