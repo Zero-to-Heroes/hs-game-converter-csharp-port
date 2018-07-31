@@ -450,7 +450,12 @@ namespace HearthstoneReplays.Parser.Handlers
 					GameEventHandler.Handle(new GameEvent
 					{
 						Type = "WINNER",
-						Value = winner
+						Value = new
+						{
+							Winner = winner,
+							LocalPlayer = state.LocalPlayer,
+							OpponentPlayer = state.OpponentPlayer
+						}
 					});
 				}
 				else if (tagChange.Value == (int)PlayState.TIED) {
