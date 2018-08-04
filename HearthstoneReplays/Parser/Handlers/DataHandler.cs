@@ -29,9 +29,9 @@ namespace HearthstoneReplays.Parser.Handlers
 			var indentLevel = data.Length - trimmed.Length;
 			data = trimmed;
 
-
-			if (data == "CREATE_GAME")
+			if (data == "CREATE_GAME") 
 			{
+				state.Reset();
 				state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
 				state.Replay.Games.Add(state.CurrentGame);
 				state.Node = new Node(typeof(Game), state.CurrentGame, 0, null);

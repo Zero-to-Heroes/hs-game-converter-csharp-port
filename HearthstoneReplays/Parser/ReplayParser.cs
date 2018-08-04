@@ -69,7 +69,6 @@ namespace HearthstoneReplays.Parser
 		public void Init()
 		{
 			State.Reset();
-			State.Replay.Games = new List<Game>();
 		}
 
 		public void ReadLine(string line)

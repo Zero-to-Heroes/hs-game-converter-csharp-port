@@ -68,6 +68,7 @@ namespace HearthstoneReplays.Parser
 		public void Reset()
 		{
 			Replay = new HearthstoneReplay();
+			Replay.Games = new List<Game>();
 			CurrentGame = new Game();
 			this._localPlayer = null;
 			this._opponentPlayer = null;
