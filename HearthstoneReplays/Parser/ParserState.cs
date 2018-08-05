@@ -33,6 +33,7 @@ namespace HearthstoneReplays.Parser
 		public int FirstPlayerId { get; set; }
 	    public int CurrentPlayerId { get; set; }
 		public ChosenEntities CurrentChosenEntites { get; set; }
+		public bool Ended { get; set; }
 
 		private Player _localPlayer;
 		public Player LocalPlayer {
@@ -82,6 +83,12 @@ namespace HearthstoneReplays.Parser
 			FirstPlayerId = -1;
 			CurrentPlayerId = -1;
 			CurrentChosenEntites = null;
+			Ended = false;
+		}
+
+		public void EndCurrentGame()
+		{
+			Ended = true;
 		}
 
 		public void UpdateCurrentNode(params System.Type[] types)

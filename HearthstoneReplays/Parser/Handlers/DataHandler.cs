@@ -49,6 +49,12 @@ namespace HearthstoneReplays.Parser.Handlers
 				state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
 				state.Replay.Games.Add(state.CurrentGame);
 				state.Node = new Node(typeof(Game), state.CurrentGame, 0, null);
+				state.Ended = false;
+			}
+
+			if (state.Ended)
+			{
+				return;
 			}
 
 			if (data == "BLOCK_END")
@@ -478,6 +484,7 @@ namespace HearthstoneReplays.Parser.Handlers
 						ReplayXml = xmlReplay
 					}
 				});
+				state.EndCurrentGame();
 			}
 		}
 
