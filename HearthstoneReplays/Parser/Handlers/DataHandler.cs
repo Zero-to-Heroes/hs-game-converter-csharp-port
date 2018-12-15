@@ -382,6 +382,7 @@ namespace HearthstoneReplays.Parser.Handlers
 					var rawEntity = match.Groups[1].Value;
 					var tagName = match.Groups[2].Value;
 					var value = match.Groups[3].Value;
+					var defChange = match.Groups.Count >= 4 ? match.Groups[4].Value : null;
 					var tag = helper.ParseTag(tagName, value);
 
 					if (tag.Name == (int)GameTag.CURRENT_PLAYER)
@@ -406,7 +407,7 @@ namespace HearthstoneReplays.Parser.Handlers
 					else
 						throw new Exception("Invalid node " + state.Node.Type);
 
-					RaiseTagChangeEvents(state, tagChange);
+					RaiseTagChangeEvents(state, tagChange, defChange);
 					return;
 				}
 				catch (Exception e)
@@ -447,7 +448,7 @@ namespace HearthstoneReplays.Parser.Handlers
 			}
 		}
 
-		private void RaiseTagChangeEvents(ParserState state, TagChange tagChange)
+		private void RaiseTagChangeEvents(ParserState state, TagChange tagChange, string defChange)
 		{
 			if (tagChange.Name == (int) GameTag.PLAYSTATE )
 			{
@@ -485,6 +486,31 @@ namespace HearthstoneReplays.Parser.Handlers
 					}
 				});
 				state.EndCurrentGame();
+			}
+
+			if (tagChange.Name == (int)GameTag.MULLIGAN_STATE && tagChange.Value == (int)Mulligan.INPUT)
+			{
+				GameEventHandler.Handle(new GameEvent
+				{
+					Type = "MULLIGAN_INPUT"
+				});
+			}
+
+			if (tagChange.Name == (int)GameTag.MULLIGAN_STATE && tagChange.Value == (int)Mulligan.DONE)
+			{
+				GameEventHandler.Handle(new GameEvent
+				{
+					Type = "MULLIGAN_DONE"
+				});
+			}
+
+			if (tagChange.Name == (int)GameTag.TURN)
+			{
+				GameEventHandler.Handle(new GameEvent
+				{
+					Type = "TURN_START",
+					Value = (int)tagChange.Value
+				});
 			}
 		}
 

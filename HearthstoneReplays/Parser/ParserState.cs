@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using HearthstoneReplays.Parser.ReplayData;
@@ -23,7 +24,6 @@ namespace HearthstoneReplays.Parser
 
 		public HearthstoneReplay Replay { get; set; }
 		public Game CurrentGame { get; set; }
-		public Node Node { get; set; }
 		public GameData GameData { get; set; }
 		public SendChoices SendChoices { get; set; }
 		public Choices Choices { get; set; }
@@ -35,11 +35,26 @@ namespace HearthstoneReplays.Parser
 		public ChosenEntities CurrentChosenEntites { get; set; }
 		public bool Ended { get; set; }
 
+		private Node _node;
+		public Node Node
+		{
+			get { return _node; }
+			set
+			{
+				if (value != _node)
+				{
+					HandleNodeUpdateEvent(_node, value);
+					this._node = value;
+				}
+			}
+		}
+
 		private Player _localPlayer;
 		public Player LocalPlayer {
 			get { return _localPlayer; }
 			set
 			{
+				Logger.Log("Set local player", LocalPlayer);
 				this._localPlayer = value;
 				//Console.WriteLine("Assigned LocalPlayer: " + LocalPlayer + ", " + EventHandler);
 				GameEventHandler.Handle(new GameEvent
@@ -192,6 +207,39 @@ namespace HearthstoneReplays.Parser
 				.Select(data => (BaseEntity)data).ToList()
 				.Where(e => e.Id == id)
 				.First();
+		}
+
+		private void HandleNodeUpdateEvent(Node oldNode, Node newNode)
+		{
+			if (oldNode != null && oldNode.Type == typeof(FullEntity))
+			{
+				FullEntity entity = (oldNode.Object as FullEntity);
+				Zone zone = (Zone) GetTag(entity.Tags, GameTag.ZONE);
+				// Entity starts in play
+				if (zone == Zone.PLAY)
+				{
+					SendEvenWithLocalPlayer(() => new GameEvent
+					{
+						Type = "CARD_PLAYED",
+						Value = new
+						{
+							CardId = entity.CardId,
+							ControllerId = GetTag(entity.Tags, GameTag.CONTROLLER),
+							LocalPlayer = LocalPlayer,
+							OpponentPlayer = OpponentPlayer
+						}
+					});
+				}
+			}
+		}
+
+		private async void SendEvenWithLocalPlayer(Func<GameEvent> provider)
+		{
+			while (LocalPlayer == null || OpponentPlayer == null)
+			{
+				await Task.Delay(1000);
+			}
+			GameEventHandler.Handle(provider.Invoke());
 		}
 	}
 }
