@@ -195,7 +195,7 @@ namespace HearthstoneReplays.Parser
 			}
 		}
 
-		private int GetTag(List<Tag> tags, GameTag tag)
+		public int GetTag(List<Tag> tags, GameTag tag)
 		{
 			Tag ret = tags.Where(t => t.Name == (int)tag).First();
 			return ret == null ? -1 : ret.Value;

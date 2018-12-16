@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.Entities;
@@ -448,7 +449,7 @@ namespace HearthstoneReplays.Parser.Handlers
 			}
 		}
 
-		private void RaiseTagChangeEvents(ParserState state, TagChange tagChange, string defChange)
+		private async void RaiseTagChangeEvents(ParserState state, TagChange tagChange, string defChange)
 		{
 			if (tagChange.Name == (int) GameTag.PLAYSTATE )
 			{
@@ -510,7 +511,33 @@ namespace HearthstoneReplays.Parser.Handlers
 				{
 					Type = "TURN_START",
 					Value = (int)tagChange.Value
-				});
+				}); 
+			}
+
+			// We detect a given stage of the run in Rumble Run
+			if (tagChange.Name == (int)GameTag.HEALTH && defChange != null)
+			{
+				while (state.CurrentGame.FormatType == 0 || state.CurrentGame.GameType == 0 || state.LocalPlayer == null)
+				{
+					await Task.Delay(100);
+				}
+
+
+				var heroEntityId = state.GetTag(state.GetEntity(state.LocalPlayer.Id).Tags, GameTag.HERO_ENTITY);
+				Logger.Log("all ready", tagChange.Entity + " " + heroEntityId + " " + state.CurrentGame.FormatType + " " + state.CurrentGame.GameType + " " + (int)FormatType.FT_WILD + " " + (int)GameType.GT_VS_AI);
+				if (tagChange.Entity == heroEntityId
+					&& state.CurrentGame.FormatType == (int)FormatType.FT_WILD 
+					&& state.CurrentGame.GameType == (int)GameType.GT_VS_AI)
+				{
+					// The player starts with 20 Health, and gains an additional 5 Health per defeated boss, 
+					// up to 45 Health for the eighth, and final boss.
+					int runStep = (tagChange.Value - 20) / 5;
+					GameEventHandler.Handle(new GameEvent
+					{
+						Type = "RUMBLE_RUN_STEP",
+						Value = runStep
+					});
+				}
 			}
 		}
 

@@ -47,7 +47,7 @@ namespace HearthstoneReplays.Parser
 		public static readonly Regex ActionFullEntityUpdatingRegex = new Regex(string.Format(@"FULL_ENTITY - Updating {0} CardID=(\w+)?$", Entity));
 		public static readonly Regex ActionFullEntityCreatingRegex = new Regex(@"FULL_ENTITY - Creating ID=(\d+) CardID=(\w+)?$");
 
-		public static readonly Regex ActionTagChangeRegex = new Regex(string.Format(@"TAG_CHANGE Entity={0} tag=(\w+) value=(\w+)", Entity));
+		public static readonly Regex ActionTagChangeRegex = new Regex(string.Format(@"TAG_CHANGE Entity={0} tag=(\w+) value=(\w+)( DEF CHANGE)?", Entity));
 		public static readonly Regex ActionTagRegex = new Regex(@"tag=(\w+) value=(\w+)");
 
 		public static readonly Regex EntitiesChosenRegex = new Regex(string.Format(@"id=(\d+) Player={0} EntitiesCount=(\d+)$", Entity));
