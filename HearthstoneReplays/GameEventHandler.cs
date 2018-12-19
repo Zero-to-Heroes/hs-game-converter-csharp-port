@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace HearthstoneReplays
 {
-	class GameEventHandler
+	public class GameEventHandler
 	{
 		public static Action<string> EventProvider;
 		public static void Handle(GameEvent gameEvent) {

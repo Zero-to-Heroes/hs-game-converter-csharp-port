@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.Entities;
@@ -22,7 +21,7 @@ namespace HearthstoneReplays.Parser.Handlers
 
 		private Helper helper = new Helper();
 
-		public void Handle(string timestamp, string data, ParserState state)
+		public void Handle(string timestamp, string data, ParserState state, GameState gameState)
 		{
 			timestamp = NormalizeTimestamp(timestamp);
 
@@ -32,6 +31,7 @@ namespace HearthstoneReplays.Parser.Handlers
 
 			if (data == "CREATE_GAME") 
 			{
+				gameState.Reset(state);
 				state.Reset();
 				state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
 				state.Replay.Games.Add(state.CurrentGame);
@@ -47,6 +47,7 @@ namespace HearthstoneReplays.Parser.Handlers
 			// output log
 			if (state.Replay.Games.Count == 0)
 			{
+				gameState.Reset(state);
 				state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
 				state.Replay.Games.Add(state.CurrentGame);
 				state.Node = new Node(typeof(Game), state.CurrentGame, 0, null);
@@ -145,6 +146,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				state.UpdateCurrentNode(typeof(Game));
 				state.CurrentGame.Data.Add(pEntity);
 				state.Node = new Node(typeof(PlayerEntity), pEntity, indentLevel, state.Node);
+				gameState.PlayerEntity(pEntity);
 				return;
 			}
 
@@ -276,7 +278,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				if(state.Node.Type == typeof(Action))
 					((Action)state.Node.Object).Data.Add(metaData);
 				else
-					throw new Exception("Invalid node " + state.Node.Type);
+					throw new Exception("Invalid node " + state.Node.Type + " for " + data);
 				state.Node = new Node(typeof(MetaData), metaData, indentLevel, state.Node);
 				return;
 			}
@@ -311,6 +313,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
 				state.Node = new Node(typeof(ShowEntity), showEntity, indentLevel, state.Node);
+				gameState.ShowEntity(showEntity);
 				return;
 			}
 
@@ -373,6 +376,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
 				state.Node = new Node(typeof(FullEntity), showEntity, indentLevel, state.Node);
+				gameState.FullEntity(showEntity);
 				return;
 			}
 
@@ -407,8 +411,7 @@ namespace HearthstoneReplays.Parser.Handlers
 						((Action)state.Node.Object).Data.Add(tagChange);
 					else
 						throw new Exception("Invalid node " + state.Node.Type);
-
-					RaiseTagChangeEvents(state, tagChange, defChange);
+					gameState.TagChange(tagChange, defChange);
 					return;
 				}
 				catch (Exception e)
@@ -433,11 +436,20 @@ namespace HearthstoneReplays.Parser.Handlers
 					else if(state.Node.Type == typeof(PlayerEntity))
 						((PlayerEntity)state.Node.Object).Tags.Add(tag);
 					else if(state.Node.Type == typeof(FullEntity))
+					{
 						((FullEntity)state.Node.Object).Tags.Add(tag);
+						gameState.Tag(tag, ((FullEntity)state.Node.Object).Id);
+					}
 					else if (state.Node.Type == typeof(ShowEntity))
+					{
 						((ShowEntity)state.Node.Object).Tags.Add(tag);
+						gameState.Tag(tag, ((ShowEntity)state.Node.Object).Entity);
+					}
 					else if (state.Node.Type == typeof(ChangeEntity))
+					{
 						((ChangeEntity)state.Node.Object).Tags.Add(tag);
+						gameState.Tag(tag, ((ChangeEntity)state.Node.Object).Entity);
+					}
 					else
 						throw new Exception("Invalid node " + state.Node.Type + " -- " + data);
 					return;
@@ -445,98 +457,6 @@ namespace HearthstoneReplays.Parser.Handlers
 				catch (Exception e)
 				{
 					Logger.Log("Exception parsing Tag", e.Message);
-				}
-			}
-		}
-
-		private async void RaiseTagChangeEvents(ParserState state, TagChange tagChange, string defChange)
-		{
-			if (tagChange.Name == (int) GameTag.PLAYSTATE )
-			{
-				if (tagChange.Value == (int)PlayState.WON) {
-					var winner = (PlayerEntity) state.GetEntity(tagChange.Entity);
-					GameEventHandler.Handle(new GameEvent
-					{
-						Type = "WINNER",
-						Value = new
-						{
-							Winner = winner,
-							LocalPlayer = state.LocalPlayer,
-							OpponentPlayer = state.OpponentPlayer
-						}
-					});
-				}
-				else if (tagChange.Value == (int)PlayState.TIED) {
-					GameEventHandler.Handle(new GameEvent
-					{
-						Type = "TIE"
-					});
-				}
-			}
-
-			if (tagChange.Name == (int) GameTag.GOLD_REWARD_STATE)
-			{
-				var xmlReplay =	new ReplayConverter().xmlFromReplay(state.Replay);
-				GameEventHandler.Handle(new GameEvent
-				{
-					Type = "GAME_END",
-					Value = new
-					{
-						Game = state.CurrentGame,
-						ReplayXml = xmlReplay
-					}
-				});
-				state.EndCurrentGame();
-			}
-
-			if (tagChange.Name == (int)GameTag.MULLIGAN_STATE && tagChange.Value == (int)Mulligan.INPUT)
-			{
-				GameEventHandler.Handle(new GameEvent
-				{
-					Type = "MULLIGAN_INPUT"
-				});
-			}
-
-			if (tagChange.Name == (int)GameTag.MULLIGAN_STATE && tagChange.Value == (int)Mulligan.DONE)
-			{
-				GameEventHandler.Handle(new GameEvent
-				{
-					Type = "MULLIGAN_DONE"
-				});
-			}
-
-			if (tagChange.Name == (int)GameTag.TURN)
-			{
-				GameEventHandler.Handle(new GameEvent
-				{
-					Type = "TURN_START",
-					Value = (int)tagChange.Value
-				}); 
-			}
-
-			// We detect a given stage of the run in Rumble Run
-			if (tagChange.Name == (int)GameTag.HEALTH && defChange != null)
-			{
-				while (state.CurrentGame.FormatType == 0 || state.CurrentGame.GameType == 0 || state.LocalPlayer == null)
-				{
-					await Task.Delay(100);
-				}
-
-
-				var heroEntityId = state.GetTag(state.GetEntity(state.LocalPlayer.Id).Tags, GameTag.HERO_ENTITY);
-				Logger.Log("all ready", tagChange.Entity + " " + heroEntityId + " " + state.CurrentGame.FormatType + " " + state.CurrentGame.GameType + " " + (int)FormatType.FT_WILD + " " + (int)GameType.GT_VS_AI);
-				if (tagChange.Entity == heroEntityId
-					&& state.CurrentGame.FormatType == (int)FormatType.FT_WILD 
-					&& state.CurrentGame.GameType == (int)GameType.GT_VS_AI)
-				{
-					// The player starts with 20 Health, and gains an additional 5 Health per defeated boss, 
-					// up to 45 Health for the eighth, and final boss.
-					int runStep = (tagChange.Value - 20) / 5;
-					GameEventHandler.Handle(new GameEvent
-					{
-						Type = "RUMBLE_RUN_STEP",
-						Value = runStep
-					});
 				}
 			}
 		}

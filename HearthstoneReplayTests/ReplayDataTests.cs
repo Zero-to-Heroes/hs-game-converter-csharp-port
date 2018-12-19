@@ -18,10 +18,11 @@ namespace HearthstoneReplayTests
 		[TestMethod]
 		public void Test()
 		{
+			GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt);
 			List<string> logFile = TestDataReader.GetInputFile("Power_1.log.txt");
 			HearthstoneReplay replay = new ReplayParser().FromString(logFile);
 			string xml = new ReplayConverter().xmlFromReplay(replay);
-			Console.Write(xml);
+			//Console.Write(xml);
 		}
 
 		[TestMethod]

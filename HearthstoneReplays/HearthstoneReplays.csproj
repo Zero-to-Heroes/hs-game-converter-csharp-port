@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums.cs" />
+    <Compile Include="Events\GameState.cs" />
     <Compile Include="Events\Player.cs" />
     <Compile Include="GameEvent.cs" />
     <Compile Include="GameEventHandler.cs" />

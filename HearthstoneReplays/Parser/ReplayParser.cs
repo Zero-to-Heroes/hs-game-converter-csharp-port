@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.Handlers;
 using HearthstoneReplays.Parser.ReplayData;
+using HearthstoneReplays.Parser.ReplayData.Entities;
 
 #endregion
 
@@ -21,6 +22,7 @@ namespace HearthstoneReplays.Parser
 		public const string Version = "1.0";
 		public const int HearthstoneBuild = 15590;
 		private readonly ParserState State = new ParserState();
+		private readonly GameState GameState = new GameState();
 
 		private DataHandler dataHandler = new DataHandler();
 		private ChoicesHandler choicesHandler = new ChoicesHandler();
@@ -103,7 +105,7 @@ namespace HearthstoneReplays.Parser
 			{
 				case "GameState.DebugPrintPower":
 				case "GameState.DebugPrintGame":
-					dataHandler.Handle(timestamp, data, State);
+					dataHandler.Handle(timestamp, data, State, GameState);
 					break;
 				//case "GameState.SendChoices":
 				//	SendChoicesHandler.Handle(timestamp, data, State);

@@ -1085,4 +1085,10 @@ namespace HearthstoneReplays.Enums
 		SETASIDE = 6,
 		SECRET = 7,
 	}
+
+	public enum Scenario
+	{
+		DUNGEON_RUN = 2663,
+		RUMBLE_RUN = 2890,
+	}
 }
