@@ -22,6 +22,7 @@ namespace HearthstoneReplays.Parser
 			Reset();
 		}
 
+		public GameState GameState = new GameState();
 		public HearthstoneReplay Replay { get; set; }
 		public Game CurrentGame { get; set; }
 		public GameData GameData { get; set; }
@@ -54,7 +55,7 @@ namespace HearthstoneReplays.Parser
 			get { return _localPlayer; }
 			set
 			{
-				Logger.Log("Set local player", LocalPlayer);
+				//Logger.Log("Set local player", LocalPlayer);
 				this._localPlayer = value;
 				//Console.WriteLine("Assigned LocalPlayer: " + LocalPlayer + ", " + EventHandler);
 				GameEventHandler.Handle(new GameEvent
@@ -83,6 +84,7 @@ namespace HearthstoneReplays.Parser
 
 		public void Reset()
 		{
+			GameState.Reset(this);
 			Replay = new HearthstoneReplay();
 			Replay.Games = new List<Game>();
 			CurrentGame = new Game();
@@ -197,7 +199,7 @@ namespace HearthstoneReplays.Parser
 
 		public int GetTag(List<Tag> tags, GameTag tag)
 		{
-			Tag ret = tags.Where(t => t.Name == (int)tag).First();
+			Tag ret = tags.FirstOrDefault(t => t.Name == (int)tag);
 			return ret == null ? -1 : ret.Value;
 		}
 
@@ -213,33 +215,9 @@ namespace HearthstoneReplays.Parser
 		{
 			if (oldNode != null && oldNode.Type == typeof(FullEntity))
 			{
-				FullEntity entity = (oldNode.Object as FullEntity);
-				Zone zone = (Zone) GetTag(entity.Tags, GameTag.ZONE);
-				// Entity starts in play
-				if (zone == Zone.PLAY)
-				{
-					SendEvenWithLocalPlayer(() => new GameEvent
-					{
-						Type = "CARD_PLAYED",
-						Value = new
-						{
-							CardId = entity.CardId,
-							ControllerId = GetTag(entity.Tags, GameTag.CONTROLLER),
-							LocalPlayer = LocalPlayer,
-							OpponentPlayer = OpponentPlayer
-						}
-					});
-				}
+				//Logger.Log("Handling node update", oldNode.Type);
+				GameState.FullEntityNodeComplete((oldNode.Object as FullEntity));
 			}
-		}
-
-		private async void SendEvenWithLocalPlayer(Func<GameEvent> provider)
-		{
-			while (LocalPlayer == null || OpponentPlayer == null)
-			{
-				await Task.Delay(1000);
-			}
-			GameEventHandler.Handle(provider.Invoke());
 		}
 	}
 }

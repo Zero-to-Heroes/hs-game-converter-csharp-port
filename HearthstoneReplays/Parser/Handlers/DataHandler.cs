@@ -21,7 +21,7 @@ namespace HearthstoneReplays.Parser.Handlers
 
 		private Helper helper = new Helper();
 
-		public void Handle(string timestamp, string data, ParserState state, GameState gameState)
+		public void Handle(string timestamp, string data, ParserState state)
 		{
 			timestamp = NormalizeTimestamp(timestamp);
 
@@ -31,7 +31,6 @@ namespace HearthstoneReplays.Parser.Handlers
 
 			if (data == "CREATE_GAME") 
 			{
-				gameState.Reset(state);
 				state.Reset();
 				state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
 				state.Replay.Games.Add(state.CurrentGame);
@@ -47,11 +46,15 @@ namespace HearthstoneReplays.Parser.Handlers
 			// output log
 			if (state.Replay.Games.Count == 0)
 			{
-				gameState.Reset(state);
+				state.Reset();
 				state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
 				state.Replay.Games.Add(state.CurrentGame);
 				state.Node = new Node(typeof(Game), state.CurrentGame, 0, null);
-				state.Ended = false;
+				GameEventHandler.Handle(new GameEvent
+				{
+					Type = "NEW_GAME"
+				});
+				return;
 			}
 
 			if (state.Ended)
@@ -146,7 +149,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				state.UpdateCurrentNode(typeof(Game));
 				state.CurrentGame.Data.Add(pEntity);
 				state.Node = new Node(typeof(PlayerEntity), pEntity, indentLevel, state.Node);
-				gameState.PlayerEntity(pEntity);
+				state.GameState.PlayerEntity(pEntity);
 				return;
 			}
 
@@ -275,10 +278,12 @@ namespace HearthstoneReplays.Parser.Handlers
 				var meta = helper.ParseEnum<MetaDataType>(rawMeta);
 				var metaData = new MetaData {Data = parsedData, Info = int.Parse(info), Meta = meta, MetaInfo = new List<Info>()};
 				state.UpdateCurrentNode(typeof(Action));
-				if(state.Node.Type == typeof(Action))
+				if (state.Node.Type == typeof(Action))
 					((Action)state.Node.Object).Data.Add(metaData);
+				else if (state.Node.Type == typeof(Game))
+					((Game)state.Node.Object).Data.Add(metaData);
 				else
-					throw new Exception("Invalid node " + state.Node.Type + " for " + data);
+					throw new Exception("Invalid node " + state.Node.Type + " for " + timestamp + " " + data);
 				state.Node = new Node(typeof(MetaData), metaData, indentLevel, state.Node);
 				return;
 			}
@@ -313,7 +318,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
 				state.Node = new Node(typeof(ShowEntity), showEntity, indentLevel, state.Node);
-				gameState.ShowEntity(showEntity);
+				state.GameState.ShowEntity(showEntity);
 				return;
 			}
 
@@ -376,7 +381,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
 				state.Node = new Node(typeof(FullEntity), showEntity, indentLevel, state.Node);
-				gameState.FullEntity(showEntity);
+				state.GameState.FullEntity(showEntity);
 				return;
 			}
 
@@ -411,7 +416,7 @@ namespace HearthstoneReplays.Parser.Handlers
 						((Action)state.Node.Object).Data.Add(tagChange);
 					else
 						throw new Exception("Invalid node " + state.Node.Type);
-					gameState.TagChange(tagChange, defChange);
+					state.GameState.TagChange(tagChange, defChange, timestamp + " " + data);
 					return;
 				}
 				catch (Exception e)
@@ -438,17 +443,17 @@ namespace HearthstoneReplays.Parser.Handlers
 					else if(state.Node.Type == typeof(FullEntity))
 					{
 						((FullEntity)state.Node.Object).Tags.Add(tag);
-						gameState.Tag(tag, ((FullEntity)state.Node.Object).Id);
+						state.GameState.Tag(tag, ((FullEntity)state.Node.Object).Id);
 					}
 					else if (state.Node.Type == typeof(ShowEntity))
 					{
 						((ShowEntity)state.Node.Object).Tags.Add(tag);
-						gameState.Tag(tag, ((ShowEntity)state.Node.Object).Entity);
+						state.GameState.Tag(tag, ((ShowEntity)state.Node.Object).Entity);
 					}
 					else if (state.Node.Type == typeof(ChangeEntity))
 					{
 						((ChangeEntity)state.Node.Object).Tags.Add(tag);
-						gameState.Tag(tag, ((ChangeEntity)state.Node.Object).Entity);
+						state.GameState.Tag(tag, ((ChangeEntity)state.Node.Object).Entity);
 					}
 					else
 						throw new Exception("Invalid node " + state.Node.Type + " -- " + data);

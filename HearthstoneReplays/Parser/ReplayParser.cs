@@ -21,28 +21,21 @@ namespace HearthstoneReplays.Parser
 	{
 		public const string Version = "1.0";
 		public const int HearthstoneBuild = 15590;
-		private readonly ParserState State = new ParserState();
-		private readonly GameState GameState = new GameState();
+		
+		private ParserState State;
+		private DataHandler dataHandler;
+		private ChoicesHandler choicesHandler;
+		private EntityChosenHandler entityChosenHandler;
+		private OptionsHandler optionsHandler;
 
-		private DataHandler dataHandler = new DataHandler();
-		private ChoicesHandler choicesHandler = new ChoicesHandler();
-		private EntityChosenHandler entityChosenHandler = new EntityChosenHandler();
-		private OptionsHandler optionsHandler = new OptionsHandler();
-
-		//public static HearthstoneReplay FromFile(string filePath, int hsBuild = HearthstoneBuild, params GameType[] gameTypes)
-		//{
-		//	using(var reader = new StreamReader(filePath))
-		//		return FromTextReader(reader);
-		//}
-
-		//public static HearthstoneReplay FromTextReader(TextReader reader, int hsBuild = HearthstoneBuild, params GameType[] gameTypes)
-		//{
-		//	var lines = new List<string>();
-		//	string line;
-		//	while((line = reader.ReadLine()) != null)
-		//		lines.Add(line);
-		//	return FromString(lines);
-		//}
+		public ReplayParser()
+		{
+			State = new ParserState();
+			dataHandler = new DataHandler();
+			choicesHandler = new ChoicesHandler();
+			entityChosenHandler = new EntityChosenHandler();
+			optionsHandler = new OptionsHandler();
+		}
 
 		public HearthstoneReplay FromString(IEnumerable<string> lines, params GameType[] gameTypes)
 		{
@@ -105,7 +98,7 @@ namespace HearthstoneReplays.Parser
 			{
 				case "GameState.DebugPrintPower":
 				case "GameState.DebugPrintGame":
-					dataHandler.Handle(timestamp, data, State, GameState);
+					dataHandler.Handle(timestamp, data, State);
 					break;
 				//case "GameState.SendChoices":
 				//	SendChoicesHandler.Handle(timestamp, data, State);

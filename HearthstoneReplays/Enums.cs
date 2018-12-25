@@ -1089,6 +1089,7 @@ namespace HearthstoneReplays.Enums
 	public enum Scenario
 	{
 		DUNGEON_RUN = 2663,
+		MONSTER_HUNT = 2706,
 		RUMBLE_RUN = 2890,
 	}
 }
