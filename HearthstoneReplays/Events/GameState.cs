@@ -97,17 +97,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 				await Task.Delay(1000);
 			}
 
-			int runProgress = ParserState.GetTag(entity.Tags, GameTag.RUN_PROGRESS);
-			if (runProgress >= 0 && ParserState.CurrentGame.ScenarioID == (int)Scenario.RUMBLE_RUN)
-			{
-				GameEventHandler.Handle(new GameEvent
-				{
-					Type = "RUMBLE_RUN_STEP",
-					Value = runProgress
-				});
-			}
-			// Doesn't work for dungeon run :/
-
 			Zone zone = (Zone)ParserState.GetTag(entity.Tags, GameTag.ZONE);
 			// Entity starts in play
 			if (zone == Zone.PLAY)
@@ -123,7 +112,23 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 						OpponentPlayer = ParserState.OpponentPlayer
 					}
 				});
-			}
+
+                // Hopefully we don't have the case where
+                //if (ParserState.GetTag(entity.Tags, GameTag.DUNGEON_PASSIVE_BUFF) == 1)
+                //    {
+                //        GameEventHandler.Handle(new GameEvent
+                //        {
+                //            Type = "PASSIVE_BUFF",
+                //            Value = new
+                //            {
+                //                CardId = entity.CardId,
+                //                ControllerId = ParserState.GetTag(entity.Tags, GameTag.CONTROLLER),
+                //                LocalPlayer = ParserState.LocalPlayer,
+                //                OpponentPlayer = ParserState.OpponentPlayer
+                //            }
+                //        });
+                //    }
+            }
 		}
 
 		private async void RaiseTagChangeEvents(TagChange tagChange, int previousValue, string defChange, string initialLog = null)
@@ -199,30 +204,32 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 				});
 			}
 
-			//// We detect a given stage of the run in Rumble Run
-			//if (ParserState.CurrentGame.ScenarioID == (int)Scenario.RUMBLE_RUN
-			//	&& tagChange.Name == (int)GameTag.HEALTH
-			//	&& defChange != null)
-			//{
-			//	var heroEntityId = ParserState.GetTag(
-			//		ParserState.GetEntity(ParserState.LocalPlayer.Id).Tags,
-			//		GameTag.HERO_ENTITY);
-			//	if (tagChange.Entity == heroEntityId)
-			//	{
-			//		// The player starts with 20 Health, and gains an additional 5 Health per defeated boss, 
-			//		// up to 45 Health for the eighth, and final boss.
-			//		int runStep = (tagChange.Value - 20) / 5;
-			//		GameEventHandler.Handle(new GameEvent
-			//		{
-			//			Type = "RUMBLE_RUN_STEP",
-			//			Value = runStep
-			//		});
-			//	}
-			//}
+            // We detect a given stage of the run in Rumble Run
+            if (ParserState.CurrentGame.ScenarioID == (int)Scenario.RUMBLE_RUN
+                && tagChange.Name == (int)GameTag.HEALTH
+                && defChange != null && defChange.Trim().Length > 0)
+            {
+                var heroEntityId = ParserState.GetTag(
+                    ParserState.GetEntity(ParserState.LocalPlayer.Id).Tags,
+                    GameTag.HERO_ENTITY);
+                if (tagChange.Entity == heroEntityId)
+                {
+                    // The player starts with 20 Health, and gains an additional 5 Health per defeated boss, 
+                    // up to 45 Health for the eighth, and final boss.
+                    int runStep = 1 + (tagChange.Value - 20) / 5;
+                    //Logger.Log("rumble step", tagChange.Value + " " + runStep + " " + initialLog);
+                    //Logger.Log("defchange", defChange);
+                    GameEventHandler.Handle(new GameEvent
+                    {
+                        Type = "RUMBLE_RUN_STEP",
+                        Value = runStep
+                    });
+                }
+            }
 
-			if (ParserState.CurrentGame.ScenarioID == (int)Scenario.DUNGEON_RUN
+            if (ParserState.CurrentGame.ScenarioID == (int)Scenario.DUNGEON_RUN
 				&& tagChange.Name == (int)GameTag.HEALTH
-				&& defChange != null)
+				&& defChange != null && defChange.Trim().Length > 0)
 			{
 				var runStep = 1 + (tagChange.Value - 15) / 5;
 				var heroEntityId = ParserState.GetTag(
@@ -259,6 +266,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 			if (tagChange.Name == (int)GameTag.ZONE && tagChange.Value == (int)Zone.PLAY)
 			{
 				var entity = CurrentEntities[tagChange.Entity];
+                //Logger.Log("entering play", entity.Id + " " + previousValue + " " + ParserState.GetTag(entity.Tags, GameTag.DUNGEON_PASSIVE_BUFF));
 				if (previousValue == (int)Zone.HAND)
 				{
 					GameEventHandler.Handle(new GameEvent
