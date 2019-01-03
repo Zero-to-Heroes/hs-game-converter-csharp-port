@@ -23,6 +23,7 @@ namespace HearthstoneReplays.Parser.Handlers
 
 		public void Handle(string timestamp, string data, ParserState state)
 		{
+            Logger.Log("Handling", timestamp + " " + data);
 			timestamp = NormalizeTimestamp(timestamp);
 
 			var trimmed = data.Trim();
@@ -164,7 +165,9 @@ namespace HearthstoneReplays.Parser.Handlers
 				var subOption = int.Parse(match.Groups[6].Value);
 				var rawTriggerKeyword = match.Groups[7].Value;
 
-				var entity = helper.ParseEntity(rawEntity, state);
+                state.GameState.UpdateEntityName(rawEntity);
+
+                var entity = helper.ParseEntity(rawEntity, state);
 				var target = helper.ParseEntity(rawTarget, state);
 				var type = helper.ParseEnum<BlockType>(rawType);
 				var triggerKeyword = helper.ParseEnum<GameTag>(rawTriggerKeyword);
@@ -181,7 +184,6 @@ namespace HearthstoneReplays.Parser.Handlers
 				if (effectIndex != null && effectIndex.Length > 0)
 				{
 					action.EffectIndex = int.Parse(effectIndex);
-
 				}
 				state.UpdateCurrentNode(typeof(Game), typeof(Action));
 				if (state.Node.Type == typeof(Game))
@@ -359,12 +361,16 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Action)state.Node.Object).Data.Add(hideEntity);
 				else
 					throw new Exception("Invalid node: " + state.Node.Type);
-				return;
+                return;
 			}
 
 			match = Regexes.ActionFullEntityUpdatingRegex.Match(data);
+            bool updating = true;
 			if(!match.Success)
+            {
 				match = Regexes.ActionFullEntityCreatingRegex.Match(data);
+                updating = false;
+            }
 			if(match.Success)
 			{
 				var rawEntity = match.Groups[1].Value;
@@ -381,7 +387,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
 				state.Node = new Node(typeof(FullEntity), showEntity, indentLevel, state.Node);
-				state.GameState.FullEntity(showEntity);
+				state.GameState.FullEntity(showEntity, updating, timestamp + " " + data);
 				return;
 			}
 
@@ -395,6 +401,8 @@ namespace HearthstoneReplays.Parser.Handlers
 					var defChange = match.Groups.Count >= 4 ? match.Groups[4].Value : null;
 					var tag = helper.ParseTag(tagName, value);
 
+                    state.GameState.UpdateEntityName(rawEntity);
+
 					if (tag.Name == (int)GameTag.CURRENT_PLAYER)
 					{
 						if (state.FirstPlayerId == -1)
@@ -403,11 +411,14 @@ namespace HearthstoneReplays.Parser.Handlers
 						}
 						UpdateCurrentPlayer(state, rawEntity, tag);
 					}
-					var entity = helper.ParseEntity(rawEntity, state);
-					if(tag.Name == (int)GameTag.ENTITY_ID)
-						entity = UpdatePlayerEntity(state, rawEntity, tag, entity);
 
-					var tagChange = new TagChange {Entity = entity, Name = tag.Name, Value = tag.Value};
+					var entity = helper.ParseEntity(rawEntity, state);
+					if (tag.Name == (int)GameTag.ENTITY_ID)
+                    {
+						entity = UpdatePlayerEntity(state, rawEntity, tag, entity);
+                    }
+
+                    var tagChange = new TagChange {Entity = entity, Name = tag.Name, Value = tag.Value};
 					state.UpdateCurrentNode(typeof(Game), typeof(Action));
 
 					if(state.Node.Type == typeof(Game))

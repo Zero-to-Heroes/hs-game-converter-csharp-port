@@ -10,7 +10,8 @@ namespace HearthstoneReplays.Parser
 	{
 		private const string Entity = @"(GameEntity|UNKNOWN HUMAN PLAYER|\[.+\]|\d+|.+)";
 
-		public static readonly Regex PowerlogLineRegex = new Regex(@"^D ([\d:.]+) ([^(]+)\(\) - (.+)$");
+        public static readonly Regex EntityWithNameAndId = new Regex(@"\[entityName=(.+) id=(\d+) .*\]");
+        public static readonly Regex PowerlogLineRegex = new Regex(@"^D ([\d:.]+) ([^(]+)\(\) - (.+)$");
 		public static readonly Regex OutputlogLineRegex = new Regex(@"\[Power\] ()([^(]+)\(\) - (.+)$");
 		public static readonly Regex EntityRegex = new Regex(@"\[.*\s*id=(\d+)\s*.*\]");
 

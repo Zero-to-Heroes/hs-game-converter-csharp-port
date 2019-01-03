@@ -75,9 +75,14 @@ namespace HearthstoneReplays.Parser
 				secondPlayer.Name = data;
 				return secondPlayer.Id;
 			}
-
-
-			throw new Exception("Could not get id from player name:" + data);
+            // Case where the entity itself is replaced by a new hero, like in the Crooked Pete / Beastly Pete case
+            var idFromState = state.GameState.PlayerIdFromEntityName(data);
+            if (idFromState != 0)
+            {
+                return idFromState;
+            }
+            throw new Exception("Could not get id from player name:" + data 
+                + " // " + firstPlayer.Name + " // " + secondPlayer.Name);
 		}
 
 		public void setName(ParserState state, int playerId, String playerName)

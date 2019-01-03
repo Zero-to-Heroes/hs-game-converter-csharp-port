@@ -15,6 +15,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 		public ParserState ParserState;
 
 		private Dictionary<int, FullEntity> CurrentEntities = new Dictionary<int, FullEntity>();
+        private Dictionary<string, int> EntityNames = new Dictionary<string, int>();
 
 		public void Reset(ParserState state)
 		{
@@ -22,6 +23,18 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 			CurrentEntities.Add(1, new FullEntity { Id = 1, Tags = new List<Tag>() });
 			ParserState = state;
 		}
+
+        public void UpdateEntityName(string rawEntity)
+        {
+            var match = Regexes.EntityWithNameAndId.Match(rawEntity);
+            if (match.Success)
+            {
+                var entityName = match.Groups[1].Value;
+                var entityId = match.Groups[2].Value;
+                //Logger.Log("Added name/id mapping", entityName + ": " + entityId);
+                EntityNames[entityName] = int.Parse(entityId);
+            }
+        }
 
 		public void PlayerEntity(PlayerEntity entity)
 		{
@@ -34,12 +47,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 			CurrentEntities.Add(entity.Id, fullEntity);
 		}
 
-		public void FullEntity(FullEntity entity)
+		public void FullEntity(FullEntity entity, bool updating, string initialLog = null)
 		{
-			if (CurrentEntities.ContainsKey(entity.Id))
+			if (updating || CurrentEntities.ContainsKey(entity.Id))
 			{
-				Logger.Log("error while parsing, fullentity already present in memory", "" + entity.Id);
-				Logger.Log("" + entity.CardId + " " + entity.Tags, "" + CurrentEntities[entity.Id].CardId + " " + CurrentEntities[entity.Id].Tags);
+				// This actually happens in a normal scenario, so we just ignore it
 				return;
 			}
 			var fullEntity = new FullEntity { CardId = entity.CardId, Id = entity.Id, Tags = new List<Tag>(), TimeStamp = entity.TimeStamp };
@@ -131,7 +143,26 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
 		}
 
-		private async void RaiseTagChangeEvents(TagChange tagChange, int previousValue, string defChange, string initialLog = null)
+        public int PlayerIdFromEntityName(string data)
+        {
+            //Logger.Log("Getting player Id from EntityName", data);
+            int entityId;
+            EntityNames.TryGetValue(data, out entityId);
+            if (entityId != 0)
+            {
+                //Logger.Log("Found matching entity id", entityId);
+                // Now find the player this entity is attached to
+                int playerId = CurrentEntities.Values
+                    .Where(e => e.Tags.Find(x => (x.Name == (int)GameTag.HERO_ENTITY && x.Value == entityId)) != null)
+                    .Select(e => e.Id)
+                    .FirstOrDefault();
+                //Logger.Log("Found matching player entity id", playerId);
+                return playerId;
+            }
+            return 0;
+        }
+
+        private async void RaiseTagChangeEvents(TagChange tagChange, int previousValue, string defChange, string initialLog = null)
 		{
 			// Wait until we have all the necessary data
 			while (ParserState.CurrentGame.FormatType == 0 || ParserState.CurrentGame.GameType == 0 || ParserState.LocalPlayer == null)
@@ -166,7 +197,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
 			if (tagChange.Name == (int)GameTag.GOLD_REWARD_STATE)
 			{
-				var xmlReplay = new ReplayConverter().xmlFromReplay(ParserState.Replay);
+                var replayCopy = ParserState.Replay;
+                var xmlReplay = new ReplayConverter().xmlFromReplay(replayCopy);
 				GameEventHandler.Handle(new GameEvent
 				{
 					Type = "GAME_END",
