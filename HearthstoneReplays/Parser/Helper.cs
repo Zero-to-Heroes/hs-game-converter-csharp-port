@@ -14,7 +14,12 @@ namespace HearthstoneReplays.Parser
 {
 	public class Helper
 	{
-		private readonly Dictionary<GameTag, Type> TagTypes = new Dictionary<GameTag, Type>
+        private readonly List<string> innkeeperNames = new List<string>() { "The Innkeeper", "Aubergiste", "Gastwirt",
+            "El tabernero", "Locandiere", "酒場のオヤジ", "여관주인",  "Karczmarz", "O Estalajadeiro", "Хозяин таверны",
+            "เจ้าของโรงแรม", "旅店老板", "旅店老闆" };
+
+
+        private readonly Dictionary<GameTag, Type> TagTypes = new Dictionary<GameTag, Type>
 		{
 			{GameTag.CARDTYPE, typeof(CardType)},
 			{GameTag.CLASS, typeof(CardClass)},
@@ -65,12 +70,12 @@ namespace HearthstoneReplays.Parser
                 return secondPlayer.Id;
             }
 
-			if(firstPlayer.Name == "UNKNOWN HUMAN PLAYER" || firstPlayer.Name == "The Innkeeper")
+			if(firstPlayer.Name == "UNKNOWN HUMAN PLAYER" || innkeeperNames.Contains(firstPlayer.Name))
 			{
 				firstPlayer.Name = data;
 				return firstPlayer.Id;
 			}
-			if(secondPlayer.Name == "UNKNOWN HUMAN PLAYER" || secondPlayer.Name == "The Innkeeper")
+			if(secondPlayer.Name == "UNKNOWN HUMAN PLAYER" || innkeeperNames.Contains(firstPlayer.Name))
 			{
 				secondPlayer.Name = data;
 				return secondPlayer.Id;
