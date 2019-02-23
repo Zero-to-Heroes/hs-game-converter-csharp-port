@@ -32,7 +32,7 @@ namespace HearthstoneReplays.Parser
 		public static readonly Regex ActionStartRegex =
 			new Regex(string.Format(@"BLOCK_START (?:SubType|BlockType)=(\w+) Entity={0} EffectCardId=(.*) EffectIndex=(-1|\d+) Target={0} SubOption={0} TriggerKeyword={0}$", Entity));
 
-		public static readonly Regex PlayerNameAssignment = new Regex(@"PlayerID=(\d), PlayerName=(.+)");
+        public static readonly Regex PlayerNameAssignment = new Regex(@"PlayerID=(\d), PlayerName=(.+)");
 
 		public static readonly Regex BuildNumber = new Regex(@"BuildNumber=(\d+)");
 		public static readonly Regex GameType = new Regex(@"GameType=(\w+)");

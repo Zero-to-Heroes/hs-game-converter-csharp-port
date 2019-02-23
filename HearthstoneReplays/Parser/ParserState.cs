@@ -4,6 +4,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using HearthstoneReplays.Events;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Parser.ReplayData.Meta;
@@ -23,6 +24,7 @@ namespace HearthstoneReplays.Parser
 		}
 
 		public GameState GameState = new GameState();
+        public NodeParser NodeParser = new NodeParser();
 		public HearthstoneReplay Replay { get; set; }
 		public Game CurrentGame { get; set; }
 		public GameData GameData { get; set; }
@@ -41,50 +43,66 @@ namespace HearthstoneReplays.Parser
 		{
 			get { return _node; }
 			set
-			{
-				if (value != _node)
-				{
-					HandleNodeUpdateEvent(_node, value);
+            {
+                if (value != _node)
+                {
+                    if (_node != null 
+                        // This works because Tag and TagChanges don't create new nodes
+                        && (_node.Type == typeof(FullEntity) || _node.Type == typeof(ShowEntity)))
+                    {
+                        EndAction();
+                    }
+                    //HandleNodeUpdateEvent(_node, value);
 					this._node = value;
-				}
-			}
+                }
+            }
 		}
 
 		private Player _localPlayer;
-		public Player LocalPlayer {
-			get { return _localPlayer; }
-			set
-			{
-				//Logger.Log("Set local player", LocalPlayer);
-				this._localPlayer = value;
-				//Console.WriteLine("Assigned LocalPlayer: " + LocalPlayer + ", " + EventHandler);
-				GameEventHandler.Handle(new GameEvent
-				{
-					Type = "LOCAL_PLAYER",
-					Value = this._localPlayer
-				});
-			}
+		public Player LocalPlayer
+        {
+            get { return _localPlayer; }
+        }
+
+        public void SetLocalPlayer(Player value, string timestamp) { 
+			_localPlayer = value;
+            NodeParser.EnqueueGameEvent(new GameEventProvider
+            {
+                // We can be 0 here, as it's ok to parse it as soon as we receive it
+                Timestamp = DateTimeOffset.Parse(timestamp),
+                GameEvent = new GameEvent
+                {
+                    Type = "LOCAL_PLAYER",
+                    Value = this._localPlayer
+                }
+            });
 		}
 
 		private Player _opponentPlayer;
 		public Player OpponentPlayer
-		{
-			get { return _opponentPlayer; }
-			set
-			{
-				this._opponentPlayer = value;
-				//Console.WriteLine("Assigned OpponentPlayer: " + OpponentPlayer);
-				GameEventHandler.Handle(new GameEvent
-				{
-					Type = "OPPONENT_PLAYER",
-					Value = this._opponentPlayer
-				});
-			}
-		}
+        {
+            get { return _opponentPlayer; }
+        }
+        
+        public void SetOpponentPlayer(Player value, string timestamp)
+        {
+            _opponentPlayer = value;
+            NodeParser.EnqueueGameEvent(new GameEventProvider
+            {
+                // We can be 0 here, as it's ok to parse it as soon as we receive it
+                Timestamp = DateTimeOffset.Parse(timestamp),
+                GameEvent = new GameEvent
+                {
+                    Type = "OPPONENT_PLAYER",
+                    Value = this._opponentPlayer
+                }
+            });
+        }
 
 		public void Reset()
 		{
 			GameState.Reset(this);
+            NodeParser.Reset(this);
 			Replay = new HearthstoneReplay();
 			Replay.Games = new List<Game>();
 			CurrentGame = new Game();
@@ -101,9 +119,19 @@ namespace HearthstoneReplays.Parser
 			CurrentPlayerId = -1;
 			CurrentChosenEntites = null;
 			Ended = false;
-		}
+        }
 
-		public void EndCurrentGame()
+        public void CreateNewNode(Node newNode)
+        {
+            NodeParser.NewNode(newNode);
+        }
+
+        public void EndAction()
+        {
+            NodeParser.CloseNode(Node);
+        }
+
+        public void EndCurrentGame()
 		{
 			Ended = true;
 		}
@@ -124,7 +152,7 @@ namespace HearthstoneReplays.Parser
 			return players;
 		}
 
-		public void TryAssignLocalPlayer()
+		public void TryAssignLocalPlayer(string timestamp)
 		{
 			// Only assign the local player once
 			if (LocalPlayer != null && OpponentPlayer != null)
@@ -170,7 +198,7 @@ namespace HearthstoneReplays.Parser
 								.Where(e => e.Id == playerEntityId)
 								.First();
 							newPlayer.CardID = playerEntity.CardId;
-							LocalPlayer = newPlayer;
+                            SetLocalPlayer(newPlayer, timestamp);
 						}
 					}
 					if (LocalPlayer != null)
@@ -189,7 +217,7 @@ namespace HearthstoneReplays.Parser
 								.Where(e => e.Id == playerEntityId)
 								.First();
 							newPlayer.CardID = playerEntity.CardId;
-							OpponentPlayer = newPlayer;
+                            SetOpponentPlayer(newPlayer, timestamp);
 						}
 						return;
 					}
@@ -211,13 +239,13 @@ namespace HearthstoneReplays.Parser
 				.First();
 		}
 
-		private void HandleNodeUpdateEvent(Node oldNode, Node newNode)
-		{
-			if (oldNode != null && oldNode.Type == typeof(FullEntity))
-			{
-				//Logger.Log("Handling node update", oldNode.Type);
-				GameState.FullEntityNodeComplete((oldNode.Object as FullEntity));
-			}
-		}
+		//private void HandleNodeUpdateEvent(Node oldNode, Node newNode)
+		//{
+		//	if (oldNode != null && oldNode.Type == typeof(FullEntity))
+		//	{
+		//		//Logger.Log("Handling node update", oldNode.Type);
+		//		GameState.FullEntityNodeComplete((oldNode.Object as FullEntity));
+		//	}
+		//}
 	}
 }

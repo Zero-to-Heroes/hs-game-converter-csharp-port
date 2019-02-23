@@ -14,9 +14,9 @@ namespace HearthstoneReplayTests
 	[TestClass]
 	public class GameEventsTest
 	{
-		[TestMethod] 
-		public void Test()
-		{ 
+		//[TestMethod] 
+		//public void Test()
+		//{ 
 			//List<string> logFile = TestDataReader.GetInputFile("Power_2.log.txt");
 			//ReplayParser parser = new ReplayParser();
 			//parser = new ReplayParser();
@@ -30,6 +30,6 @@ namespace HearthstoneReplayTests
 			//{
 			//	parser.ReadLine(logLine);
 			//}
-		} 
+		//} 
 	}
 }

@@ -2,6 +2,8 @@
 
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using HearthstoneReplays.Enums;
+using System.Linq;
 
 #endregion
 
@@ -18,5 +20,11 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
 
 		[XmlElement("Tag", typeof(Tag))]
 		public List<Tag> Tags { get; set; }
-	}
+
+        public int GetTag(GameTag tag)
+        {
+            var match = Tags.FirstOrDefault(t => t.Name == (int)tag);
+            return match == null ? -1 : match.Value;
+        }
+    }
 }

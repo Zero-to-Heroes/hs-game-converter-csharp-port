@@ -14,8 +14,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 	{
 		public ParserState ParserState;
 
-		private Dictionary<int, FullEntity> CurrentEntities = new Dictionary<int, FullEntity>();
-        private Dictionary<string, int> EntityNames = new Dictionary<string, int>();
+		public Dictionary<int, FullEntity> CurrentEntities = new Dictionary<int, FullEntity>();
+        public Dictionary<string, int> EntityNames = new Dictionary<string, int>();
 
 		public void Reset(ParserState state)
 		{
@@ -31,7 +31,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             {
                 var entityName = match.Groups[1].Value;
                 var entityId = match.Groups[2].Value;
-                //Logger.Log("Added name/id mapping", entityName + ": " + entityId);
                 EntityNames[entityName] = int.Parse(entityId);
             }
         }
@@ -101,48 +100,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 			existingTag.Value = tag.Value;
 		}
 
-		public async void FullEntityNodeComplete(FullEntity entity)
-		{
-			//Logger.Log("Preparing to handle full entity node complete", "" + ParserState);
-			while (ParserState.LocalPlayer == null || ParserState.OpponentPlayer == null)
-			{
-				await Task.Delay(1000);
-			}
-
-			Zone zone = (Zone)ParserState.GetTag(entity.Tags, GameTag.ZONE);
-			// Entity starts in play
-			if (zone == Zone.PLAY)
-			{
-				GameEventHandler.Handle(new GameEvent
-				{
-					Type = "CARD_PLAYED",
-					Value = new
-					{
-						CardId = entity.CardId,
-						ControllerId = ParserState.GetTag(entity.Tags, GameTag.CONTROLLER),
-						LocalPlayer = ParserState.LocalPlayer,
-						OpponentPlayer = ParserState.OpponentPlayer
-					}
-				});
-
-                // Hopefully we don't have the case where
-                //if (ParserState.GetTag(entity.Tags, GameTag.DUNGEON_PASSIVE_BUFF) == 1)
-                //    {
-                //        GameEventHandler.Handle(new GameEvent
-                //        {
-                //            Type = "PASSIVE_BUFF",
-                //            Value = new
-                //            {
-                //                CardId = entity.CardId,
-                //                ControllerId = ParserState.GetTag(entity.Tags, GameTag.CONTROLLER),
-                //                LocalPlayer = ParserState.LocalPlayer,
-                //                OpponentPlayer = ParserState.OpponentPlayer
-                //            }
-                //        });
-                //    }
-            }
-		}
-
         public int PlayerIdFromEntityName(string data)
         {
             //Logger.Log("Getting player Id from EntityName", data);
@@ -170,130 +127,69 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 				await Task.Delay(100);
 			}
 
-			if (tagChange.Name == (int)GameTag.PLAYSTATE)
-			{
-				if (tagChange.Value == (int)PlayState.WON)
-				{
-					var winner = (PlayerEntity)ParserState.GetEntity(tagChange.Entity);
-					GameEventHandler.Handle(new GameEvent
-					{
-						Type = "WINNER",
-						Value = new
-						{
-							Winner = winner,
-							LocalPlayer = ParserState.LocalPlayer,
-							OpponentPlayer = ParserState.OpponentPlayer
-						}
-					});
-				}
-				else if (tagChange.Value == (int)PlayState.TIED)
-				{
-					GameEventHandler.Handle(new GameEvent
-					{
-						Type = "TIE"
-					});
-				}
-			}
-
 			if (tagChange.Name == (int)GameTag.GOLD_REWARD_STATE)
 			{
-                var replayCopy = ParserState.Replay;
-                var xmlReplay = new ReplayConverter().xmlFromReplay(replayCopy);
-				GameEventHandler.Handle(new GameEvent
-				{
-					Type = "GAME_END",
-					Value = new
-					{
-						Game = ParserState.CurrentGame,
-						ReplayXml = xmlReplay
-					}
-				});
 				ParserState.EndCurrentGame();
 			}
 
-			if (tagChange.Name == (int)GameTag.MULLIGAN_STATE && tagChange.Value == (int)Mulligan.INPUT)
-			{
-				GameEventHandler.Handle(new GameEvent
-				{
-					Type = "MULLIGAN_INPUT"
-				});
-			}
-
-			if (tagChange.Name == (int)GameTag.MULLIGAN_STATE && tagChange.Value == (int)Mulligan.DONE)
-			{
-				GameEventHandler.Handle(new GameEvent
-				{
-					Type = "MULLIGAN_DONE"
-				});
-			}
-
-			if (tagChange.Name == (int)GameTag.TURN)
-			{
-				GameEventHandler.Handle(new GameEvent
-				{
-					Type = "TURN_START",
-					Value = (int)tagChange.Value
-				});
-			}
-
             // We detect a given stage of the run in Rumble Run
-            if (ParserState.CurrentGame.ScenarioID == (int)Scenario.RUMBLE_RUN
-                && tagChange.Name == (int)GameTag.HEALTH
-                && defChange != null && defChange.Trim().Length > 0)
-            {
-                var heroEntityId = ParserState.GetTag(
-                    ParserState.GetEntity(ParserState.LocalPlayer.Id).Tags,
-                    GameTag.HERO_ENTITY);
-                if (tagChange.Entity == heroEntityId)
-                {
-                    // The player starts with 20 Health, and gains an additional 5 Health per defeated boss, 
-                    // up to 45 Health for the eighth, and final boss.
-                    int runStep = 1 + (tagChange.Value - 20) / 5;
-                    //Logger.Log("rumble step", tagChange.Value + " " + runStep + " " + initialLog);
-                    //Logger.Log("defchange", defChange);
-                    GameEventHandler.Handle(new GameEvent
-                    {
-                        Type = "RUMBLE_RUN_STEP",
-                        Value = runStep
-                    });
-                }
-            }
+            //if (ParserState.CurrentGame.ScenarioID == (int)Scenario.RUMBLE_RUN
+            //    && tagChange.Name == (int)GameTag.HEALTH
+            //    && defChange != null && defChange.Trim().Length > 0)
+            //{
+            //    var heroEntityId = ParserState.GetTag(
+            //        ParserState.GetEntity(ParserState.LocalPlayer.Id).Tags,
+            //        GameTag.HERO_ENTITY);
+            //    if (tagChange.Entity == heroEntityId)
+            //    {
+            //        // The player starts with 20 Health, and gains an additional 5 Health per defeated boss, 
+            //        // up to 45 Health for the eighth, and final boss.
+            //        int runStep = 1 + (tagChange.Value - 20) / 5;
+            //        //Logger.Log("rumble step", tagChange.Value + " " + runStep + " " + initialLog);
+            //        //Logger.Log("defchange", defChange);
+            //        GameEventHandler.Handle(new GameEvent
+            //        {
+            //            Type = "RUMBLE_RUN_STEP",
+            //            Value = runStep
+            //        });
+            //    }
+            //}
 
-            if (ParserState.CurrentGame.ScenarioID == (int)Scenario.DUNGEON_RUN
-				&& tagChange.Name == (int)GameTag.HEALTH
-				&& defChange != null && defChange.Trim().Length > 0)
-			{
-				var runStep = 1 + (tagChange.Value - 15) / 5;
-				var heroEntityId = ParserState.GetTag(
-					ParserState.GetEntity(ParserState.LocalPlayer.Id).Tags,
-					GameTag.HERO_ENTITY);
-				if (tagChange.Entity == heroEntityId)
-				{
-					GameEventHandler.Handle(new GameEvent
-					{
-						Type = "DUNGEON_RUN_STEP",
-						Value = runStep
-					});
-				}
-			}
+   //         if (ParserState.CurrentGame.ScenarioID == (int)Scenario.DUNGEON_RUN
+			//	&& tagChange.Name == (int)GameTag.HEALTH
+			//	&& defChange != null && defChange.Trim().Length > 0)
+			//{
+			//	var runStep = 1 + (tagChange.Value - 15) / 5;
+			//	var heroEntityId = ParserState.GetTag(
+			//		ParserState.GetEntity(ParserState.LocalPlayer.Id).Tags,
+			//		GameTag.HERO_ENTITY);
+			//	if (tagChange.Entity == heroEntityId)
+			//	{
+			//		GameEventHandler.Handle(new GameEvent
+			//		{
+			//			Type = "DUNGEON_RUN_STEP",
+			//			Value = runStep
+			//		});
+			//	}
+			//}
 
-			if (ParserState.CurrentGame.ScenarioID == (int)Scenario.MONSTER_HUNT
-				&& tagChange.Name == (int)GameTag.HEALTH
-				&& defChange != null && defChange.Trim().Length > 0)
-			{
-				var runStep = 1 + (tagChange.Value - 10) / 5;
-				var heroEntityId = ParserState.GetTag(
-					ParserState.GetEntity(ParserState.LocalPlayer.Id).Tags,
-					GameTag.HERO_ENTITY);
-				if (tagChange.Entity == heroEntityId)
-				{
-					GameEventHandler.Handle(new GameEvent
-					{
-						Type = "MONSTER_HUNT_STEP",
-						Value = runStep
-					});
-				}
-			}
+			//if (ParserState.CurrentGame.ScenarioID == (int)Scenario.MONSTER_HUNT
+			//	&& tagChange.Name == (int)GameTag.HEALTH
+			//	&& defChange != null && defChange.Trim().Length > 0)
+			//{
+			//	var runStep = 1 + (tagChange.Value - 10) / 5;
+			//	var heroEntityId = ParserState.GetTag(
+			//		ParserState.GetEntity(ParserState.LocalPlayer.Id).Tags,
+			//		GameTag.HERO_ENTITY);
+			//	if (tagChange.Entity == heroEntityId)
+			//	{
+			//		GameEventHandler.Handle(new GameEvent
+			//		{
+			//			Type = "MONSTER_HUNT_STEP",
+			//			Value = runStep
+			//		});
+			//	}
+			//}
 
 			if (tagChange.Name == (int)GameTag.ZONE && tagChange.Value == (int)Zone.PLAY)
 			{
@@ -301,32 +197,32 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 //Logger.Log("entering play", entity.Id + " " + previousValue + " " + ParserState.GetTag(entity.Tags, GameTag.DUNGEON_PASSIVE_BUFF));
 				if (previousValue == (int)Zone.HAND)
 				{
-					GameEventHandler.Handle(new GameEvent
-					{
-						Type = "CARD_PLAYED",
-						Value = new
-						{
-							CardId = entity.CardId,
-							ControllerId = ParserState.GetTag(entity.Tags, GameTag.CONTROLLER),
-							LocalPlayer = ParserState.LocalPlayer,
-							OpponentPlayer = ParserState.OpponentPlayer
-						}
-					});
+					//GameEventHandler.Handle(new GameEvent
+					//{
+					//	Type = "CARD_PLAYED",
+					//	Value = new
+					//	{
+					//		CardId = entity.CardId,
+					//		ControllerId = ParserState.GetTag(entity.Tags, GameTag.CONTROLLER),
+					//		LocalPlayer = ParserState.LocalPlayer,
+					//		OpponentPlayer = ParserState.OpponentPlayer
+					//	}
+					//});
 				}
-				else if (ParserState.GetTag(entity.Tags, GameTag.DUNGEON_PASSIVE_BUFF) == 1)
-				{
-					GameEventHandler.Handle(new GameEvent
-					{
-						Type = "PASSIVE_BUFF",
-						Value = new
-						{
-							CardId = entity.CardId,
-							ControllerId = ParserState.GetTag(entity.Tags, GameTag.CONTROLLER),
-							LocalPlayer = ParserState.LocalPlayer,
-							OpponentPlayer = ParserState.OpponentPlayer
-						}
-					});
-				}
+				//else if (ParserState.GetTag(entity.Tags, GameTag.DUNGEON_PASSIVE_BUFF) == 1)
+				//{
+				//	GameEventHandler.Handle(new GameEvent
+				//	{
+				//		Type = "PASSIVE_BUFF",
+				//		Value = new
+				//		{
+				//			CardId = entity.CardId,
+				//			ControllerId = ParserState.GetTag(entity.Tags, GameTag.CONTROLLER),
+				//			LocalPlayer = ParserState.LocalPlayer,
+				//			OpponentPlayer = ParserState.OpponentPlayer
+				//		}
+				//	});
+				//}
 			}
 		}
 	}

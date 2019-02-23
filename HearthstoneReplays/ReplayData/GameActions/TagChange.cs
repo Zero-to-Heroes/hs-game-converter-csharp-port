@@ -11,15 +11,18 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
 		[XmlAttribute("tag")]
 		public int Name { get; set; }
 
-		[XmlAttribute("value")]
-		public int Value { get; set; }
+        [XmlAttribute("value")]
+        public int Value { get; set; }
 
-		public override bool Equals(object obj)
+        [XmlAttribute("defChange")]
+        public string DefChange { get; set; }
+
+        public override bool Equals(object obj)
 		{
 			var other = obj as TagChange;
 			if(other == null)
 				return false;
-			return other.Name == Name && other.Value == Value;
+			return other.Name == Name && other.Value == Value && other.DefChange == DefChange;
 		}
 	}
 }

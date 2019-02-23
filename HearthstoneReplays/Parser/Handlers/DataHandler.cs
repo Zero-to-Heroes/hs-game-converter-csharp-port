@@ -9,6 +9,7 @@ using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Parser.ReplayData.Meta;
+using HearthstoneReplays.Events;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 #endregion
@@ -35,11 +36,9 @@ namespace HearthstoneReplays.Parser.Handlers
 				state.Reset();
 				state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
 				state.Replay.Games.Add(state.CurrentGame);
-				state.Node = new Node(typeof(Game), state.CurrentGame, 0, null);
-				GameEventHandler.Handle(new GameEvent
-				{
-					Type = "NEW_GAME"
-				});
+                var newNode = new Node(typeof(Game), state.CurrentGame, 0, null);
+                state.CreateNewNode(newNode);
+				state.Node = newNode;
 				return;
 			}
 
@@ -50,12 +49,10 @@ namespace HearthstoneReplays.Parser.Handlers
 				state.Reset();
 				state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
 				state.Replay.Games.Add(state.CurrentGame);
-				state.Node = new Node(typeof(Game), state.CurrentGame, 0, null);
-				GameEventHandler.Handle(new GameEvent
-				{
-					Type = "NEW_GAME"
-				});
-				return;
+                var newNode = new Node(typeof(Game), state.CurrentGame, 0, null);
+                state.CreateNewNode(newNode);
+                state.Node = newNode;
+                return;
 			}
 
 			if (state.Ended)
@@ -67,7 +64,8 @@ namespace HearthstoneReplays.Parser.Handlers
 			{
 				state.UpdateCurrentNode(typeof(Game), typeof(Action));
 				state.Node = state.Node.Parent ?? state.Node;
-				return;
+                state.EndAction();
+                return;
 			}
 
 			var match = Regexes.ActionCreategameRegex.Match(data);
@@ -77,8 +75,10 @@ namespace HearthstoneReplays.Parser.Handlers
 				Debug.Assert(id == "1");
 				var gEntity = new GameEntity { Id = int.Parse(id), Tags = new List<Tag>() };
 				state.CurrentGame.Data.Add(gEntity);
-				state.Node = new Node(typeof(GameEntity), gEntity, indentLevel, state.Node);
-				return;
+                var newNode = new Node(typeof(GameEntity), gEntity, indentLevel, state.Node);
+                state.CreateNewNode(newNode);
+                state.Node = newNode;
+                return;
 			}
 
 			match = Regexes.PlayerNameAssignment.Match(data);
@@ -90,7 +90,7 @@ namespace HearthstoneReplays.Parser.Handlers
 					.Where(player => player.PlayerId == playerId)
 					.First();
 				matchingPlayer.Name = playerName;
-				state.TryAssignLocalPlayer();
+				state.TryAssignLocalPlayer(timestamp);
 			}
 
 			match = Regexes.BuildNumber.Match(data);
@@ -119,17 +119,22 @@ namespace HearthstoneReplays.Parser.Handlers
 			if (match.Success)
 			{
 				state.CurrentGame.ScenarioID = int.Parse(match.Groups[1].Value);
-				GameEventHandler.Handle(new GameEvent
-				{
-					Type = "MATCH_METADATA",
-					Value = new
-					{
-						BuildNumber = state.CurrentGame.BuildNumber,
-						GameType = state.CurrentGame.GameType,
-						FormatType = state.CurrentGame.FormatType,
-						ScenarioID = state.CurrentGame.ScenarioID,
-					}
-				});
+                // This is a very peculiar log info, we don't fit it to the new events archi for now
+                state.NodeParser.EnqueueGameEvent(new GameEventProvider
+                {
+                    Timestamp = DateTimeOffset.Parse(timestamp),
+                    GameEvent = new GameEvent
+                    {
+                        Type = "MATCH_METADATA",
+                        Value = new
+                        {
+                            BuildNumber = state.CurrentGame.BuildNumber,
+                            GameType = state.CurrentGame.GameType,
+                            FormatType = state.CurrentGame.FormatType,
+                            ScenarioID = state.CurrentGame.ScenarioID,
+                        }
+                    }
+                });
 			}
 
 			match = Regexes.ActionCreategamePlayerRegex.Match(data);
@@ -149,8 +154,10 @@ namespace HearthstoneReplays.Parser.Handlers
 				};
 				state.UpdateCurrentNode(typeof(Game));
 				state.CurrentGame.Data.Add(pEntity);
-				state.Node = new Node(typeof(PlayerEntity), pEntity, indentLevel, state.Node);
-				state.GameState.PlayerEntity(pEntity);
+                var newNode = new Node(typeof(PlayerEntity), pEntity, indentLevel, state.Node);
+                state.CreateNewNode(newNode);
+                state.Node = newNode;
+                state.GameState.PlayerEntity(pEntity);
 				return;
 			}
 
@@ -192,8 +199,10 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Action)state.Node.Object).Data.Add(action);
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
-				state.Node = new Node(typeof(Action), action, indentLevel, state.Node);
-				return;
+                var newNode = new Node(typeof(Action), action, indentLevel, state.Node);
+                state.CreateNewNode(newNode);
+                state.Node = newNode;
+                return;
 			}
 
 
@@ -231,8 +240,10 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Action)state.Node.Object).Data.Add(action);
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
-				state.Node = new Node(typeof(Action), action, indentLevel, state.Node);
-				return;
+                var newNode = new Node(typeof(Action), action, indentLevel, state.Node);
+                state.CreateNewNode(newNode);
+                state.Node = newNode;
+                return;
 			}
 
 			match = Regexes.ActionStartRegex_8_4.Match(data);
@@ -266,11 +277,13 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Action)state.Node.Object).Data.Add(action);
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
-				state.Node = new Node(typeof(Action), action, indentLevel, state.Node);
-				return;
+                var newNode = new Node(typeof(Action), action, indentLevel, state.Node);
+                state.CreateNewNode(newNode);
+                state.Node = newNode;
+                return;
 			}
 
-			match = Regexes.ActionMetadataRegex.Match(data);
+            match = Regexes.ActionMetadataRegex.Match(data);
 			if(match.Success)
 			{
 				var rawMeta = match.Groups[1].Value;
@@ -286,8 +299,10 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Game)state.Node.Object).Data.Add(metaData);
 				else
 					throw new Exception("Invalid node " + state.Node.Type + " for " + timestamp + " " + data);
-				state.Node = new Node(typeof(MetaData), metaData, indentLevel, state.Node);
-				return;
+                var newNode = new Node(typeof(MetaData), metaData, indentLevel, state.Node);
+                state.CreateNewNode(newNode);
+                state.Node = newNode;
+                return;
 			}
 
 			match = Regexes.ActionMetaDataInfoRegex.Match(data);
@@ -319,8 +334,10 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Action)state.Node.Object).Data.Add(showEntity);
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
-				state.Node = new Node(typeof(ShowEntity), showEntity, indentLevel, state.Node);
-				state.GameState.ShowEntity(showEntity);
+                var newNode = new Node(typeof(ShowEntity), showEntity, indentLevel, state.Node);
+                state.CreateNewNode(newNode);
+                state.Node = newNode;
+                state.GameState.ShowEntity(showEntity);
 				return;
 			}
 
@@ -339,8 +356,10 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Action)state.Node.Object).Data.Add(changeEntity);
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
-				state.Node = new Node(typeof(ChangeEntity), changeEntity, indentLevel, state.Node);
-				return;
+                var newNode = new Node(typeof(ChangeEntity), changeEntity, indentLevel, state.Node);
+                state.CreateNewNode(newNode);
+                state.Node = newNode;
+                return;
 			}
 
 			match = Regexes.ActionHideEntityRegex.Match(data);
@@ -386,8 +405,10 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Action)state.Node.Object).Data.Add(showEntity);
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
-				state.Node = new Node(typeof(FullEntity), showEntity, indentLevel, state.Node);
-				state.GameState.FullEntity(showEntity, updating, timestamp + " " + data);
+                var newNode = new Node(typeof(FullEntity), showEntity, indentLevel, state.Node);
+                state.CreateNewNode(newNode);
+                state.Node = newNode;
+                state.GameState.FullEntity(showEntity, updating, timestamp + " " + data);
 				return;
 			}
 
@@ -424,9 +445,16 @@ namespace HearthstoneReplays.Parser.Handlers
                 {
 					entity = UpdatePlayerEntity(state, rawEntity, tag, entity);
                 }
-
-                var tagChange = new TagChange {Entity = entity, Name = tag.Name, Value = tag.Value};
+                
+                var tagChange = new TagChange {
+                    Entity = entity,
+                    Name = tag.Name,
+                    Value = tag.Value,
+                    TimeStamp = timestamp,
+                    DefChange = defChange
+                };
 				state.UpdateCurrentNode(typeof(Game), typeof(Action));
+                state.CreateNewNode(new Node(typeof(TagChange), tagChange, indentLevel, state.Node));
 
 				if(state.Node.Type == typeof(Game))
 					((Game)state.Node.Object).Data.Add(tagChange);

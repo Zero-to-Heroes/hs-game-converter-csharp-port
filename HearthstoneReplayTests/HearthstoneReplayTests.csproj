@@ -132,7 +132,7 @@
     <EmbeddedResource Include="TestData\Power_1.log.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="TestData\Power_2.log.txt" />
+    <EmbeddedResource Include="TestData\Power_rumble_run.log.txt" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="TestData\Power_gameAndFormatTypes.log.txt" />

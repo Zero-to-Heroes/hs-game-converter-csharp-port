@@ -107,7 +107,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums.cs" />
+    <Compile Include="Events\ActionParser.cs" />
+    <Compile Include="Events\GameEventProvider.cs" />
+    <Compile Include="Events\NodeParser.cs" />
     <Compile Include="Events\GameState.cs" />
+    <Compile Include="Events\Parsers\CardPresentOnGameStartParser.cs" />
+    <Compile Include="Events\Parsers\CardPlayedFromHandParser .cs" />
+    <Compile Include="Events\Parsers\PassiveBuffParser.cs" />
+    <Compile Include="Events\Parsers\MonsterHuntStepParser.cs" />
+    <Compile Include="Events\Parsers\DungeonRunStepParser.cs" />
+    <Compile Include="Events\Parsers\RumbleRunStepParser.cs" />
+    <Compile Include="Events\Parsers\MulliganDoneParser.cs" />
+    <Compile Include="Events\Parsers\TurnStartParser.cs" />
+    <Compile Include="Events\Parsers\MulliganInputParser.cs" />
+    <Compile Include="Events\Parsers\GameEndParser.cs" />
+    <Compile Include="Events\Parsers\WinnerParser.cs" />
+    <Compile Include="Events\Parsers\NewGameParser.cs" />
     <Compile Include="Events\Player.cs" />
     <Compile Include="GameEvent.cs" />
     <Compile Include="GameEventHandler.cs" />
