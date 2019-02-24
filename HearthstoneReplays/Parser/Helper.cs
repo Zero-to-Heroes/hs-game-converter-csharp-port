@@ -56,10 +56,9 @@ namespace HearthstoneReplays.Parser
             var secondPlayer = (PlayerEntity)state.CurrentGame.Data.FirstOrDefault(x => (x is PlayerEntity) && ((PlayerEntity)x).Id != state.FirstPlayerId);
             if(secondPlayer == null) throw new Exception("Could not find second player " + data);
 
-            if(firstPlayer.Name == data) return firstPlayer.Id;
-            if(secondPlayer.Name == data) return secondPlayer.Id;
-
-		    if (string.IsNullOrEmpty(firstPlayer.Name))
+            if (firstPlayer.Name == data) return firstPlayer.Id;
+            if (secondPlayer.Name == data) return secondPlayer.Id;
+            if (string.IsNullOrEmpty(firstPlayer.Name))
 		    {
 		        firstPlayer.Name = data;
                 return firstPlayer.Id;
@@ -70,7 +69,16 @@ namespace HearthstoneReplays.Parser
                 return secondPlayer.Id;
             }
 
-			if(firstPlayer.Name == "UNKNOWN HUMAN PLAYER" || innkeeperNames.Contains(firstPlayer.Name))
+            // Sometimes we register the first player name with the full battletag, 
+            // and get only the short name afterwards
+            if (firstPlayer.Name.IndexOf(data) != -1) return firstPlayer.Id;
+            if (secondPlayer.Name.IndexOf(data) != -1) return secondPlayer.Id;
+            // And the opposite
+            if (data != null && data.IndexOf(firstPlayer.Name) != -1) return firstPlayer.Id;
+            if (data != null && data.IndexOf(secondPlayer.Name) != -1) return secondPlayer.Id;
+
+
+            if (firstPlayer.Name == "UNKNOWN HUMAN PLAYER" || innkeeperNames.Contains(firstPlayer.Name))
 			{
 				firstPlayer.Name = data;
 				return firstPlayer.Id;
