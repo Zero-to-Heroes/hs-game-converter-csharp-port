@@ -337,7 +337,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 var newNode = new Node(typeof(ShowEntity), showEntity, indentLevel, state.Node);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
-                state.GameState.ShowEntity(showEntity);
+                //state.GameState.ShowEntity(showEntity);
 				return;
 			}
 
@@ -408,7 +408,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 var newNode = new Node(typeof(FullEntity), showEntity, indentLevel, state.Node);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
-                state.GameState.FullEntity(showEntity, updating, timestamp + " " + data);
+                //state.GameState.FullEntity(showEntity, updating, timestamp + " " + data);
 				return;
 			}
 
@@ -492,12 +492,12 @@ namespace HearthstoneReplays.Parser.Handlers
 				else if(state.Node.Type == typeof(FullEntity))
 				{
 					((FullEntity)state.Node.Object).Tags.Add(tag);
-					state.GameState.Tag(tag, ((FullEntity)state.Node.Object).Id);
+					//state.GameState.Tag(tag, ((FullEntity)state.Node.Object).Id);
 				}
 				else if (state.Node.Type == typeof(ShowEntity))
 				{
 					((ShowEntity)state.Node.Object).Tags.Add(tag);
-					state.GameState.Tag(tag, ((ShowEntity)state.Node.Object).Entity);
+					//state.GameState.Tag(tag, ((ShowEntity)state.Node.Object).Entity);
 				}
 				else if (state.Node.Type == typeof(ChangeEntity))
 				{

@@ -51,6 +51,14 @@ namespace HearthstoneReplays.Parser
                         && (_node.Type == typeof(FullEntity) || _node.Type == typeof(ShowEntity)))
                     {
                         EndAction();
+                        if (_node.Type == typeof(ShowEntity))
+                        {
+                            GameState.ShowEntity(_node.Object as ShowEntity);
+                        }
+                        else if (_node.Type == typeof(FullEntity))
+                        {
+                            GameState.FullEntity(_node.Object as FullEntity, false);
+                        }
                     }
                     //HandleNodeUpdateEvent(_node, value);
 					this._node = value;

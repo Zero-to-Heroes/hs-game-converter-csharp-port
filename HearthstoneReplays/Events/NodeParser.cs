@@ -108,7 +108,7 @@ namespace HearthstoneReplays.Events
                 new MonsterRunStepParser(ParserState),
                 new PassiveBuffParser(ParserState),
                 new CardPresentOnGameStartParser(ParserState),
-                //TODO: shrine played at start of game
+                new CardDrawFromDeckParser(ParserState),
             };
         }
 

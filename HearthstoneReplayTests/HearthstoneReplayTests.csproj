@@ -136,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="TestData\Power_gameAndFormatTypes.log.txt" />
+    <EmbeddedResource Include="TestData\test_card_draw.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

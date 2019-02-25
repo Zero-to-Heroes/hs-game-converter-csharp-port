@@ -53,7 +53,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 				// This actually happens in a normal scenario, so we just ignore it
 				return;
 			}
-			var fullEntity = new FullEntity { CardId = entity.CardId, Id = entity.Id, Tags = new List<Tag>(), TimeStamp = entity.TimeStamp };
+			var fullEntity = new FullEntity { CardId = entity.CardId, Id = entity.Id, Tags = entity.Tags, TimeStamp = entity.TimeStamp };
 			CurrentEntities.Add(entity.Id, fullEntity);
 		}
 
@@ -63,9 +63,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 			{
 				Logger.Log("error while parsing, showentity doesn't have an entity in memory yet", "" + entity.Entity);
 				return;
-			}
-			CurrentEntities[entity.Entity].CardId = entity.CardId;
-		}
+            }
+            CurrentEntities[entity.Entity].CardId = entity.CardId;
+            CurrentEntities[entity.Entity].Tags = entity.Tags;
+        }
 
 		public void TagChange(TagChange tagChange, string defChange, string initialLog = null)
 		{
@@ -88,7 +89,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 		{
 			if (!CurrentEntities.ContainsKey(entityId))
 			{
-				Logger.Log("error while parsing, tagchange doesn't have an entity in memory yet", "" + entityId);
+				Logger.Log("error while parsing, tag doesn't have an entity in memory yet", "" + entityId);
 				return;
 			}
 			var existingTag = CurrentEntities[entityId].Tags.Find((t) => tag.Name == t.Name);
