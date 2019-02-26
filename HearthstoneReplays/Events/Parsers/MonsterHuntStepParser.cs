@@ -18,17 +18,11 @@ namespace HearthstoneReplays.Events.Parsers
             this.GameState = ParserState.GameState;
         }
 
-        public bool NeedMetaData()
-        {
-            return true;
-        }
-
         public bool AppliesOnNewNode(Node node)
         {
             return node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.HEALTH
-                && !string.IsNullOrWhiteSpace((node.Object as TagChange).DefChange)
-                && ParserState.CurrentGame.ScenarioID == (int)Scenario.MONSTER_HUNT;
+                && !string.IsNullOrWhiteSpace((node.Object as TagChange).DefChange);
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -40,22 +34,27 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var runStep = 1 + (tagChange.Value - 10) / 5;
-            var heroEntityId = ParserState.GetTag(
-                ParserState.GetEntity(ParserState.LocalPlayer.Id).Tags,
-                GameTag.HERO_ENTITY);
-            if (tagChange.Entity == heroEntityId)
+            return new GameEventProvider
             {
-                return new GameEventProvider
-                {
-                    Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                    GameEvent = new GameEvent
+                Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
+                SupplyGameEvent = () => {
+                    if (ParserState.CurrentGame.ScenarioID != (int)Scenario.MONSTER_HUNT)
+                    {
+                        return null;
+                    }
+                    var heroEntityId = ParserState.GetEntity(ParserState.LocalPlayer.Id).GetTag(GameTag.HERO_ENTITY);
+                    if (tagChange.Entity != heroEntityId)
+                    {
+                        return null;
+                    }
+                    return new GameEvent
                     {
                         Type = "MONSTER_HUNT_STEP",
                         Value = runStep
-                    }
-                };
-            }
-            return null;
+                    };
+                },
+                NeedMetaData = true
+            };
         }
 
         public GameEventProvider CreateGameEventProviderFromClose(Node node)

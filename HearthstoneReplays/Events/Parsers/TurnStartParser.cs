@@ -18,11 +18,6 @@ namespace HearthstoneReplays.Events.Parsers
             this.GameState = ParserState.GameState;
         }
 
-        public bool NeedMetaData()
-        {
-            return false;
-        }
-
         public bool AppliesOnNewNode(Node node)
         {
             return node.Type == typeof(TagChange)
@@ -40,11 +35,12 @@ namespace HearthstoneReplays.Events.Parsers
             return new GameEventProvider
             {
                 Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                GameEvent = new GameEvent
+                SupplyGameEvent = () => new GameEvent
                 {
                     Type = "TURN_START",
                     Value = (int)tagChange.Value
-                }
+                },
+                NeedMetaData = false
             };
         }
 

@@ -23,7 +23,7 @@ namespace HearthstoneReplayTests
             List<string> logFile = TestDataReader.GetInputFile("test_card_draw.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
 			string xml = new ReplayConverter().xmlFromReplay(replay);
-            System.Threading.Thread.Sleep(5000);
+            System.Threading.Thread.Sleep(10000);
             //Console.Write(xml);
         }
 

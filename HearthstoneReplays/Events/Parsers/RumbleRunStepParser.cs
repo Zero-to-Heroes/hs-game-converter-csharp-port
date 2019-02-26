@@ -18,17 +18,11 @@ namespace HearthstoneReplays.Events.Parsers
             this.GameState = ParserState.GameState;
         }
 
-        public bool NeedMetaData()
-        {
-            return true;
-        }
-
         public bool AppliesOnNewNode(Node node)
         {
             return node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.HEALTH
-                && !string.IsNullOrWhiteSpace((node.Object as TagChange).DefChange)
-                && ParserState.CurrentGame.ScenarioID == (int)Scenario.RUMBLE_RUN;
+                && !string.IsNullOrWhiteSpace((node.Object as TagChange).DefChange);
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -38,26 +32,31 @@ namespace HearthstoneReplays.Events.Parsers
 
         public GameEventProvider CreateGameEventProviderFromNew(Node node)
         {
-            var tagChange = node.Object as TagChange;
-            var heroEntityId = ParserState.GetTag(
-                    ParserState.GetEntity(ParserState.LocalPlayer.Id).Tags,
-                    GameTag.HERO_ENTITY);
-            if (tagChange.Entity == heroEntityId)
+            var tagChange = node.Object as TagChange; 
+            // The player starts with 20 Health, and gains an additional 5 Health per defeated boss, 
+            // up to 45 Health for the eighth, and final boss.
+            int runStep = 1 + (tagChange.Value - 20) / 5;
+            return new GameEventProvider
             {
-                // The player starts with 20 Health, and gains an additional 5 Health per defeated boss, 
-                // up to 45 Health for the eighth, and final boss.
-                int runStep = 1 + (tagChange.Value - 20) / 5;
-                return new GameEventProvider
-                {
-                    Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                    GameEvent = new GameEvent
+                Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
+                SupplyGameEvent = () => {
+                    if (ParserState.CurrentGame.ScenarioID != (int)Scenario.RUMBLE_RUN)
+                    {
+                        return null;
+                    }
+                    var heroEntityId = ParserState.GetEntity(ParserState.LocalPlayer.Id).GetTag(GameTag.HERO_ENTITY);
+                    if (tagChange.Entity != heroEntityId)
+                    {
+                        return null;
+                    }
+                    return new GameEvent
                     {
                         Type = "RUMBLE_RUN_STEP",
                         Value = runStep
-                    }
-                };
-            }
-            return null;
+                    };
+                },
+                NeedMetaData = true
+            };
         }
 
         public GameEventProvider CreateGameEventProviderFromClose(Node node)

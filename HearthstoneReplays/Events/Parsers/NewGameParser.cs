@@ -11,11 +11,6 @@ namespace HearthstoneReplays.Events.Parsers
 {
     public class NewGameParser : ActionParser
     {
-        public bool NeedMetaData()
-        {
-            return false;
-        }
-
         public bool AppliesOnNewNode(Node node)
         {
             return node.Type == typeof(Game);
@@ -31,10 +26,11 @@ namespace HearthstoneReplays.Events.Parsers
             return new GameEventProvider
             {
                 Timestamp = DateTimeOffset.Parse((node.Object as Game).TimeStamp),
-                GameEvent = new GameEvent
+                SupplyGameEvent = () => new GameEvent
                 {
                     Type = "NEW_GAME"
-                }
+                },
+                NeedMetaData = false
             };
         }
 

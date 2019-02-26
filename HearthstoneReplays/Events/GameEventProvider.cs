@@ -8,7 +8,8 @@ namespace HearthstoneReplays.Events
 {
     public class GameEventProvider
     {
-        public GameEvent GameEvent { get; set; }
+        public Func<GameEvent> SupplyGameEvent { get; set; }
         public DateTimeOffset Timestamp { get; set; }
+        public bool NeedMetaData { get; set; }
     }
 }

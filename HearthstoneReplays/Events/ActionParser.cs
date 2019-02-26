@@ -9,7 +9,6 @@ namespace HearthstoneReplays.Events
 {
     interface ActionParser
     {
-        bool NeedMetaData();
         bool AppliesOnNewNode(Node node);
         bool AppliesOnCloseNode(Node node);
         GameEventProvider CreateGameEventProviderFromNew(Node node);

@@ -18,11 +18,6 @@ namespace HearthstoneReplays.Events.Parsers
             this.GameState = ParserState.GameState;
         }
 
-        public bool NeedMetaData()
-        {
-            return true;
-        }
-
         public bool AppliesOnNewNode(Node node)
         {
             return node.Type == typeof(TagChange)
@@ -39,22 +34,25 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
+            var cardId = entity.CardId;
+            var controllerId = ParserState.GetTag(entity.Tags, GameTag.CONTROLLER);
             if (ParserState.GetTag(entity.Tags, GameTag.DUNGEON_PASSIVE_BUFF) == 1)
             {
                 return new GameEventProvider
                 {
                     Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                    GameEvent = new GameEvent
+                    SupplyGameEvent = () => new GameEvent
                     {
                         Type = "PASSIVE_BUFF",
                         Value = new
                         {
-                            CardId = entity.CardId,
-                            ControllerId = ParserState.GetTag(entity.Tags, GameTag.CONTROLLER),
+                            CardId = cardId,
+                            ControllerId = controllerId,
                             LocalPlayer = ParserState.LocalPlayer,
                             OpponentPlayer = ParserState.OpponentPlayer
                         }
-                    }
+                    },
+                    NeedMetaData = true
                 };
             }
             return null;

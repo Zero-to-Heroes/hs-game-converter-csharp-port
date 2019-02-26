@@ -18,11 +18,6 @@ namespace HearthstoneReplays.Events.Parsers
             this.GameState = ParserState.GameState;
         }
 
-        public bool NeedMetaData()
-        {
-            return false;
-        }
-
         public bool AppliesOnNewNode(Node node)
         {
             return node.Type == typeof(TagChange)
@@ -41,22 +36,25 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
+            var cardId = entity.CardId;
+            var controllerId = entity.GetTag(GameTag.CONTROLLER);
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
                 return new GameEventProvider
                 {
                     Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                    GameEvent = new GameEvent
+                    SupplyGameEvent = () => new GameEvent
                     {
                         Type = "CARD_PLAYED",
                         Value = new
                         {
-                            CardId = entity.CardId,
-                            ControllerId = entity.GetTag(GameTag.CONTROLLER),
+                            CardId = cardId,
+                            ControllerId = controllerId,
                             LocalPlayer = ParserState.LocalPlayer,
                             OpponentPlayer = ParserState.OpponentPlayer
                         }
-                    }
+                    },
+                    NeedMetaData = false
                 };
             }
             return null;
@@ -72,21 +70,24 @@ namespace HearthstoneReplays.Events.Parsers
                     if (showEntity.GetTag(GameTag.ZONE) == (int)Zone.PLAY 
                         && showEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
                     {
+                        var cardId = showEntity.CardId;
+                        var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
                         // For now there can only be one card played per block
                         return new GameEventProvider
                         {
                             Timestamp = DateTimeOffset.Parse(action.TimeStamp),
-                            GameEvent = new GameEvent
+                            SupplyGameEvent = () => new GameEvent
                             {
                                 Type = "CARD_PLAYED",
                                 Value = new
                                 {
-                                    CardId = showEntity.CardId,
-                                    ControllerId = showEntity.GetTag(GameTag.CONTROLLER),
+                                    CardId = cardId,
+                                    ControllerId = controllerId,
                                     LocalPlayer = ParserState.LocalPlayer,
                                     OpponentPlayer = ParserState.OpponentPlayer
                                 }
-                            }
+                            },
+                            NeedMetaData = false
                         };
                     }
                 }

@@ -36,18 +36,14 @@ namespace HearthstoneReplays.Events
             parsers = BuildActionParsers(ParserState);
         }
 
-        public async void NewNode(Node node)
+        public void NewNode(Node node)
         {
+            if (node == null)
+            {
+                return;
+            }
             foreach (ActionParser parser in parsers)
             {
-                if (parser.NeedMetaData())
-                {
-                    // Wait until we have all the necessary data
-                    while (ParserState.CurrentGame.FormatType == 0 || ParserState.CurrentGame.GameType == 0 || ParserState.LocalPlayer == null)
-                    {
-                        await Task.Delay(100);
-                    }
-                }
                 if (parser.AppliesOnNewNode(node))
                 {
                     GameEventProvider provider = parser.CreateGameEventProviderFromNew(node);
@@ -59,7 +55,7 @@ namespace HearthstoneReplays.Events
             }
         }
 
-        public async void CloseNode(Node node)
+        public void CloseNode(Node node)
         {
             if (node == null)
             {
@@ -67,14 +63,6 @@ namespace HearthstoneReplays.Events
             }
             foreach (ActionParser parser in parsers)
             {
-                if (parser.NeedMetaData())
-                {
-                    // Wait until we have all the necessary data
-                    while (ParserState.CurrentGame.FormatType == 0 || ParserState.CurrentGame.GameType == 0 || ParserState.LocalPlayer == null)
-                    {
-                        await Task.Delay(100);
-                    }
-                }
                 if (parser.AppliesOnCloseNode(node))
                 {
                     GameEventProvider provider = parser.CreateGameEventProviderFromClose(node);
@@ -109,10 +97,11 @@ namespace HearthstoneReplays.Events
                 new PassiveBuffParser(ParserState),
                 new CardPresentOnGameStartParser(ParserState),
                 new CardDrawFromDeckParser(ParserState),
+                new CardBackToDeckParser(ParserState),
             };
         }
 
-        private void ProcessGameEventQueue(Object source, ElapsedEventArgs e)
+        private async void ProcessGameEventQueue(Object source, ElapsedEventArgs e)
         {
             // If both the first events has just been added, wait a bit, so that we're sure there's no 
             // other event that should be processed first
@@ -122,7 +111,21 @@ namespace HearthstoneReplays.Events
             {
                 GameEventProvider provider = eventQueue[0];
                 eventQueue.RemoveAt(0);
-                GameEventHandler.Handle(provider.GameEvent);
+                if (provider.NeedMetaData)
+                {
+                    // Wait until we have all the necessary data
+                    while (ParserState.CurrentGame.FormatType == 0 || ParserState.CurrentGame.GameType == 0 || ParserState.LocalPlayer == null)
+                    {
+                        await Task.Delay(100);
+                    }
+                }
+                var gameEvent = provider.SupplyGameEvent();
+                // This can happen because there are some conditions that are only resolved when we 
+                // have the full meta data, like dungeon run step
+                if (gameEvent != null)
+                {
+                    GameEventHandler.Handle(gameEvent);
+                }
             }
         }
     }

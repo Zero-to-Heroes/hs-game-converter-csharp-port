@@ -18,11 +18,6 @@ namespace HearthstoneReplays.Events.Parsers
             this.GameState = ParserState.GameState;
         }
 
-        public bool NeedMetaData()
-        {
-            return true;
-        }
-
         public bool AppliesOnNewNode(Node node)
         {
             return node.Type == typeof(TagChange)
@@ -36,10 +31,12 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var appliesToShowEntity = node.Type == typeof(ShowEntity)
                 && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.HAND
+                && GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
                 && (GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) == -1 
                     || GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) == (int)Zone.DECK);
             var appliesToFullEntity = node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.HAND
+                && GameState.CurrentEntities.ContainsKey((node.Object as FullEntity).Id)
                 && (GameState.CurrentEntities[(node.Object as FullEntity).Id].GetTag(GameTag.ZONE) == -1
                     || GameState.CurrentEntities[(node.Object as FullEntity).Id].GetTag(GameTag.ZONE) == (int)Zone.DECK);
             return appliesToShowEntity || appliesToFullEntity;
@@ -49,20 +46,23 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
+            var cardId = entity.CardId;
+            var controllerId = entity.GetTag(GameTag.CONTROLLER);
             return new GameEventProvider
             {
                 Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                GameEvent = new GameEvent
+                SupplyGameEvent = () => new GameEvent
                 {
                     Type = "CARD_DRAW_FROM_DECK",
                     Value = new
                     {
-                        CardId = entity.CardId,
-                        ControllerId = entity.GetTag(GameTag.CONTROLLER),
+                        CardId = cardId,
+                        ControllerId = controllerId,
                         LocalPlayer = ParserState.LocalPlayer,
                         OpponentPlayer = ParserState.OpponentPlayer
                     }
-                }
+                },
+                NeedMetaData = true
             };
         }
 
@@ -81,39 +81,45 @@ namespace HearthstoneReplays.Events.Parsers
 
         private GameEventProvider CreateEventFromShowEntity(ShowEntity showEntity)
         {
+            var cardId = showEntity.CardId;
+            var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             return new GameEventProvider
             {
                 Timestamp = DateTimeOffset.Parse(showEntity.TimeStamp),
-                GameEvent = new GameEvent
+                SupplyGameEvent = () => new GameEvent
                 {
                     Type = "CARD_DRAW_FROM_DECK",
                     Value = new
                     {
-                        CardId = showEntity.CardId,
-                        ControllerId = showEntity.GetTag(GameTag.CONTROLLER),
+                        CardId = cardId,
+                        ControllerId = controllerId,
                         LocalPlayer = ParserState.LocalPlayer,
                         OpponentPlayer = ParserState.OpponentPlayer
                     }
-                }
+                },
+                NeedMetaData = true
             };
         }
 
         private GameEventProvider CreateEventFromFullEntity(FullEntity fullEntity)
         {
+            var cardId = fullEntity.CardId;
+            var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             return new GameEventProvider
             {
                 Timestamp = DateTimeOffset.Parse(fullEntity.TimeStamp),
-                GameEvent = new GameEvent
+                SupplyGameEvent = () => new GameEvent
                 {
                     Type = "CARD_DRAW_FROM_DECK",
                     Value = new
                     {
-                        CardId = fullEntity.CardId,
-                        ControllerId = fullEntity.GetTag(GameTag.CONTROLLER),
+                        CardId = cardId,
+                        ControllerId = controllerId,
                         LocalPlayer = ParserState.LocalPlayer,
                         OpponentPlayer = ParserState.OpponentPlayer
                     }
-                }
+                },
+                NeedMetaData = true
             };
         }
     }

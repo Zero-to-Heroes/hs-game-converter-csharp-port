@@ -18,11 +18,6 @@ namespace HearthstoneReplays.Events.Parsers
             this.GameState = ParserState.GameState;
         }
 
-        public bool NeedMetaData()
-        {
-            return true;
-        }
-
         public bool AppliesOnNewNode(Node node)
         {
             return node.Type == typeof(TagChange)
@@ -43,7 +38,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return new GameEventProvider
                 {
                     Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                    GameEvent = new GameEvent
+                    SupplyGameEvent = () => new GameEvent
                     {
                         Type = "WINNER",
                         Value = new
@@ -52,7 +47,8 @@ namespace HearthstoneReplays.Events.Parsers
                             LocalPlayer = ParserState.LocalPlayer,
                             OpponentPlayer = ParserState.OpponentPlayer
                         }
-                    }
+                    },
+                    NeedMetaData = true
                 };
             }
             else if (tagChange.Value == (int)PlayState.TIED)
@@ -60,10 +56,11 @@ namespace HearthstoneReplays.Events.Parsers
                 return new GameEventProvider
                 {
                     Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                    GameEvent = new GameEvent
+                    SupplyGameEvent = () => new GameEvent
                     {
                         Type = "TIE"
-                    }
+                    },
+                    NeedMetaData = true
                 };
             }
             return null;

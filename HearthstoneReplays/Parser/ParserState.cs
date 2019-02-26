@@ -78,11 +78,12 @@ namespace HearthstoneReplays.Parser
             {
                 // We can be 0 here, as it's ok to parse it as soon as we receive it
                 Timestamp = DateTimeOffset.Parse(timestamp),
-                GameEvent = new GameEvent
+                SupplyGameEvent = () => new GameEvent
                 {
                     Type = "LOCAL_PLAYER",
                     Value = this._localPlayer
-                }
+                },
+                NeedMetaData = false
             });
 		}
 
@@ -99,11 +100,12 @@ namespace HearthstoneReplays.Parser
             {
                 // We can be 0 here, as it's ok to parse it as soon as we receive it
                 Timestamp = DateTimeOffset.Parse(timestamp),
-                GameEvent = new GameEvent
+                SupplyGameEvent = () => new GameEvent
                 {
                     Type = "OPPONENT_PLAYER",
                     Value = this._opponentPlayer
-                }
+                },
+                NeedMetaData = false
             });
         }
 

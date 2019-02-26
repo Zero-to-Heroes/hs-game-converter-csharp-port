@@ -18,11 +18,6 @@ namespace HearthstoneReplays.Events.Parsers
             this.GameState = ParserState.GameState;
         }
 
-        public bool NeedMetaData()
-        {
-            return true;
-        }
-
         public bool AppliesOnNewNode(Node node)
         {
             return node.Type == typeof(TagChange)
@@ -42,7 +37,7 @@ namespace HearthstoneReplays.Events.Parsers
             return new GameEventProvider
             {
                 Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                GameEvent = new GameEvent
+                SupplyGameEvent = () => new GameEvent
                 {
                     Type = "GAME_END",
                     Value = new
@@ -50,7 +45,8 @@ namespace HearthstoneReplays.Events.Parsers
                         Game = ParserState.CurrentGame,
                         ReplayXml = xmlReplay
                     }
-                }
+                },
+                NeedMetaData = true
             };
         }
 

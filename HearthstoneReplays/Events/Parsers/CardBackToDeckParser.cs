@@ -7,12 +7,12 @@ using HearthstoneReplays.Parser.ReplayData.Entities;
 
 namespace HearthstoneReplays.Events.Parsers
 {
-    public class MulliganDoneParser : ActionParser
+    public class CardBackToDeckParser : ActionParser
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
 
-        public MulliganDoneParser(ParserState ParserState)
+        public CardBackToDeckParser(ParserState ParserState)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
@@ -21,8 +21,8 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnNewNode(Node node)
         {
             return node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.MULLIGAN_STATE
-                && (node.Object as TagChange).Value == (int)Mulligan.DONE;
+                && (node.Object as TagChange).Name == (int)GameTag.ZONE
+                && (node.Object as TagChange).Value == (int)Zone.DECK;
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -33,14 +33,27 @@ namespace HearthstoneReplays.Events.Parsers
         public GameEventProvider CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
+            var entity = GameState.CurrentEntities[tagChange.Entity];
+            var zoneInt = entity.GetTag(GameTag.ZONE) == -1 ? 0 : entity.GetTag(GameTag.ZONE);
+            var initialZone = ((Zone)zoneInt).ToString();
+            var cardId = entity.CardId;
+            var controllerId = entity.GetTag(GameTag.CONTROLLER);
             return new GameEventProvider
             {
                 Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
                 SupplyGameEvent = () => new GameEvent
                 {
-                    Type = "MULLIGAN_DONE"
+                    Type = "CARD_BACK_TO_DECK",
+                    Value = new
+                    {
+                        CardId = cardId,
+                        ControllerId = controllerId,
+                        InitialZone = initialZone,
+                        LocalPlayer = ParserState.LocalPlayer,
+                        OpponentPlayer = ParserState.OpponentPlayer
+                    }
                 },
-                NeedMetaData = false
+                NeedMetaData = true
             };
         }
 

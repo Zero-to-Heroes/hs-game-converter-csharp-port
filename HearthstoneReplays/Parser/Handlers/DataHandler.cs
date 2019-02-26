@@ -123,7 +123,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 state.NodeParser.EnqueueGameEvent(new GameEventProvider
                 {
                     Timestamp = DateTimeOffset.Parse(timestamp),
-                    GameEvent = new GameEvent
+                    SupplyGameEvent = () => new GameEvent
                     {
                         Type = "MATCH_METADATA",
                         Value = new
@@ -133,7 +133,8 @@ namespace HearthstoneReplays.Parser.Handlers
                             FormatType = state.CurrentGame.FormatType,
                             ScenarioID = state.CurrentGame.ScenarioID,
                         }
-                    }
+                    },
+                    NeedMetaData = false
                 });
 			}
 

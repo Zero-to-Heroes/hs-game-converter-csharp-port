@@ -18,11 +18,6 @@ namespace HearthstoneReplays.Events.Parsers
             this.GameState = ParserState.GameState;
         }
 
-        public bool NeedMetaData()
-        {
-            return true;
-        }
-
         public bool AppliesOnNewNode(Node node)
         {
             return false;
@@ -43,20 +38,23 @@ namespace HearthstoneReplays.Events.Parsers
         public GameEventProvider CreateGameEventProviderFromClose(Node node)
         {
             var fullEntity = node.Object as FullEntity;
+            var cardId = fullEntity.CardId;
+            var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             return new GameEventProvider
             {
                 Timestamp = DateTimeOffset.Parse(fullEntity.TimeStamp),
-                GameEvent = new GameEvent
+                SupplyGameEvent = () => new GameEvent
                 {
                     Type = "CARD_ON_BOARD_AT_GAME_START",
                     Value = new
                     {
-                        CardId = fullEntity.CardId,
-                        ControllerId = fullEntity.GetTag(GameTag.CONTROLLER),
+                        CardId = cardId,
+                        ControllerId = controllerId,
                         LocalPlayer = ParserState.LocalPlayer,
                         OpponentPlayer = ParserState.OpponentPlayer
                     }
-                }
+                },
+                NeedMetaData = true
             };
         }
     }
