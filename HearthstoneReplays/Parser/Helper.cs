@@ -63,20 +63,18 @@ namespace HearthstoneReplays.Parser
 		        firstPlayer.Name = data;
                 return firstPlayer.Id;
             }
-		    if (string.IsNullOrEmpty(secondPlayer.Name))
+            // Sometimes we register the player name with the full battletag, 
+            // and get only the short name afterwards
+            if (firstPlayer.Name.IndexOf(data) != -1) return firstPlayer.Id;
+            if (data != null && data.IndexOf(firstPlayer.Name) != -1) return firstPlayer.Id;
+            if (string.IsNullOrEmpty(secondPlayer.Name))
 		    {
 		        secondPlayer.Name = data;
                 return secondPlayer.Id;
             }
-
-            // Sometimes we register the first player name with the full battletag, 
-            // and get only the short name afterwards
-            if (firstPlayer.Name.IndexOf(data) != -1) return firstPlayer.Id;
-            if (secondPlayer.Name.IndexOf(data) != -1) return secondPlayer.Id;
             // And the opposite
-            if (data != null && data.IndexOf(firstPlayer.Name) != -1) return firstPlayer.Id;
+            if (secondPlayer.Name.IndexOf(data) != -1) return secondPlayer.Id;
             if (data != null && data.IndexOf(secondPlayer.Name) != -1) return secondPlayer.Id;
-
 
             if (firstPlayer.Name == "UNKNOWN HUMAN PLAYER" || innkeeperNames.Contains(firstPlayer.Name))
 			{

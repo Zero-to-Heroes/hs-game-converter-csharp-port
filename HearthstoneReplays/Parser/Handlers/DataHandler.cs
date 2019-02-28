@@ -24,7 +24,7 @@ namespace HearthstoneReplays.Parser.Handlers
 
 		public void Handle(string timestamp, string data, ParserState state)
 		{
-            //Logger.Log("Handling", timestamp + " " + data);
+            state.FullLog += timestamp + " " + data + "\n";
 			timestamp = NormalizeTimestamp(timestamp);
 
 			var trimmed = data.Trim();
@@ -173,6 +173,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				var subOption = int.Parse(match.Groups[6].Value);
 				var rawTriggerKeyword = match.Groups[7].Value;
 
+                //Console.WriteLine("Really updating entityname " + rawEntity + " for full log " + data);
                 state.GameState.UpdateEntityName(rawEntity);
 
                 var entity = helper.ParseEntity(rawEntity, state);
@@ -396,8 +397,10 @@ namespace HearthstoneReplays.Parser.Handlers
 				var rawEntity = match.Groups[1].Value;
 				var cardId = match.Groups[2].Value;
 				var entity = helper.ParseEntity(rawEntity, state);
+                //Console.WriteLine("updating entityname " + rawEntity + " for full log " + timestamp + " " + data);
+                state.GameState.UpdateEntityName(rawEntity);
 
-				var showEntity = new FullEntity {CardId = cardId, Id = entity, Tags = new List<Tag>(), TimeStamp = timestamp};
+                var showEntity = new FullEntity {CardId = cardId, Id = entity, Tags = new List<Tag>(), TimeStamp = timestamp};
 				state.UpdateCurrentNode(typeof(Game), typeof(Action));
 
 				if(state.Node.Type == typeof(Game))

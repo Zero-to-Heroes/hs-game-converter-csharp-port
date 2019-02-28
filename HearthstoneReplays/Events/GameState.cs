@@ -33,6 +33,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             {
                 var entityName = match.Groups[1].Value;
                 var entityId = match.Groups[2].Value;
+                //Console.WriteLine("Adding entity mapping " + entityName + " " + entityId);
                 EntityNames[entityName] = int.Parse(entityId);
             }
         }
@@ -106,7 +107,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public int PlayerIdFromEntityName(string data)
         {
-            //Logger.Log("Getting player Id from EntityName", data);
+            //Logger.Log("Gettingg player Id from EntityName", data);
             int entityId;
             EntityNames.TryGetValue(data, out entityId);
             if (entityId != 0)
@@ -117,7 +118,14 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                     .Where(e => e.Tags.Find(x => (x.Name == (int)GameTag.HERO_ENTITY && x.Value == entityId)) != null)
                     .Select(e => e.Id)
                     .FirstOrDefault();
-                //Logger.Log("Found matching player entity id", playerId);
+                if (playerId == 0)
+                {
+                    var entity = CurrentEntities.Values.Where(x => x.Id == entityId).FirstOrDefault();
+                    var entityControllerId = entity.Tags.Find(x => x.Name == (int)GameTag.CONTROLLER).Value;
+                    //Console.WriteLine("Controller ID = " + entityControllerId);
+                    playerId = ParserState.getPlayers().Find(x => x.PlayerId == entityControllerId).Id;
+                }
+                //Logger.Log("Found matching player entity id for " + data, playerId);
                 return playerId;
             }
             return 0;

@@ -20,10 +20,10 @@ namespace HearthstoneReplayTests
 		{
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt);
             //List<string> logFile = TestDataReader.GetInputFile("Power_1.log.txt");
-            List<string> logFile = TestDataReader.GetInputFile("test_card_draw.txt");
+            List<string> logFile = TestDataReader.GetInputFile("entity_change_solo_mode.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
 			string xml = new ReplayConverter().xmlFromReplay(replay);
-            System.Threading.Thread.Sleep(10000);
+            System.Threading.Thread.Sleep(5 * 60 * 1000);
             //Console.Write(xml);
         }
 

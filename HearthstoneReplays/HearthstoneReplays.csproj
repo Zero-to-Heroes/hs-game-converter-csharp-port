@@ -129,6 +129,7 @@
     <Compile Include="GameEvent.cs" />
     <Compile Include="GameEventHandler.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Parser\Handlers\PowerDataHandler.cs" />
     <Compile Include="Parser\Handlers\EntityChosenHandler.cs" />
     <Compile Include="Parser\Handlers\ChoicesHandler.cs" />
     <Compile Include="Parser\Handlers\DataHandler.cs" />

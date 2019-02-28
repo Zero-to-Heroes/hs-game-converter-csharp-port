@@ -37,6 +37,7 @@ namespace HearthstoneReplays.Parser
 	    public int CurrentPlayerId { get; set; }
 		public ChosenEntities CurrentChosenEntites { get; set; }
 		public bool Ended { get; set; }
+        public string FullLog { get; set; } = "";
 
 		private Node _node;
 		public Node Node
@@ -129,6 +130,7 @@ namespace HearthstoneReplays.Parser
 			CurrentPlayerId = -1;
 			CurrentChosenEntites = null;
 			Ended = false;
+            FullLog = "";
         }
 
         public void CreateNewNode(Node newNode)

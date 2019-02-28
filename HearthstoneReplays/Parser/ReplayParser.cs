@@ -22,8 +22,9 @@ namespace HearthstoneReplays.Parser
 		public const string Version = "1.0";
 		public const int HearthstoneBuild = 15590;
 		
-		private ParserState State;
+		public ParserState State;
 		private DataHandler dataHandler;
+        private PowerDataHandler powerDataHandler;
 		private ChoicesHandler choicesHandler;
 		private EntityChosenHandler entityChosenHandler;
 		private OptionsHandler optionsHandler;
@@ -32,7 +33,8 @@ namespace HearthstoneReplays.Parser
 		{
 			State = new ParserState();
 			dataHandler = new DataHandler();
-			choicesHandler = new ChoicesHandler();
+            powerDataHandler = new PowerDataHandler();
+            choicesHandler = new ChoicesHandler();
 			entityChosenHandler = new EntityChosenHandler();
 			optionsHandler = new OptionsHandler();
 		}
@@ -113,19 +115,22 @@ namespace HearthstoneReplays.Parser
 				case "GameState.DebugPrintOptions":
 					optionsHandler.Handle(timestamp, data, State);
 					break;
-				//case "GameState.SendOption":
-				//	SendOptionHandler.Handle(timestamp, data, State);
-				//	break;
-				//case "GameState.OnEntityChoices":
-				//	// Spectator mode noise
-				//	break;
-				//case "ChoiceCardMgr.WaitThenShowChoices":
-				//	// Not needed for replays
-				//	break;
-				//case "GameState.DebugPrintChoice":
-				//	Console.WriteLine("Warning: DebugPrintChoice was removed in 10357. Ignoring.");
-				//                break;
-				default:
+                case "PowerTaskList.DebugPrintPower":
+                    powerDataHandler.Handle(timestamp, data, State);
+                    break;
+                //case "GameState.SendOption":
+                //	SendOptionHandler.Handle(timestamp, data, State);
+                //	break;
+                //case "GameState.OnEntityChoices":
+                //	// Spectator mode noise
+                //	break;
+                //case "ChoiceCardMgr.WaitThenShowChoices":
+                //	// Not needed for replays
+                //	break;
+                //case "GameState.DebugPrintChoice":
+                //	Console.WriteLine("Warning: DebugPrintChoice was removed in 10357. Ignoring.");
+                //                break;
+                default:
 					//if(!method.StartsWith("PowerTaskList.") && !method.StartsWith("PowerProcessor.") && !method.StartsWith("PowerSpellController"))
 					//	Console.WriteLine("Warning: Unhandled method: " + method);
 					break;

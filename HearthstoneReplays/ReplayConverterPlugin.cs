@@ -68,7 +68,7 @@ namespace HearthstoneReplays
 				}
 				catch (Exception e)
 				{
-					onGlobalEvent("Exception when parsing game " + e.GetBaseException(), logLines);
+                    onGlobalEvent("Exception when parsing game " + e.GetBaseException(), parser.State.FullLog);
 				}
 			});
 		}
