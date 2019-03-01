@@ -24,7 +24,6 @@ namespace HearthstoneReplays.Parser.Handlers
 
 		public void Handle(string timestamp, string data, ParserState state)
 		{
-            state.FullLog += timestamp + " " + data + "\n";
 			timestamp = NormalizeTimestamp(timestamp);
 
 			var trimmed = data.Trim();

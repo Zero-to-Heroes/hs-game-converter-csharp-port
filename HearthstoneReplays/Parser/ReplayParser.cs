@@ -95,8 +95,9 @@ namespace HearthstoneReplays.Parser
 		}
 
 		private void AddData(string timestamp, string method, string data)
-		{
-			switch(method)
+        {
+            State.FullLog += timestamp + " " + data + "\n";
+            switch (method)
 			{
 				case "GameState.DebugPrintPower":
 				case "GameState.DebugPrintGame":
