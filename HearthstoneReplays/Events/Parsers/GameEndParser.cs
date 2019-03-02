@@ -46,7 +46,8 @@ namespace HearthstoneReplays.Events.Parsers
                         ReplayXml = xmlReplay
                     }
                 },
-                NeedMetaData = true
+                NeedMetaData = true,
+                CreationLogLine = node.CreationLogLine
             };
         }
 

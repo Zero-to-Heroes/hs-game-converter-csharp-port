@@ -40,7 +40,8 @@ namespace HearthstoneReplays.Events.Parsers
                 {
                     Type = "MULLIGAN_INPUT"
                 },
-                NeedMetaData = false
+                NeedMetaData = false,
+                CreationLogLine = node.CreationLogLine
             };
         }
 

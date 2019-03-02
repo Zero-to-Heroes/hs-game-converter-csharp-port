@@ -54,7 +54,8 @@ namespace HearthstoneReplays.Events.Parsers
                         OpponentPlayer = ParserState.OpponentPlayer
                     }
                 },
-                NeedMetaData = true
+                NeedMetaData = true,
+                CreationLogLine = node.CreationLogLine
             };
         }
     }

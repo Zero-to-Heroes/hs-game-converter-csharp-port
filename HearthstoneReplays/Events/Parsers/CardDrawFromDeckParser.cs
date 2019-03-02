@@ -62,7 +62,8 @@ namespace HearthstoneReplays.Events.Parsers
                         OpponentPlayer = ParserState.OpponentPlayer
                     }
                 },
-                NeedMetaData = true
+                NeedMetaData = true,
+                CreationLogLine = node.CreationLogLine
             };
         }
 
@@ -70,16 +71,16 @@ namespace HearthstoneReplays.Events.Parsers
         {
             if (node.Type == typeof(ShowEntity))
             {
-                return CreateEventFromShowEntity(node.Object as ShowEntity);
+                return CreateEventFromShowEntity(node.Object as ShowEntity, node.CreationLogLine);
             }
             else if (node.Type == typeof(FullEntity))
             {
-                return CreateEventFromFullEntity(node.Object as FullEntity);
+                return CreateEventFromFullEntity(node.Object as FullEntity, node.CreationLogLine);
             }
             return null;
         }
 
-        private GameEventProvider CreateEventFromShowEntity(ShowEntity showEntity)
+        private GameEventProvider CreateEventFromShowEntity(ShowEntity showEntity, string creationLogLine)
         {
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
@@ -97,11 +98,12 @@ namespace HearthstoneReplays.Events.Parsers
                         OpponentPlayer = ParserState.OpponentPlayer
                     }
                 },
-                NeedMetaData = true
+                NeedMetaData = true,
+                CreationLogLine = creationLogLine
             };
         }
 
-        private GameEventProvider CreateEventFromFullEntity(FullEntity fullEntity)
+        private GameEventProvider CreateEventFromFullEntity(FullEntity fullEntity, string creationLogLine)
         {
             var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
@@ -119,7 +121,8 @@ namespace HearthstoneReplays.Events.Parsers
                         OpponentPlayer = ParserState.OpponentPlayer
                     }
                 },
-                NeedMetaData = true
+                NeedMetaData = true,
+                CreationLogLine = creationLogLine
             };
         }
     }

@@ -30,7 +30,8 @@ namespace HearthstoneReplays.Events.Parsers
                 {
                     Type = "NEW_GAME"
                 },
-                NeedMetaData = false
+                NeedMetaData = false,
+                CreationLogLine = node.CreationLogLine
             };
         }
 

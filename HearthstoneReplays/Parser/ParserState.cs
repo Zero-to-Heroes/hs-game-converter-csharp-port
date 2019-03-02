@@ -73,7 +73,7 @@ namespace HearthstoneReplays.Parser
             get { return _localPlayer; }
         }
 
-        public void SetLocalPlayer(Player value, string timestamp) { 
+        public void SetLocalPlayer(Player value, string timestamp, string data) { 
 			_localPlayer = value;
             NodeParser.EnqueueGameEvent(new GameEventProvider
             {
@@ -84,7 +84,8 @@ namespace HearthstoneReplays.Parser
                     Type = "LOCAL_PLAYER",
                     Value = this._localPlayer
                 },
-                NeedMetaData = false
+                NeedMetaData = false,
+                CreationLogLine = data
             });
 		}
 
@@ -94,7 +95,7 @@ namespace HearthstoneReplays.Parser
             get { return _opponentPlayer; }
         }
         
-        public void SetOpponentPlayer(Player value, string timestamp)
+        public void SetOpponentPlayer(Player value, string timestamp, string data)
         {
             _opponentPlayer = value;
             NodeParser.EnqueueGameEvent(new GameEventProvider
@@ -106,7 +107,8 @@ namespace HearthstoneReplays.Parser
                     Type = "OPPONENT_PLAYER",
                     Value = this._opponentPlayer
                 },
-                NeedMetaData = false
+                NeedMetaData = false,
+                CreationLogLine = data
             });
         }
 
@@ -164,7 +166,7 @@ namespace HearthstoneReplays.Parser
 			return players;
 		}
 
-		public void TryAssignLocalPlayer(string timestamp)
+		public void TryAssignLocalPlayer(string timestamp, string data)
 		{
 			// Only assign the local player once
 			if (LocalPlayer != null && OpponentPlayer != null)
@@ -188,7 +190,7 @@ namespace HearthstoneReplays.Parser
 				}
 
 			//Console.WriteLine("Trying to assign local player");
-			List<ShowEntity> showEntities = CurrentGame.FilterGameData(typeof(ShowEntity)).Select(data => (ShowEntity)data).ToList();
+			List<ShowEntity> showEntities = CurrentGame.FilterGameData(typeof(ShowEntity)).Select(d => (ShowEntity)d).ToList();
 			foreach (ShowEntity entity in showEntities)
 			{
 				//Console.WriteLine("Considering entity: " + entity);
@@ -210,7 +212,7 @@ namespace HearthstoneReplays.Parser
 								.Where(e => e.Id == playerEntityId)
 								.First();
 							newPlayer.CardID = playerEntity.CardId;
-                            SetLocalPlayer(newPlayer, timestamp);
+                            SetLocalPlayer(newPlayer, timestamp, data);
 						}
 					}
 					if (LocalPlayer != null)
@@ -229,7 +231,7 @@ namespace HearthstoneReplays.Parser
 								.Where(e => e.Id == playerEntityId)
 								.First();
 							newPlayer.CardID = playerEntity.CardId;
-                            SetOpponentPlayer(newPlayer, timestamp);
+                            SetOpponentPlayer(newPlayer, timestamp, data);
 						}
 						return;
 					}

@@ -35,7 +35,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				state.Reset();
 				state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
 				state.Replay.Games.Add(state.CurrentGame);
-                var newNode = new Node(typeof(Game), state.CurrentGame, 0, null);
+                var newNode = new Node(typeof(Game), state.CurrentGame, 0, null, data);
                 state.CreateNewNode(newNode);
 				state.Node = newNode;
 				return;
@@ -48,7 +48,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				state.Reset();
 				state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
 				state.Replay.Games.Add(state.CurrentGame);
-                var newNode = new Node(typeof(Game), state.CurrentGame, 0, null);
+                var newNode = new Node(typeof(Game), state.CurrentGame, 0, null, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
                 return;
@@ -74,7 +74,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				Debug.Assert(id == "1");
 				var gEntity = new GameEntity { Id = int.Parse(id), Tags = new List<Tag>() };
 				state.CurrentGame.Data.Add(gEntity);
-                var newNode = new Node(typeof(GameEntity), gEntity, indentLevel, state.Node);
+                var newNode = new Node(typeof(GameEntity), gEntity, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
                 return;
@@ -89,7 +89,7 @@ namespace HearthstoneReplays.Parser.Handlers
 					.Where(player => player.PlayerId == playerId)
 					.First();
 				matchingPlayer.Name = playerName;
-				state.TryAssignLocalPlayer(timestamp);
+				state.TryAssignLocalPlayer(timestamp, data);
 			}
 
 			match = Regexes.BuildNumber.Match(data);
@@ -133,7 +133,8 @@ namespace HearthstoneReplays.Parser.Handlers
                             ScenarioID = state.CurrentGame.ScenarioID,
                         }
                     },
-                    NeedMetaData = false
+                    NeedMetaData = false,
+                    CreationLogLine = data
                 });
 			}
 
@@ -154,7 +155,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				};
 				state.UpdateCurrentNode(typeof(Game));
 				state.CurrentGame.Data.Add(pEntity);
-                var newNode = new Node(typeof(PlayerEntity), pEntity, indentLevel, state.Node);
+                var newNode = new Node(typeof(PlayerEntity), pEntity, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
                 state.GameState.PlayerEntity(pEntity);
@@ -200,7 +201,7 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Action)state.Node.Object).Data.Add(action);
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
-                var newNode = new Node(typeof(Action), action, indentLevel, state.Node);
+                var newNode = new Node(typeof(Action), action, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
                 return;
@@ -241,7 +242,7 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Action)state.Node.Object).Data.Add(action);
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
-                var newNode = new Node(typeof(Action), action, indentLevel, state.Node);
+                var newNode = new Node(typeof(Action), action, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
                 return;
@@ -278,7 +279,7 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Action)state.Node.Object).Data.Add(action);
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
-                var newNode = new Node(typeof(Action), action, indentLevel, state.Node);
+                var newNode = new Node(typeof(Action), action, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
                 return;
@@ -300,7 +301,7 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Game)state.Node.Object).Data.Add(metaData);
 				else
 					throw new Exception("Invalid node " + state.Node.Type + " for " + timestamp + " " + data);
-                var newNode = new Node(typeof(MetaData), metaData, indentLevel, state.Node);
+                var newNode = new Node(typeof(MetaData), metaData, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
                 return;
@@ -335,7 +336,7 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Action)state.Node.Object).Data.Add(showEntity);
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
-                var newNode = new Node(typeof(ShowEntity), showEntity, indentLevel, state.Node);
+                var newNode = new Node(typeof(ShowEntity), showEntity, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
                 //state.GameState.ShowEntity(showEntity);
@@ -357,7 +358,7 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Action)state.Node.Object).Data.Add(changeEntity);
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
-                var newNode = new Node(typeof(ChangeEntity), changeEntity, indentLevel, state.Node);
+                var newNode = new Node(typeof(ChangeEntity), changeEntity, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
                 return;
@@ -408,7 +409,7 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Action)state.Node.Object).Data.Add(showEntity);
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
-                var newNode = new Node(typeof(FullEntity), showEntity, indentLevel, state.Node);
+                var newNode = new Node(typeof(FullEntity), showEntity, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
                 //state.GameState.FullEntity(showEntity, updating, timestamp + " " + data);
@@ -457,7 +458,7 @@ namespace HearthstoneReplays.Parser.Handlers
                     DefChange = defChange
                 };
 				state.UpdateCurrentNode(typeof(Game), typeof(Action));
-                state.CreateNewNode(new Node(typeof(TagChange), tagChange, indentLevel, state.Node));
+                state.CreateNewNode(new Node(typeof(TagChange), tagChange, indentLevel, state.Node, data));
 
 				if(state.Node.Type == typeof(Game))
 					((Game)state.Node.Object).Data.Add(tagChange);

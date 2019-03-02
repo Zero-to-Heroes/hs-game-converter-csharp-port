@@ -48,7 +48,8 @@ namespace HearthstoneReplays.Events.Parsers
                             OpponentPlayer = ParserState.OpponentPlayer
                         }
                     },
-                    NeedMetaData = true
+                    NeedMetaData = true,
+                    CreationLogLine = node.CreationLogLine
                 };
             }
             else if (tagChange.Value == (int)PlayState.TIED)
@@ -60,7 +61,8 @@ namespace HearthstoneReplays.Events.Parsers
                     {
                         Type = "TIE"
                     },
-                    NeedMetaData = true
+                    NeedMetaData = true,
+                    CreationLogLine = node.CreationLogLine
                 };
             }
             return null;

@@ -80,6 +80,14 @@ namespace HearthstoneReplays.Events
             eventQueue = eventQueue.OrderBy(p => p.Timestamp).ToList();
         }
 
+        public void ReceiveAnimationLog(string data)
+        {
+            foreach (GameEventProvider provider in eventQueue)
+            {
+                provider.ReceiveAnimationLog(data);
+            }
+        }
+
         private List<ActionParser> BuildActionParsers(ParserState ParserState)
         {
             return new List<ActionParser>()
@@ -107,8 +115,13 @@ namespace HearthstoneReplays.Events
             // other event that should be processed first
             // Warning: this means the whole event parsing works in real-time, and is not suited for 
             // post-processing of games
-            while (eventQueue.Count > 0 && DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).Milliseconds > 500)
+            while (eventQueue.Count > 0 
+                && DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).Milliseconds > 500)
             {
+                if (!eventQueue.Any(p => p.AnimationReady))
+                {
+                    return;
+                }
                 GameEventProvider provider = eventQueue[0];
                 eventQueue.RemoveAt(0);
                 if (provider.NeedMetaData)

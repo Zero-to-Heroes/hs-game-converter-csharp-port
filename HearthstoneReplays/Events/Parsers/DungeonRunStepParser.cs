@@ -53,7 +53,8 @@ namespace HearthstoneReplays.Events.Parsers
                         Value = runStep
                     };
                 },
-                NeedMetaData = true
+                NeedMetaData = true,
+                CreationLogLine = node.CreationLogLine
             };
         }
 

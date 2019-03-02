@@ -40,7 +40,8 @@ namespace HearthstoneReplays.Events.Parsers
                     Type = "TURN_START",
                     Value = (int)tagChange.Value
                 },
-                NeedMetaData = false
+                NeedMetaData = false,
+                CreationLogLine = node.CreationLogLine
             };
         }
 
