@@ -90,13 +90,18 @@ namespace HearthstoneReplays.Parser
 			if (!match.Success)
 				return;
 
-			AddData(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value);
+            State.FullLog += line + "\n";
+            AddData(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value);
+            // New game
+            if (State.FullLog.Length == 0)
+            {
+                State.FullLog += line + "\n";
+            }
 
-		}
+        }
 
-		private void AddData(string timestamp, string method, string data)
+        private void AddData(string timestamp, string method, string data)
         {
-            State.FullLog += timestamp + " " + data + "\n";
             switch (method)
 			{
 				case "GameState.DebugPrintPower":
