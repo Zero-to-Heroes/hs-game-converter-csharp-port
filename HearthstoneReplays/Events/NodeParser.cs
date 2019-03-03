@@ -106,6 +106,7 @@ namespace HearthstoneReplays.Events
                 new CardPresentOnGameStartParser(ParserState),
                 new CardDrawFromDeckParser(ParserState),
                 new CardBackToDeckParser(ParserState),
+                new DiscardedCardParser(ParserState),
             };
         }
 
