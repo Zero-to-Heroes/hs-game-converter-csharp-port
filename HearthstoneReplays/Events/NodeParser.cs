@@ -22,6 +22,8 @@ namespace HearthstoneReplays.Events
         private Timer timer;
         private ParserState ParserState;
 
+        private readonly Object listLock = new object();
+
         public NodeParser()
         {
             eventQueue = new List<GameEventProvider>();
@@ -78,15 +80,21 @@ namespace HearthstoneReplays.Events
 
         public void EnqueueGameEvent(GameEventProvider provider)
         {
-            eventQueue.Add(provider);
-            eventQueue = eventQueue.OrderBy(p => p.Timestamp).ToList();
+            lock(listLock)
+            {
+                eventQueue.Add(provider);
+                eventQueue = eventQueue.OrderBy(p => p.Timestamp).ToList();
+            }
         }
 
         public void ReceiveAnimationLog(string data)
         {
-            foreach (GameEventProvider provider in eventQueue)
-            {
-                provider.ReceiveAnimationLog(data);
+            lock (listLock)
+            { 
+                foreach (GameEventProvider provider in eventQueue)
+                {
+                    provider.ReceiveAnimationLog(data);
+                }
             }
         }
 
@@ -95,9 +103,8 @@ namespace HearthstoneReplays.Events
             return new List<ActionParser>()
             {
                 new NewGameParser(),
-                // TODO: secret played from hand
                 new CardPlayedFromHandParser(ParserState),
-                // TODO: coin in hand
+                new SecretPlayedFromHandParser(ParserState),
                 new WinnerParser(ParserState),
                 new GameEndParser(ParserState),
                 new MulliganInputParser(ParserState),
@@ -109,9 +116,11 @@ namespace HearthstoneReplays.Events
                 new PassiveBuffParser(ParserState),
                 new CardPresentOnGameStartParser(ParserState),
                 new CardDrawFromDeckParser(ParserState),
+                new ReceiveCardInHandParser(ParserState),
                 new CardBackToDeckParser(ParserState),
                 // TODO: discover
                 new DiscardedCardParser(ParserState),
+                new CardRemovedFromDeckParser(ParserState),
             };
         }
 
@@ -124,9 +133,12 @@ namespace HearthstoneReplays.Events
             while (eventQueue.Count > 0 
                 && (DevMode || DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).Milliseconds > 500))
             {
-                if (!eventQueue.Any(p => p.AnimationReady))
+                lock (listLock)
                 {
-                    return;
+                    if (!eventQueue.Any(p => p.AnimationReady))
+                    {
+                        return;
+                    }
                 }
                 GameEventProvider provider = eventQueue[0];
                 eventQueue.RemoveAt(0);
@@ -138,12 +150,15 @@ namespace HearthstoneReplays.Events
                         await Task.Delay(100);
                     }
                 }
-                var gameEvent = provider.SupplyGameEvent();
-                // This can happen because there are some conditions that are only resolved when we 
-                // have the full meta data, like dungeon run step
-                if (gameEvent != null)
+                lock (listLock)
                 {
-                    GameEventHandler.Handle(gameEvent);
+                    var gameEvent = provider.SupplyGameEvent();
+                    // This can happen because there are some conditions that are only resolved when we 
+                    // have the full meta data, like dungeon run step
+                    if (gameEvent != null)
+                    {
+                        GameEventHandler.Handle(gameEvent);
+                    }
                 }
             }
         }

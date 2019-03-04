@@ -17,14 +17,14 @@ namespace HearthstoneReplayTests
 	{
 		[TestMethod]
 		public void Test() 
-		{
-            NodeParser.DevMode = true;
+		{ 
+            NodeParser.DevMode = true; 
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt);
             //List<string> logFile = TestDataReader.GetInputFile("Power_1.log.txt");
-            List<string> logFile = TestDataReader.GetInputFile("secret_played.txt");
+            List<string> logFile = TestDataReader.GetInputFile("tracking_hunter.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
 			string xml = new ReplayConverter().xmlFromReplay(replay);
-            //System.Threading.Thread.Sleep(15 * 1000);
+            System.Threading.Thread.Sleep(500);
             //Console.Write(xml);
         }
 

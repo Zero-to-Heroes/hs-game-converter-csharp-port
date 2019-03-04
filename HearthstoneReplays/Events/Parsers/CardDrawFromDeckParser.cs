@@ -32,13 +32,11 @@ namespace HearthstoneReplays.Events.Parsers
             var appliesToShowEntity = node.Type == typeof(ShowEntity)
                 && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.HAND
                 && GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
-                && (GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) == -1 
-                    || GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) == (int)Zone.DECK);
+                && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) == (int)Zone.DECK;
             var appliesToFullEntity = node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.HAND
                 && GameState.CurrentEntities.ContainsKey((node.Object as FullEntity).Id)
-                && (GameState.CurrentEntities[(node.Object as FullEntity).Id].GetTag(GameTag.ZONE) == -1
-                    || GameState.CurrentEntities[(node.Object as FullEntity).Id].GetTag(GameTag.ZONE) == (int)Zone.DECK);
+                && GameState.CurrentEntities[(node.Object as FullEntity).Id].GetTag(GameTag.ZONE) == (int)Zone.DECK;
             return appliesToShowEntity || appliesToFullEntity;
         }
 
