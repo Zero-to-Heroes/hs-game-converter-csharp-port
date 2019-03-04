@@ -47,20 +47,23 @@ namespace HearthstoneReplays.Events
                     return;
                 }
             }
+            // Special case for PowerTaskList Updating an entity that was only created in GameState
+            var matchCreationInGameState = Regexes.ActionFullEntityCreatingRegex.Match(CreationLogLine);
+            var matchUpdateInPowerTaskList = Regexes.ActionFullEntityUpdatingRegex.Match(data);
+            if (matchCreationInGameState.Success && matchUpdateInPowerTaskList.Success)
+            {
+                var gsRawEntity = matchCreationInGameState.Groups[1].Value;
+                var gsEntity = helper.ParseEntity(gsRawEntity, state);
 
-            //var matchCreationInGameState = Regexes.ActionFullEntityCreatingRegex.Match(CreationLogLine);
-            //var matchUpdateInPowerTaskList = Regexes.ActionFullEntityUpdatingRegex.Match(data);
-            //// Special case for PowerTaskList Updating an entity that was only created in GameState
-            //if (matchCreationInGameState.Success && matchUpdateInPowerTaskList.Success)
-            //{
-            //    var creationEntity = matchCreationInGameState.Groups[1].Value;
-            //    var updateEntity = matchUpdateInPowerTaskList.Groups[1].Value;
-            //    if (creationEntity == updateEntity)
-            //    {
-            //        AnimationReady = true;
-            //        return;
-            //    }
-            //}
+                var ptlRawEntity = matchUpdateInPowerTaskList.Groups[1].Value;
+                var ptlEntity = helper.ParseEntity(ptlRawEntity, state);
+
+                if (gsEntity == ptlEntity)
+                {
+                    AnimationReady = true;
+                    return;
+                }
+            }
         }
     }
 }

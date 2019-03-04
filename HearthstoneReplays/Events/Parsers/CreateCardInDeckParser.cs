@@ -27,8 +27,13 @@ namespace HearthstoneReplays.Events.Parsers
         {
             // In this case, a FullEntity is created with minimal info, and the real
             // card creation happens in the ShowEntity
-            return node.Type == typeof(ShowEntity)
+            var appliesOnShowEntity = node.Type == typeof(ShowEntity)
                 && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.DECK;
+            var appliesOnFullEntity = node.Type == typeof(FullEntity)
+                && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.DECK
+                // We don't want to include the entities created when the game starts
+                && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action);
+            return appliesOnShowEntity || appliesOnFullEntity;
         }
 
         public GameEventProvider CreateGameEventProviderFromNew(Node node)
@@ -37,6 +42,19 @@ namespace HearthstoneReplays.Events.Parsers
         }
 
         public GameEventProvider CreateGameEventProviderFromClose(Node node)
+        {
+            if (node.Type == typeof(ShowEntity))
+            {
+                return CreateFromShowEntity(node);
+            }
+            else if (node.Type == typeof(FullEntity))
+            {
+                return CreateFromFullEntity(node);
+            }
+            return null;
+        }
+
+        private GameEventProvider CreateFromShowEntity(Node node)
         {
             var showEntity = node.Object as ShowEntity;
             var cardId = showEntity.CardId;
@@ -58,6 +76,62 @@ namespace HearthstoneReplays.Events.Parsers
                 NeedMetaData = true,
                 CreationLogLine = node.CreationLogLine
             };
+        }
+
+        private GameEventProvider CreateFromFullEntity(Node node)
+        {
+            var fullEntity = node.Object as FullEntity;
+            var creatorCardId = FindCardCreatorCardId(fullEntity, node);
+            var cardId = PredictCardId(creatorCardId);
+            var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
+            return new GameEventProvider
+            {
+                Timestamp = DateTimeOffset.Parse(fullEntity.TimeStamp),
+                SupplyGameEvent = () => new GameEvent
+                {
+                    Type = "CREATE_CARD_IN_DECK",
+                    Value = new
+                    {
+                        CardId = cardId,
+                        ControllerId = controllerId,
+                        LocalPlayer = ParserState.LocalPlayer,
+                        OpponentPlayer = ParserState.OpponentPlayer,
+                        CreatorCardId = creatorCardId, // Used when there is no cardId, so we can show "created by ..."
+                    }
+                },
+                NeedMetaData = true,
+                CreationLogLine = node.CreationLogLine
+            };
+        }
+
+        private string FindCardCreatorCardId(FullEntity fullEntity, Node node)
+        {
+            if (fullEntity.GetTag(GameTag.CREATOR) != -1 
+                    && GameState.CurrentEntities.ContainsKey(fullEntity.GetTag(GameTag.CREATOR)))
+            {
+                var creator = GameState.CurrentEntities[fullEntity.GetTag(GameTag.CREATOR)];
+                return creator.CardId;
+            }
+            if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+            {
+                var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                if (GameState.CurrentEntities.ContainsKey(act.Entity))
+                {
+                    var creator = GameState.CurrentEntities[act.Entity];
+                    return creator.CardId;
+                }
+            }
+            return null;
+        }
+
+        private string PredictCardId(string creatorCardId)
+        {
+            switch(creatorCardId)
+            {
+                // Raptor Hatchling
+                case "UNG_914": return "UNG_914t1";
+            }
+            return null;
         }
     }
 }
