@@ -15,7 +15,9 @@ namespace HearthstoneReplays.Events
         public bool AnimationReady { get; set; }
         public string CreationLogLine { get; set; }
 
-        public void ReceiveAnimationLog(string data)
+        private Helper helper = new Helper();
+
+        public void ReceiveAnimationLog(string data, ParserState state)
         {
             if (CreationLogLine == null)
             {
@@ -27,6 +29,25 @@ namespace HearthstoneReplays.Events
                 AnimationReady = true;
                 return;
             }
+            // Sometimes the information doesn't exactly match - one has more details on the entity
+            // So here we compared the most basic form of both logs
+            var matchShowInGameState = Regexes.ActionShowEntityRegex.Match(CreationLogLine);
+            var matchShowInPowerTaskList = Regexes.ActionShowEntityRegex.Match(data);
+            if (matchShowInGameState.Success && matchShowInPowerTaskList.Success)
+            {
+                var gsRawEntity = matchShowInGameState.Groups[1].Value;
+                var gsEntity = helper.ParseEntity(gsRawEntity, state);
+
+                var ptlRawEntity = matchShowInGameState.Groups[1].Value;
+                var ptlEntity = helper.ParseEntity(ptlRawEntity, state);
+
+                if (gsEntity == ptlEntity)
+                {
+                    AnimationReady = true;
+                    return;
+                }
+            }
+
             //var matchCreationInGameState = Regexes.ActionFullEntityCreatingRegex.Match(CreationLogLine);
             //var matchUpdateInPowerTaskList = Regexes.ActionFullEntityUpdatingRegex.Match(data);
             //// Special case for PowerTaskList Updating an entity that was only created in GameState

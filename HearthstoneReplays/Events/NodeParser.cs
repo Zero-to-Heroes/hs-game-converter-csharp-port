@@ -93,7 +93,7 @@ namespace HearthstoneReplays.Events
             { 
                 foreach (GameEventProvider provider in eventQueue)
                 {
-                    provider.ReceiveAnimationLog(data);
+                    provider.ReceiveAnimationLog(data, ParserState);
                 }
             }
         }
@@ -121,6 +121,7 @@ namespace HearthstoneReplays.Events
                 // TODO: discover
                 new DiscardedCardParser(ParserState),
                 new CardRemovedFromDeckParser(ParserState),
+                new CreateCardInDeckParser(ParserState),
             };
         }
 
