@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using HearthstoneReplays;
-using HearthstoneReplays.Enums;
+using HearthstoneReplays.Events;
 using HearthstoneReplays.Parser;
 using HearthstoneReplays.Parser.ReplayData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -18,12 +18,13 @@ namespace HearthstoneReplayTests
 		[TestMethod]
 		public void Test() 
 		{
+            NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt);
             //List<string> logFile = TestDataReader.GetInputFile("Power_1.log.txt");
-            List<string> logFile = TestDataReader.GetInputFile("discard.txt");
+            List<string> logFile = TestDataReader.GetInputFile("secret_played.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
 			string xml = new ReplayConverter().xmlFromReplay(replay);
-            System.Threading.Thread.Sleep(15 * 1000);
+            //System.Threading.Thread.Sleep(15 * 1000);
             //Console.Write(xml);
         }
 

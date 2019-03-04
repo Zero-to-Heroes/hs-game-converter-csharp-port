@@ -15,6 +15,8 @@ namespace HearthstoneReplays.Events
 {
 	public class NodeParser
     {
+        public static bool DevMode = false;
+
         private List<ActionParser> parsers;
         private List<GameEventProvider> eventQueue;
         private Timer timer;
@@ -93,7 +95,9 @@ namespace HearthstoneReplays.Events
             return new List<ActionParser>()
             {
                 new NewGameParser(),
+                // TODO: secret played from hand
                 new CardPlayedFromHandParser(ParserState),
+                // TODO: coin in hand
                 new WinnerParser(ParserState),
                 new GameEndParser(ParserState),
                 new MulliganInputParser(ParserState),
@@ -106,6 +110,7 @@ namespace HearthstoneReplays.Events
                 new CardPresentOnGameStartParser(ParserState),
                 new CardDrawFromDeckParser(ParserState),
                 new CardBackToDeckParser(ParserState),
+                // TODO: discover
                 new DiscardedCardParser(ParserState),
             };
         }
@@ -117,7 +122,7 @@ namespace HearthstoneReplays.Events
             // Warning: this means the whole event parsing works in real-time, and is not suited for 
             // post-processing of games
             while (eventQueue.Count > 0 
-                && DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).Milliseconds > 500)
+                && (DevMode || DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).Milliseconds > 500))
             {
                 if (!eventQueue.Any(p => p.AnimationReady))
                 {
