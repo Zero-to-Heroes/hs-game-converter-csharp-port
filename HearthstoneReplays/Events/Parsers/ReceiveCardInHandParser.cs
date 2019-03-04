@@ -107,7 +107,6 @@ namespace HearthstoneReplays.Events.Parsers
 
         private GameEventProvider CreateEventFromFullEntity(FullEntity fullEntity, string creationLogLine)
         {
-            Console.WriteLine("Considerg " + creationLogLine);
             var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             var previousZone = 0;

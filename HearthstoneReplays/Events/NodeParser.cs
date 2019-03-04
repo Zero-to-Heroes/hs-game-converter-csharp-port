@@ -118,10 +118,12 @@ namespace HearthstoneReplays.Events
                 new CardDrawFromDeckParser(ParserState),
                 new ReceiveCardInHandParser(ParserState),
                 new CardBackToDeckParser(ParserState),
-                // TODO: discover
                 new DiscardedCardParser(ParserState),
                 new CardRemovedFromDeckParser(ParserState),
                 new CreateCardInDeckParser(ParserState),
+                new EndOfEchoInHandParser(ParserState),
+                // Hunting mastiff - The echo cards do not disappear from tracker
+                // Overall, we detect our own draws too soon, while the computer is still playing
             };
         }
 
