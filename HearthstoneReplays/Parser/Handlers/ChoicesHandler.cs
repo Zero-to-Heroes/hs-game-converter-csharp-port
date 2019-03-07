@@ -61,7 +61,9 @@ namespace HearthstoneReplays.Parser.Handlers
 					TimeStamp = timestamp
 				};
 				if (state.Node.Type == typeof(Game))
-					((Game)state.Node.Object).Data.Add(state.Choices);
+                {
+                    ((Game)state.Node.Object).AddData(state.Choices);
+                }
 				else if (state.Node.Type == typeof(Action))
 					((Action)state.Node.Object).Data.Add(state.Choices);
 				else

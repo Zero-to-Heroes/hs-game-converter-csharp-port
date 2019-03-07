@@ -24,7 +24,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				state.Options = new Options {Id = int.Parse(id), OptionList = new List<Option>(), TimeStamp = timestamp};
 				state.UpdateCurrentNode(typeof(Game));
 				if(state.Node.Type == typeof(Game))
-					((Game)state.Node.Object).Data.Add(state.Options);
+					((Game)state.Node.Object).AddData(state.Options);
 				else
 					throw new Exception("Invalid node " + state.Node.Type + " -- " + data);
 				return;

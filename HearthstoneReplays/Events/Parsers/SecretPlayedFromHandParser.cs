@@ -40,23 +40,21 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
-                return new GameEventProvider
-                {
-                    Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                    SupplyGameEvent = () => new GameEvent
-                    {
-                        Type = "SECRET_PLAYED",
-                        Value = new
-                        {
-                            CardId = cardId,
-                            ControllerId = controllerId,
-                            LocalPlayer = ParserState.LocalPlayer,
-                            OpponentPlayer = ParserState.OpponentPlayer
-                        }
-                    },
-                    NeedMetaData = false,
-                    CreationLogLine = node.CreationLogLine
-                };
+                return GameEventProvider.Create(
+                       tagChange.TimeStamp,
+                       () => new GameEvent
+                       {
+                           Type = "SECRET_PLAYED",
+                           Value = new
+                           {
+                               CardId = cardId,
+                               ControllerId = controllerId,
+                               LocalPlayer = ParserState.LocalPlayer,
+                               OpponentPlayer = ParserState.OpponentPlayer
+                           }
+                       },
+                       true,
+                       node.CreationLogLine);
             }
             return null;
         }

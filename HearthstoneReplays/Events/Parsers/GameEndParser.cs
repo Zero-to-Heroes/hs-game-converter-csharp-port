@@ -34,10 +34,9 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var replayCopy = ParserState.Replay;
             var xmlReplay = new ReplayConverter().xmlFromReplay(replayCopy);
-            return new GameEventProvider
-            {
-                Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                SupplyGameEvent = () => new GameEvent
+            return GameEventProvider.Create(
+                tagChange.TimeStamp,
+                () => new GameEvent
                 {
                     Type = "GAME_END",
                     Value = new
@@ -46,9 +45,8 @@ namespace HearthstoneReplays.Events.Parsers
                         ReplayXml = xmlReplay
                     }
                 },
-                NeedMetaData = true,
-                CreationLogLine = node.CreationLogLine
-            };
+                true,
+                node.CreationLogLine);
         }
 
         public GameEventProvider CreateGameEventProviderFromClose(Node node)

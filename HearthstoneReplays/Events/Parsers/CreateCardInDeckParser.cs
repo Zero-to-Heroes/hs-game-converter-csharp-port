@@ -59,10 +59,9 @@ namespace HearthstoneReplays.Events.Parsers
             var showEntity = node.Object as ShowEntity;
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
-            return new GameEventProvider
-            {
-                Timestamp = DateTimeOffset.Parse(showEntity.TimeStamp),
-                SupplyGameEvent = () => new GameEvent
+            return GameEventProvider.Create(
+                showEntity.TimeStamp,
+                () => new GameEvent
                 {
                     Type = "CREATE_CARD_IN_DECK",
                     Value = new
@@ -73,9 +72,8 @@ namespace HearthstoneReplays.Events.Parsers
                         OpponentPlayer = ParserState.OpponentPlayer
                     }
                 },
-                NeedMetaData = true,
-                CreationLogLine = node.CreationLogLine
-            };
+                true,
+                node.CreationLogLine);
         }
 
         private GameEventProvider CreateFromFullEntity(Node node)
@@ -84,10 +82,9 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorCardId = FindCardCreatorCardId(fullEntity, node);
             var cardId = PredictCardId(creatorCardId);
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
-            return new GameEventProvider
-            {
-                Timestamp = DateTimeOffset.Parse(fullEntity.TimeStamp),
-                SupplyGameEvent = () => new GameEvent
+            return GameEventProvider.Create(
+                fullEntity.TimeStamp,
+                () => new GameEvent
                 {
                     Type = "CREATE_CARD_IN_DECK",
                     Value = new
@@ -99,9 +96,8 @@ namespace HearthstoneReplays.Events.Parsers
                         CreatorCardId = creatorCardId, // Used when there is no cardId, so we can show "created by ..."
                     }
                 },
-                NeedMetaData = true,
-                CreationLogLine = node.CreationLogLine
-            };
+                true,
+                node.CreationLogLine);
         }
 
         private string FindCardCreatorCardId(FullEntity fullEntity, Node node)

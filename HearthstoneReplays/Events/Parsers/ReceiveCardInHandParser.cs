@@ -46,25 +46,22 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             var previousZone = entity.GetTag(GameTag.ZONE) == -1 ? 0 : entity.GetTag(GameTag.ZONE);
-            var provider = new GameEventProvider
-            {
-                Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                SupplyGameEvent = () => new GameEvent
-                {
-                    Type = "RECEIVE_CARD_IN_HAND",
-                    Value = new
+            return GameEventProvider.Create(
+                    tagChange.TimeStamp,
+                    () => new GameEvent
                     {
-                        CardId = cardId,
-                        ControllerId = controllerId,
-                        LocalPlayer = ParserState.LocalPlayer,
-                        OpponentPlayer = ParserState.OpponentPlayer,
-                        PreviousZone = ((Zone)previousZone).ToString(),
-                    }
-                },
-                NeedMetaData = true,
-                CreationLogLine = node.CreationLogLine
-            };
-            return provider;
+                        Type = "RECEIVE_CARD_IN_HAND",
+                        Value = new
+                        {
+                            CardId = cardId,
+                            ControllerId = controllerId,
+                            LocalPlayer = ParserState.LocalPlayer,
+                            OpponentPlayer = ParserState.OpponentPlayer,
+                            PreviousZone = ((Zone)previousZone).ToString(),
+                        }
+                    },
+                    true,
+                    node.CreationLogLine);
         }
 
         public GameEventProvider CreateGameEventProviderFromClose(Node node)
@@ -85,24 +82,22 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             var previousZone = GameState.CurrentEntities[showEntity.Entity].GetTag(GameTag.ZONE);
-            return new GameEventProvider
-            {
-                Timestamp = DateTimeOffset.Parse(showEntity.TimeStamp),
-                SupplyGameEvent = () => new GameEvent
-                {
-                    Type = "RECEIVE_CARD_IN_HAND",
-                    Value = new
+            return GameEventProvider.Create(
+                    showEntity.TimeStamp,
+                    () => new GameEvent
                     {
-                        CardId = cardId,
-                        ControllerId = controllerId,
-                        LocalPlayer = ParserState.LocalPlayer,
-                        OpponentPlayer = ParserState.OpponentPlayer,
-                        PreviousZone = ((Zone)previousZone).ToString(),
-                    }
-                },
-                NeedMetaData = true,
-                CreationLogLine = creationLogLine
-            };
+                        Type = "RECEIVE_CARD_IN_HAND",
+                        Value = new
+                        {
+                            CardId = cardId,
+                            ControllerId = controllerId,
+                            LocalPlayer = ParserState.LocalPlayer,
+                            OpponentPlayer = ParserState.OpponentPlayer,
+                            PreviousZone = ((Zone)previousZone).ToString(),
+                        }
+                    },
+                    true,
+                    creationLogLine);
         }
 
         private GameEventProvider CreateEventFromFullEntity(FullEntity fullEntity, string creationLogLine)
@@ -114,24 +109,22 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 previousZone = GameState.CurrentEntities[fullEntity.Id].GetTag(GameTag.ZONE);
             }
-            return new GameEventProvider
-            {
-                Timestamp = DateTimeOffset.Parse(fullEntity.TimeStamp),
-                SupplyGameEvent = () => new GameEvent
-                {
-                    Type = "RECEIVE_CARD_IN_HAND",
-                    Value = new
+            return GameEventProvider.Create(
+                    fullEntity.TimeStamp,
+                    () => new GameEvent
                     {
-                        CardId = cardId,
-                        ControllerId = controllerId,
-                        LocalPlayer = ParserState.LocalPlayer,
-                        OpponentPlayer = ParserState.OpponentPlayer,
-                        PreviousZone = ((Zone)previousZone).ToString(),
-                    }
-                },
-                NeedMetaData = true,
-                CreationLogLine = creationLogLine
-            };
+                        Type = "RECEIVE_CARD_IN_HAND",
+                        Value = new
+                        {
+                            CardId = cardId,
+                            ControllerId = controllerId,
+                            LocalPlayer = ParserState.LocalPlayer,
+                            OpponentPlayer = ParserState.OpponentPlayer,
+                            PreviousZone = ((Zone)previousZone).ToString(),
+                        }
+                    },
+                    true,
+                    creationLogLine);
         }
     }
 }

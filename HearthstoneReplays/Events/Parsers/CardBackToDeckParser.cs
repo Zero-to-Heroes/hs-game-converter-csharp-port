@@ -38,10 +38,9 @@ namespace HearthstoneReplays.Events.Parsers
             var initialZone = ((Zone)zoneInt).ToString();
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
-            return new GameEventProvider
-            {
-                Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                SupplyGameEvent = () => new GameEvent
+            return GameEventProvider.Create(
+                tagChange.TimeStamp,
+                () => new GameEvent
                 {
                     Type = "CARD_BACK_TO_DECK",
                     Value = new
@@ -53,9 +52,8 @@ namespace HearthstoneReplays.Events.Parsers
                         OpponentPlayer = ParserState.OpponentPlayer
                     }
                 },
-                NeedMetaData = true,
-                CreationLogLine = node.CreationLogLine
-            };
+                true,
+                node.CreationLogLine);
         }
 
         public GameEventProvider CreateGameEventProviderFromClose(Node node)

@@ -26,7 +26,7 @@ namespace HearthstoneReplays.Parser.Handlers
 			    var type = helper.ParseEnum<ChoiceType>(rawType);
 				state.SendChoices = new SendChoices {Choices = new List<Choice>(), Entity = int.Parse(id), Type = type, TimeStamp = timestamp};
 				if(state.Node.Type == typeof(Game))
-					((Game)state.Node.Object).Data.Add(state.SendChoices);
+					((Game)state.Node.Object).AddData(state.SendChoices);
 				else if(state.Node.Type == typeof(Action))
 					((Action)state.Node.Object).Data.Add(state.SendChoices);
 				else

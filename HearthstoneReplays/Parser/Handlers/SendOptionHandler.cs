@@ -28,7 +28,7 @@ namespace HearthstoneReplays.Parser.Handlers
 					Target = int.Parse(target)
 				};
 				if(state.Node.Type == typeof(Game))
-					((Game)state.Node.Object).Data.Add(sendOption);
+					((Game)state.Node.Object).AddData(sendOption);
 				else
 					throw new Exception("Invalid node " + state.Node.Type + " -- " + data);
 			}

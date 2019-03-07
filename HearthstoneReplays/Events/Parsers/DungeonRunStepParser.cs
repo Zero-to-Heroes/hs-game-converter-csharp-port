@@ -34,10 +34,9 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var runStep = 1 + (tagChange.Value - 15) / 5;
-            return new GameEventProvider
-            {
-                Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                SupplyGameEvent = () => {
+            return GameEventProvider.Create(
+                tagChange.TimeStamp,
+                () => {
                     if (ParserState.CurrentGame.ScenarioID != (int)Scenario.DUNGEON_RUN)
                     {
                         return null;
@@ -53,9 +52,8 @@ namespace HearthstoneReplays.Events.Parsers
                         Value = runStep
                     };
                 },
-                NeedMetaData = true,
-                CreationLogLine = node.CreationLogLine
-            };
+                true,
+                node.CreationLogLine);
         }
 
         public GameEventProvider CreateGameEventProviderFromClose(Node node)

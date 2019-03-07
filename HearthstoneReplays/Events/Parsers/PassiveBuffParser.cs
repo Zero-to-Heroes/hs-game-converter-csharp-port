@@ -38,10 +38,9 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = ParserState.GetTag(entity.Tags, GameTag.CONTROLLER);
             if (ParserState.GetTag(entity.Tags, GameTag.DUNGEON_PASSIVE_BUFF) == 1)
             {
-                return new GameEventProvider
-                {
-                    Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                    SupplyGameEvent = () => new GameEvent
+                return GameEventProvider.Create(
+                    tagChange.TimeStamp,
+                    () => new GameEvent
                     {
                         Type = "PASSIVE_BUFF",
                         Value = new
@@ -52,9 +51,8 @@ namespace HearthstoneReplays.Events.Parsers
                             OpponentPlayer = ParserState.OpponentPlayer
                         }
                     },
-                    NeedMetaData = true,
-                    CreationLogLine = node.CreationLogLine
-                };
+                    true,
+                    node.CreationLogLine);
             }
             return null;
         }

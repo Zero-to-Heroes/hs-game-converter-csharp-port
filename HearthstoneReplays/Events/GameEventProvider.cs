@@ -17,6 +17,26 @@ namespace HearthstoneReplays.Events
 
         private Helper helper = new Helper();
 
+        private GameEventProvider()
+        {
+
+        }
+
+        public static GameEventProvider Create(
+            string originalTimestamp, 
+            Func<GameEvent> eventProvider, 
+            bool needMetaData,
+            string creationLogLine)
+        {
+            return new GameEventProvider
+            {
+                Timestamp = ParseTimestamp(originalTimestamp),
+                SupplyGameEvent = eventProvider,
+                NeedMetaData = needMetaData,
+                CreationLogLine = creationLogLine
+            };
+        }
+
         public void ReceiveAnimationLog(string data, ParserState state)
         {
             if (CreationLogLine == null)
@@ -64,6 +84,22 @@ namespace HearthstoneReplays.Events
                     return;
                 }
             }
+        }
+
+        private static DateTimeOffset ParseTimestamp(string timestamp)
+        {
+            if (!string.IsNullOrEmpty(timestamp))
+            {
+                String[] split = timestamp.Split(':');
+                int hours = int.Parse(split[0]);
+                if (hours >= 24)
+                {
+                    String newTs = "00:" + split[1] + ":" + split[2];
+                    return DateTimeOffset.Parse(newTs).AddDays(1);
+                }
+                return DateTimeOffset.Parse(timestamp);
+            }
+            return DateTimeOffset.MinValue;
         }
     }
 }

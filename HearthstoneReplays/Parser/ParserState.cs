@@ -75,18 +75,15 @@ namespace HearthstoneReplays.Parser
 
         public void SetLocalPlayer(Player value, string timestamp, string data) { 
 			_localPlayer = value;
-            NodeParser.EnqueueGameEvent(new GameEventProvider
-            {
-                // We can be 0 here, as it's ok to parse it as soon as we receive it
-                Timestamp = DateTimeOffset.Parse(timestamp),
-                SupplyGameEvent = () => new GameEvent
-                {
-                    Type = "LOCAL_PLAYER",
-                    Value = this._localPlayer
-                },
-                NeedMetaData = false,
-                CreationLogLine = data
-            });
+            NodeParser.EnqueueGameEvent(GameEventProvider.Create(
+                    timestamp,
+                    () => new GameEvent
+                    {
+                        Type = "LOCAL_PLAYER",
+                        Value = this._localPlayer
+                    },
+                    false,
+                    data));
 		}
 
 		private Player _opponentPlayer;
@@ -98,18 +95,15 @@ namespace HearthstoneReplays.Parser
         public void SetOpponentPlayer(Player value, string timestamp, string data)
         {
             _opponentPlayer = value;
-            NodeParser.EnqueueGameEvent(new GameEventProvider
-            {
-                // We can be 0 here, as it's ok to parse it as soon as we receive it
-                Timestamp = DateTimeOffset.Parse(timestamp),
-                SupplyGameEvent = () => new GameEvent
-                {
-                    Type = "OPPONENT_PLAYER",
-                    Value = this._opponentPlayer
-                },
-                NeedMetaData = false,
-                CreationLogLine = data
-            });
+            NodeParser.EnqueueGameEvent(GameEventProvider.Create(
+                    timestamp,
+                    () => new GameEvent
+                    {
+                        Type = "OPPONENT_PLAYER",
+                        Value = this._opponentPlayer
+                    },
+                    false,
+                    data));
         }
 
 		public void Reset()

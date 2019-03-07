@@ -40,10 +40,9 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
-                return new GameEventProvider
-                {
-                    Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                    SupplyGameEvent = () => new GameEvent
+                return GameEventProvider.Create(
+                    tagChange.TimeStamp,
+                    () => new GameEvent
                     {
                         Type = "CARD_PLAYED",
                         Value = new
@@ -54,9 +53,8 @@ namespace HearthstoneReplays.Events.Parsers
                             OpponentPlayer = ParserState.OpponentPlayer
                         }
                     },
-                    NeedMetaData = false,
-                    CreationLogLine = node.CreationLogLine
-                };
+                    false,
+                    node.CreationLogLine);
             }
             return null;
         }
@@ -74,23 +72,21 @@ namespace HearthstoneReplays.Events.Parsers
                         var cardId = showEntity.CardId;
                         var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
                         // For now there can only be one card played per block
-                        return new GameEventProvider
-                        {
-                            Timestamp = DateTimeOffset.Parse(action.TimeStamp),
-                            SupplyGameEvent = () => new GameEvent
-                            {
-                                Type = "CARD_PLAYED",
-                                Value = new
+                        return GameEventProvider.Create(
+                            action.TimeStamp,
+                            () => new GameEvent
                                 {
-                                    CardId = cardId,
-                                    ControllerId = controllerId,
-                                    LocalPlayer = ParserState.LocalPlayer,
-                                    OpponentPlayer = ParserState.OpponentPlayer
-                                }
-                            },
-                            NeedMetaData = false,
-                            CreationLogLine = node.CreationLogLine
-                        };
+                                    Type = "CARD_PLAYED",
+                                    Value = new
+                                    {
+                                        CardId = cardId,
+                                        ControllerId = controllerId,
+                                        LocalPlayer = ParserState.LocalPlayer,
+                                        OpponentPlayer = ParserState.OpponentPlayer
+                                    }
+                                },
+                            false,
+                            node.CreationLogLine);
                     }
                 }
             }

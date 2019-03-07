@@ -35,35 +35,31 @@ namespace HearthstoneReplays.Events.Parsers
             if (tagChange.Value == (int)PlayState.WON)
             {
                 var winner = (PlayerEntity)ParserState.GetEntity(tagChange.Entity);
-                return new GameEventProvider
-                {
-                    Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                    SupplyGameEvent = () => new GameEvent
-                    {
-                        Type = "WINNER",
-                        Value = new
-                        {
-                            Winner = winner,
-                            LocalPlayer = ParserState.LocalPlayer,
-                            OpponentPlayer = ParserState.OpponentPlayer
-                        }
-                    },
-                    NeedMetaData = true,
-                    CreationLogLine = node.CreationLogLine
-                };
+                return GameEventProvider.Create(
+                       tagChange.TimeStamp,
+                       () => new GameEvent
+                       {
+                           Type = "WINNER",
+                           Value = new
+                           {
+                               Winner = winner,
+                               LocalPlayer = ParserState.LocalPlayer,
+                               OpponentPlayer = ParserState.OpponentPlayer
+                           }
+                       },
+                       true,
+                       node.CreationLogLine);
             }
             else if (tagChange.Value == (int)PlayState.TIED)
             {
-                return new GameEventProvider
-                {
-                    Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                    SupplyGameEvent = () => new GameEvent
-                    {
-                        Type = "TIE"
-                    },
-                    NeedMetaData = true,
-                    CreationLogLine = node.CreationLogLine
-                };
+                return GameEventProvider.Create(
+                       tagChange.TimeStamp,
+                       () => new GameEvent
+                       {
+                           Type = "TIE"
+                       },
+                       true,
+                       node.CreationLogLine);
             }
             return null;
         }

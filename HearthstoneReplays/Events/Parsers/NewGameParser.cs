@@ -23,16 +23,14 @@ namespace HearthstoneReplays.Events.Parsers
 
         public GameEventProvider CreateGameEventProviderFromNew(Node node)
         {
-            return new GameEventProvider
-            {
-                Timestamp = DateTimeOffset.Parse((node.Object as Game).TimeStamp),
-                SupplyGameEvent = () => new GameEvent
+            return GameEventProvider.Create(
+                (node.Object as Game).TimeStamp,
+                () => new GameEvent
                 {
                     Type = "NEW_GAME"
                 },
-                NeedMetaData = false,
-                CreationLogLine = node.CreationLogLine
-            };
+                false,
+                node.CreationLogLine);
         }
 
         public GameEventProvider CreateGameEventProviderFromClose(Node node)

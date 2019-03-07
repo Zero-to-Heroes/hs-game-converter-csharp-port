@@ -29,7 +29,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				var cEntities = new ChosenEntities {Entity = entity, PlayerId = player, Count = count, Choices = new List<Choice>(), TimeStamp = timestamp};
 
 				if (state.Node.Type == typeof(Game))
-					((Game)state.Node.Object).Data.Add(cEntities);
+					((Game)state.Node.Object).AddData(cEntities);
 				else if (state.Node.Type == typeof(Action))
 					((Action)state.Node.Object).Data.Add(cEntities);
 				else

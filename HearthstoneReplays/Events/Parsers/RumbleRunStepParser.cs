@@ -36,28 +36,26 @@ namespace HearthstoneReplays.Events.Parsers
             // The player starts with 20 Health, and gains an additional 5 Health per defeated boss, 
             // up to 45 Health for the eighth, and final boss.
             int runStep = 1 + (tagChange.Value - 20) / 5;
-            return new GameEventProvider
-            {
-                Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                SupplyGameEvent = () => {
-                    if (ParserState.CurrentGame.ScenarioID != (int)Scenario.RUMBLE_RUN)
-                    {
-                        return null;
-                    }
-                    var heroEntityId = ParserState.GetEntity(ParserState.LocalPlayer.Id).GetTag(GameTag.HERO_ENTITY);
-                    if (tagChange.Entity != heroEntityId)
-                    {
-                        return null;
-                    }
-                    return new GameEvent
-                    {
-                        Type = "RUMBLE_RUN_STEP",
-                        Value = runStep
-                    };
-                },
-                NeedMetaData = true,
-                CreationLogLine = node.CreationLogLine
-            };
+            return GameEventProvider.Create(
+                    tagChange.TimeStamp,
+                    () => {
+                         if (ParserState.CurrentGame.ScenarioID != (int)Scenario.RUMBLE_RUN)
+                         {
+                             return null;
+                         }
+                         var heroEntityId = ParserState.GetEntity(ParserState.LocalPlayer.Id).GetTag(GameTag.HERO_ENTITY);
+                         if (tagChange.Entity != heroEntityId)
+                         {
+                             return null;
+                         }
+                         return new GameEvent
+                         {
+                             Type = "RUMBLE_RUN_STEP",
+                             Value = runStep
+                         };
+                    },
+                    true,
+                    node.CreationLogLine);
         }
 
         public GameEventProvider CreateGameEventProviderFromClose(Node node)

@@ -40,10 +40,9 @@ namespace HearthstoneReplays.Events.Parsers
             var fullEntity = node.Object as FullEntity;
             var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
-            return new GameEventProvider
-            {
-                Timestamp = DateTimeOffset.Parse(fullEntity.TimeStamp),
-                SupplyGameEvent = () => new GameEvent
+            return GameEventProvider.Create(
+                fullEntity.TimeStamp,
+                () => new GameEvent
                 {
                     Type = "CARD_ON_BOARD_AT_GAME_START",
                     Value = new
@@ -54,9 +53,8 @@ namespace HearthstoneReplays.Events.Parsers
                         OpponentPlayer = ParserState.OpponentPlayer
                     }
                 },
-                NeedMetaData = true,
-                CreationLogLine = node.CreationLogLine
-            };
+                true,
+                node.CreationLogLine);
         }
     }
 }

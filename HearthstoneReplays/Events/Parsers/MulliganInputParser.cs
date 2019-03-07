@@ -33,16 +33,14 @@ namespace HearthstoneReplays.Events.Parsers
         public GameEventProvider CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
-            return new GameEventProvider
-            {
-                Timestamp = DateTimeOffset.Parse(tagChange.TimeStamp),
-                SupplyGameEvent = () => new GameEvent
+            return GameEventProvider.Create(
+                tagChange.TimeStamp,
+                () => new GameEvent
                 {
                     Type = "MULLIGAN_INPUT"
                 },
-                NeedMetaData = false,
-                CreationLogLine = node.CreationLogLine
-            };
+                false,
+                node.CreationLogLine);
         }
 
         public GameEventProvider CreateGameEventProviderFromClose(Node node)

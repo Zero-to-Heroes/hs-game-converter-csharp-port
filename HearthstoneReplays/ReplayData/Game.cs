@@ -14,7 +14,9 @@ namespace HearthstoneReplays.Parser.ReplayData
 {
 	public class Game
 	{
-		[XmlAttribute("ts")]
+        public readonly object listLock = new object();
+
+        [XmlAttribute("ts")]
 		public string TimeStamp { get; set; }
 
 		[XmlAttribute("buildNumber")]
@@ -48,18 +50,29 @@ namespace HearthstoneReplays.Parser.ReplayData
 		[XmlElement("ChosenEntities", typeof(ChosenEntities))]
 		public List<GameData> Data { get; set; }
 
+        public void AddData(GameData data)
+        {
+            lock (listLock)
+            {
+                Data.Add(data);
+            }
+        }
+
 		internal List<GameData> FilterGameData(params System.Type[] types)
 		{
 			// Build the list - could probably be built incrementally instead of rebuilding it completely every time
 			List<GameData> result = new List<GameData>();
-			foreach (GameData data in Data)
-			{
-				result.Add(data);
-				ExtractData(result, data);
-			}
+            lock (listLock)
+            {
+			    foreach (GameData data in Data)
+			    {
+				    result.Add(data);
+				    ExtractData(result, data);
+			    }
 
-			// Now filter it
-			return result.Where(data => types.Contains(data.GetType())).ToList();
+			    // Now filter it
+			    return result.Where(data => types.Contains(data.GetType())).ToList();
+            }
 		}
 
 		internal void ExtractData(List<GameData> result, GameData data)
