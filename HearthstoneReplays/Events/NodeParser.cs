@@ -91,9 +91,12 @@ namespace HearthstoneReplays.Events
         {
             lock (listLock)
             { 
-                foreach (GameEventProvider provider in eventQueue)
+                if (eventQueue.Count > 0)
                 {
-                    provider.ReceiveAnimationLog(data, ParserState);
+                    foreach (GameEventProvider provider in eventQueue)
+                    {
+                        provider.ReceiveAnimationLog(data, ParserState);
+                    }
                 }
             }
         }
@@ -122,8 +125,6 @@ namespace HearthstoneReplays.Events
                 new CardRemovedFromDeckParser(ParserState),
                 new CreateCardInDeckParser(ParserState),
                 new EndOfEchoInHandParser(ParserState),
-                // Hunting mastiff - The echo cards do not disappear from tracker
-                // Overall, we detect our own draws too soon, while the computer is still playing
             };
         }
 
@@ -136,15 +137,16 @@ namespace HearthstoneReplays.Events
             while (eventQueue.Count > 0 
                 && (DevMode || DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).Milliseconds > 500))
             {
+                GameEventProvider provider;
                 lock (listLock)
                 {
                     if (!eventQueue.Any(p => p.AnimationReady))
                     {
                         return;
                     }
+                    provider = eventQueue[0];
+                    eventQueue.RemoveAt(0);
                 }
-                GameEventProvider provider = eventQueue[0];
-                eventQueue.RemoveAt(0);
                 if (provider.NeedMetaData)
                 {
                     // Wait until we have all the necessary data
