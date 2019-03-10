@@ -53,7 +53,7 @@ namespace HearthstoneReplays.Events.Parsers
                             OpponentPlayer = ParserState.OpponentPlayer
                         }
                     },
-                    false,
+                    true,
                     node.CreationLogLine);
             }
             return null;
@@ -85,7 +85,7 @@ namespace HearthstoneReplays.Events.Parsers
                                         OpponentPlayer = ParserState.OpponentPlayer
                                     }
                                 },
-                            false,
+                            true,
                             node.CreationLogLine);
                     }
                 }
