@@ -16,8 +16,14 @@ namespace HearthstoneReplays.Parser.Handlers
 		private Helper helper = new Helper();
 
 		public void Handle(string timestamp, string data, ParserState state)
-		{
-			data = data.Trim();
+        {
+            // This happens for the first options when spectating a game that has already started
+            if (state.CurrentGame == null || state.Node == null)
+            {
+                return;
+            }
+
+            data = data.Trim();
 			var match = Regexes.SendChoicesChoicetypeRegex.Match(data);
 			if(match.Success)
 			{

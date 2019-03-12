@@ -111,6 +111,12 @@
     <Compile Include="Events\GameEventProvider.cs" />
     <Compile Include="Events\NodeParser.cs" />
     <Compile Include="Events\GameState.cs" />
+    <Compile Include="Events\Parsers\CreateCardInDeckParser.cs" />
+    <Compile Include="Events\Parsers\CardRemovedFromDeckParser.cs" />
+    <Compile Include="Events\Parsers\EndOfEchoInHandParser.cs" />
+    <Compile Include="Events\Parsers\ReceiveCardInHandParser.cs" />
+    <Compile Include="Events\Parsers\SecretPlayedFromHandParser.cs" />
+    <Compile Include="Events\Parsers\DiscardedCardParser.cs" />
     <Compile Include="Events\Parsers\CardBackToDeckParser.cs" />
     <Compile Include="Events\Parsers\CardDrawFromDeckParser.cs" />
     <Compile Include="Events\Parsers\CardPresentOnGameStartParser.cs" />
