@@ -38,6 +38,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 var newNode = new Node(typeof(Game), state.CurrentGame, 0, null, data);
                 state.CreateNewNode(newNode);
 				state.Node = newNode;
+                Logger.Log("Created a new game", "");
 				return;
 			}
 
@@ -51,7 +52,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 var newNode = new Node(typeof(Game), state.CurrentGame, 0, null, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
-                return;
+                Logger.Log("Created a new game without CREATE_GAME tag", "");
 			}
 
 			if (state.Ended)
@@ -90,7 +91,8 @@ namespace HearthstoneReplays.Parser.Handlers
 					.First();
 				matchingPlayer.Name = playerName;
 				state.TryAssignLocalPlayer(timestamp, data);
-			}
+                Logger.Log("Tried to assign player name", data);
+            }
 
 			match = Regexes.BuildNumber.Match(data);
 			if (match.Success)

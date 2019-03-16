@@ -94,6 +94,13 @@ namespace HearthstoneReplays.Parser
             {
                 return idFromState;
             }
+            // Fringe case, but I saw it happen from time to time
+            // We assume this happens in a game vs AI, so the human player is always the first
+            // and if that's not the case, then we have no way to know which unknown human player this is
+            if (data == "UNKNOWN HUMAN PLAYER")
+            {
+                return firstPlayer.Id;
+            }
             throw new Exception("Could not get id from player name: " + data 
                 + " // " + firstPlayer.Name + " // " + secondPlayer.Name);
 		}
