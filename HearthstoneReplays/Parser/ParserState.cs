@@ -60,6 +60,10 @@ namespace HearthstoneReplays.Parser
                         {
                             GameState.FullEntity(_node.Object as FullEntity, false);
                         }
+                        else if (_node.Type == typeof(ChangeEntity))
+                        {
+                            GameState.ChangeEntity(_node.Object as ChangeEntity);
+                        }
                     }
                     //HandleNodeUpdateEvent(_node, value);
 					this._node = value;

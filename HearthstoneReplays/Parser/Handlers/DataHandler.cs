@@ -61,10 +61,10 @@ namespace HearthstoneReplays.Parser.Handlers
 			}
 
 			if (data == "BLOCK_END")
-			{
-				state.UpdateCurrentNode(typeof(Game), typeof(Action));
-				state.Node = state.Node.Parent ?? state.Node;
+            {
                 state.EndAction();
+                state.UpdateCurrentNode(typeof(Game), typeof(Action));
+				state.Node = state.Node.Parent ?? state.Node;
                 return;
 			}
 

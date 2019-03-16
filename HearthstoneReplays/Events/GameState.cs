@@ -58,20 +58,35 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 			}
 			var fullEntity = new FullEntity { CardId = entity.CardId, Id = entity.Id, Tags = entity.Tags, TimeStamp = entity.TimeStamp };
 			CurrentEntities.Add(entity.Id, fullEntity);
-		}
+        }
 
-		public void ShowEntity(ShowEntity entity)
-		{
-			if (!CurrentEntities.ContainsKey(entity.Entity))
-			{
-				Logger.Log("error while parsing, showentity doesn't have an entity in memory yet", "" + entity.Entity);
-				return;
+        public void ShowEntity(ShowEntity entity)
+        {
+            if (!CurrentEntities.ContainsKey(entity.Entity))
+            {
+                Logger.Log("error while parsing, showentity doesn't have an entity in memory yet", "" + entity.Entity);
+                return;
             }
             CurrentEntities[entity.Entity].CardId = entity.CardId;
             CurrentEntities[entity.Entity].Tags = entity.Tags;
         }
 
-		public void TagChange(TagChange tagChange, string defChange, string initialLog = null)
+        public void ChangeEntity(ChangeEntity entity)
+        {
+            if (!CurrentEntities.ContainsKey(entity.Entity))
+            {
+                Logger.Log("error while parsing, changeEntity doesn't have an entity in memory yet", "" + entity.Entity);
+                return;
+            }
+            CurrentEntities[entity.Entity].CardId = entity.CardId;
+            List<int> newTagIds = entity.Tags.Select(tag => tag.Name).ToList();
+            List<Tag> oldTagsToKeep = CurrentEntities[entity.Entity].Tags
+                .Where(tag => !newTagIds.Contains(tag.Name))
+                .ToList();
+            oldTagsToKeep.AddRange(entity.Tags);
+        }
+
+        public void TagChange(TagChange tagChange, string defChange, string initialLog = null)
 		{
 			if (!CurrentEntities.ContainsKey(tagChange.Entity))
 			{
