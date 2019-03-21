@@ -50,13 +50,14 @@ namespace HearthstoneReplays
 
 		private ReplayParser parser = new ReplayParser();
 
-		public void initRealtimeLogConversion()
+		public void initRealtimeLogConversion(Action<object> callback)
 		{
 			Logger.Log = onGlobalEvent;
 			GameEventHandler.EventProvider = onGameEvent;
 			parser = new ReplayParser();
-			parser.Init();
-		}
+            parser.Init();
+            callback?.Invoke(null);
+        }
 
 		public void realtimeLogProcessing(string[] logLines, Action<object> callback)
 		{
@@ -70,7 +71,7 @@ namespace HearthstoneReplays
 				{
                     onGlobalEvent("Exception when parsing game " + e.GetBaseException() 
                                 + " // " + logLines[logLines.Length - 1],                         
-                        parser.State.FullLog + "/#/" + logLines);
+                        parser.State.FullLog + "/#/" + string.Join("\n", logLines));
 				}
 			});
 		}
