@@ -111,6 +111,7 @@
     <Compile Include="Events\GameEventProvider.cs" />
     <Compile Include="Events\NodeParser.cs" />
     <Compile Include="Events\GameState.cs" />
+    <Compile Include="Events\Parsers\CardChangedParser.cs" />
     <Compile Include="Events\Parsers\CreateCardInDeckParser.cs" />
     <Compile Include="Events\Parsers\CardRemovedFromDeckParser.cs" />
     <Compile Include="Events\Parsers\EndOfEchoInHandParser.cs" />

@@ -135,6 +135,8 @@
     <EmbeddedResource Include="TestData\Power_rumble_run.log.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="TestData\beastly_beauty.txt" />
+    <Content Include="TestData\reconnect.txt" />
     <EmbeddedResource Include="TestData\psychic_scream.txt" />
     <EmbeddedResource Include="TestData\hunting_mastiff_with_echo.txt" />
     <EmbeddedResource Include="TestData\on_the_coin.txt" />
@@ -148,6 +150,7 @@
     <EmbeddedResource Include="TestData\mindvisino.txt" />
     <EmbeddedResource Include="TestData\bug.txt" />
     <EmbeddedResource Include="TestData\spectate.txt" />
+    <Content Include="TestData\beastly_pete.txt" />
     <Content Include="TestData\Power_gameAndFormatTypes.log.txt" />
     <EmbeddedResource Include="TestData\entity_change_solo_mode.txt" />
     <EmbeddedResource Include="TestData\test_card_draw.txt" />

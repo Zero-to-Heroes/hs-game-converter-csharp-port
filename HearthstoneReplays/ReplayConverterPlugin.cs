@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using HearthstoneReplays.Parser;
+using HearthstoneReplays.Events;
 using Newtonsoft;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -87,6 +88,16 @@ namespace HearthstoneReplays
 			{
 				onGlobalEvent(first, second);
 			});
-		}
-	}
+        }
+
+        public void startDevMode()
+        {
+            NodeParser.DevMode = true;
+        }
+
+        public void stopDevMode()
+        {
+            NodeParser.DevMode = true;
+        }
+    }
 }
