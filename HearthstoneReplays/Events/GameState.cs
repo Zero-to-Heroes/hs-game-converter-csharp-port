@@ -56,7 +56,13 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 				// This actually happens in a normal scenario, so we just ignore it
 				return;
 			}
-			var fullEntity = new FullEntity { CardId = entity.CardId, Id = entity.Id, Tags = entity.Tags, TimeStamp = entity.TimeStamp };
+
+            var newTags = new List<Tag>();
+            foreach (var oldTag in entity.Tags)
+            {
+                newTags.Add(new Tag { Name = oldTag.Name, Value = oldTag.Value });
+            }
+			var fullEntity = new FullEntity { CardId = entity.CardId, Id = entity.Id, Tags = newTags, TimeStamp = entity.TimeStamp };
 			CurrentEntities.Add(entity.Id, fullEntity);
         }
 
@@ -67,8 +73,14 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 Logger.Log("error while parsing, showentity doesn't have an entity in memory yet", "" + entity.Entity);
                 return;
             }
+
+            var newTags = new List<Tag>();
+            foreach (var oldTag in entity.Tags)
+            {
+                newTags.Add(new Tag { Name = oldTag.Name, Value = oldTag.Value });
+            }
             CurrentEntities[entity.Entity].CardId = entity.CardId;
-            CurrentEntities[entity.Entity].Tags = entity.Tags;
+            CurrentEntities[entity.Entity].Tags = newTags;
         }
 
         public void ChangeEntity(ChangeEntity entity)
@@ -83,7 +95,12 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             List<Tag> oldTagsToKeep = CurrentEntities[entity.Entity].Tags
                 .Where(tag => !newTagIds.Contains(tag.Name))
                 .ToList();
-            oldTagsToKeep.AddRange(entity.Tags);
+            var newTags = new List<Tag>();
+            foreach (var oldTag in entity.Tags)
+            {
+                newTags.Add(new Tag { Name = oldTag.Name, Value = oldTag.Value });
+            }
+            oldTagsToKeep.AddRange(newTags);
         }
 
         public void TagChange(TagChange tagChange, string defChange, string initialLog = null)
