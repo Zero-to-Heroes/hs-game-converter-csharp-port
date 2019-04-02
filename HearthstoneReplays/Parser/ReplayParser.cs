@@ -64,8 +64,9 @@ namespace HearthstoneReplays.Parser
 		}
 
 		public void Init()
-		{
-			State.Reset();
+        {
+            Logger.Log("Calling reset from ReplayParser.init()", "");
+            //State.Reset();
 		}
 
 		public void ReadLine(string line)
@@ -91,6 +92,7 @@ namespace HearthstoneReplays.Parser
 				return;
 
             State.FullLog += line + "\n";
+            //Logger.Log("Processing new line", line);
             AddData(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value);
             // New game
             if (State.FullLog.Length == 0)

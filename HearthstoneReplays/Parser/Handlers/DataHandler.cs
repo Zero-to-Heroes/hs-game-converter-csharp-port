@@ -23,16 +23,17 @@ namespace HearthstoneReplays.Parser.Handlers
 		private Helper helper = new Helper();
 
 		public void Handle(string timestamp, string data, ParserState state)
-		{
-			timestamp = NormalizeTimestamp(timestamp);
+        {
+            timestamp = NormalizeTimestamp(timestamp);
 
 			var trimmed = data.Trim();
 			var indentLevel = data.Length - trimmed.Length;
 			data = trimmed;
 
-			if (data == "CREATE_GAME") 
-			{
-				state.Reset();
+			if (data == "CREATE_GAME")
+            {
+                //Logger.Log("Calling reset from CREATE_GAME", "");
+                state.Reset();
 				state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
 				state.Replay.Games.Add(state.CurrentGame);
                 var newNode = new Node(typeof(Game), state.CurrentGame, 0, null, data);
@@ -44,16 +45,17 @@ namespace HearthstoneReplays.Parser.Handlers
 
 			// TODO: special case where the CREATE_GAME tag is not present in the
 			// output log
-			if (state.Replay.Games.Count == 0)
-			{
-				state.Reset();
-				state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
-				state.Replay.Games.Add(state.CurrentGame);
-                var newNode = new Node(typeof(Game), state.CurrentGame, 0, null, data);
-                state.CreateNewNode(newNode);
-                state.Node = newNode;
-                Logger.Log("Created a new game without CREATE_GAME tag", "");
-			}
+			//if (state.Replay.Games.Count == 0)
+   //         {
+   //             Logger.Log("Calling reset from new game without create_game tag", "");
+   //             state.Reset();
+			//	state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
+			//	state.Replay.Games.Add(state.CurrentGame);
+   //             var newNode = new Node(typeof(Game), state.CurrentGame, 0, null, data);
+   //             state.CreateNewNode(newNode);
+   //             state.Node = newNode;
+   //             Logger.Log("Created a new game without CREATE_GAME tag", "");
+			//}
 
 			if (state.Ended)
 			{

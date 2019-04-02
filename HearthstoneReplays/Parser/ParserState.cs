@@ -19,8 +19,9 @@ namespace HearthstoneReplays.Parser
 	public class ParserState
 	{
 		public ParserState()
-		{
-			Reset();
+        {
+            Logger.Log("Calling reset from ParserState constructor", "");
+            //Reset();
 		}
 
 		public GameState GameState = new GameState();
@@ -131,6 +132,7 @@ namespace HearthstoneReplays.Parser
 			CurrentChosenEntites = null;
 			Ended = false;
             FullLog = "";
+            Logger.Log("resetting game state", "");
         }
 
         public void CreateNewNode(Node newNode)
