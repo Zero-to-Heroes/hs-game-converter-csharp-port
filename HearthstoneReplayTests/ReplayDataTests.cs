@@ -17,11 +17,11 @@ namespace HearthstoneReplayTests
 	{
 		[TestMethod]
 		public void Test()  
-		{ 
+		{
             NodeParser.DevMode = true; 
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt);
             //List<string> logFile = TestDataReader.GetInputFile("Power_1.log.txt");
-            List<string> logFile = TestDataReader.GetInputFile("incorrect_controller.txt");
+            List<string> logFile = TestDataReader.GetInputFile("bug.txt");
             //while (true)
             //{
                 HearthstoneReplay replay = new ReplayParser().FromString(logFile);
