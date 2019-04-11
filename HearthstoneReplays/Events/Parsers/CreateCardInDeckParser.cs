@@ -57,7 +57,14 @@ namespace HearthstoneReplays.Events.Parsers
         private GameEventProvider CreateFromShowEntity(Node node)
         {
             var showEntity = node.Object as ShowEntity;
-            var cardId = showEntity.CardId;
+            var currentCard = GameState.CurrentEntities[showEntity.Entity];
+            // If the card is already present in the deck, do nothing
+            if (currentCard.GetTag(GameTag.ZONE) == (int)Zone.DECK)
+            {
+                return null;
+            }
+            var creatorCardId = FindCardCreatorCardId(showEntity.GetTag(GameTag.CREATOR), node);
+            var cardId = PredictCardId(creatorCardId, node);
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             return GameEventProvider.Create(
                 showEntity.TimeStamp,
@@ -79,8 +86,8 @@ namespace HearthstoneReplays.Events.Parsers
         private GameEventProvider CreateFromFullEntity(Node node)
         {
             var fullEntity = node.Object as FullEntity;
-            var creatorCardId = FindCardCreatorCardId(fullEntity, node);
-            var cardId = PredictCardId(creatorCardId);
+            var creatorCardId = FindCardCreatorCardId(fullEntity.GetTag(GameTag.CREATOR), node);
+            var cardId = PredictCardId(creatorCardId, node);
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             return GameEventProvider.Create(
                 fullEntity.TimeStamp,
@@ -100,12 +107,11 @@ namespace HearthstoneReplays.Events.Parsers
                 node.CreationLogLine);
         }
 
-        private string FindCardCreatorCardId(FullEntity fullEntity, Node node)
+        private string FindCardCreatorCardId(int creatorTag, Node node)
         {
-            if (fullEntity.GetTag(GameTag.CREATOR) != -1 
-                    && GameState.CurrentEntities.ContainsKey(fullEntity.GetTag(GameTag.CREATOR)))
+            if (creatorTag != -1 && GameState.CurrentEntities.ContainsKey(creatorTag))
             {
-                var creator = GameState.CurrentEntities[fullEntity.GetTag(GameTag.CREATOR)];
+                var creator = GameState.CurrentEntities[creatorTag];
                 return creator.CardId;
             }
             if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
@@ -120,12 +126,44 @@ namespace HearthstoneReplays.Events.Parsers
             return null;
         }
 
-        private string PredictCardId(string creatorCardId)
+        private string PredictCardId(string creatorCardId, Node node)
         {
             switch(creatorCardId)
             {
                 // Raptor Hatchling
                 case "UNG_914": return "UNG_914t1";
+                // Seaforium Bomber
+                case "BOT_511": return "BOT_511t";
+                // Clockwork Goblin
+                case "DAL_060": return "BOT_511t";
+                // Wrenchcalibur
+                case "DAL_063": return "BOT_511t";
+                // Augmented Elekk creates the same card as was played
+                case "BOT_559": 
+                    // The parent action is Augmented Elekk trigger, which is not the one we're interested in
+                    // Its parent is the one that created the new entity
+                    if (node.Parent.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+                    {
+                        var act = node.Parent.Parent.Object as Parser.ReplayData.GameActions.Action;
+                        // It should be the last ShowEntity of the action children
+                        // Otherwise, the last FullEntity
+                        for (int i = act.Data.Count - 1; i >= 0; i--)
+                        {
+                            if (act.Data[i].GetType() == typeof(ShowEntity))
+                            {
+                                var showEntity = act.Data[i] as ShowEntity;
+                                return showEntity.CardId;
+                            }
+                            if (act.Data[i].GetType() == typeof(FullEntity))
+                            {
+                                var fullEntity = act.Data[i] as FullEntity;
+                                return fullEntity.CardId;
+                            }
+                        }
+                        // And if nothing matches, then we don't predict anything
+                        return null;
+                    }
+                    return null;
             }
             return null;
         }
