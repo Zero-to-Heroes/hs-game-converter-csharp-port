@@ -164,6 +164,18 @@ namespace HearthstoneReplays.Events.Parsers
                         return null;
                     }
                     return null;
+                // Togwaggle's scheme
+                case "DAL_010":
+                    if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+                    {
+                        var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                        var target = GameState.CurrentEntities[act.Target];
+                        if (target != null)
+                        {
+                            return target.CardId;
+                        }
+                    }
+                    return null;
             }
             return null;
         }
