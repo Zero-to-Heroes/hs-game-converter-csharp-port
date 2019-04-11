@@ -126,6 +126,7 @@ namespace HearthstoneReplays.Events
                 new CreateCardInDeckParser(ParserState),
                 new EndOfEchoInHandParser(ParserState),
                 new CardChangedParser(ParserState),
+                new CardRemovedFromHandParser(ParserState),
             };
         }
 

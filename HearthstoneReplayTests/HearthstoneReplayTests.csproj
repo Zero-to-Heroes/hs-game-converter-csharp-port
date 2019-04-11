@@ -135,8 +135,12 @@
     <EmbeddedResource Include="TestData\Power_rumble_run.log.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />
     <EmbeddedResource Include="TestData\incorrect_controller.txt" />
+    <EmbeddedResource Include="TestData\bombs_in_deck.txt" />
+    <EmbeddedResource Include="TestData\augmented_elekk.txt" />
+    <EmbeddedResource Include="TestData\bomb_drawn.txt" />
     <Content Include="TestData\reconnect.txt" />
     <EmbeddedResource Include="TestData\psychic_scream.txt" />
     <EmbeddedResource Include="TestData\hunting_mastiff_with_echo.txt" />
@@ -158,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="TestData\shirvallah.log" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
