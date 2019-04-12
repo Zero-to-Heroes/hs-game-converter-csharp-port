@@ -21,7 +21,7 @@ namespace HearthstoneReplayTests
             NodeParser.DevMode = true; 
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt);
             //List<string> logFile = TestDataReader.GetInputFile("Power_1.log.txt");
-            List<string> logFile = TestDataReader.GetInputFile("togglewagle_scheme.txt");
+            List<string> logFile = TestDataReader.GetInputFile("lab_recruiter.txt");
             //while (true)
             //{
                 HearthstoneReplay replay = new ReplayParser().FromString(logFile);

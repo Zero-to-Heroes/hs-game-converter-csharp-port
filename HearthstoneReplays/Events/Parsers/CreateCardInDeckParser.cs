@@ -166,6 +166,8 @@ namespace HearthstoneReplays.Events.Parsers
                     return null;
                 // Togwaggle's scheme
                 case "DAL_010":
+                // Lab recruiter
+                case "BOT_288":
                     if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                     {
                         var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;

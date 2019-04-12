@@ -136,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestData\togglewagle_scheme.txt" />
+    <EmbeddedResource Include="TestData\lab_recruiter.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />
