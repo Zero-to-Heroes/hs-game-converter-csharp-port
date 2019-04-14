@@ -27,7 +27,8 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY
-                && node.Parent != null && node.Parent.Type == typeof(Game);
+                && node.Parent != null && node.Parent.Type == typeof(Game)
+                && !ParserState.ReconnectionOngoing;
         }
 
         public GameEventProvider CreateGameEventProviderFromNew(Node node)

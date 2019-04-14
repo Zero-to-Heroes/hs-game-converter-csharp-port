@@ -22,40 +22,34 @@ namespace HearthstoneReplays.Parser.Handlers
 
 		private Helper helper = new Helper();
 
-		public void Handle(string timestamp, string data, ParserState state)
+		public void Handle(string timestamp, string data, ParserState state, int previousTimestampTotalSeconds)
         {
             timestamp = NormalizeTimestamp(timestamp);
-
+            
 			var trimmed = data.Trim();
 			var indentLevel = data.Length - trimmed.Length;
 			data = trimmed;
 
 			if (data == "CREATE_GAME")
             {
-                //Logger.Log("Calling reset from CREATE_GAME", "");
+                var totalSeconds = BuildTotalSeconds(timestamp);
+                if (!state.Ended && state.NumberOfCreates >= 1)
+                {
+                    Logger.Log("Probable reconnect detected", "" + (totalSeconds - previousTimestampTotalSeconds));
+                    state.ReconnectionOngoing = true;
+                    state.NumberOfCreates++;
+                    return;
+                }
                 state.Reset();
+                state.NumberOfCreates++;
 				state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
 				state.Replay.Games.Add(state.CurrentGame);
                 var newNode = new Node(typeof(Game), state.CurrentGame, 0, null, data);
                 state.CreateNewNode(newNode);
 				state.Node = newNode;
-                Logger.Log("Created a new game", "");
+                Logger.Log("Created a new game", "" + totalSeconds + "," + previousTimestampTotalSeconds);
 				return;
 			}
-
-			// TODO: special case where the CREATE_GAME tag is not present in the
-			// output log
-			//if (state.Replay.Games.Count == 0)
-   //         {
-   //             Logger.Log("Calling reset from new game without create_game tag", "");
-   //             state.Reset();
-			//	state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
-			//	state.Replay.Games.Add(state.CurrentGame);
-   //             var newNode = new Node(typeof(Game), state.CurrentGame, 0, null, data);
-   //             state.CreateNewNode(newNode);
-   //             state.Node = newNode;
-   //             Logger.Log("Created a new game without CREATE_GAME tag", "");
-			//}
 
 			if (state.Ended)
 			{
@@ -73,6 +67,10 @@ namespace HearthstoneReplays.Parser.Handlers
 			var match = Regexes.ActionCreategameRegex.Match(data);
 			if (match.Success)
 			{
+                if (state.ReconnectionOngoing)
+                {
+                    return;
+                }
 				var id = match.Groups[1].Value;
 				Debug.Assert(id == "1");
 				var gEntity = new GameEntity { Id = int.Parse(id), Tags = new List<Tag>() };
@@ -85,8 +83,12 @@ namespace HearthstoneReplays.Parser.Handlers
 
 			match = Regexes.PlayerNameAssignment.Match(data);
 			if (match.Success)
-			{
-				var playerId = int.Parse(match.Groups[1].Value);
+            {
+                if (state.ReconnectionOngoing)
+                {
+                    return;
+                }
+                var playerId = int.Parse(match.Groups[1].Value);
 				var playerName = match.Groups[2].Value;
 				var matchingPlayer = state.getPlayers()
 					.Where(player => player.PlayerId == playerId)
@@ -120,8 +122,12 @@ namespace HearthstoneReplays.Parser.Handlers
 
 			match = Regexes.ScenarioID.Match(data);
 			if (match.Success)
-			{
-				state.CurrentGame.ScenarioID = int.Parse(match.Groups[1].Value);
+            {
+                if (state.ReconnectionOngoing)
+                {
+                    return;
+                }
+                state.CurrentGame.ScenarioID = int.Parse(match.Groups[1].Value);
                 // This is a very peculiar log info, we don't fit it to the new events archi for now
                 state.NodeParser.EnqueueGameEvent(GameEventProvider.Create(
                     timestamp,
@@ -143,6 +149,10 @@ namespace HearthstoneReplays.Parser.Handlers
 			match = Regexes.ActionCreategamePlayerRegex.Match(data);
 			if(match.Success)
 			{
+                if (state.ReconnectionOngoing)
+                {
+                    return;
+                }
 				var id = match.Groups[1].Value;
 				var playerId = match.Groups[2].Value;
 				var accountHi = match.Groups[3].Value;
@@ -167,6 +177,7 @@ namespace HearthstoneReplays.Parser.Handlers
 			match = Regexes.ActionStartRegex.Match(data);
 			if (match.Success)
 			{
+                state.ReconnectionOngoing = false;
 				var rawType = match.Groups[1].Value;
 				var rawEntity = match.Groups[2].Value;
 				var effectId = match.Groups[3].Value;
@@ -212,8 +223,9 @@ namespace HearthstoneReplays.Parser.Handlers
 
 			match = Regexes.ActionStartRegex_Short.Match(data);
 			if (match.Success)
-			{
-				var rawType = match.Groups[1].Value;
+            {
+                state.ReconnectionOngoing = false;
+                var rawType = match.Groups[1].Value;
 				var rawEntity = match.Groups[2].Value;
 				var effectId = match.Groups[3].Value;
 				var effectIndex = match.Groups[4].Value;
@@ -252,8 +264,9 @@ namespace HearthstoneReplays.Parser.Handlers
 
 			match = Regexes.ActionStartRegex_8_4.Match(data);
 			if(match.Success)
-			{
-				var rawType = match.Groups[1].Value;
+            {
+                state.ReconnectionOngoing = false;
+                var rawType = match.Groups[1].Value;
 				var rawEntity = match.Groups[2].Value;
 				var effectId = match.Groups[3].Value;
 				var effectIndex = match.Groups[4].Value;
@@ -289,8 +302,9 @@ namespace HearthstoneReplays.Parser.Handlers
 
             match = Regexes.ActionMetadataRegex.Match(data);
 			if(match.Success)
-			{
-				var rawMeta = match.Groups[1].Value;
+            {
+                state.ReconnectionOngoing = false;
+                var rawMeta = match.Groups[1].Value;
 				var rawData = match.Groups[2].Value;
 				var info = match.Groups[3].Value;
 				var parsedData = helper.ParseEntity(rawData, state);
@@ -311,8 +325,9 @@ namespace HearthstoneReplays.Parser.Handlers
 
 			match = Regexes.ActionMetaDataInfoRegex.Match(data);
 			if(match.Success)
-			{
-				var index = match.Groups[1].Value;
+            {
+                state.ReconnectionOngoing = false;
+                var index = match.Groups[1].Value;
 				var rawEntity = match.Groups[2].Value;
 				var entity = helper.ParseEntity(rawEntity, state);
 				var metaInfo = new Info {Id = entity, Index = int.Parse(index), Entity = entity};
@@ -325,8 +340,9 @@ namespace HearthstoneReplays.Parser.Handlers
 
 			match = Regexes.ActionShowEntityRegex.Match(data);
 			if(match.Success)
-			{
-				var rawEntity = match.Groups[1].Value;
+            {
+                state.ReconnectionOngoing = false;
+                var rawEntity = match.Groups[1].Value;
 				var cardId = match.Groups[2].Value;
 				var entity = helper.ParseEntity(rawEntity, state);
 
@@ -347,8 +363,9 @@ namespace HearthstoneReplays.Parser.Handlers
 
 			match = Regexes.ActionChangeEntityRegex.Match(data);
 			if (match.Success)
-			{
-				var rawEntity = match.Groups[1].Value;
+            {
+                state.ReconnectionOngoing = false;
+                var rawEntity = match.Groups[1].Value;
 				var cardId = match.Groups[2].Value;
 				var entity = helper.ParseEntity(rawEntity, state);
 
@@ -368,8 +385,9 @@ namespace HearthstoneReplays.Parser.Handlers
 
 			match = Regexes.ActionHideEntityRegex.Match(data);
 			if(match.Success)
-			{
-				var rawEntity = match.Groups[1].Value;
+            {
+                state.ReconnectionOngoing = false;
+                var rawEntity = match.Groups[1].Value;
 				var tagName = match.Groups[2].Value;
 				var value = match.Groups[3].Value;
 				var entity = helper.ParseEntity(rawEntity, state);
@@ -405,14 +423,17 @@ namespace HearthstoneReplays.Parser.Handlers
                 var showEntity = new FullEntity {CardId = cardId, Id = entity, Tags = new List<Tag>(), TimeStamp = timestamp};
 				state.UpdateCurrentNode(typeof(Game), typeof(Action));
 
-				if(state.Node.Type == typeof(Game))
-					((Game)state.Node.Object).AddData(showEntity);
-				else if(state.Node.Type == typeof(Action))
-					((Action)state.Node.Object).Data.Add(showEntity);
-				else
-					throw new Exception("Invalid node " + state.Node.Type);
                 var newNode = new Node(typeof(FullEntity), showEntity, indentLevel, state.Node, data);
-                state.CreateNewNode(newNode);
+                if (!state.ReconnectionOngoing)
+                {
+				    if(state.Node.Type == typeof(Game))
+					    ((Game)state.Node.Object).AddData(showEntity);
+				    else if(state.Node.Type == typeof(Action))
+					    ((Action)state.Node.Object).Data.Add(showEntity);
+				    else
+					    throw new Exception("Invalid node " + state.Node.Type);
+                    state.CreateNewNode(newNode);
+                }
                 state.Node = newNode;
                 //state.GameState.FullEntity(showEntity, updating, timestamp + " " + data);
 				return;
@@ -420,8 +441,9 @@ namespace HearthstoneReplays.Parser.Handlers
 
 			match = Regexes.ActionTagChangeRegex.Match(data);
 			if(match.Success)
-			{
-				var rawEntity = match.Groups[1].Value;
+            {
+                state.ReconnectionOngoing = false;
+                var rawEntity = match.Groups[1].Value;
 				var tagName = match.Groups[2].Value;
 				var value = match.Groups[3].Value;
 				var defChange = match.Groups.Count >= 4 ? match.Groups[4].Value : null;
@@ -475,7 +497,14 @@ namespace HearthstoneReplays.Parser.Handlers
 			match = Regexes.ActionTagRegex.Match(data);
 			if(match.Success)
 			{
-				var tagName = match.Groups[1].Value;
+                // When in reconnect, we don't parse the GameEntity and 
+                // PlayerEntity nodes, so the tags think they are parsed while 
+                // under the Game root node
+                if (state.Node.Type == typeof(Game))
+                {
+                    return;
+                }
+                var tagName = match.Groups[1].Value;
 				var value = match.Groups[2].Value;
                 Tag tag = null;
                 try
@@ -571,7 +600,6 @@ namespace HearthstoneReplays.Parser.Handlers
             }
         }
 
-
 		private String NormalizeTimestamp(String timestamp)
 		{
 			if (!string.IsNullOrEmpty(timestamp))
@@ -587,6 +615,19 @@ namespace HearthstoneReplays.Parser.Handlers
 				previousTimestampHours = hours;
 			}
 			return timestamp;
-		}
-	}
+        }
+
+        private int BuildTotalSeconds(String timestamp)
+        {
+            if (!string.IsNullOrEmpty(timestamp))
+            {
+                String[] split = timestamp.Split(':');
+                int hours = int.Parse(split[0]);
+                int minutes = int.Parse(split[1]);
+                int seconds = int.Parse(split[2].Split('.')[0]);
+                return seconds + 60 * minutes + 3600 * hours;
+            }
+            return 0;
+        }
+    }
 }

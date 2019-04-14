@@ -37,7 +37,9 @@ namespace HearthstoneReplays.Parser
 		public int FirstPlayerId { get; set; }
 	    public int CurrentPlayerId { get; set; }
 		public ChosenEntities CurrentChosenEntites { get; set; }
-		public bool Ended { get; set; }
+        public bool Ended { get; set; }
+        public int NumberOfCreates { get; set; }
+        public bool ReconnectionOngoing { get; set; }
         public string FullLog { get; set; } = "";
 
 		private Node _node;
@@ -50,7 +52,9 @@ namespace HearthstoneReplays.Parser
                 {
                     if (_node != null 
                         // This works because Tag and TagChanges don't create new nodes
-                        && (_node.Type == typeof(FullEntity) || _node.Type == typeof(ShowEntity)))
+                        && (_node.Type == typeof(FullEntity) 
+                                || _node.Type == typeof(ShowEntity) 
+                                || _node.Type == typeof(ChangeEntity)))
                     {
                         EndAction();
                         if (_node.Type == typeof(ShowEntity))
@@ -59,7 +63,16 @@ namespace HearthstoneReplays.Parser
                         }
                         else if (_node.Type == typeof(FullEntity))
                         {
-                            GameState.FullEntity(_node.Object as FullEntity, false);
+                            // In this case we just update the current state to whatever the game 
+                            // tells us to
+                            if (ReconnectionOngoing)
+                            {
+                                GameState.UpdateTagsForFullEntity(_node.Object as FullEntity);
+                            }
+                            else
+                            {
+                                GameState.FullEntity(_node.Object as FullEntity, false);
+                            }
                         }
                         else if (_node.Type == typeof(ChangeEntity))
                         {
@@ -131,7 +144,9 @@ namespace HearthstoneReplays.Parser
 			CurrentPlayerId = -1;
 			CurrentChosenEntites = null;
 			Ended = false;
+            ReconnectionOngoing = false;
             FullLog = "";
+            NumberOfCreates = 0;
             Logger.Log("resetting game state", "");
         }
 

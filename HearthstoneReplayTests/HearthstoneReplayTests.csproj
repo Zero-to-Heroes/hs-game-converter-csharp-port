@@ -137,6 +137,8 @@
   <ItemGroup>
     <EmbeddedResource Include="TestData\togglewagle_scheme.txt" />
     <EmbeddedResource Include="TestData\lab_recruiter.txt" />
+    <EmbeddedResource Include="TestData\reconnect.txt" />
+    <EmbeddedResource Include="TestData\pogo-11.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />
@@ -144,7 +146,6 @@
     <EmbeddedResource Include="TestData\bombs_in_deck.txt" />
     <EmbeddedResource Include="TestData\augmented_elekk.txt" />
     <EmbeddedResource Include="TestData\bomb_drawn.txt" />
-    <Content Include="TestData\reconnect.txt" />
     <EmbeddedResource Include="TestData\psychic_scream.txt" />
     <EmbeddedResource Include="TestData\hunting_mastiff_with_echo.txt" />
     <EmbeddedResource Include="TestData\on_the_coin.txt" />

@@ -66,6 +66,30 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 			CurrentEntities.Add(entity.Id, fullEntity);
         }
 
+        // Used in case of reconnt
+        public void UpdateTagsForFullEntity(FullEntity entity)
+        {
+            if (!CurrentEntities.ContainsKey(entity.Id))
+            {
+                Logger.Log("error while parsing, UpdateTagsForFullEntity doesn't have an entity in memory yet", "" + entity.Id);
+                return;
+            }
+
+            CurrentEntities[entity.Id].CardId = entity.CardId;
+            List<int> newTagIds = entity.Tags.Select(tag => tag.Name).ToList();
+            List<Tag> oldTagsToKeep = CurrentEntities[entity.Id].Tags
+                .Where(tag => !newTagIds.Contains(tag.Name))
+                .Select(tag => new Tag { Name = tag.Name, Value = tag.Value })
+                .ToList();
+            var newTags = new List<Tag>();
+            foreach (var oldTag in entity.Tags)
+            {
+                newTags.Add(new Tag { Name = oldTag.Name, Value = oldTag.Value });
+            }
+            oldTagsToKeep.AddRange(newTags);
+            CurrentEntities[entity.Id].Tags = oldTagsToKeep;
+        }
+
         public void ShowEntity(ShowEntity entity)
         {
             if (!CurrentEntities.ContainsKey(entity.Entity))
@@ -74,13 +98,19 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 return;
             }
 
+            CurrentEntities[entity.Entity].CardId = entity.CardId;
+            List<int> newTagIds = entity.Tags.Select(tag => tag.Name).ToList();
+            List<Tag> oldTagsToKeep = CurrentEntities[entity.Entity].Tags
+                .Where(tag => !newTagIds.Contains(tag.Name))
+                .Select(tag => new Tag { Name = tag.Name, Value = tag.Value })
+                .ToList();
             var newTags = new List<Tag>();
             foreach (var oldTag in entity.Tags)
             {
                 newTags.Add(new Tag { Name = oldTag.Name, Value = oldTag.Value });
             }
-            CurrentEntities[entity.Entity].CardId = entity.CardId;
-            CurrentEntities[entity.Entity].Tags = newTags;
+            oldTagsToKeep.AddRange(newTags);
+            CurrentEntities[entity.Entity].Tags = oldTagsToKeep;
         }
 
         public void ChangeEntity(ChangeEntity entity)
@@ -94,6 +124,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             List<int> newTagIds = entity.Tags.Select(tag => tag.Name).ToList();
             List<Tag> oldTagsToKeep = CurrentEntities[entity.Entity].Tags
                 .Where(tag => !newTagIds.Contains(tag.Name))
+                .Select(tag => new Tag { Name = tag.Name, Value = tag.Value })
                 .ToList();
             var newTags = new List<Tag>();
             foreach (var oldTag in entity.Tags)
@@ -101,6 +132,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 newTags.Add(new Tag { Name = oldTag.Name, Value = oldTag.Value });
             }
             oldTagsToKeep.AddRange(newTags);
+            CurrentEntities[entity.Entity].Tags = oldTagsToKeep;
         }
 
         public void TagChange(TagChange tagChange, string defChange, string initialLog = null)

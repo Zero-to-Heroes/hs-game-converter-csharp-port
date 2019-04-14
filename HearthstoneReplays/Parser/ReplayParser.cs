@@ -29,7 +29,9 @@ namespace HearthstoneReplays.Parser
 		private EntityChosenHandler entityChosenHandler;
 		private OptionsHandler optionsHandler;
 
-		public ReplayParser()
+        private int previousTimestampTotalSeconds;
+
+        public ReplayParser()
 		{
 			State = new ParserState();
 			dataHandler = new DataHandler();
@@ -37,7 +39,9 @@ namespace HearthstoneReplays.Parser
             choicesHandler = new ChoicesHandler();
 			entityChosenHandler = new EntityChosenHandler();
 			optionsHandler = new OptionsHandler();
-		}
+            previousTimestampTotalSeconds = 0;
+
+        }
 
 		public HearthstoneReplay FromString(IEnumerable<string> lines, params GameType[] gameTypes)
 		{
@@ -66,8 +70,9 @@ namespace HearthstoneReplays.Parser
 		public void Init()
         {
             Logger.Log("Calling reset from ReplayParser.init()", "");
+            previousTimestampTotalSeconds = 0;
             //State.Reset();
-		}
+        }
 
 		public void ReadLine(string line)
 		{
@@ -108,23 +113,28 @@ namespace HearthstoneReplays.Parser
 			{
 				case "GameState.DebugPrintPower":
 				case "GameState.DebugPrintGame":
-					dataHandler.Handle(timestamp, data, State);
-					break;
+					dataHandler.Handle(timestamp, data, State, previousTimestampTotalSeconds);
+                    previousTimestampTotalSeconds = BuildTotalSeconds(timestamp);
+                    break;
 				//case "GameState.SendChoices":
 				//	SendChoicesHandler.Handle(timestamp, data, State);
 				//	break;
 				//case "GameState.DebugPrintChoices":
 				case "GameState.DebugPrintEntityChoices":
                     choicesHandler.Handle(timestamp, data, State);
-					break;
+                    previousTimestampTotalSeconds = BuildTotalSeconds(timestamp);
+                    break;
 				case "GameState.DebugPrintEntitiesChosen":
 					entityChosenHandler.Handle(timestamp, data, State);
-					break;
+                    previousTimestampTotalSeconds = BuildTotalSeconds(timestamp);
+                    break;
 				case "GameState.DebugPrintOptions":
 					optionsHandler.Handle(timestamp, data, State);
-					break;
+                    previousTimestampTotalSeconds = BuildTotalSeconds(timestamp);
+                    break;
                 case "PowerTaskList.DebugPrintPower":
                     powerDataHandler.Handle(timestamp, data, State);
+                    previousTimestampTotalSeconds = BuildTotalSeconds(timestamp);
                     break;
                 //case "GameState.SendOption":
                 //	SendOptionHandler.Handle(timestamp, data, State);
@@ -143,6 +153,19 @@ namespace HearthstoneReplays.Parser
 					//	Console.WriteLine("Warning: Unhandled method: " + method);
 					break;
 			}
-		}
-	}
+        }
+
+        private int BuildTotalSeconds(String timestamp)
+        {
+            if (!string.IsNullOrEmpty(timestamp))
+            {
+                String[] split = timestamp.Split(':');
+                int hours = int.Parse(split[0]);
+                int minutes = int.Parse(split[1]);
+                int seconds = int.Parse(split[2].Split('.')[0]);
+                return seconds + 60 * minutes + 3600 * hours;
+            }
+            return 0;
+        }
+    }
 }
