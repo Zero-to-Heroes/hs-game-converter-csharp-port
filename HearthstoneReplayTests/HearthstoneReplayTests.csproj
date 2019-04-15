@@ -139,6 +139,7 @@
     <EmbeddedResource Include="TestData\lab_recruiter.txt" />
     <EmbeddedResource Include="TestData\reconnect.txt" />
     <EmbeddedResource Include="TestData\pogo-11.txt" />
+    <EmbeddedResource Include="TestData\recruit.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />

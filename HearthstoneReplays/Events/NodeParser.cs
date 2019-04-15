@@ -128,6 +128,7 @@ namespace HearthstoneReplays.Events
                 new CardChangedParser(ParserState),
                 new CardRemovedFromHandParser(ParserState),
                 new MinionOnBoardAttackUpdatedParser(ParserState),
+                new RecruitParser(ParserState),
             };
         }
 
