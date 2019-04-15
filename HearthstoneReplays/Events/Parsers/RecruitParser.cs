@@ -46,7 +46,7 @@ namespace HearthstoneReplays.Events.Parsers
                 showEntity.TimeStamp,
                 () => new GameEvent
                 {
-                    Type = "CARD_RECRUITED",
+                    Type = "RECRUIT_CARD",
                     Value = new
                     {
                         CardId = cardId,
