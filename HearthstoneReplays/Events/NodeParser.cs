@@ -67,7 +67,7 @@ namespace HearthstoneReplays.Events
             }
             foreach (ActionParser parser in parsers)
             {
-                if (parser.AppliesOnCloseNode(node))
+                if (!node.Closed && parser.AppliesOnCloseNode(node))
                 {
                     GameEventProvider provider = parser.CreateGameEventProviderFromClose(node);
                     if (provider != null)
@@ -76,6 +76,8 @@ namespace HearthstoneReplays.Events
                     }
                 }
             }
+            // Make sure we don't process the same node twice
+            node.Closed = true;
         }
 
         public void EnqueueGameEvent(GameEventProvider provider)
@@ -129,6 +131,7 @@ namespace HearthstoneReplays.Events
                 new CardRemovedFromHandParser(ParserState),
                 new MinionOnBoardAttackUpdatedParser(ParserState),
                 new RecruitParser(ParserState),
+                new MinionSummonedParser(ParserState),
             };
         }
 

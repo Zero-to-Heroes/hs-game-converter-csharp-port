@@ -27,5 +27,6 @@ namespace HearthstoneReplays.Parser
 		public int IndentLevel { get; set; }
 		public Node Parent { get; set; }
         public string CreationLogLine { get; set; }
+        public bool Closed { get; set; }
 	}
 }
