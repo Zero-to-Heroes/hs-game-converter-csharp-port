@@ -142,6 +142,7 @@
     <EmbeddedResource Include="TestData\recruit.txt" />
     <EmbeddedResource Include="TestData\soulfire.txt" />
     <EmbeddedResource Include="TestData\treant_summoning.txt" />
+    <EmbeddedResource Include="TestData\fatigue.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />

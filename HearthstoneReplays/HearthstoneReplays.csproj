@@ -111,6 +111,7 @@
     <Compile Include="Events\GameEventProvider.cs" />
     <Compile Include="Events\NodeParser.cs" />
     <Compile Include="Events\GameState.cs" />
+    <Compile Include="Events\Parsers\FatigueParser.cs" />
     <Compile Include="Events\Parsers\MinionSummonedParser.cs" />
     <Compile Include="Events\Parsers\RecruitParser.cs" />
     <Compile Include="Events\Parsers\MinionOnBoardAttackUpdatedParser.cs" />
