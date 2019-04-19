@@ -335,7 +335,8 @@ namespace HearthstoneReplays.Parser.Handlers
 					((MetaData)state.Node.Object).MetaInfo.Add(metaInfo);
 				else
 					throw new Exception("Invalid node " + state.Node.Type);
-			    return;
+                state.CreateNewNode(new Node(typeof(Info), metaInfo, indentLevel, state.Node, data));
+                return;
 			}
 
 			match = Regexes.ActionShowEntityRegex.Match(data);
