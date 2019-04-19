@@ -71,8 +71,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         {
             if (!CurrentEntities.ContainsKey(entity.Id))
             {
-                Logger.Log("error while parsing, UpdateTagsForFullEntity doesn't have an entity in memory yet", "" + entity.Id);
-                return;
+                Logger.Log("No entity in memory when calling UpdateTagsForFullEntity, creating it", entity.Id);
+                FullEntity(entity, false);
             }
 
             CurrentEntities[entity.Id].CardId = entity.CardId;
