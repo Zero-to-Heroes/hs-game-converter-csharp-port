@@ -44,8 +44,13 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 			{
 				Logger.Log("error while parsing, playerEntity already present in memory", "" + entity.Id);
 				return;
-			}
-			var fullEntity = new FullEntity { Id = entity.Id, Tags = new List<Tag>(), TimeStamp = entity.TimeStamp };
+            }
+            var newTags = new List<Tag>();
+            foreach (var oldTag in entity.Tags)
+            {
+                newTags.Add(new Tag { Name = oldTag.Name, Value = oldTag.Value });
+            }
+            var fullEntity = new FullEntity { Id = entity.Id, Tags = newTags, TimeStamp = entity.TimeStamp };
 			CurrentEntities.Add(entity.Id, fullEntity);
 		}
 
@@ -111,6 +116,25 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
             oldTagsToKeep.AddRange(newTags);
             CurrentEntities[entity.Entity].Tags = oldTagsToKeep;
+        }
+
+        public string GetCardIdForEntity(int id)
+        {
+            var entity = CurrentEntities[id];
+            if (entity.CardId != null)
+            {
+                return entity.CardId;
+            }
+            var test = CurrentEntities.Values
+                .Where((e) => e.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                .Where((e) => e.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                .ToList();
+            return CurrentEntities.Values
+                .Where((e) => e.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                .Where((e) => e.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                .Where((e) => e.GetTag(GameTag.CONTROLLER) == entity.GetTag(GameTag.CONTROLLER))
+                .First()
+                .CardId;
         }
 
         public void ChangeEntity(ChangeEntity entity)

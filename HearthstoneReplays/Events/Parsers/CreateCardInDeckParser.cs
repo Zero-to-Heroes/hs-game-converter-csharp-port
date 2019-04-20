@@ -4,6 +4,7 @@ using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
+using System.Collections.Generic;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -36,12 +37,12 @@ namespace HearthstoneReplays.Events.Parsers
             return appliesOnShowEntity || appliesOnFullEntity;
         }
 
-        public GameEventProvider CreateGameEventProviderFromNew(Node node)
+        public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             return null;
         }
 
-        public GameEventProvider CreateGameEventProviderFromClose(Node node)
+        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             if (node.Type == typeof(ShowEntity))
             {
@@ -54,7 +55,7 @@ namespace HearthstoneReplays.Events.Parsers
             return null;
         }
 
-        private GameEventProvider CreateFromShowEntity(Node node)
+        private List<GameEventProvider> CreateFromShowEntity(Node node)
         {
             var showEntity = node.Object as ShowEntity;
             var currentCard = GameState.CurrentEntities[showEntity.Entity];
@@ -66,7 +67,7 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorCardId = FindCardCreatorCardId(showEntity.GetTag(GameTag.CREATOR), node);
             var cardId = PredictCardId(creatorCardId, node);
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
-            return GameEventProvider.Create(
+            return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 () => new GameEvent
                 {
@@ -80,16 +81,16 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                 },
                 true,
-                node.CreationLogLine);
+                node.CreationLogLine) };
         }
 
-        private GameEventProvider CreateFromFullEntity(Node node)
+        private List<GameEventProvider> CreateFromFullEntity(Node node)
         {
             var fullEntity = node.Object as FullEntity;
             var creatorCardId = FindCardCreatorCardId(fullEntity.GetTag(GameTag.CREATOR), node);
             var cardId = PredictCardId(creatorCardId, node);
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
-            return GameEventProvider.Create(
+            return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 () => new GameEvent
                 {
@@ -104,7 +105,7 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                 },
                 true,
-                node.CreationLogLine);
+                node.CreationLogLine) };
         }
 
         private string FindCardCreatorCardId(int creatorTag, Node node)

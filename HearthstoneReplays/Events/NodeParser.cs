@@ -50,10 +50,10 @@ namespace HearthstoneReplays.Events
             {
                 if (parser.AppliesOnNewNode(node))
                 {
-                    GameEventProvider provider = parser.CreateGameEventProviderFromNew(node);
-                    if (provider != null)
+                    List<GameEventProvider> providers = parser.CreateGameEventProviderFromNew(node);
+                    if (providers != null)
                     {
-                        EnqueueGameEvent(provider);
+                        EnqueueGameEvent(providers);
                     }
                 }
             }
@@ -69,10 +69,10 @@ namespace HearthstoneReplays.Events
             {
                 if (!node.Closed && parser.AppliesOnCloseNode(node))
                 {
-                    GameEventProvider provider = parser.CreateGameEventProviderFromClose(node);
-                    if (provider != null)
+                    List<GameEventProvider> providers = parser.CreateGameEventProviderFromClose(node);
+                    if (providers != null)
                     {
-                        EnqueueGameEvent(provider);
+                        EnqueueGameEvent(providers);
                     }
                 }
             }
@@ -80,11 +80,11 @@ namespace HearthstoneReplays.Events
             node.Closed = true;
         }
 
-        public void EnqueueGameEvent(GameEventProvider provider)
+        public void EnqueueGameEvent(List<GameEventProvider> providers)
         {
             lock(listLock)
             {
-                eventQueue.Add(provider);
+                eventQueue.AddRange(providers);
                 eventQueue = eventQueue.OrderBy(p => p.Timestamp).ToList();
             }
         }

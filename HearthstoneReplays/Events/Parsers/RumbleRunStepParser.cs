@@ -4,6 +4,7 @@ using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
+using System.Collections.Generic;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -30,13 +31,13 @@ namespace HearthstoneReplays.Events.Parsers
             return false;
         }
 
-        public GameEventProvider CreateGameEventProviderFromNew(Node node)
+        public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange; 
             // The player starts with 20 Health, and gains an additional 5 Health per defeated boss, 
             // up to 45 Health for the eighth, and final boss.
             int runStep = 1 + (tagChange.Value - 20) / 5;
-            return GameEventProvider.Create(
+            return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     () => {
                          if (ParserState.CurrentGame.ScenarioID != (int)Scenario.RUMBLE_RUN)
@@ -55,10 +56,10 @@ namespace HearthstoneReplays.Events.Parsers
                          };
                     },
                     true,
-                    node.CreationLogLine);
+                    node.CreationLogLine) };
         }
 
-        public GameEventProvider CreateGameEventProviderFromClose(Node node)
+        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             return null;
         }

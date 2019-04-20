@@ -129,7 +129,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 }
                 state.CurrentGame.ScenarioID = int.Parse(match.Groups[1].Value);
                 // This is a very peculiar log info, we don't fit it to the new events archi for now
-                state.NodeParser.EnqueueGameEvent(GameEventProvider.Create(
+                state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
                     () => new GameEvent
                     {
@@ -143,7 +143,7 @@ namespace HearthstoneReplays.Parser.Handlers
                         }
                     },
                     false,
-                    data));
+                    data) });
 			}
 
 			match = Regexes.ActionCreategamePlayerRegex.Match(data);
@@ -170,7 +170,6 @@ namespace HearthstoneReplays.Parser.Handlers
                 var newNode = new Node(typeof(PlayerEntity), pEntity, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
-                state.GameState.PlayerEntity(pEntity);
 				return;
 			}
 

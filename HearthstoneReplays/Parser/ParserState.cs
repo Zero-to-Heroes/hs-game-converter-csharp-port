@@ -79,6 +79,10 @@ namespace HearthstoneReplays.Parser
                             GameState.ChangeEntity(_node.Object as ChangeEntity);
                         }
                     }
+                    if (_node != null && _node.Type == typeof(PlayerEntity))
+                    {
+                        GameState.PlayerEntity(_node.Object as PlayerEntity);
+                    }
                     //HandleNodeUpdateEvent(_node, value);
 					this._node = value;
                 }
@@ -93,7 +97,7 @@ namespace HearthstoneReplays.Parser
 
         public void SetLocalPlayer(Player value, string timestamp, string data) { 
 			_localPlayer = value;
-            NodeParser.EnqueueGameEvent(GameEventProvider.Create(
+            NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
                     () => new GameEvent
                     {
@@ -101,7 +105,7 @@ namespace HearthstoneReplays.Parser
                         Value = this._localPlayer
                     },
                     false,
-                    data));
+                    data) });
 		}
 
 		private Player _opponentPlayer;
@@ -113,7 +117,7 @@ namespace HearthstoneReplays.Parser
         public void SetOpponentPlayer(Player value, string timestamp, string data)
         {
             _opponentPlayer = value;
-            NodeParser.EnqueueGameEvent(GameEventProvider.Create(
+            NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
                     () => new GameEvent
                     {
@@ -121,7 +125,7 @@ namespace HearthstoneReplays.Parser
                         Value = this._opponentPlayer
                     },
                     false,
-                    data));
+                    data) });
         }
 
 		public void Reset()

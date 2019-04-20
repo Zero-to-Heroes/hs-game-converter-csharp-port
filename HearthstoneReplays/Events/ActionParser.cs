@@ -11,7 +11,7 @@ namespace HearthstoneReplays.Events
     {
         bool AppliesOnNewNode(Node node);
         bool AppliesOnCloseNode(Node node);
-        GameEventProvider CreateGameEventProviderFromNew(Node node);
-        GameEventProvider CreateGameEventProviderFromClose(Node node);
+        List<GameEventProvider> CreateGameEventProviderFromNew(Node node);
+        List<GameEventProvider> CreateGameEventProviderFromClose(Node node);
     }
 }

@@ -21,19 +21,19 @@ namespace HearthstoneReplays.Events.Parsers
             return false;
         }
 
-        public GameEventProvider CreateGameEventProviderFromNew(Node node)
+        public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            return GameEventProvider.Create(
+            return new List<GameEventProvider> { GameEventProvider.Create(
                 (node.Object as Game).TimeStamp,
                 () => new GameEvent
                 {
                     Type = "NEW_GAME"
                 },
                 false,
-                node.CreationLogLine);
+                node.CreationLogLine) };
         }
 
-        public GameEventProvider CreateGameEventProviderFromClose(Node node)
+        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             return null;
         }

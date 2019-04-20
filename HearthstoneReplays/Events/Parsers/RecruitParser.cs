@@ -4,6 +4,7 @@ using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
+using System.Collections.Generic;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -32,17 +33,17 @@ namespace HearthstoneReplays.Events.Parsers
             return appliesToShowEntity;
         }
 
-        public GameEventProvider CreateGameEventProviderFromNew(Node node)
+        public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             return null;
         }
 
-        public GameEventProvider CreateGameEventProviderFromClose(Node node)
+        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var showEntity = node.Object as ShowEntity;
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
-            return GameEventProvider.Create(
+            return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 () => new GameEvent
                 {
@@ -56,7 +57,7 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                 },
                 true,
-                node.CreationLogLine);
+                node.CreationLogLine) };
         }
     }
 }

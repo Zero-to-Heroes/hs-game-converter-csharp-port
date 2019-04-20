@@ -4,6 +4,7 @@ using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
+using System.Collections.Generic;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -39,13 +40,13 @@ namespace HearthstoneReplays.Events.Parsers
             return appliesToShowEntity || appliesToFullEntity;
         }
 
-        public GameEventProvider CreateGameEventProviderFromNew(Node node)
+        public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
-            return GameEventProvider.Create(
+            return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 () => new GameEvent
                 {
@@ -59,10 +60,10 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                 },
                 true,
-                node.CreationLogLine);
+                node.CreationLogLine) };
         }
 
-        public GameEventProvider CreateGameEventProviderFromClose(Node node)
+        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             if (node.Type == typeof(ShowEntity))
             {
@@ -75,11 +76,11 @@ namespace HearthstoneReplays.Events.Parsers
             return null;
         }
 
-        private GameEventProvider CreateEventFromShowEntity(ShowEntity showEntity, string creationLogLine)
+        private List<GameEventProvider> CreateEventFromShowEntity(ShowEntity showEntity, string creationLogLine)
         {
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
-            return GameEventProvider.Create(
+            return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 () => new GameEvent
                 {
@@ -93,14 +94,14 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                 },
                 true,
-                creationLogLine);
+                creationLogLine) };
         }
 
-        private GameEventProvider CreateEventFromFullEntity(FullEntity fullEntity, string creationLogLine)
+        private List<GameEventProvider> CreateEventFromFullEntity(FullEntity fullEntity, string creationLogLine)
         {
             var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
-            return GameEventProvider.Create(
+            return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 () => new GameEvent
                 {
@@ -114,7 +115,7 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                 },
                 true,
-                creationLogLine);
+                creationLogLine) };
         }
     }
 }
