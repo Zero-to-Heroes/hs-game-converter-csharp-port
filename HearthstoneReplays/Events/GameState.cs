@@ -38,7 +38,16 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
         }
 
-		public void PlayerEntity(PlayerEntity entity)
+        public GameStateReport BuildGameStateReport()
+        {
+            return new GameStateReport
+            {
+                LocalPlayer = PlayerReport.BuildPlayerReport(this, ParserState.LocalPlayer.Id),
+                OpponentReport = PlayerReport.BuildPlayerReport(this, ParserState.OpponentPlayer.Id)
+            };
+        }
+
+        public void PlayerEntity(PlayerEntity entity)
 		{
 			if (CurrentEntities.ContainsKey(entity.Id))
 			{
@@ -135,6 +144,21 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 .Where((e) => e.GetTag(GameTag.CONTROLLER) == entity.GetTag(GameTag.CONTROLLER))
                 .First()
                 .CardId;
+        }
+
+        public FullEntity GetPlayerHeroEntity(int entityId)
+        {
+            var entity = CurrentEntities[entityId];
+            if (entity.CardId != null)
+            {
+                return entity;
+            }
+            var heroesForController = CurrentEntities.Values
+                .Where((e) => e.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                .Where((e) => e.GetTag(GameTag.CONTROLLER) == entity.GetTag(GameTag.CONTROLLER))
+                // If there are several, we take the most recent one
+                .OrderByDescending((e) => e.TimeStamp);
+            return heroesForController.First();
         }
 
         public void ChangeEntity(ChangeEntity entity)

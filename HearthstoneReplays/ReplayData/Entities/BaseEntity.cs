@@ -34,10 +34,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 			return base.GetHashCode();
 		}
 
-        public int GetTag(GameTag tag)
+        public int GetTag(GameTag tag, int defaultValue = -1)
         {
             var match = Tags.FirstOrDefault(t => t.Name == (int)tag);
-            return match == null ? -1 : match.Value;
+            return match == null ? defaultValue : match.Value;
         }
 	}
 }
