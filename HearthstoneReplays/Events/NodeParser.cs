@@ -134,6 +134,7 @@ namespace HearthstoneReplays.Events
                 new MinionSummonedParser(ParserState),
                 new FatigueParser(ParserState),
                 new DamageParser(ParserState),
+                new BurnedCardParser(ParserState),
             };
         }
 

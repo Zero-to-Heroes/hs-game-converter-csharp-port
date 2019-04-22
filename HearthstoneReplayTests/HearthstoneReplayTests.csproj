@@ -145,6 +145,7 @@
     <EmbeddedResource Include="TestData\fatigue.txt" />
     <EmbeddedResource Include="TestData\goblin_bombs.txt" />
     <EmbeddedResource Include="TestData\arcane_missiles.txt" />
+    <EmbeddedResource Include="TestData\burned_cards.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />
