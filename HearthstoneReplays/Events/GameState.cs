@@ -26,6 +26,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             ParserState = state;
 		}
 
+        public FullEntity GetGameEntity()
+        {
+            return CurrentEntities[1];
+        }
+
         public void UpdateEntityName(string rawEntity)
         {
             var match = Regexes.EntityWithNameAndId.Match(rawEntity);

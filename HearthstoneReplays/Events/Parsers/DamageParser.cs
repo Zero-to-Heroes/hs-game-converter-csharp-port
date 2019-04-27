@@ -90,7 +90,7 @@ namespace HearthstoneReplays.Events.Parsers
                     var damageTarget = GameState.CurrentEntities[info.Entity];
                     var targetCardId = GameState.GetCardIdForEntity(damageTarget.Id);
                     var targetControllerId = damageTarget.GetTag(GameTag.CONTROLLER);
-                    var damageSource = GetDamageSource(damageTarget, action);
+                    var damageSource = GetDamageSource(damageTarget, action, damageTag);
                     var sourceCardId = GameState.GetCardIdForEntity(damageSource.Id);
                     var sourceControllerId = damageSource.GetTag(GameTag.CONTROLLER);
                     Dictionary<string, DamageInternal> currentSourceDamages = null;
@@ -160,16 +160,31 @@ namespace HearthstoneReplays.Events.Parsers
             return numberOfDamageTags > 0;
         }
 
-        private FullEntity GetDamageSource(FullEntity target, Parser.ReplayData.GameActions.Action action)
+        private FullEntity GetDamageSource(FullEntity target, Parser.ReplayData.GameActions.Action action, MetaData meta)
         {
             var actionSource = GameState.CurrentEntities[action.Entity];
             if (action.Type == (int)BlockType.ATTACK)
             {
+                var damageSource = action.Entity;
                 if (target.Id == action.Entity)
                 {
-                    return GameState.CurrentEntities[action.Target];
+                    // This doesn't work, because once the action is ended the PROPOSED_DEFENDER is reset
+                    // var defender = GameState.GetGameEntity().GetTag(GameTag.PROPOSED_DEFENDER);
+                    // We still want to handle the attack at the global level (so that we can group 
+                    // damage events), so we need to use a trick
+                    var metaIndex = action.Data.IndexOf(meta);
+                    for (var i = 0; i < metaIndex; i++)
+                    {
+                        var data = action.Data[i];
+                        if (data.GetType() == typeof(TagChange) 
+                            && (data as TagChange).Name == (int)GameTag.PROPOSED_DEFENDER
+                            && (data as TagChange).Entity == GameState.GetGameEntity().Id)
+                        {
+                            damageSource = (data as TagChange).Value;
+                        }
+                    }
                 }
-                return GameState.CurrentEntities[action.Entity];
+                return GameState.CurrentEntities[damageSource];
             }
             return actionSource;
         }
