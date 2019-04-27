@@ -110,6 +110,7 @@
     <Compile Include="Events\ActionParser.cs" />
     <Compile Include="Events\GameEventProvider.cs" />
     <Compile Include="Events\Parsers\BurnedCardParser.cs" />
+    <Compile Include="Events\Parsers\MinionDiedParser.cs" />
     <Compile Include="Events\PlayerReport.cs" />
     <Compile Include="Events\GameStateReport.cs" />
     <Compile Include="Events\NodeParser.cs" />
