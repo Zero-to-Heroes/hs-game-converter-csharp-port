@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HearthstoneReplays.Parser;
+using System.Text.RegularExpressions;
 
 namespace HearthstoneReplays.Events
 {
@@ -49,6 +50,17 @@ namespace HearthstoneReplays.Events
                 AnimationReady = true;
                 return;
             }
+            // In the case of discarded cards, the position in the zone can change between 
+            // the GameState and PowerTaskList logs, so we do a check without taking 
+            // the zone position into account
+            var dataWithoutZones = Regex.Replace(data, @"zonePos=\d", "");
+            var creationLogWithoutZones = Regex.Replace(CreationLogLine, @"zonePos=\d", "");
+            if (dataWithoutZones == creationLogWithoutZones)
+            {
+                AnimationReady = true;
+                return;
+            }
+
             // Sometimes the information doesn't exactly match - one has more details on the entity
             // So here we compared the most basic form of both logs
             var matchShowInGameState = Regexes.ActionShowEntityRegex.Match(CreationLogLine);
