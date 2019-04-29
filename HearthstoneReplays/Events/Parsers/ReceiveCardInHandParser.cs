@@ -61,6 +61,7 @@ namespace HearthstoneReplays.Events.Parsers
                             LocalPlayer = ParserState.LocalPlayer,
                             OpponentPlayer = ParserState.OpponentPlayer,
                             PreviousZone = ((Zone)previousZone).ToString(),
+                            EntityId = entity.Id,
                         }
                     },
                     true,
@@ -97,6 +98,7 @@ namespace HearthstoneReplays.Events.Parsers
                             LocalPlayer = ParserState.LocalPlayer,
                             OpponentPlayer = ParserState.OpponentPlayer,
                             PreviousZone = ((Zone)previousZone).ToString(),
+                            EntityId = showEntity.Entity,
                         }
                     },
                     true,
@@ -124,6 +126,7 @@ namespace HearthstoneReplays.Events.Parsers
                             LocalPlayer = ParserState.LocalPlayer,
                             OpponentPlayer = ParserState.OpponentPlayer,
                             PreviousZone = ((Zone)previousZone).ToString(),
+                            EntityId = fullEntity.Id,
                         }
                     },
                     true,

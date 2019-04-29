@@ -60,6 +60,7 @@ namespace HearthstoneReplays.Events.Parsers
                             ControllerId = controllerId,
                             LocalPlayer = ParserState.LocalPlayer,
                             OpponentPlayer = ParserState.OpponentPlayer,
+                            EntityId = entity.Id,
                         }
                     },
                     true,

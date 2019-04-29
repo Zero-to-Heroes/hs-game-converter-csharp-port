@@ -77,7 +77,8 @@ namespace HearthstoneReplays.Events.Parsers
                         CardId = cardId,
                         ControllerId = controllerId,
                         LocalPlayer = ParserState.LocalPlayer,
-                        OpponentPlayer = ParserState.OpponentPlayer
+                        OpponentPlayer = ParserState.OpponentPlayer,
+                        EntityId = showEntity.Entity,
                     }
                 },
                 true,
@@ -102,6 +103,7 @@ namespace HearthstoneReplays.Events.Parsers
                         LocalPlayer = ParserState.LocalPlayer,
                         OpponentPlayer = ParserState.OpponentPlayer,
                         CreatorCardId = creatorCardId, // Used when there is no cardId, so we can show "created by ..."
+                        EntityId = fullEntity.Id,
                     }
                 },
                 true,

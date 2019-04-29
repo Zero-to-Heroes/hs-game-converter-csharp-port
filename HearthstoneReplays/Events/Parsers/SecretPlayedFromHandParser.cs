@@ -48,10 +48,11 @@ namespace HearthstoneReplays.Events.Parsers
                            Type = "SECRET_PLAYED",
                            Value = new
                            {
-                               CardId = cardId,
-                               ControllerId = controllerId,
-                               LocalPlayer = ParserState.LocalPlayer,
-                               OpponentPlayer = ParserState.OpponentPlayer
+                                CardId = cardId,
+                                ControllerId = controllerId,
+                                LocalPlayer = ParserState.LocalPlayer,
+                                OpponentPlayer = ParserState.OpponentPlayer,
+                                EntityId = entity.Id,
                            }
                        },
                        true,
