@@ -167,10 +167,9 @@ namespace HearthstoneReplays.Events.Parsers
                         return null;
                     }
                     return null;
-                // Togwaggle's scheme
-                case "DAL_010":
-                // Lab recruiter
-                case "BOT_288":
+                case "DAL_010": // Togwaggle's scheme
+                case "BOT_288": // Lab recruiter
+                case "GIL_815": // Baleful Banker
                     if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                     {
                         var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
