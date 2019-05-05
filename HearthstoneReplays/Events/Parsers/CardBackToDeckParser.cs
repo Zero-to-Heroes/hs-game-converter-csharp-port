@@ -43,7 +43,7 @@ namespace HearthstoneReplays.Events.Parsers
                 tagChange.TimeStamp,
                 () => new GameEvent
                 {
-                    Type = "CARD_BACK_TO_DECK",
+                    Type = zoneInt == (int)Zone.SETASIDE ? "CREATE_CARD_IN_DECK" : "CARD_BACK_TO_DECK",
                     Value = new
                     {
                         CardId = cardId,
