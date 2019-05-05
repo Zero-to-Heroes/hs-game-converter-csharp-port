@@ -61,6 +61,20 @@ namespace HearthstoneReplays.Events
                 return;
             }
 
+            // And sometimes the full entity is logged in PTL, while only the entity is logged 
+            // in GS
+            var ptlMatchForFullEntity = Regexes.EntityRegex.Match(data);
+            if (ptlMatchForFullEntity.Success)
+            {
+                var id = ptlMatchForFullEntity.Groups[1];
+                var dataWithOnlyEntityId = Regex.Replace(data, Regexes.EntityRegex.ToString(), "" + id);
+                if (dataWithOnlyEntityId == CreationLogLine)
+                {
+                    AnimationReady = true;
+                    return;
+                }
+            }
+
             // Sometimes the information doesn't exactly match - one has more details on the entity
             // So here we compared the most basic form of both logs
             var matchShowInGameState = Regexes.ActionShowEntityRegex.Match(CreationLogLine);
