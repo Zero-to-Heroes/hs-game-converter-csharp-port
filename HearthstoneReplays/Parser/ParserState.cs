@@ -210,7 +210,7 @@ namespace HearthstoneReplays.Parser
 				{
 					return;
 				}
-				}
+			}
 
 			//Console.WriteLine("Trying to assign local player");
 			List<ShowEntity> showEntities = CurrentGame.FilterGameData(typeof(ShowEntity)).Select(d => (ShowEntity)d).ToList();

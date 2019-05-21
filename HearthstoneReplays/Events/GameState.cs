@@ -45,6 +45,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public GameStateReport BuildGameStateReport()
         {
+            // This occurs during encounters with Bob the Bartender
+            if (ParserState.LocalPlayer == null || ParserState.OpponentPlayer == null)
+            {
+                return null;
+            }
             return new GameStateReport
             {
                 LocalPlayer = PlayerReport.BuildPlayerReport(this, ParserState.LocalPlayer.Id),
