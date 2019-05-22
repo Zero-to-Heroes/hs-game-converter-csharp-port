@@ -45,11 +45,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public GameStateReport BuildGameStateReport()
         {
-            // This occurs during encounters with Bob the Bartender
-            if (ParserState.LocalPlayer == null || ParserState.OpponentPlayer == null)
-            {
-                return null;
-            }
             return new GameStateReport
             {
                 LocalPlayer = PlayerReport.BuildPlayerReport(this, ParserState.LocalPlayer.Id),
@@ -256,7 +251,9 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         private async void RaiseTagChangeEvents(TagChange tagChange, int previousValue, string defChange, string initialLog = null)
 		{
 			// Wait until we have all the necessary data
-			while (ParserState.CurrentGame.FormatType == 0 || ParserState.CurrentGame.GameType == 0 || ParserState.LocalPlayer == null)
+			while (ParserState.CurrentGame.FormatType == 0 
+                || ParserState.CurrentGame.GameType == 0 
+                || ParserState.LocalPlayer == null)
 			{
 				await Task.Delay(100);
             }
