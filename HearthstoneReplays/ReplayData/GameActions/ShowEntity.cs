@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace HearthstoneReplays.Parser.ReplayData.GameActions
 {
-	public class ShowEntity : GameData
+	public class ShowEntity : GameData, IEntityData 
 
 	{
 		[XmlAttribute("cardID")]

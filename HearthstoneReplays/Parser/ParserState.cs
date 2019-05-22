@@ -200,7 +200,8 @@ namespace HearthstoneReplays.Parser
 			// Names are not assigned right away, so wait until all the data is present to notify
 			foreach (PlayerEntity player in getPlayers())
 			{
-				if (player.Name == null)
+                // SOme games against AI, eg Bob
+				if (player.Name == null && player.AccountHi != "0")
 				{
 					//Console.WriteLine("Player with no name: " + player);
 					return;
@@ -213,8 +214,13 @@ namespace HearthstoneReplays.Parser
 			}
 
 			//Console.WriteLine("Trying to assign local player");
-			List<ShowEntity> showEntities = CurrentGame.FilterGameData(typeof(ShowEntity)).Select(d => (ShowEntity)d).ToList();
-			foreach (ShowEntity entity in showEntities)
+			List<IEntityData> showEntities = CurrentGame.FilterGameData(typeof(ShowEntity)).Select(d => (IEntityData)d).ToList();
+            // Happens when facing Bob
+            if (showEntities.Count == 0)
+            {
+                showEntities = CurrentGame.FilterGameData(typeof(FullEntity)).Select(d => (IEntityData)d).ToList();
+            }
+			foreach (IEntityData entity in showEntities)
 			{
 				//Console.WriteLine("Considering entity: " + entity);
 				if (entity.CardId != null && entity.CardId.Length > 0 && GetTag(entity.Tags, GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
