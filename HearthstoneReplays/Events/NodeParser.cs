@@ -145,8 +145,10 @@ namespace HearthstoneReplays.Events
             // other event that should be processed first
             // Warning: this means the whole event parsing works in real-time, and is not suited for 
             // post-processing of games
+            var first = eventQueue.First();
+            var isFirstGameCreation = first.CreationLogLine.IndexOf("CREATE_GAME") != -1;
             while (eventQueue.Count > 0 
-                && (DevMode || DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).Milliseconds > 500))
+                && ((DevMode && !isFirstGameCreation) || DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).Milliseconds > 500))
             {
                 GameEventProvider provider;
                 lock (listLock)
