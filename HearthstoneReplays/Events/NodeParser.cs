@@ -84,6 +84,14 @@ namespace HearthstoneReplays.Events
         {
             lock(listLock)
             {
+                var shouldUnqueuePredicates = providers.Select((provider) => provider.isDuplicatePredicate).ToList();
+                // Remove duplicate events
+                // As we process the queue when the animation is ready, we should not have a race condition 
+                // here, but it's still risky (vs preventing the insertion if a future event is a duplicate, but 
+                // which requires a lot of reengineering of the loop)
+                eventQueue = eventQueue
+                    .Where((queued) => !shouldUnqueuePredicates.Any((predicate) => predicate(queued)))
+                    .ToList();
                 eventQueue.AddRange(providers);
                 eventQueue = eventQueue.OrderBy(p => p.Timestamp).ToList();
             }
@@ -145,10 +153,8 @@ namespace HearthstoneReplays.Events
             // other event that should be processed first
             // Warning: this means the whole event parsing works in real-time, and is not suited for 
             // post-processing of games
-            var first = eventQueue.First();
-            var isFirstGameCreation = first.CreationLogLine.IndexOf("CREATE_GAME") != -1;
             while (eventQueue.Count > 0 
-                && ((DevMode && !isFirstGameCreation) || DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).Milliseconds > 500))
+                && (DevMode || DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).Milliseconds > 500))
             {
                 GameEventProvider provider;
                 lock (listLock)

@@ -11,6 +11,7 @@ namespace HearthstoneReplays.Events
     public class GameEventProvider
     {
         public Func<GameEvent> SupplyGameEvent { get; set; }
+        public Func<GameEventProvider, bool> isDuplicatePredicate { get; set; }
         public DateTimeOffset Timestamp { get; set; }
         public bool NeedMetaData { get; set; }
         public bool AnimationReady { get; set; }
@@ -29,10 +30,21 @@ namespace HearthstoneReplays.Events
             bool needMetaData,
             string creationLogLine)
         {
+            return Create(originalTimestamp, eventProvider, (a) => false, needMetaData, creationLogLine);
+        }
+
+        public static GameEventProvider Create(
+            string originalTimestamp,
+            Func<GameEvent> eventProvider,
+            Func<GameEventProvider, bool> isDuplicatePredicate,
+            bool needMetaData,
+            string creationLogLine)
+        {
             return new GameEventProvider
             {
                 Timestamp = ParseTimestamp(originalTimestamp),
                 SupplyGameEvent = eventProvider,
+                isDuplicatePredicate = isDuplicatePredicate,
                 NeedMetaData = needMetaData,
                 CreationLogLine = creationLogLine
             };

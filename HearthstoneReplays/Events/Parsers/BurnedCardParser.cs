@@ -63,10 +63,26 @@ namespace HearthstoneReplays.Events.Parsers
                             EntityId = entity.Id,
                         }
                     },
+                    (GameEventProvider provider) =>
+                    {
+                        var gameEvent = provider.SupplyGameEvent();
+                        if (gameEvent.Type != "CARD_REMOVED_FROM_DECK")
+                        {
+                            return false;
+                        }
+                        var obj = gameEvent.Value;
+                        return obj.GetType().GetProperty("CardId").GetValue(obj, null) as string == cardId;
+                    },
                     true,
                     node.CreationLogLine));
             }
             return result;
+        }
+
+        // Before 
+        public void RemoveDuplicates()
+        {
+
         }
     }
 }
