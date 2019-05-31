@@ -153,6 +153,7 @@
     <EmbeddedResource Include="TestData\reconnect2.txt" />
     <EmbeddedResource Include="TestData\bob.txt" />
     <EmbeddedResource Include="TestData\army_of_the_dead.txt" />
+    <EmbeddedResource Include="TestData\mad_scientist.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />

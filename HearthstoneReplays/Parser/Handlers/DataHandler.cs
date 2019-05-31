@@ -454,7 +454,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 }
                 catch (Exception e)
                 {
-                    Logger.Log("Exception parsing TagChange: " + tagName + " with value " + value, e.Message);
+                    Logger.Log("Warning when parsing TagChange: " + tagName + " with value " + value, e.Message);
                     return;
                 }
                 state.GameState.UpdateEntityName(rawEntity);
@@ -513,7 +513,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 }
                 catch (Exception e)
                 {
-                    Logger.Log("Exception parsing Tag: " + tagName + " with value " + value, e.Message);
+                    Logger.Log("Warning when parsing Tag: " + tagName + " with value " + value, e.Message);
                     return; 
                 }
 

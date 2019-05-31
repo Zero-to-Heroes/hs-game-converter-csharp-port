@@ -22,7 +22,7 @@ namespace HearthstoneReplayTests
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt);
-            List<string> logFile = TestDataReader.GetInputFile("army_of_the_dead.txt");
+            List<string> logFile = TestDataReader.GetInputFile("mad_scientist.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
 			string xml = new ReplayConverter().xmlFromReplay(replay);
         }
@@ -33,26 +33,45 @@ namespace HearthstoneReplayTests
             NodeParser.DevMode = true;
             var fileOutputs = new[]
             {
-                new { FileName = "army_of_the_dead", EventName = "CARD_REMOVED_FROM_DECK", ExpectedEventCount = 3 },
+                new { FileName = "army_of_the_dead", Events = new[]
+                {
+                    new { EventName = "CARD_REMOVED_FROM_DECK", ExpectedEventCount = 3 },
+                    new { EventName = "BURNED_CARD", ExpectedEventCount = 1 },
+                }},
+                new { FileName = "burned_cards", Events = new[]
+                {
+                    new { EventName = "BURNED_CARD", ExpectedEventCount = 1 },
+                }},
+                new { FileName = "mad_scientist", Events = new[]
+                {
+                    new { EventName = "SECRET_PLAYED_FROM_DECK", ExpectedEventCount = 1 },
+                }},
             };
 
             foreach (dynamic fileOutput in fileOutputs)
             {
                 var testedFileName = fileOutput.FileName as string;
-                var testedEventName = fileOutput.EventName as string;
-                var expectedEventCount = (int)fileOutput.ExpectedEventCount;
-                var totalEvents = 0;
+                var events = new Dictionary<string, int>();
                 GameEventHandler.EventProvider = (evt) =>
                 {
                     var evtName = JsonConvert.DeserializeObject<JObject>(evt).First.First.ToString();
-                    if (evtName == testedEventName)
+                    var value = 0;
+                    if (events.ContainsKey(evtName))
                     {
-                        totalEvents++;
+                        value = events[evtName];
                     }
+                    events[evtName] = value + 1;
                 };
                 List<string> logFile = TestDataReader.GetInputFile(testedFileName + ".txt");
                 HearthstoneReplay replay = new ReplayParser().FromString(logFile);
-                Assert.AreEqual(expectedEventCount, totalEvents, testedFileName + " / " + testedEventName);
+
+                foreach (dynamic evt in fileOutput.Events)
+                {
+                    var expectedEventCount = (int)evt.ExpectedEventCount;
+                    var testedEventName = evt.EventName as string;
+                    Assert.IsTrue(events.ContainsKey(testedEventName), "Missing event: " + testedFileName + " / " + testedEventName);
+                    Assert.AreEqual(expectedEventCount, events[testedEventName], testedFileName + " / " + testedEventName);
+                }
             }
         }
 

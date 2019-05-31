@@ -144,6 +144,7 @@ namespace HearthstoneReplays.Events
                 new DamageParser(ParserState),
                 new BurnedCardParser(ParserState),
                 new MinionDiedParser(ParserState),
+                new SecretPlayedFromDeckParser(ParserState),
             };
         }
 
