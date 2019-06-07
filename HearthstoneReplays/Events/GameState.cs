@@ -258,7 +258,9 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 				await Task.Delay(100);
             }
 
-            if (tagChange.Name == (int)GameTag.GOLD_REWARD_STATE)
+            if (tagChange.Name == (int)GameTag.GOLD_REWARD_STATE 
+                // This handles reconnects
+                || (tagChange.Name == (int)GameTag.STATE && tagChange.Value == (int)State.COMPLETE))
             {
                 ParserState.EndCurrentGame();
             }
