@@ -22,7 +22,9 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnNewNode(Node node)
         {
             return node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.GOLD_REWARD_STATE;
+                && ((node.Object as TagChange).Name == (int)GameTag.GOLD_REWARD_STATE
+                        || ((node.Object as TagChange).Name == (int)GameTag.STATE
+                                && (node.Object as TagChange).Value == (int)State.COMPLETE));
         }
 
         public bool AppliesOnCloseNode(Node node)

@@ -160,7 +160,7 @@ namespace HearthstoneReplays.Events
                 GameEventProvider provider;
                 lock (listLock)
                 {
-                    if (!eventQueue.Any(p => p.AnimationReady))
+                    if (!eventQueue.Any(p => p.AnimationReady) && !ParserState.Ended)
                     {
                         return;
                     }
