@@ -55,6 +55,17 @@ namespace HearthstoneReplays.Parser.Handlers
 			{
 				return;
 			}
+            // The app was launched in the middle of a game, we don't support this now but at least don't crash
+            if (state.NumberOfCreates == 0)
+            {
+                // Just selectively do some sampling to avoid logging everything, but we 
+                // still want to have a trace that this is what happened
+                if (data == "BLOCK_END")
+                {
+                    Logger.Log("Trying to parse an ongoing game, this is not supported yet", "");
+                }
+                return;
+            }
 
 			if (data == "BLOCK_END")
             {
