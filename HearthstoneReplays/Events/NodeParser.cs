@@ -84,14 +84,20 @@ namespace HearthstoneReplays.Events
         {
             lock(listLock)
             {
-                var shouldUnqueuePredicates = providers.Select((provider) => provider.isDuplicatePredicate).ToList();
+                var shouldUnqueuePredicates = providers
+                    .Select(provider => provider.isDuplicatePredicate)
+                    .ToList();
                 // Remove duplicate events
                 // As we process the queue when the animation is ready, we should not have a race condition 
                 // here, but it's still risky (vs preventing the insertion if a future event is a duplicate, but 
                 // which requires a lot of reengineering of the loop)
-                eventQueue = eventQueue
-                    .Where((queued) => !shouldUnqueuePredicates.Any((predicate) => predicate(queued)))
-                    .ToList();
+                if (eventQueue != null && eventQueue.Count > 0)
+                {
+                    eventQueue = eventQueue
+                        .Where(queued => queued != null)
+                        .Where((queued) => !shouldUnqueuePredicates.Any((predicate) => predicate(queued)))
+                        .ToList();
+                }
                 eventQueue.AddRange(providers);
                 eventQueue = eventQueue.OrderBy(p => p.Timestamp).ToList();
             }
