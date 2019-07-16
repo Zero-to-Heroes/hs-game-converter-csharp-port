@@ -15,6 +15,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 		[XmlAttribute("cardID")]
 		public string CardId { get; set; }
 
+        [XmlIgnore]
         public int Entity
         {
             get
