@@ -163,33 +163,45 @@ namespace HearthstoneReplays.Events
             while (eventQueue.Count > 0 
                 && (DevMode || DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).Milliseconds > 500))
             {
-                GameEventProvider provider;
-                lock (listLock)
+                try
                 {
-                    if (!eventQueue.Any(p => p.AnimationReady) && !ParserState.Ended)
+                    GameEventProvider provider;
+                    lock (listLock)
                     {
-                        return;
+                        if (eventQueue.Count == 0)
+                        {
+                            return;
+                        }
+                        if (!eventQueue.Any(p => p.AnimationReady) && !ParserState.Ended)
+                        {
+                            return;
+                        }
+                        provider = eventQueue[0];
+                        eventQueue.RemoveAt(0);
                     }
-                    provider = eventQueue[0];
-                    eventQueue.RemoveAt(0);
+                    if (provider.NeedMetaData)
+                    {
+                        // Wait until we have all the necessary data
+                        while (ParserState.CurrentGame.FormatType == 0 || ParserState.CurrentGame.GameType == 0 || ParserState.LocalPlayer == null)
+                        {
+                            await Task.Delay(100);
+                        }
+                    }
+                    lock (listLock)
+                    {
+                        var gameEvent = provider.SupplyGameEvent();
+                        // This can happen because there are some conditions that are only resolved when we 
+                        // have the full meta data, like dungeon run step
+                        if (gameEvent != null)
+                        {
+                            GameEventHandler.Handle(gameEvent);
+                        }
+                    }
                 }
-                if (provider.NeedMetaData)
+                catch (Exception ex)
                 {
-                    // Wait until we have all the necessary data
-                    while (ParserState.CurrentGame.FormatType == 0 || ParserState.CurrentGame.GameType == 0 || ParserState.LocalPlayer == null)
-                    {
-                        await Task.Delay(100);
-                    }
-                }
-                lock (listLock)
-                {
-                    var gameEvent = provider.SupplyGameEvent();
-                    // This can happen because there are some conditions that are only resolved when we 
-                    // have the full meta data, like dungeon run step
-                    if (gameEvent != null)
-                    {
-                        GameEventHandler.Handle(gameEvent);
-                    }
+                    Logger.Log("Exception while parsing event queue", ex.Message);
+                    Logger.Log(ex.StackTrace, "");
                 }
             }
         }

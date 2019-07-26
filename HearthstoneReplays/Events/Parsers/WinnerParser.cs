@@ -47,7 +47,7 @@ namespace HearthstoneReplays.Events.Parsers
                                Winner = winner,
                                LocalPlayer = ParserState.LocalPlayer,
                                OpponentPlayer = ParserState.OpponentPlayer,
-                               GameState = gameStateReport,
+                               GameStateReport = gameStateReport,
                            }
                        },
                        true,

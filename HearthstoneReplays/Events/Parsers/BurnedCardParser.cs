@@ -51,18 +51,13 @@ namespace HearthstoneReplays.Events.Parsers
                 var controllerId = entity.GetTag(GameTag.CONTROLLER);
                 result.Add(GameEventProvider.Create(
                     meta.TimeStamp,
-                    () => new GameEvent
-                    {
-                        Type = "BURNED_CARD",
-                        Value = new
-                        {
-                            CardId = cardId,
-                            ControllerId = controllerId,
-                            LocalPlayer = ParserState.LocalPlayer,
-                            OpponentPlayer = ParserState.OpponentPlayer,
-                            EntityId = entity.Id,
-                        }
-                    },
+                    GameEvent.CreateProvider(
+                        "BURNED_CARD",
+                        cardId,
+                        controllerId,
+                        entity.Id,
+                        ParserState,
+                        GameState),
                     (GameEventProvider provider) =>
                     {
                         var gameEvent = provider.SupplyGameEvent();

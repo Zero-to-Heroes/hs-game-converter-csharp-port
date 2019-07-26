@@ -41,19 +41,16 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
-                () => new GameEvent
-                {
-                    Type = zoneInt == (int)Zone.SETASIDE ? "CREATE_CARD_IN_DECK" : "CARD_BACK_TO_DECK",
-                    Value = new
-                    {
-                        CardId = cardId,
-                        ControllerId = controllerId,
+                GameEvent.CreateProvider(
+                    zoneInt == (int)Zone.SETASIDE ? "CREATE_CARD_IN_DECK" : "CARD_BACK_TO_DECK",
+                    cardId,
+                    controllerId,
+                    entity.Id,
+                    ParserState,
+                    GameState,
+                    new {
                         InitialZone = initialZone,
-                        LocalPlayer = ParserState.LocalPlayer,
-                        OpponentPlayer = ParserState.OpponentPlayer,
-                        EntityId = entity.Id,
-                    }
-                },
+                    }),
                 true,
                 node.CreationLogLine) };
         }

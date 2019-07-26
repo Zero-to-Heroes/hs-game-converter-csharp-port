@@ -72,18 +72,13 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
-                () => new GameEvent
-                {
-                    Type = "CREATE_CARD_IN_DECK",
-                    Value = new
-                    {
-                        CardId = cardId,
-                        ControllerId = controllerId,
-                        LocalPlayer = ParserState.LocalPlayer,
-                        OpponentPlayer = ParserState.OpponentPlayer,
-                        EntityId = showEntity.Entity,
-                    }
-                },
+                GameEvent.CreateProvider(
+                    "CREATE_CARD_IN_DECK",
+                    cardId,
+                    controllerId,
+                    showEntity.Entity,
+                    ParserState,
+                    GameState),
                 true,
                 node.CreationLogLine) };
         }
@@ -96,19 +91,16 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
-                () => new GameEvent
-                {
-                    Type = "CREATE_CARD_IN_DECK",
-                    Value = new
-                    {
-                        CardId = cardId,
-                        ControllerId = controllerId,
-                        LocalPlayer = ParserState.LocalPlayer,
-                        OpponentPlayer = ParserState.OpponentPlayer,
+                GameEvent.CreateProvider(
+                    "CREATE_CARD_IN_DECK",
+                    cardId,
+                    controllerId,
+                    fullEntity.Id,
+                    ParserState,
+                    GameState,
+                    new {
                         CreatorCardId = creatorCardId, // Used when there is no cardId, so we can show "created by ..."
-                        EntityId = fullEntity.Id,
-                    }
-                },
+                    }),
                 true,
                 node.CreationLogLine) };
         }

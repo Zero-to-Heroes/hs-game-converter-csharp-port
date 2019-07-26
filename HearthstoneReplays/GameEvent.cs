@@ -1,4 +1,8 @@
-﻿using System;
+﻿using HearthstoneReplays.Parser;
+using HearthstoneReplays.Parser.ReplayData.Meta;
+using HearthstoneReplays.Enums;
+using HearthstoneReplays.Parser.ReplayData.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,5 +18,58 @@ namespace HearthstoneReplays
 		public override string ToString() {
 			return "GameEvent: " + Type + " (" + Value + ")";
 		}
+
+        public static Func<GameEvent> CreateProvider(string type, string cardId, int controllerId, int entityId, ParserState parserState, GameState gameState, object additionalProps = null)
+        {
+            return () => new GameEvent
+            {
+                Type = type,
+                Value = new
+                {
+                    CardId = cardId,
+                    ControllerId = controllerId,
+                    LocalPlayer = parserState.LocalPlayer,
+                    OpponentPlayer = parserState.OpponentPlayer,
+                    EntityId = entityId,
+                    GameState = new {
+                        Player = new
+                        {
+                            Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.LocalPlayer.PlayerId),
+                            Board = GameEvent.BuildZone(gameState, Zone.PLAY, parserState.LocalPlayer.PlayerId),
+                        },
+                        Opponent = new
+                        {
+                            Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.OpponentPlayer.PlayerId),
+                            Board = GameEvent.BuildZone(gameState, Zone.PLAY, parserState.OpponentPlayer.PlayerId),
+                        }
+                    },
+                    AdditionalProps = additionalProps
+                }
+            };
+        }
+
+        private static List<dynamic> BuildZone(GameState gameState, Zone zone, int playerId)
+        {
+            return gameState.CurrentEntities.Values
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)zone)
+                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
+                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
+                    .Select(entity => BuildSmallEntity(entity))
+                    .ToList();
+        }
+
+        private static dynamic BuildSmallEntity(BaseEntity entity)
+        {
+            string cardId = null;
+            if (entity.GetType() == typeof(FullEntity))
+            {
+                cardId = (entity as FullEntity).CardId;
+            }
+            return new
+            {
+                entityId = entity.Id,
+                cardId = cardId,
+            };
+        }
 	}
 }

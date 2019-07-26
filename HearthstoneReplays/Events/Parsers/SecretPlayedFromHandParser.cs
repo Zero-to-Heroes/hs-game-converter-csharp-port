@@ -43,18 +43,13 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return new List<GameEventProvider> { GameEventProvider.Create(
                        tagChange.TimeStamp,
-                       () => new GameEvent
-                       {
-                           Type = "SECRET_PLAYED",
-                           Value = new
-                           {
-                                CardId = cardId,
-                                ControllerId = controllerId,
-                                LocalPlayer = ParserState.LocalPlayer,
-                                OpponentPlayer = ParserState.OpponentPlayer,
-                                EntityId = entity.Id,
-                           }
-                       },
+                        GameEvent.CreateProvider(
+                            "SECRET_PLAYED",
+                            cardId,
+                            controllerId,
+                            entity.Id,
+                            ParserState,
+                            GameState),
                        true,
                        node.CreationLogLine) };
             }

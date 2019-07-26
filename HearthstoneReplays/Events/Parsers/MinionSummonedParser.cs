@@ -41,18 +41,13 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
-                () => new GameEvent
-                {
-                    Type = "MINION_SUMMONED",
-                    Value = new
-                    {
-                        CardId = cardId,
-                        ControllerId = controllerId,
-                        LocalPlayer = ParserState.LocalPlayer,
-                        OpponentPlayer = ParserState.OpponentPlayer,
-                        EntityId = fullEntity.Id,
-                    }
-                },
+                GameEvent.CreateProvider(
+                    "MINION_SUMMONED",
+                    cardId,
+                    controllerId,
+                    fullEntity.Id,
+                    ParserState,
+                    GameState),
                 true,
                 node.CreationLogLine) };
         }

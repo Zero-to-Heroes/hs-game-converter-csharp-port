@@ -43,18 +43,13 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
-                    () => new GameEvent
-                    {
-                        Type = "CARD_PLAYED",
-                        Value = new
-                        {
-                            CardId = cardId,
-                            ControllerId = controllerId,
-                            LocalPlayer = ParserState.LocalPlayer,
-                            OpponentPlayer = ParserState.OpponentPlayer,
-                        EntityId = entity.Id,
-                        }
-                    },
+                    GameEvent.CreateProvider(
+                        "CARD_PLAYED",
+                        cardId,
+                        controllerId,
+                        entity.Id,
+                        ParserState,
+                        GameState),
                     true,
                     node.CreationLogLine) };
             }
@@ -76,18 +71,13 @@ namespace HearthstoneReplays.Events.Parsers
                         // For now there can only be one card played per block
                         return new List<GameEventProvider> { GameEventProvider.Create(
                             action.TimeStamp,
-                            () => new GameEvent
-                                {
-                                    Type = "CARD_PLAYED",
-                                    Value = new
-                                    {
-                                        CardId = cardId,
-                                        ControllerId = controllerId,
-                                        LocalPlayer = ParserState.LocalPlayer,
-                                        OpponentPlayer = ParserState.OpponentPlayer,
-                                        EntityId = showEntity.Entity,
-                                    }
-                                },
+                            GameEvent.CreateProvider(
+                                "CARD_PLAYED",
+                                cardId,
+                                controllerId,
+                                showEntity.Entity,
+                                ParserState,
+                                GameState),
                             true,
                             node.CreationLogLine) };
                     }

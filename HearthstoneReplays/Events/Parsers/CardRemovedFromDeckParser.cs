@@ -53,18 +53,13 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
-                () => new GameEvent
-                {
-                    Type = "CARD_REMOVED_FROM_DECK",
-                    Value = new
-                    {
-                        CardId = cardId,
-                        ControllerId = controllerId,
-                        LocalPlayer = ParserState.LocalPlayer,
-                        OpponentPlayer = ParserState.OpponentPlayer,
-                        EntityId = entity.Id,
-                    }
-                },
+                GameEvent.CreateProvider(
+                    "CARD_REMOVED_FROM_DECK",
+                    cardId,
+                    controllerId,
+                    entity.Id,
+                    ParserState,
+                    GameState),
                 true,
                 node.CreationLogLine) };
         }
@@ -108,18 +103,13 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             return new List<GameEventProvider> { GameEventProvider.Create(
             showEntity.TimeStamp,
-            () => new GameEvent
-            {
-                Type = "CARD_REMOVED_FROM_DECK",
-                Value = new
-                {
-                    CardId = cardId,
-                    ControllerId = controllerId,
-                    LocalPlayer = ParserState.LocalPlayer,
-                    OpponentPlayer = ParserState.OpponentPlayer,
-                    EntityId = showEntity.Entity,
-                }
-            },
+            GameEvent.CreateProvider(
+                "CARD_REMOVED_FROM_DECK",
+                cardId,
+                controllerId,
+                showEntity.Entity,
+                ParserState,
+                GameState),
             true,
             creationLogLine) };
         }
@@ -145,18 +135,13 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
-                () => new GameEvent
-                {
-                    Type = "CARD_REMOVED_FROM_DECK",
-                    Value = new
-                    {
-                        CardId = cardId,
-                        ControllerId = controllerId,
-                        LocalPlayer = ParserState.LocalPlayer,
-                        OpponentPlayer = ParserState.OpponentPlayer,
-                        EntityId = fullEntity.Id,
-                    }
-                },
+                GameEvent.CreateProvider(
+                    "CARD_REMOVED_FROM_DECK",
+                    cardId,
+                    controllerId,
+                    fullEntity.Id,
+                    ParserState,
+                    GameState),
                 true,
                 creationLogLine) };
         }
