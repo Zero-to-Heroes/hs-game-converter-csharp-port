@@ -66,7 +66,7 @@ namespace HearthstoneReplays.Events.Parsers
                             return false;
                         }
                         var obj = gameEvent.Value;
-                        return obj.GetType().GetProperty("CardId").GetValue(obj, null) as string == cardId;
+                        return obj != null && obj.GetType().GetProperty("CardId").GetValue(obj, null) as string == cardId;
                     },
                     true,
                     node.CreationLogLine));

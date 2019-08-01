@@ -91,7 +91,10 @@ namespace HearthstoneReplays.Events
                 // As we process the queue when the animation is ready, we should not have a race condition 
                 // here, but it's still risky (vs preventing the insertion if a future event is a duplicate, but 
                 // which requires a lot of reengineering of the loop)
-                if (eventQueue != null && eventQueue.Count > 0)
+                if (eventQueue != null 
+                    && eventQueue.Count > 0 
+                    && shouldUnqueuePredicates != null
+                    && shouldUnqueuePredicates.Count > 0)
                 {
                     eventQueue = eventQueue
                         .Where(queued => queued != null)
@@ -160,8 +163,7 @@ namespace HearthstoneReplays.Events
             // other event that should be processed first
             // Warning: this means the whole event parsing works in real-time, and is not suited for 
             // post-processing of games
-            while (eventQueue.Count > 0 
-                && (DevMode || DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).Milliseconds > 500))
+            while (IsEventToProcess())
             {
                 try
                 {
@@ -201,8 +203,24 @@ namespace HearthstoneReplays.Events
                 catch (Exception ex)
                 {
                     Logger.Log("Exception while parsing event queue", ex.Message);
-                    Logger.Log(ex.StackTrace, "");
+                    Logger.Log(ex.StackTrace, "" + eventQueue.Count);
+                    return;
                 }
+            }
+        }
+
+        private bool IsEventToProcess()
+        {
+            try
+            {
+                return eventQueue.Count > 0
+                        && (DevMode || DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).Milliseconds > 500);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Exception while trying to determine event to process", ex.Message);
+                Logger.Log(ex.StackTrace, "" + eventQueue.Count);
+                return false;
             }
         }
     }
