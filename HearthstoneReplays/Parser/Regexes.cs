@@ -39,7 +39,7 @@ namespace HearthstoneReplays.Parser
 		public static readonly Regex FormatType = new Regex(@"FormatType=(\w+)");
 		public static readonly Regex ScenarioID = new Regex(@"ScenarioID=(\d+)");
 
-		public static readonly Regex ActionMetadataRegex = new Regex(string.Format(@"META_DATA - Meta=(\w+) Data={0} Info=(\d+)", Entity));
+		public static readonly Regex ActionMetadataRegex = new Regex(string.Format(@"META_DATA - Meta=(\w+) Data={0} (?:Info|InfoCount)=(\d+)", Entity));
 		public static readonly Regex ActionMetaDataInfoRegex = new Regex(string.Format(@"Info\[(\d+)\] = {0}", Entity));
 
 		public static readonly Regex ActionChangeEntityRegex = new Regex(string.Format(@"CHANGE_ENTITY - Updating Entity={0} CardID=(\w+)$", Entity));

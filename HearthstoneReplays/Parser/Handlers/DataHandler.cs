@@ -303,8 +303,8 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Game)state.Node.Object).AddData(action);
 				else if(state.Node.Type == typeof(Action))
 					((Action)state.Node.Object).Data.Add(action);
-				else
-					throw new Exception("Invalid node " + state.Node.Type);
+                else
+                    throw new Exception("Invalid node " + state.Node.Type + " while parsing " + data);
                 var newNode = new Node(typeof(Action), action, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
@@ -344,8 +344,8 @@ namespace HearthstoneReplays.Parser.Handlers
 				var metaInfo = new Info {Id = entity, Index = int.Parse(index), Entity = entity};
 				if(state.Node.Type == typeof(MetaData))
 					((MetaData)state.Node.Object).MetaInfo.Add(metaInfo);
-				else
-					throw new Exception("Invalid node " + state.Node.Type);
+                else
+                    throw new Exception("Invalid node " + state.Node.Type + " while parsing " + data);
                 state.CreateNewNode(new Node(typeof(Info), metaInfo, indentLevel, state.Node, data));
                 return;
 			}
@@ -365,7 +365,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				else if(state.Node.Type == typeof(Action))
 					((Action)state.Node.Object).Data.Add(showEntity);
 				else
-					throw new Exception("Invalid node " + state.Node.Type);
+					throw new Exception("Invalid node " + state.Node.Type + " while parsing " + data);
                 var newNode = new Node(typeof(ShowEntity), showEntity, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;

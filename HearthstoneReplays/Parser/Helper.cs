@@ -29,8 +29,9 @@ namespace HearthstoneReplays.Parser
 			{GameTag.MULLIGAN_STATE, typeof(Mulligan)},
 			{GameTag.NEXT_STEP, typeof(Step)},
 			{GameTag.STATE, typeof(State)},
-			{GameTag.STEP, typeof(Step)},
-			{GameTag.ZONE, typeof(Zone)}
+            {GameTag.STEP, typeof(Step)},
+            {GameTag.CARDRACE, typeof(Race)},
+            {GameTag.ZONE, typeof(Zone)}
 		};
 
 		public int ParseEntity(string data, ParserState state)
