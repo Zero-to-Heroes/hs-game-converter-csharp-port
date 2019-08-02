@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Threading;
 using System.Collections.Generic;
 using HearthstoneReplays;
 using HearthstoneReplays.Events;
@@ -22,7 +23,7 @@ namespace HearthstoneReplayTests
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt);
-            List<string> logFile = TestDataReader.GetInputFile("the_box.txt");
+            List<string> logFile = TestDataReader.GetInputFile("burned_cards.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
 			string xml = new ReplayConverter().xmlFromReplay(replay);
             Console.Write(xml);
@@ -47,6 +48,10 @@ namespace HearthstoneReplayTests
                 {
                     new { EventName = "SECRET_PLAYED_FROM_DECK", ExpectedEventCount = 1 },
                 }},
+                new { FileName = "new_meta_log", Events = new[]
+                {
+                    new { EventName = "CARD_PLAYED", ExpectedEventCount = 41 },
+                }},
             };
 
             foreach (dynamic fileOutput in fileOutputs)
@@ -65,6 +70,7 @@ namespace HearthstoneReplayTests
                 };
                 List<string> logFile = TestDataReader.GetInputFile(testedFileName + ".txt");
                 HearthstoneReplay replay = new ReplayParser().FromString(logFile);
+                Thread.Sleep(500);
 
                 foreach (dynamic evt in fileOutput.Events)
                 {
