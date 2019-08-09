@@ -187,12 +187,14 @@ namespace HearthstoneReplays.Events.Parsers
                 case Rogue.FaldoreiStrider: return NonCollectible.Rogue.FaldoreiStrider_SpiderAmbushEnchantment;
                 case Rogue.RazorpetalLasher: return NonCollectible.Rogue.RazorpetalVolley_RazorpetalToken;
                 case Rogue.RazorpetalVolley: return NonCollectible.Rogue.RazorpetalVolley_RazorpetalToken;
+                case Rogue.ShadowOfDeath: return NonCollectible.Rogue.ShadowofDeath_ShadowToken;
                 case Rogue.TheCavernsBelow: return NonCollectible.Rogue.TheCavernsBelow_CrystalCoreTokenUNGORO;
                 case Rogue.Wanted: return NonCollectible.Neutral.Coin;
                 case Shaman.UniteTheMurlocs: return NonCollectible.Shaman.UnitetheMurlocs_MegafinToken;
                 case Shaman.WhiteEyes: return NonCollectible.Shaman.WhiteEyes_TheStormGuardianToken;
                 case Warlock.CurseOfRafaam: return NonCollectible.Warlock.CurseofRafaam_CursedToken;
                 case Warlock.HighPriestessJeklik: return Warlock.HighPriestessJeklik;
+                case Warlock.Impbalming: return NonCollectible.Warlock.Impbalming_WorthlessImpToken;
                 case Warlock.LakkariSacrifice: return NonCollectible.Warlock.LakkariSacrifice_NetherPortalToken1;
                 case Warlock.RinTheFirstDisciple: return NonCollectible.Warlock.RintheFirstDisciple_TheFirstSealToken;
                 case NonCollectible.Warlock.RintheFirstDisciple_TheFirstSealToken : return NonCollectible.Warlock.RintheFirstDisciple_TheSecondSealToken;
