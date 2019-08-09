@@ -39,10 +39,18 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var meta = node.Object as MetaData;
+            if (meta == null)
+            {
+                Logger.Log("Could not find meta info", "");
+            }
             List<GameEventProvider> result = new List<GameEventProvider>();
             foreach (var info in meta.MetaInfo)
             {
                 var entity = GameState.CurrentEntities[info.Entity];
+                if (entity == null)
+                {
+                    Logger.Log("Could not find entity", info.Entity);
+                }
                 var cardId = entity.CardId;
                 if (cardId == null)
                 {
@@ -61,12 +69,16 @@ namespace HearthstoneReplays.Events.Parsers
                     (GameEventProvider provider) =>
                     {
                         var gameEvent = provider.SupplyGameEvent();
+                        if (gameEvent == null)
+                        {
+                            Logger.Log("Could not identify gameEvent", provider.CreationLogLine);
+                        }
                         if (gameEvent.Type != "CARD_REMOVED_FROM_DECK")
                         {
                             return false;
                         }
-                        var obj = gameEvent.Value;
-                        return obj != null && obj.GetType().GetProperty("CardId").GetValue(obj, null) as string == cardId;
+                        dynamic obj = gameEvent.Value;
+                        return obj != null && (obj.CardId as string) == cardId;
                     },
                     true,
                     node.CreationLogLine));
