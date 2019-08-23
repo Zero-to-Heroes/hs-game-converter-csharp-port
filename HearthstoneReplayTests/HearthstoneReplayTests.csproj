@@ -158,6 +158,7 @@
     <EmbeddedResource Include="TestData\face_collector.txt" />
     <EmbeddedResource Include="TestData\new_meta_log.txt" />
     <EmbeddedResource Include="TestData\change_entity.txt" />
+    <EmbeddedResource Include="TestData\card_draw_game_state.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />

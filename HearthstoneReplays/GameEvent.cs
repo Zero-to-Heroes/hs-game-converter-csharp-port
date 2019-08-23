@@ -19,7 +19,7 @@ namespace HearthstoneReplays
 			return "GameEvent: " + Type + " (" + Value + ")";
 		}
 
-        public static Func<GameEvent> CreateProvider(string type, string cardId, int controllerId, int entityId, ParserState parserState, GameState gameState, object additionalProps = null)
+        public static Func<GameEvent> CreateProvider(string type, string cardId, int controllerId, int entityId, ParserState parserState, object gameState, object additionalProps = null)
         {
             return () => new GameEvent
             {
@@ -31,24 +31,36 @@ namespace HearthstoneReplays
                     LocalPlayer = parserState.LocalPlayer,
                     OpponentPlayer = parserState.OpponentPlayer,
                     EntityId = entityId,
-                    GameState = new {
-                        Player = new
-                        {
-                            Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.LocalPlayer.PlayerId),
-                            Board = GameEvent.BuildZone(gameState, Zone.PLAY, parserState.LocalPlayer.PlayerId),
-                        },
-                        Opponent = new
-                        {
-                            Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.OpponentPlayer.PlayerId),
-                            Board = GameEvent.BuildZone(gameState, Zone.PLAY, parserState.OpponentPlayer.PlayerId),
-                        }
-                    },
+                    GameState = gameState,
                     AdditionalProps = additionalProps
                 }
             };
         }
 
-        private static List<dynamic> BuildZone(GameState gameState, Zone zone, int playerId)
+        // It needs to be built beforehand, as the game state we pass is not immutable
+        public static object BuildGameState(ParserState parserState, GameState gameState)
+        {
+            if (parserState == null ||parserState.LocalPlayer == null || parserState.OpponentPlayer == null)
+            {
+                return new { };
+            }
+            var result = new
+            {
+                Player = new
+                {
+                    Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.LocalPlayer.PlayerId),
+                    Board = GameEvent.BuildZone(gameState, Zone.PLAY, parserState.LocalPlayer.PlayerId),
+                },
+                Opponent = new
+                {
+                    Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.OpponentPlayer.PlayerId),
+                    Board = GameEvent.BuildZone(gameState, Zone.PLAY, parserState.OpponentPlayer.PlayerId),
+                }
+            };
+            return result;
+        }
+
+        private static List<object> BuildZone(GameState gameState, Zone zone, int playerId)
         {
             return gameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)zone)
@@ -58,7 +70,7 @@ namespace HearthstoneReplays
                     .ToList();
         }
 
-        private static dynamic BuildSmallEntity(BaseEntity entity)
+        private static object BuildSmallEntity(BaseEntity entity)
         {
             string cardId = null;
             if (entity.GetType() == typeof(FullEntity))

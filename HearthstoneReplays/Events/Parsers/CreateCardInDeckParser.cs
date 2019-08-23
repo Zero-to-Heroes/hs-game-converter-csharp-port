@@ -70,6 +70,7 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorCardId = FindCardCreatorCardId(showEntity.GetTag(GameTag.CREATOR), node);
             var cardId = PredictCardId(creatorCardId, node);
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 GameEvent.CreateProvider(
@@ -78,7 +79,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     showEntity.Entity,
                     ParserState,
-                    GameState),
+                    gameState),
                 true,
                 node.CreationLogLine) };
         }
@@ -89,6 +90,7 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorCardId = FindCardCreatorCardId(fullEntity.GetTag(GameTag.CREATOR), node);
             var cardId = PredictCardId(creatorCardId, node);
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 GameEvent.CreateProvider(
@@ -97,7 +99,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     fullEntity.Id,
                     ParserState,
-                    GameState,
+                    gameState,
                     new {
                         CreatorCardId = creatorCardId, // Used when there is no cardId, so we can show "created by ..."
                     }),
