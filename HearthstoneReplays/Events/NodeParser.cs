@@ -155,6 +155,7 @@ namespace HearthstoneReplays.Events
                 new MinionDiedParser(ParserState),
                 new SecretPlayedFromDeckParser(ParserState),
                 new FirstPlayerParser(ParserState),
+                new MainStepReadyParser(ParserState),
             };
         }
 
