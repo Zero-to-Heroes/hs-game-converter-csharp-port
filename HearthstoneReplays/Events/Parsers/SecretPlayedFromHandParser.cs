@@ -50,7 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
                             controllerId,
                             entity.Id,
                             ParserState,
-                        GameState,
+                            GameState,
                             gameState),
                        true,
                        node.CreationLogLine) };
@@ -58,8 +58,37 @@ namespace HearthstoneReplays.Events.Parsers
             return null;
         }
 
+        // Typically the case when the opponent plays a quest or a secret
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
+            var action = node.Object as Parser.ReplayData.GameActions.Action;
+            foreach (var data in action.Data)
+            {
+                if (data.GetType() == typeof(ShowEntity))
+                {
+                    var showEntity = data as ShowEntity;
+                    if (showEntity.GetTag(GameTag.ZONE) == (int)Zone.SECRET
+                        && showEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
+                    {
+                        var cardId = showEntity.CardId;
+                        var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
+                        var gameState = GameEvent.BuildGameState(ParserState, GameState);
+                        // For now there can only be one card played per block
+                        return new List<GameEventProvider> { GameEventProvider.Create(
+                            action.TimeStamp,
+                            GameEvent.CreateProvider(
+                                "SECRET_PLAYED",
+                                cardId,
+                                controllerId,
+                                showEntity.Entity,
+                                ParserState,
+                                GameState,
+                                gameState),
+                            true,
+                            node.CreationLogLine) };
+                    }
+                }
+            }
             return null;
         }
     }
