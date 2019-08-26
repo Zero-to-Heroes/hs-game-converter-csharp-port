@@ -192,7 +192,7 @@ namespace HearthstoneReplays.Events
                     }
                     lock (listLock)
                     {
-                        var gameEvent = provider.SupplyGameEvent();
+                        var gameEvent = provider.GameEvent != null ? provider.GameEvent : provider.SupplyGameEvent();
                         // This can happen because there are some conditions that are only resolved when we 
                         // have the full meta data, like dungeon run step
                         if (gameEvent != null)

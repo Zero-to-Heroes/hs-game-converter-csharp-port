@@ -159,6 +159,7 @@
     <EmbeddedResource Include="TestData\new_meta_log.txt" />
     <EmbeddedResource Include="TestData\change_entity.txt" />
     <EmbeddedResource Include="TestData\card_draw_game_state.txt" />
+    <EmbeddedResource Include="TestData\bug - Copy.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />
@@ -177,7 +178,7 @@
     <EmbeddedResource Include="TestData\springpaw.txt" />
     <EmbeddedResource Include="TestData\jeweled_macaw.txt" />
     <EmbeddedResource Include="TestData\mindvisino.txt" />
-    <EmbeddedResource Include="TestData\bug.txt" />
+    <EmbeddedResource Include="TestData\treeants_to_hand.txt" />
     <EmbeddedResource Include="TestData\spectate.txt" />
     <Content Include="TestData\beastly_pete.txt" />
     <Content Include="TestData\Power_gameAndFormatTypes.log.txt" />

@@ -48,6 +48,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     ParserState,
+                        GameState,
                     gameState,
                     new {
                         InitialZone = initialZone,

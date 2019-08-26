@@ -16,6 +16,7 @@ namespace HearthstoneReplays.Events
         public bool NeedMetaData { get; set; }
         public bool AnimationReady { get; set; }
         public string CreationLogLine { get; set; }
+        public GameEvent GameEvent { get; private set; }
 
         private Helper helper = new Helper();
 
@@ -51,6 +52,17 @@ namespace HearthstoneReplays.Events
         }
 
         public void ReceiveAnimationLog(string data, ParserState state)
+        {
+            // Mark the event as ready to be emitted
+            IsEventReady(data, state);
+            // And now's the time to compute the event itself
+            if (AnimationReady)
+            {
+                GameEvent = SupplyGameEvent();
+            }
+        }
+
+        private void IsEventReady(string data, ParserState state) {
         {
             if (CreationLogLine == null)
             {
@@ -123,6 +135,7 @@ namespace HearthstoneReplays.Events
                 }
             }
         }
+    }
 
         private static DateTimeOffset ParseTimestamp(string timestamp)
         {

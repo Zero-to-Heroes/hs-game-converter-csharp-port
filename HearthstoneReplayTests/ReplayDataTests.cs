@@ -23,7 +23,7 @@ namespace HearthstoneReplayTests
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt);
-            List<string> logFile = TestDataReader.GetInputFile("card_draw_game_state.txt");
+            List<string> logFile = TestDataReader.GetInputFile("treeants_to_hand.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
 			string xml = new ReplayConverter().xmlFromReplay(replay);
             Console.Write(xml);

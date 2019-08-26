@@ -66,6 +66,7 @@ namespace HearthstoneReplays.Events.Parsers
                         controllerId,
                         entity.Id,
                         ParserState,
+                        GameState,
                         gameState),
                     (GameEventProvider provider) =>
                     {

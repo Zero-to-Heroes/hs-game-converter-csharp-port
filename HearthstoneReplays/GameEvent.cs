@@ -19,7 +19,15 @@ namespace HearthstoneReplays
 			return "GameEvent: " + Type + " (" + Value + ")";
 		}
 
-        public static Func<GameEvent> CreateProvider(string type, string cardId, int controllerId, int entityId, ParserState parserState, object gameState, object additionalProps = null)
+        public static Func<GameEvent> CreateProvider(
+            string type, 
+            string cardId, 
+            int controllerId, 
+            int entityId, 
+            ParserState parserState, 
+            GameState fullGameState, 
+            object gameState, 
+            object additionalProps = null)
         {
             return () => new GameEvent
             {
@@ -31,7 +39,9 @@ namespace HearthstoneReplays
                     LocalPlayer = parserState.LocalPlayer,
                     OpponentPlayer = parserState.OpponentPlayer,
                     EntityId = entityId,
-                    GameState = gameState,
+                    // We do it now so that the zone positions should have been resolved, while 
+                    // if we compute it when the event is built, there is no guarantee of that
+                    GameState = BuildGameState(parserState, fullGameState),
                     AdditionalProps = additionalProps
                 }
             };
@@ -40,7 +50,7 @@ namespace HearthstoneReplays
         // It needs to be built beforehand, as the game state we pass is not immutable
         public static object BuildGameState(ParserState parserState, GameState gameState)
         {
-            if (parserState == null ||parserState.LocalPlayer == null || parserState.OpponentPlayer == null)
+            if (parserState == null || parserState.LocalPlayer == null || parserState.OpponentPlayer == null)
             {
                 return new { };
             }

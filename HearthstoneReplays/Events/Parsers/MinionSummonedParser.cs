@@ -48,6 +48,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     fullEntity.Id,
                     ParserState,
+                        GameState,
                     gameState),
                 true,
                 node.CreationLogLine) };

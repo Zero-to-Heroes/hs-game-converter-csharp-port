@@ -79,6 +79,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     showEntity.Entity,
                     ParserState,
+                        GameState,
                     gameState),
                 true,
                 node.CreationLogLine) };
@@ -99,6 +100,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     fullEntity.Id,
                     ParserState,
+                        GameState,
                     gameState,
                     new {
                         CreatorCardId = creatorCardId, // Used when there is no cardId, so we can show "created by ..."
