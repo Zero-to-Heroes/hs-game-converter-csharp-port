@@ -37,6 +37,7 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var replayCopy = ParserState.Replay;
             var xmlReplay = new ReplayConverter().xmlFromReplay(replayCopy);
+            var gameStateReport = GameState.BuildGameStateReport();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 () => new GameEvent
@@ -44,6 +45,9 @@ namespace HearthstoneReplays.Events.Parsers
                     Type = "GAME_END",
                     Value = new
                     {
+                        LocalPlayer = ParserState.LocalPlayer,
+                        OpponentPlayer = ParserState.OpponentPlayer,
+                        GameStateReport = gameStateReport,
                         Game = ParserState.CurrentGame,
                         ReplayXml = xmlReplay
                     }

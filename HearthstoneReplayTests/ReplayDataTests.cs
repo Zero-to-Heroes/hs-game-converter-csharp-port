@@ -22,11 +22,12 @@ namespace HearthstoneReplayTests
 		public void Test()  
 		{
             NodeParser.DevMode = true;
-            GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt);
-            List<string> logFile = TestDataReader.GetInputFile("treeants_to_hand.txt");
+            GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
+            List<string> logFile = TestDataReader.GetInputFile("healing.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
-			string xml = new ReplayConverter().xmlFromReplay(replay);
-            Console.Write(xml);
+            Thread.Sleep(500);
+            //string xml = new ReplayConverter().xmlFromReplay(replay);
+            //Console.Write(xml);
         }
 
         [TestMethod]
@@ -51,6 +52,10 @@ namespace HearthstoneReplayTests
                 new { FileName = "new_meta_log", Events = new[]
                 {
                     new { EventName = "CARD_PLAYED", ExpectedEventCount = 41 },
+                }},
+                new { FileName = "healing", Events = new[]
+                {
+                    new { EventName = "HEALING", ExpectedEventCount = 25 },
                 }},
             };
 

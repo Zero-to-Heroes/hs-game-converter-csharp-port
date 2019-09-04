@@ -51,9 +51,11 @@ namespace HearthstoneReplays.Events.Parsers
                     // If source or target are player entities, they don't have any 
                     // attached cardId
                     var damageTarget = GameState.CurrentEntities[info.Entity];
+                    var targetEntityId = damageTarget.Id;
                     var targetCardId = GameState.GetCardIdForEntity(damageTarget.Id);
                     var targetControllerId = damageTarget.GetTag(GameTag.CONTROLLER);
                     var damageSource = GetDamageSource(damageTarget, action, damageTag);
+                    var sourceEntityId = damageSource.Id;
                     var sourceCardId = GameState.GetCardIdForEntity(damageSource.Id);
                     var sourceControllerId = damageSource.GetTag(GameTag.CONTROLLER);
                     Dictionary<string, DamageInternal> currentSourceDamages = null;
@@ -75,8 +77,10 @@ namespace HearthstoneReplays.Events.Parsers
                     {
                         currentTargetDamages = new DamageInternal
                         {
-                            TargetControllerId = targetControllerId,
+                            SourceEntityId = sourceEntityId,
                             SourceControllerId = sourceControllerId,
+                            TargetEntityId = targetEntityId,
+                            TargetControllerId = targetControllerId,
                             Damage = 0,
                             Timestamp = info.TimeStamp,
                         };
@@ -101,6 +105,7 @@ namespace HearthstoneReplays.Events.Parsers
                         Value = new
                         {
                             SourceCardId = damageSource,
+                            SourceEntityId = totalDamages[damageSource].First().Value.SourceEntityId,
                             SourceControllerId = totalDamages[damageSource].First().Value.SourceControllerId,
                             Targets = totalDamages[damageSource],
                             LocalPlayer = ParserState.LocalPlayer,
@@ -155,7 +160,9 @@ namespace HearthstoneReplays.Events.Parsers
 
         private class DamageInternal
         {
+            public int SourceEntityId;
             public int SourceControllerId;
+            public int TargetEntityId;
             public int TargetControllerId;
             public int Damage;
             public string Timestamp;
