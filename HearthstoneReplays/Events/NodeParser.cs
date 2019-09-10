@@ -157,6 +157,7 @@ namespace HearthstoneReplays.Events
                 new SecretPlayedFromDeckParser(ParserState),
                 new FirstPlayerParser(ParserState),
                 new MainStepReadyParser(ParserState),
+                new ArmorChangeParser(ParserState),
             };
         }
 
