@@ -141,18 +141,20 @@ namespace HearthstoneReplays.Parser.Handlers
                 }
                 state.CurrentGame.ScenarioID = int.Parse(match.Groups[1].Value);
                 // This is a very peculiar log info, we don't fit it to the new events archi for now
+                var metaData = new
+                {
+                    BuildNumber = state.CurrentGame.BuildNumber,
+                    GameType = state.CurrentGame.GameType,
+                    FormatType = state.CurrentGame.FormatType,
+                    ScenarioID = state.CurrentGame.ScenarioID,
+                };
+                state.GameState.MetaData = metaData;
                 state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
                     () => new GameEvent
                     {
                         Type = "MATCH_METADATA",
-                        Value = new
-                        {
-                            BuildNumber = state.CurrentGame.BuildNumber,
-                            GameType = state.CurrentGame.GameType,
-                            FormatType = state.CurrentGame.FormatType,
-                            ScenarioID = state.CurrentGame.ScenarioID,
-                        }
+                        Value = metaData
                     },
                     false,
                     data) });

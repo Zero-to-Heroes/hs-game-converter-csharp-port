@@ -23,7 +23,7 @@ namespace HearthstoneReplayTests
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
-            List<string> logFile = TestDataReader.GetInputFile("healing.txt");
+            List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
             Thread.Sleep(500);
             //string xml = new ReplayConverter().xmlFromReplay(replay);
@@ -56,6 +56,10 @@ namespace HearthstoneReplayTests
                 new { FileName = "healing", Events = new[]
                 {
                     new { EventName = "HEALING", ExpectedEventCount = 25 },
+                }},
+                new { FileName = "armor", Events = new[]
+                {
+                    new { EventName = "ARMOR_CHANGED", ExpectedEventCount = 55 },
                 }},
             };
 

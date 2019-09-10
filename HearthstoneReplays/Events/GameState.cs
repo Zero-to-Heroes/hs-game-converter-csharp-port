@@ -17,12 +17,14 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 		public Dictionary<int, FullEntity> CurrentEntities = new Dictionary<int, FullEntity>();
         public Dictionary<string, int> EntityNames = new Dictionary<string, int>();
         public bool MulliganOver = false;
+        public dynamic MetaData;
 
 		public void Reset(ParserState state)
 		{
 			CurrentEntities = new Dictionary<int, FullEntity>();
 			CurrentEntities.Add(1, new FullEntity { Id = 1, Tags = new List<Tag>() });
             MulliganOver = false;
+            MetaData = null;
             ParserState = state;
 		}
 
@@ -48,7 +50,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             return new GameStateReport
             {
                 LocalPlayer = PlayerReport.BuildPlayerReport(this, ParserState.LocalPlayer.Id),
-                OpponentReport = PlayerReport.BuildPlayerReport(this, ParserState.OpponentPlayer.Id)
+                OpponentReport = PlayerReport.BuildPlayerReport(this, ParserState.OpponentPlayer.Id),
             };
         }
 

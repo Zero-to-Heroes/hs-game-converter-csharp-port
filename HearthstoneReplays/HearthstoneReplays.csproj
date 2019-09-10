@@ -114,6 +114,7 @@
     <Compile Include="Events\Parsers\HealingParser.cs" />
     <Compile Include="Events\Parsers\FirstPlayerParser.cs" />
     <Compile Include="Events\Parsers\MinionDiedParser.cs" />
+    <Compile Include="Events\Parsers\ArmorChangeParser.cs" />
     <Compile Include="Events\Parsers\SecretPlayedFromDeckParser.cs" />
     <Compile Include="Events\Parsers\MainStepReadyParser.cs" />
     <Compile Include="Events\PlayerReport.cs" />
