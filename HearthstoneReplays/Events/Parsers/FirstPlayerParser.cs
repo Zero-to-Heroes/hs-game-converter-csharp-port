@@ -41,7 +41,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Type = "FIRST_PLAYER",
                     Value = new
                     {
-                        PlayerId = entity.Id,
+                        EntityId = entity.Id,
                         LocalPlayer = ParserState.LocalPlayer,
                         OpponentPlayer = ParserState.OpponentPlayer,
                     }
