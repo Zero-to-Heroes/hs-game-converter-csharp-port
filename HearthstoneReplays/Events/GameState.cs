@@ -163,6 +163,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             var heroesForController = CurrentEntities.Values
                 .Where((e) => e.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where((e) => e.GetTag(GameTag.CONTROLLER) == entity.GetTag(GameTag.CONTROLLER))
+                .Where((e) => e.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 // If there are several, we take the most recent one
                 .OrderByDescending((e) => e.TimeStamp);
             return heroesForController.First();
