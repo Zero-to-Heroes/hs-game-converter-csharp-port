@@ -17,6 +17,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 		public Dictionary<int, FullEntity> CurrentEntities = new Dictionary<int, FullEntity>();
         public Dictionary<string, int> EntityNames = new Dictionary<string, int>();
         public bool MulliganOver = false;
+        public int CurrentTurn = 0;
         public dynamic MetaData;
 
 		public void Reset(ParserState state)
@@ -166,6 +167,15 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 .Where((e) => e.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 // If there are several, we take the most recent one
                 .OrderByDescending((e) => e.TimeStamp);
+            // Happens if the remaining hero is dead for instance
+            if (heroesForController.Count() == 0)
+            {
+                heroesForController = CurrentEntities.Values
+                .Where((e) => e.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                .Where((e) => e.GetTag(GameTag.CONTROLLER) == entity.GetTag(GameTag.CONTROLLER))
+                // If there are several, we take the oldest one (as the most recent can be a hero card in hand)
+                .OrderBy((e) => e.TimeStamp);
+            }
             return heroesForController.First();
         }
 

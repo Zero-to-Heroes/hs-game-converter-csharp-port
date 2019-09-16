@@ -33,6 +33,7 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
+            GameState.CurrentTurn = (int)tagChange.Value;
             return new List<GameEventProvider> { GameEventProvider.Create(
                    tagChange.TimeStamp,
                    () => new GameEvent

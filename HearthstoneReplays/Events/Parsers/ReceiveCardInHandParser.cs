@@ -50,6 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             var previousZone = entity.GetTag(GameTag.ZONE) == -1 ? 0 : entity.GetTag(GameTag.ZONE);
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            
             return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     GameEvent.CreateProvider(
@@ -68,18 +69,20 @@ namespace HearthstoneReplays.Events.Parsers
         {
             if (node.Type == typeof(ShowEntity))
             {
-                return CreateEventFromShowEntity(node.Object as ShowEntity, node.CreationLogLine);
+                return CreateEventFromShowEntity(node, node.CreationLogLine);
             }
             else if (node.Type == typeof(FullEntity))
             {
-                return CreateEventFromFullEntity(node.Object as FullEntity, node.CreationLogLine);
+                return CreateEventFromFullEntity(node, node.CreationLogLine);
             }
             return null;
         }
 
-        private List<GameEventProvider> CreateEventFromShowEntity(ShowEntity showEntity, string creationLogLine)
+        private List<GameEventProvider> CreateEventFromShowEntity(Node node, string creationLogLine)
         {
-            var cardId = showEntity.CardId;
+            ShowEntity showEntity = node.Object as ShowEntity;
+            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, showEntity.GetTag(GameTag.CREATOR), node);
+            var cardId = Oracle.PredictCardId(GameState, creatorCardId, node, showEntity.CardId);
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             var previousZone = GameState.CurrentEntities[showEntity.Entity].GetTag(GameTag.ZONE);
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
@@ -97,9 +100,19 @@ namespace HearthstoneReplays.Events.Parsers
                     creationLogLine) };
         }
 
-        private List<GameEventProvider> CreateEventFromFullEntity(FullEntity fullEntity, string creationLogLine)
+        private List<GameEventProvider> CreateEventFromFullEntity(Node node, string creationLogLine)
         {
-            var cardId = fullEntity.CardId;
+            FullEntity fullEntity = node.Object as FullEntity;
+            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity.GetTag(GameTag.CREATOR), node);
+            var cardId = Oracle.PredictCardId(GameState, creatorCardId, node, fullEntity.CardId);
+            if (cardId == null && GameState.CurrentTurn == 1 && fullEntity.GetTag(GameTag.ZONE_POSITION) == 5)
+            {
+                var controller = GameState.CurrentEntities[fullEntity.GetTag(GameTag.CONTROLLER) + 1];
+                if (controller.GetTag(GameTag.CURRENT_PLAYER) != 1)
+                {
+                    cardId = "GAME_005";
+                }
+            }
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             var previousZone = 0;
             if (GameState.CurrentEntities.ContainsKey(fullEntity.Id))
