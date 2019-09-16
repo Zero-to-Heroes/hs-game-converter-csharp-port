@@ -97,7 +97,7 @@ namespace HearthstoneReplays
 
         public void stopDevMode()
         {
-            NodeParser.DevMode = true;
+            NodeParser.DevMode = false;
         }
     }
 }
