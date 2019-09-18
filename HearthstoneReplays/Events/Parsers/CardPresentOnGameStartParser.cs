@@ -42,6 +42,7 @@ namespace HearthstoneReplays.Events.Parsers
             var fullEntity = node.Object as FullEntity;
             var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
+            var startingHealth = fullEntity.GetTag(GameTag.HEALTH);
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
@@ -51,8 +52,11 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     fullEntity.Id,
                     ParserState,
-                        GameState,
-                    gameState),
+                    GameState,
+                    gameState,
+                    new {
+                        Health = startingHealth
+                    }),
                 true,
                 node.CreationLogLine) };
         }
