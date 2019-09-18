@@ -23,7 +23,7 @@ namespace HearthstoneReplayTests
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
-            List<string> logFile = TestDataReader.GetInputFile("game_report__damage_at_end_taken.txt");
+            List<string> logFile = TestDataReader.GetInputFile("army_of_the_dead.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
             Thread.Sleep(500);
             //string xml = new ReplayConverter().xmlFromReplay(replay);
@@ -40,26 +40,36 @@ namespace HearthstoneReplayTests
                 {
                     new { EventName = "CARD_REMOVED_FROM_DECK", ExpectedEventCount = 3 },
                     new { EventName = "BURNED_CARD", ExpectedEventCount = 1 },
+                    new { EventName = "CARD_STOLEN", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "burned_cards", Events = new[]
                 {
                     new { EventName = "BURNED_CARD", ExpectedEventCount = 1 },
+                    new { EventName = "CARD_STOLEN", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "mad_scientist", Events = new[]
                 {
                     new { EventName = "SECRET_PLAYED_FROM_DECK", ExpectedEventCount = 1 },
+                    new { EventName = "CARD_STOLEN", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "new_meta_log", Events = new[]
                 {
                     new { EventName = "CARD_PLAYED", ExpectedEventCount = 41 },
+                    new { EventName = "CARD_STOLEN", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "healing", Events = new[]
                 {
                     new { EventName = "HEALING", ExpectedEventCount = 25 },
+                    new { EventName = "CARD_STOLEN", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "armor", Events = new[]
                 {
                     new { EventName = "ARMOR_CHANGED", ExpectedEventCount = 55 },
+                    new { EventName = "CARD_STOLEN", ExpectedEventCount = 0 },
+                }},
+                new { FileName = "steal_card", Events = new[]
+                {
+                    new { EventName = "CARD_STOLEN", ExpectedEventCount = 2 },
                 }},
             };
 
@@ -73,7 +83,7 @@ namespace HearthstoneReplayTests
                     var value = 0;
                     if (events.ContainsKey(evtName))
                     {
-                        value = events[evtName];
+                        value = events[evtName]; 
                     }
                     events[evtName] = value + 1;
                 };
@@ -85,8 +95,12 @@ namespace HearthstoneReplayTests
                 {
                     var expectedEventCount = (int)evt.ExpectedEventCount;
                     var testedEventName = evt.EventName as string;
-                    Assert.IsTrue(events.ContainsKey(testedEventName), "Missing event: " + testedFileName + " / " + testedEventName);
-                    Assert.AreEqual(expectedEventCount, events[testedEventName], testedFileName + " / " + testedEventName);
+                    var realEventCount = 0;
+                    if (events.ContainsKey(testedEventName))
+                    {
+                        realEventCount = events[testedEventName];
+                    }
+                    Assert.AreEqual(expectedEventCount, realEventCount, testedFileName + " / " + testedEventName);
                 }
             }
         }

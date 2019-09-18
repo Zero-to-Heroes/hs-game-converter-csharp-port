@@ -158,6 +158,7 @@ namespace HearthstoneReplays.Events
                 new FirstPlayerParser(ParserState),
                 new MainStepReadyParser(ParserState),
                 new ArmorChangeParser(ParserState),
+                new CardStolenParser(ParserState),
             };
         }
 
@@ -178,7 +179,10 @@ namespace HearthstoneReplays.Events
                         {
                             return;
                         }
-                        if (!eventQueue.Any(p => p.AnimationReady) && !ParserState.Ended)
+                        if (!eventQueue.Any(p => p.AnimationReady) 
+                            && !ParserState.Ended
+                            // Safeguard - Don't wait too long for the animation in case we never receive it
+                            && DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).TotalMilliseconds < 5000)
                         {
                             return;
                         }
@@ -202,6 +206,10 @@ namespace HearthstoneReplays.Events
                         {
                             GameEventHandler.Handle(gameEvent);
                         }
+                        else
+                        {
+                            Logger.Log("Game event is null, so doing nothing", provider.CreationLogLine);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -217,8 +225,10 @@ namespace HearthstoneReplays.Events
         {
             try
             {
+                // We leave some time so that events parsed later can be processed sooner (typiecally the case 
+                // for end-of-block events vs start-of-block events, like tag changes)
                 return eventQueue.Count > 0
-                        && (DevMode || DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).Milliseconds > 500);
+                        && (DevMode || DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).TotalMilliseconds > 500);
             }
             catch (Exception ex)
             {

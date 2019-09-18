@@ -107,10 +107,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums.cs" />
+    <Compile Include="Events\Oracle.cs" />
     <Compile Include="Events\ActionParser.cs" />
     <Compile Include="Events\CardIds.cs" />
     <Compile Include="Events\GameEventProvider.cs" />
     <Compile Include="Events\Parsers\BurnedCardParser.cs" />
+    <Compile Include="Events\Parsers\CardStolenParser.cs" />
     <Compile Include="Events\Parsers\HealingParser.cs" />
     <Compile Include="Events\Parsers\FirstPlayerParser.cs" />
     <Compile Include="Events\Parsers\MinionDiedParser.cs" />

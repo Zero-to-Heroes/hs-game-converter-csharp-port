@@ -143,10 +143,13 @@ namespace HearthstoneReplays.Events
             {
                 String[] split = timestamp.Split(':');
                 int hours = int.Parse(split[0]);
-                if (hours >= 24)
-                {
+                if (hours >= 24) 
+                {  
                     String newTs = "00:" + split[1] + ":" + split[2];
-                    return DateTimeOffset.Parse(newTs).AddDays(1);
+                    Logger.Log(timestamp, newTs);
+                    // We don't need to add a day here, because the computer's clock will also have 
+                    // made the time leap to the next day
+                    return DateTimeOffset.Parse(newTs);
                 }
                 return DateTimeOffset.Parse(timestamp);
             }
