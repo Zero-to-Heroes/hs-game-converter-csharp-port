@@ -23,7 +23,7 @@ namespace HearthstoneReplayTests
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
-            List<string> logFile = TestDataReader.GetInputFile("army_of_the_dead.txt");
+            List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
             Thread.Sleep(500);
             //string xml = new ReplayConverter().xmlFromReplay(replay);
@@ -70,6 +70,11 @@ namespace HearthstoneReplayTests
                 new { FileName = "steal_card", Events = new[]
                 {
                     new { EventName = "CARD_STOLEN", ExpectedEventCount = 2 },
+                }},
+                new { FileName = "bulwark_of_death", Events = new[]
+                {
+                    new { EventName = "SECRET_TRIGGERED", ExpectedEventCount = 2 },
+                    new { EventName = "DEATHRATTLE_TRIGGERED", ExpectedEventCount = 12 },
                 }},
             };
 

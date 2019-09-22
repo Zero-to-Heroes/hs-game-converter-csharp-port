@@ -164,9 +164,11 @@
     <EmbeddedResource Include="TestData\armor.txt" />
     <EmbeddedResource Include="TestData\game_report__damage_at_end_taken.txt" />
     <EmbeddedResource Include="TestData\coin_in_hand.txt" />
-    <EmbeddedResource Include="TestData\shirvallah_over_midnight.txt" />
     <EmbeddedResource Include="TestData\plague_lord.txt" />
     <EmbeddedResource Include="TestData\steal_card.txt" />
+    <EmbeddedResource Include="TestData\plague_lord_one_run_defeat.txt" />
+    <EmbeddedResource Include="TestData\plague_lord_one_run_defeat_2.txt" />
+    <EmbeddedResource Include="TestData\bulwark_of_death.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />

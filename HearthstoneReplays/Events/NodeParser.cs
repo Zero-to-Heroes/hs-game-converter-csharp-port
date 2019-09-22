@@ -159,6 +159,8 @@ namespace HearthstoneReplays.Events
                 new MainStepReadyParser(ParserState),
                 new ArmorChangeParser(ParserState),
                 new CardStolenParser(ParserState),
+                new SecretTriggeredParser(ParserState),
+                new DeathrattleTriggeredParser(ParserState),
             };
         }
 
