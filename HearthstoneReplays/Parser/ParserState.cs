@@ -40,7 +40,7 @@ namespace HearthstoneReplays.Parser
         public bool Ended { get; set; }
         public int NumberOfCreates { get; set; }
         public bool ReconnectionOngoing { get; set; }
-        public string FullLog { get; set; } = "";
+        //public string FullLog { get; set; } = "";
 
 		private Node _node;
 		public Node Node
@@ -153,7 +153,7 @@ namespace HearthstoneReplays.Parser
 			CurrentChosenEntites = null;
 			Ended = false;
             ReconnectionOngoing = false;
-            FullLog = "";
+            //FullLog = "";
             NumberOfCreates = 0;
             Logger.Log("resetting game state", "");
         }

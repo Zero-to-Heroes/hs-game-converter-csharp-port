@@ -96,14 +96,14 @@ namespace HearthstoneReplays.Parser
 			if (!match.Success)
 				return;
 
-            State.FullLog += line + "\n";
+            //State.FullLog += line + "\n";
             //Logger.Log("Processing new line", line);
             AddData(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value);
             // New game
-            if (State.FullLog.Length == 0)
-            {
-                State.FullLog += line + "\n";
-            }
+            //if (State.FullLog.Length == 0)
+            //{
+            //    State.FullLog += line + "\n";
+            //}
 
         }
 
