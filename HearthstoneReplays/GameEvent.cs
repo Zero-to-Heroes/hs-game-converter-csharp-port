@@ -91,6 +91,8 @@ namespace HearthstoneReplays
             {
                 entityId = entity.Id,
                 cardId = cardId,
+                attack = entity.GetTag(GameTag.ATK),
+                health = entity.GetTag(GameTag.HEALTH),
             };
         }
 	}
