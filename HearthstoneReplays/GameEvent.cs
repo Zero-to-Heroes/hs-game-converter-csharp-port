@@ -72,12 +72,20 @@ namespace HearthstoneReplays
 
         private static List<object> BuildZone(GameState gameState, Zone zone, int playerId)
         {
-            return gameState.CurrentEntities.Values
+            try
+            {
+                return gameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)zone)
                     .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => BuildSmallEntity(entity))
                     .ToList();
+            }
+            catch (Exception e)
+            {
+                Logger.Log("Warning: issue when trying to build zone", e);
+                return BuildZone(gameState, zone, playerId);
+            }
         }
 
         private static object BuildSmallEntity(BaseEntity entity)
