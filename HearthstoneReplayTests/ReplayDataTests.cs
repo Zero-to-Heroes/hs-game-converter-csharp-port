@@ -76,6 +76,11 @@ namespace HearthstoneReplayTests
                     new { EventName = "SECRET_TRIGGERED", ExpectedEventCount = 2 },
                     new { EventName = "DEATHRATTLE_TRIGGERED", ExpectedEventCount = 12 },
                 }},
+                // Just check that no error is thrown
+                new { FileName = "toki_hero_power", Events = new[]
+                {
+                    new { EventName = "NEW_GAME", ExpectedEventCount = 1 },
+                }},
             };
 
             foreach (dynamic fileOutput in fileOutputs)
