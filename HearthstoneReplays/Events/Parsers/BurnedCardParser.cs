@@ -70,10 +70,16 @@ namespace HearthstoneReplays.Events.Parsers
                         gameState),
                     (GameEventProvider provider) =>
                     {
+                        if (provider == null)
+                        {
+                            Logger.Log("Error: trying to instantiate an event with null provider", node.CreationLogLine);
+                            return false;
+                        }
                         var gameEvent = provider.SupplyGameEvent();
                         if (gameEvent == null)
                         {
                             Logger.Log("Could not identify gameEvent", provider.CreationLogLine);
+                            return false;
                         }
                         if (gameEvent.Type != "CARD_REMOVED_FROM_DECK")
                         {
