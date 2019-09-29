@@ -41,20 +41,18 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
-                () => new GameEvent
-                {
-                    Type = "MINION_ON_BOARD_ATTACK_UPDATED",
-                    Value = new
-                    {
-                        CardId = cardId,
-                        ControllerId = controllerId,
-                        LocalPlayer = ParserState.LocalPlayer,
-                        OpponentPlayer = ParserState.OpponentPlayer,
+                GameEvent.CreateProvider(
+                    "MINION_ON_BOARD_ATTACK_UPDATED",
+                    cardId,
+                    controllerId,
+                    entity.Id,
+                    ParserState,
+                    GameState,
+                    new {
                         InitialAttack = initialAttack,
                         NewAttack = newAttack,
-                        EntityId = entity.Id, // Might be useful if we want to uniquely identify the minion
                     }
-                },
+                ),
                 true,
                 node.CreationLogLine) };
         }
