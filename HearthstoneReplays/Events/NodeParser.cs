@@ -227,10 +227,16 @@ namespace HearthstoneReplays.Events
         {
             try
             {
-                // We leave some time so that events parsed later can be processed sooner (typiecally the case 
-                // for end-of-block events vs start-of-block events, like tag changes)
-                return eventQueue.Count > 0
+                var isEvent = false;
+
+                lock (listLock)
+                {
+                    // We leave some time so that events parsed later can be processed sooner (typiecally the case 
+                    // for end-of-block events vs start-of-block events, like tag changes)
+                    isEvent=  eventQueue.Count > 0
                         && (DevMode || DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).TotalMilliseconds > 500);
+                }
+                return isEvent;
             }
             catch (Exception ex)
             {
