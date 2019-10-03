@@ -25,18 +25,20 @@ namespace HearthstoneReplays.Parser.Handlers
 
             data = data.Trim();
 
-			var match = Regexes.ChoicesChoiceRegex.Match(data);
-			if (match.Success)
-			{
-				var playerId = match.Groups[1].Value;
-				var playerName = match.Groups[2].Value;
-				if (!string.IsNullOrEmpty(playerId) && !string.IsNullOrEmpty(playerName))
-				{
-					helper.setName(state, int.Parse(playerId), playerName);
-				}
-			}
+            // The code below was used before the log introduced an easier way to assign names
+            // to ids, and should not be needed anymore
+			//var match = Regexes.ChoicesChoiceRegex.Match(data);
+			//if (match.Success)
+			//{
+			//	var playerId = match.Groups[1].Value;
+			//	var playerName = match.Groups[2].Value;
+			//	if (!string.IsNullOrEmpty(playerId) && !string.IsNullOrEmpty(playerName))
+			//	{
+			//		helper.setName(state, int.Parse(playerId), playerName);
+			//	}
+			//}
 
-			match = Regexes.ChoicesChoiceRegex.Match(data);
+			var match = Regexes.ChoicesChoiceRegex.Match(data);
 			if (match.Success)
 			{
 				state.UpdateCurrentNode(typeof(Game), typeof(Action));
