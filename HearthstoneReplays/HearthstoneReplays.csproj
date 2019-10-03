@@ -111,6 +111,7 @@
     <Compile Include="Events\ActionParser.cs" />
     <Compile Include="Events\CardIds.cs" />
     <Compile Include="Events\GameEventProvider.cs" />
+    <Compile Include="Events\Parsers\HealthDefChangeParser.cs" />
     <Compile Include="Events\Parsers\BurnedCardParser.cs" />
     <Compile Include="Events\Parsers\CardStolenParser.cs" />
     <Compile Include="Events\Parsers\HealingParser.cs" />
