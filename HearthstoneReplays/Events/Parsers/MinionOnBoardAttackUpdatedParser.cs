@@ -48,6 +48,7 @@ namespace HearthstoneReplays.Events.Parsers
                     entity.Id,
                     ParserState,
                     GameState,
+                    null,
                     new {
                         InitialAttack = initialAttack,
                         NewAttack = newAttack,
