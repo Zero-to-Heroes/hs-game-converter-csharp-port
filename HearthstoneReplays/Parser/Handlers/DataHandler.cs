@@ -20,6 +20,8 @@ namespace HearthstoneReplays.Parser.Handlers
 	{
 		public int previousTimestampHours;
 
+        //public int index;
+
 		private Helper helper = new Helper();
 
 		public void Handle(string timestamp, string data, ParserState state, int previousTimestampTotalSeconds)
@@ -30,8 +32,11 @@ namespace HearthstoneReplays.Parser.Handlers
 			var indentLevel = data.Length - trimmed.Length;
 			data = trimmed;
 
-			if (data == "CREATE_GAME")
+            //Logger.Log("Handling event? " + index++, timestamp + " " + data);
+
+            if (data == "CREATE_GAME")
             {
+                //Logger.Log("Handling create game", "");
                 var totalSeconds = BuildTotalSeconds(timestamp);
                 if (!state.Ended && state.NumberOfCreates >= 1)
                 {
@@ -57,16 +62,16 @@ namespace HearthstoneReplays.Parser.Handlers
 				return;
 			}
             // The app was launched in the middle of a game, we don't support this now but at least don't crash
-            if (state.NumberOfCreates == 0)
-            {
-                // Just selectively do some sampling to avoid logging everything, but we 
-                // still want to have a trace that this is what happened
-                if (data == "BLOCK_END")
-                {
-                    Logger.Log("Trying to parse an ongoing game, this is not supported yet", "");
-                }
-                return;
-            }
+            //if (state.NumberOfCreates == 0)
+            //{
+            //    // Just selectively do some sampling to avoid logging everything, but we 
+            //    // still want to have a trace that this is what happened
+            //    if (data == "BLOCK_END")
+            //    {
+            //        Logger.Log("Trying to parse an ongoing game, this is not supported yet", "");
+            //    }
+            //    return;
+            //}
 
 			if (data == "BLOCK_END")
             {
@@ -163,15 +168,18 @@ namespace HearthstoneReplays.Parser.Handlers
 			match = Regexes.ActionCreategamePlayerRegex.Match(data);
 			if(match.Success)
 			{
+                //Logger.Log("Handling PlayerEntity", "");
                 if (state.ReconnectionOngoing)
                 {
+                    //Logger.Log("Reconnection ongoing", "returning");
                     return;
                 }
 				var id = match.Groups[1].Value;
 				var playerId = match.Groups[2].Value;
 				var accountHi = match.Groups[3].Value;
 				var accountLo = match.Groups[4].Value;
-				var pEntity = new PlayerEntity
+                //Logger.Log("Handling PlayerEntity with id", id);
+                var pEntity = new PlayerEntity
 				{
 					Id = int.Parse(id),
 					AccountHi = accountHi,
@@ -181,10 +189,12 @@ namespace HearthstoneReplays.Parser.Handlers
 				};
 				state.UpdateCurrentNode(typeof(Game));
 				state.CurrentGame.AddData(pEntity);
+
                 var newNode = new Node(typeof(PlayerEntity), pEntity, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
-				return;
+                //Logger.Log("Updated current node", state.Node.CreationLogLine);
+                return;
 			}
 
 			match = Regexes.ActionStartRegex.Match(data);
