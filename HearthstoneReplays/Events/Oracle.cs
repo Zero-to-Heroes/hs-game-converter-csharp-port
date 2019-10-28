@@ -88,6 +88,7 @@ namespace HearthstoneReplays.Events
                 case Mage.OpenTheWaygate: return NonCollectible.Mage.OpentheWaygate_TimeWarpToken;
                 case Mage.Pyros: return NonCollectible.Mage.Pyros_PyrosToken1;
                 case Mage.Rhonin: return Mage.ArcaneMissiles;
+                case Mage.SteamSurger: return Mage.FlameGeyser;
                 case NonCollectible.Mage.Pyros_PyrosToken1: return NonCollectible.Mage.Pyros_PyrosToken2;
                 case Paladin.DrygulchJailor: return NonCollectible.Paladin.Reinforce_SilverHandRecruitToken;
                 case Paladin.TheLastKaleidosaur: return NonCollectible.Paladin.TheLastKaleidosaur_GalvadonToken;
@@ -176,6 +177,7 @@ namespace HearthstoneReplays.Events
                 case Warlock.ExpiredMerchant:
                     Console.WriteLine("TODO! Implement ExpiredMerchant card guess");
                     return null;
+
                 case Priest.SpiritOfTheDead:
                     if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                     {
@@ -192,6 +194,16 @@ namespace HearthstoneReplays.Events
                                 }
                             }
                         }
+                    }
+                    return null;
+
+                case Mage.ManaBind:
+                case Mage.FrozenClone:
+                    if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action) 
+                        && node.Parent.Parent?.Type == typeof(Parser.ReplayData.GameActions.Action))
+                    {
+                        var act = node.Parent.Parent.Object as Parser.ReplayData.GameActions.Action;
+                        return GameState.CurrentEntities[act.Entity].CardId;
                     }
                     return null;
             }
