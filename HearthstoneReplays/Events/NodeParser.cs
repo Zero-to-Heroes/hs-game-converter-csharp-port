@@ -42,20 +42,28 @@ namespace HearthstoneReplays.Events
 
         public void NewNode(Node node)
         {
-            if (node == null)
+            try
             {
-                return;
-            }
-            foreach (ActionParser parser in parsers)
-            {
-                if (parser.AppliesOnNewNode(node))
+                if (node == null)
                 {
-                    List<GameEventProvider> providers = parser.CreateGameEventProviderFromNew(node);
-                    if (providers != null)
+                    return;
+                }
+                foreach (ActionParser parser in parsers)
+                {
+                    if (parser.AppliesOnNewNode(node))
                     {
-                        EnqueueGameEvent(providers);
+                        List<GameEventProvider> providers = parser.CreateGameEventProviderFromNew(node);
+                        if (providers != null)
+                        {
+                            EnqueueGameEvent(providers);
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Logger.Log(e.StackTrace, e.Message);
+                Logger.Log("Exception while trying to apply parsers to new node", "ignoring node and moving on");
             }
         }
 
@@ -162,6 +170,7 @@ namespace HearthstoneReplays.Events
                 new SecretTriggeredParser(ParserState),
                 new DeathrattleTriggeredParser(ParserState),
                 new HealthDefChangeParser(ParserState),
+                new ChangeCardCreatorParser(ParserState),
             };
         }
 
@@ -217,8 +226,8 @@ namespace HearthstoneReplays.Events
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log("Exception while parsing event queue", ex.Message);
                     Logger.Log(ex.StackTrace, "" + eventQueue.Count);
+                    Logger.Log("Exception while parsing event queue", ex.Message);
                     return;
                 }
             }
@@ -241,8 +250,8 @@ namespace HearthstoneReplays.Events
             }
             catch (Exception ex)
             {
-                Logger.Log("Exception while trying to determine event to process", ex.Message);
                 Logger.Log(ex.StackTrace, "" + eventQueue.Count);
+                Logger.Log("Exception while trying to determine event to process", ex.Message);
                 return false;
             }
         }
