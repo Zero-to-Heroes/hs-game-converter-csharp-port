@@ -132,7 +132,10 @@ namespace HearthstoneReplays.Events.Parsers
                         fullEntity.Id,
                         ParserState,
                         GameState,
-                        gameState),
+                        gameState,
+                        new {
+                            CreatorCardId = creatorCardId,
+                        }),
                     true,
                     creationLogLine) };
         }
