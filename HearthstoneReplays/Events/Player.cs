@@ -25,6 +25,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
 		public string CardID { get; set; }
 
+        public bool IsMainPlayer { get; set; }
+
 		public override string ToString()
 		{
 			return JsonConvert.SerializeObject(this);
@@ -41,6 +43,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 			player.Name = entity.Name;
 			player.Rank = entity.Rank;
 			player.LegendRank = entity.LegendRank;
+            player.IsMainPlayer = entity.IsMainPlayer;
 			return player;
 		}
 	}

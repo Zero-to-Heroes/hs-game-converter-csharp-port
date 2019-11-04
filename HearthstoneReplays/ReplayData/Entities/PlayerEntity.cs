@@ -30,7 +30,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 		[XmlAttribute("cardback")]
 		public string Cardback { get; set; }
 
-		public override string ToString()
+        [XmlAttribute("isMainPlayer")]
+        public bool IsMainPlayer { get; set; }
+
+        public override string ToString()
 		{
 			return JsonConvert.SerializeObject(this);
 			//return "PlayerEntity: " + PlayerId + ", " + Name;

@@ -101,6 +101,9 @@ namespace HearthstoneReplays.Parser
 
         public void SetLocalPlayer(Player value, string timestamp, string data) { 
 			_localPlayer = value;
+            value.IsMainPlayer = true;
+            var playerEntity = getPlayers().Find(player => player.PlayerId == value.PlayerId);
+            playerEntity.IsMainPlayer = value.IsMainPlayer;
             NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
                     () => new GameEvent
@@ -121,6 +124,9 @@ namespace HearthstoneReplays.Parser
         public void SetOpponentPlayer(Player value, string timestamp, string data)
         {
             _opponentPlayer = value;
+            value.IsMainPlayer = false;
+            var playerEntity = getPlayers().Find(player => player.PlayerId == value.PlayerId);
+            playerEntity.IsMainPlayer = value.IsMainPlayer;
             NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
                     () => new GameEvent
