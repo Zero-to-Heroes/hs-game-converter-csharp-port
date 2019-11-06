@@ -17,6 +17,9 @@ namespace HearthstoneReplays.Parser
         private readonly List<string> innkeeperNames = new List<string>() { "The Innkeeper", "Aubergiste", "Gastwirt",
             "El tabernero", "Locandiere", "酒場のオヤジ", "여관주인",  "Karczmarz", "O Estalajadeiro", "Хозяин таверны",
             "เจ้าของโรงแรม", "旅店老板", "旅店老闆" };
+        private readonly List<string> bobTavernNames = new List<string>() { "Bob's Tavern", "Bobs Gasthaus", "Taberna de Bob",
+            "Taverne de Bob", "Locanda di Bob", "ボブの酒場", "밥의 선술집", "Karczma Boba", "Taverna do Bob", "Таверна Боба",
+            "โรงเตี๊ยมของบ็อบ", "鲍勃的酒馆", "鮑伯的旅店"};
 
 
         private readonly Dictionary<GameTag, Type> TagTypes = new Dictionary<GameTag, Type>
@@ -81,14 +84,18 @@ namespace HearthstoneReplays.Parser
 
             if (firstPlayer.Name == "UNKNOWN HUMAN PLAYER" 
                 || innkeeperNames.Select(x => x.ToLower()).Contains(firstPlayer.Name.ToLower())
-                || innkeeperNames.Select(x => x.ToLower()).Contains(firstPlayer.InitialName.ToLower()))
+                || innkeeperNames.Select(x => x.ToLower()).Contains(firstPlayer.InitialName.ToLower())
+                || bobTavernNames.Select(x => x.ToLower()).Contains(firstPlayer.Name.ToLower())
+                || bobTavernNames.Select(x => x.ToLower()).Contains(firstPlayer.InitialName.ToLower()))
 			{
 				firstPlayer.Name = data;
 				return firstPlayer.Id;
 			}
 			if(secondPlayer.Name == "UNKNOWN HUMAN PLAYER" 
                 || innkeeperNames.Select(x => x.ToLower()).Contains(secondPlayer.Name.ToLower())
-                || innkeeperNames.Select(x => x.ToLower()).Contains(secondPlayer.InitialName.ToLower()))
+                || innkeeperNames.Select(x => x.ToLower()).Contains(secondPlayer.InitialName.ToLower())
+                || bobTavernNames.Select(x => x.ToLower()).Contains(secondPlayer.Name.ToLower())
+                || bobTavernNames.Select(x => x.ToLower()).Contains(secondPlayer.InitialName.ToLower()))
 			{
 				secondPlayer.Name = data;
 				return secondPlayer.Id;

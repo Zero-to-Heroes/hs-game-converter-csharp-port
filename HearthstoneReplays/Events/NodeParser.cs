@@ -225,8 +225,7 @@ namespace HearthstoneReplays.Events
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(ex.StackTrace, "" + eventQueue.Count);
-                    Logger.Log("Exception while parsing event queue", ex.Message);
+                    Logger.Log("Exception while parsing event queue " + ex.Message, ex.StackTrace);
                     return;
                 }
             }

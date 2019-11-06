@@ -30,7 +30,7 @@ namespace HearthstoneReplays
 
 			if (callback == null)
 			{
-				onGlobalEvent("No callback, returning", logs);
+				onGlobalEvent("No callback, returning", "");
 				return;
 			}
 
