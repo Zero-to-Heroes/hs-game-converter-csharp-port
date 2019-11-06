@@ -170,6 +170,7 @@ namespace HearthstoneReplays.Events
                 new DeathrattleTriggeredParser(ParserState),
                 new HealthDefChangeParser(ParserState),
                 new ChangeCardCreatorParser(ParserState),
+                new LocalPlayerLeaderboardPlaceChangedParser(ParserState),
             };
         }
 

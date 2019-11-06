@@ -26,8 +26,8 @@ namespace HearthstoneReplayTests
             List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
             Thread.Sleep(500);
-            string xml = new ReplayConverter().xmlFromReplay(replay);
-            Console.Write(xml);
+            //string xml = new ReplayConverter().xmlFromReplay(replay);
+            //Console.Write(xml);
         }
 
         [TestMethod]
@@ -80,6 +80,10 @@ namespace HearthstoneReplayTests
                 new { FileName = "toki_hero_power", Events = new[]
                 {
                     new { EventName = "NEW_GAME", ExpectedEventCount = 1 },
+                }},
+                new { FileName = "local_player_leaedrboard", Events = new[]
+                {
+                    new { EventName = "LOCAL_PLAYER_LEADERBOARD_PLACE_CHANGED", ExpectedEventCount = 7 },
                 }},
             };
 
