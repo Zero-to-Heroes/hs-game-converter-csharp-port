@@ -83,7 +83,7 @@ namespace HearthstoneReplays
             }
             catch (Exception e)
             {
-                Logger.Log("Warning: issue when trying to build zone", e);
+                Logger.Log("Warning: issue when trying to build zone " + e.Message, e.StackTrace);
                 return BuildZone(gameState, zone, playerId);
             }
         }
