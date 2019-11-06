@@ -18,10 +18,12 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 		[XmlAttribute("playerID")]
 		public int PlayerId { get; set; }
 
-		[XmlAttribute("name")]
-		public string Name { get; set; }
+        [XmlAttribute("name")]
+        public string Name { get; set; }
 
-		[XmlAttribute("rank")]
+        public string InitialName { get; set; }
+
+        [XmlAttribute("rank")]
 		public string Rank { get; set; }
 
 		[XmlAttribute("legendRank")]

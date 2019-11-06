@@ -13,7 +13,7 @@ using Type = System.Type;
 namespace HearthstoneReplays.Parser
 {
 	public class Helper
-	{
+    {
         private readonly List<string> innkeeperNames = new List<string>() { "The Innkeeper", "Aubergiste", "Gastwirt",
             "El tabernero", "Locandiere", "酒場のオヤジ", "여관주인",  "Karczmarz", "O Estalajadeiro", "Хозяин таверны",
             "เจ้าของโรงแรม", "旅店老板", "旅店老闆" };
@@ -62,6 +62,7 @@ namespace HearthstoneReplays.Parser
             if (string.IsNullOrEmpty(firstPlayer.Name))
 		    {
 		        firstPlayer.Name = data;
+                firstPlayer.InitialName = data;
                 return firstPlayer.Id;
             }
             // Sometimes we register the player name with the full battletag, 
@@ -71,6 +72,7 @@ namespace HearthstoneReplays.Parser
             if (string.IsNullOrEmpty(secondPlayer.Name))
 		    {
 		        secondPlayer.Name = data;
+                secondPlayer.InitialName = data;
                 return secondPlayer.Id;
             }
             // And the opposite
@@ -78,13 +80,15 @@ namespace HearthstoneReplays.Parser
             if (data != null && data.IndexOf(secondPlayer.Name) != -1) return secondPlayer.Id;
 
             if (firstPlayer.Name == "UNKNOWN HUMAN PLAYER" 
-                || innkeeperNames.Select(x => x.ToLower()).Contains(firstPlayer.Name.ToLower()))
+                || innkeeperNames.Select(x => x.ToLower()).Contains(firstPlayer.Name.ToLower())
+                || innkeeperNames.Select(x => x.ToLower()).Contains(firstPlayer.InitialName.ToLower()))
 			{
 				firstPlayer.Name = data;
 				return firstPlayer.Id;
 			}
 			if(secondPlayer.Name == "UNKNOWN HUMAN PLAYER" 
-                || innkeeperNames.Select(x => x.ToLower()).Contains(secondPlayer.Name.ToLower()))
+                || innkeeperNames.Select(x => x.ToLower()).Contains(secondPlayer.Name.ToLower())
+                || innkeeperNames.Select(x => x.ToLower()).Contains(secondPlayer.InitialName.ToLower()))
 			{
 				secondPlayer.Name = data;
 				return secondPlayer.Id;
@@ -102,9 +106,11 @@ namespace HearthstoneReplays.Parser
             {
                 return firstPlayer.Id;
             }
-            throw new Exception("Could not get id from player name: " + data 
-                + " // " + firstPlayer.Name + " // " + secondPlayer.Name);
-		}
+            //Logger.Log("Error: could not get id from player name: " + data
+            //    + " // " + firstPlayer.Name + " // " + secondPlayer.Name, "returning second player as a default");
+            throw new Exception("Could not get id from player name: " + data
+                + " // " + firstPlayer.Name + " // " + firstPlayer.InitialName + " // " + secondPlayer.Name + " // " + secondPlayer.InitialName);
+        }
 
 		public void setName(ParserState state, int playerId, String playerName)
 		{

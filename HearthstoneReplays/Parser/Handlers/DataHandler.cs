@@ -89,7 +89,7 @@ namespace HearthstoneReplays.Parser.Handlers
                     return;
                 }
 				var id = match.Groups[1].Value;
-				Debug.Assert(id == "1");
+				//Debug.Assert(id == "1");
 				var gEntity = new GameEntity { Id = int.Parse(id), Tags = new List<Tag>() };
 				state.CurrentGame.AddData(gEntity);
                 var newNode = new Node(typeof(GameEntity), gEntity, indentLevel, state.Node, data);
@@ -110,8 +110,9 @@ namespace HearthstoneReplays.Parser.Handlers
 				var matchingPlayer = state.getPlayers()
 					.Where(player => player.PlayerId == playerId)
 					.First();
-				matchingPlayer.Name = playerName;
-				state.TryAssignLocalPlayer(timestamp, data);
+                matchingPlayer.Name = playerName;
+                matchingPlayer.InitialName = playerName;
+                state.TryAssignLocalPlayer(timestamp, data);
                 Logger.Log("Tried to assign player name", data);
             }
 
@@ -606,6 +607,7 @@ namespace HearthstoneReplays.Parser.Handlers
                     var currentPlayer =
                         (PlayerEntity)state.CurrentGame.Data.Single(x => (x is PlayerEntity) && ((PlayerEntity)x).Id == state.CurrentPlayerId);
                     currentPlayer.Name = rawEntity;
+                    currentPlayer.InitialName = rawEntity;
                 }
             }
             else if(tag.Value == 1)
@@ -619,6 +621,7 @@ namespace HearthstoneReplays.Parser.Handlers
                     var currentPlayer =
                         (PlayerEntity)state.CurrentGame.Data.Single(x => (x is PlayerEntity) && ((PlayerEntity)x).Id != state.CurrentPlayerId);
                     currentPlayer.Name = rawEntity;
+                    currentPlayer.InitialName = rawEntity;
                 }
                 state.CurrentPlayerId = helper.ParseEntity(rawEntity, state);
             }

@@ -110,7 +110,7 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = Oracle.PredictCardId(GameState, creatorCardId, node, fullEntity.CardId);
             if (cardId == null && GameState.CurrentTurn == 1 && fullEntity.GetTag(GameTag.ZONE_POSITION) == 5)
             {
-                var controller = GameState.CurrentEntities[fullEntity.GetTag(GameTag.CONTROLLER) + 1];
+                var controller = GameState.GetController(fullEntity.GetTag(GameTag.CONTROLLER));
                 if (controller.GetTag(GameTag.CURRENT_PLAYER) != 1)
                 {
                     cardId = "GAME_005";

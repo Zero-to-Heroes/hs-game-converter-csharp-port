@@ -19,19 +19,36 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public bool MulliganOver = false;
         public int CurrentTurn = 0;
         public dynamic MetaData;
+        private int gameEntityId;
+        private Dictionary<int, int> controllerEntity = new Dictionary<int, int>();
 
 		public void Reset(ParserState state)
 		{
 			CurrentEntities = new Dictionary<int, FullEntity>();
-			CurrentEntities.Add(1, new FullEntity { Id = 1, Tags = new List<Tag>() });
+            controllerEntity = new Dictionary<int, int>();
+            gameEntityId = -1;
+            //CurrentEntities.Add(1, new FullEntity { Id = 1, Tags = new List<Tag>() });
             MulliganOver = false;
             MetaData = null;
             ParserState = state;
 		}
 
+        public void GameEntity(GameEntity entity)
+        {
+            if (CurrentEntities.ContainsKey(entity.Id))
+            {
+                Logger.Log("error while parsing GameEntity, playerEntity already present in memory", "" + entity.Id);
+                return;
+            }
+            var newTags = new List<Tag>();
+            var fullEntity = new FullEntity { Id = entity.Id, Tags = newTags, TimeStamp = entity.TimeStamp };
+            CurrentEntities.Add(entity.Id, fullEntity);
+            gameEntityId = entity.Id;
+        }
+
         public FullEntity GetGameEntity()
         {
-            return CurrentEntities[1];
+            return CurrentEntities[gameEntityId];
         }
 
         public void UpdateEntityName(string rawEntity)
@@ -69,7 +86,13 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
             var fullEntity = new FullEntity { Id = entity.Id, Tags = newTags, TimeStamp = entity.TimeStamp };
 			CurrentEntities.Add(entity.Id, fullEntity);
+            controllerEntity.Add(entity.PlayerId, entity.Id);
 		}
+
+        public FullEntity GetController(int controllerId)
+        {
+            return CurrentEntities[controllerEntity[controllerId]];
+        }
 
 		public void FullEntity(FullEntity entity, bool updating, string initialLog = null)
 		{
