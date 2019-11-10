@@ -37,21 +37,26 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 var winner = (PlayerEntity)ParserState.GetEntity(tagChange.Entity);
                 var gameStateReport = GameState.BuildGameStateReport();
+                //Logger.Log("Creating event provider for WinnerParser", node.CreationLogLine);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                        tagChange.TimeStamp,
-                       () => new GameEvent
-                       {
-                           Type = "WINNER",
-                           Value = new
-                           {
-                               Winner = winner,
-                               LocalPlayer = ParserState.LocalPlayer,
-                               OpponentPlayer = ParserState.OpponentPlayer,
-                               GameStateReport = gameStateReport,
-                           }
+                       () => {
+                            //Logger.Log("Providing game event for WinnerParser", node.CreationLogLine);
+                            return new GameEvent
+                            {
+                                Type = "WINNER",
+                                Value = new
+                                {
+                                    Winner = winner,
+                                    LocalPlayer = ParserState.LocalPlayer,
+                                    OpponentPlayer = ParserState.OpponentPlayer,
+                                    GameStateReport = gameStateReport,
+                                }
+                            };
                        },
                        true,
-                       node.CreationLogLine) };
+                       node.CreationLogLine,
+                       true) };
             }
             else if (tagChange.Value == (int)PlayState.TIED)
             {

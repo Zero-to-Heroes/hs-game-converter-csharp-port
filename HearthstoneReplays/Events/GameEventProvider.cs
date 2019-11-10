@@ -20,18 +20,21 @@ namespace HearthstoneReplays.Events
 
         private Helper helper = new Helper();
 
+        public bool debug { get; set; }
+
         private GameEventProvider()
         {
 
         }
 
         public static GameEventProvider Create(
-            string originalTimestamp, 
-            Func<GameEvent> eventProvider, 
+            string originalTimestamp,
+            Func<GameEvent> eventProvider,
             bool needMetaData,
-            string creationLogLine)
+            string creationLogLine,
+            bool debug = false)
         {
-            return Create(originalTimestamp, eventProvider, (a) => false, needMetaData, creationLogLine);
+            return Create(originalTimestamp, eventProvider, (a) => false, needMetaData, creationLogLine, debug);
         }
 
         public static GameEventProvider Create(
@@ -39,38 +42,62 @@ namespace HearthstoneReplays.Events
             Func<GameEvent> eventProvider,
             Func<GameEventProvider, bool> isDuplicatePredicate,
             bool needMetaData,
-            string creationLogLine)
+            string creationLogLine,
+            bool debug = false)
         {
-            return new GameEventProvider
+            var result = new GameEventProvider
             {
                 Timestamp = ParseTimestamp(originalTimestamp),
                 SupplyGameEvent = eventProvider,
                 isDuplicatePredicate = isDuplicatePredicate,
                 NeedMetaData = needMetaData,
-                CreationLogLine = creationLogLine
+                CreationLogLine = creationLogLine,
+                debug = debug,
             };
+            //if (debug)
+            //{
+            //    Logger.Log("Creating game event provider in debug " + result.debug, creationLogLine);
+            //}
+            return result;
         }
 
         public void ReceiveAnimationLog(string data, ParserState state)
         {
+            //if (debug || data.Contains("PLAYSTATE"))
+            //{
+            //    Logger.Log("Receiving anomation log " + data, debug);
+            //}
             // Mark the event as ready to be emitted
             IsEventReady(data, state);
             // And now's the time to compute the event itself
             if (AnimationReady)
             {
+                //if (debug)
+                //{
+                //    Logger.Log("IsEventReady, supplying game event", "");
+                //}
                 GameEvent = SupplyGameEvent();
             }
         }
 
-        private void IsEventReady(string data, ParserState state) {
+        private void IsEventReady(string data, ParserState state)
         {
-            if (CreationLogLine == null)
-            {
-                Console.WriteLine("ERROR - Missing CreationLogLine for " + SupplyGameEvent);
-            }
+            //if (CreationLogLine == null)
+            //{
+            //    Logger.Log("Error Missing CreationLogLine for ", data);
+            //}
             data = data.Trim();
+            //if (debug)
+            //{
+            //    Logger.Log("IsEventReady, data", data);
+            //}
+
             if (data == CreationLogLine)
             {
+                //if (debug)
+                //{
+                //    Logger.Log("IsEventReady, AnimationReady", "animation ready");
+                //}
                 AnimationReady = true;
                 return;
             }
@@ -81,6 +108,10 @@ namespace HearthstoneReplays.Events
             var creationLogWithoutZones = Regex.Replace(CreationLogLine, @"zonePos=\d", "");
             if (dataWithoutZones == creationLogWithoutZones)
             {
+                //if (debug)
+                //{
+                //    Logger.Log("IsEventReady, AnimationReady without zones", "animation ready");
+                //}
                 AnimationReady = true;
                 return;
             }
@@ -94,6 +125,10 @@ namespace HearthstoneReplays.Events
                 var dataWithOnlyEntityId = Regex.Replace(data, Regexes.EntityRegex.ToString(), "" + id);
                 if (dataWithOnlyEntityId == CreationLogLine)
                 {
+                    //if (debug)
+                    //{
+                    //    Logger.Log("IsEventReady, AnimationReady with only entity id", "animation ready");
+                    //}
                     AnimationReady = true;
                     return;
                 }
@@ -113,6 +148,10 @@ namespace HearthstoneReplays.Events
 
                 if (gsEntity == ptlEntity)
                 {
+                    //if (debug)
+                    //{
+                    //    Logger.Log("IsEventReady, AnimationReady with entity check", "animation ready");
+                    //}
                     AnimationReady = true;
                     return;
                 }
@@ -130,12 +169,15 @@ namespace HearthstoneReplays.Events
 
                 if (gsEntity == ptlEntity)
                 {
+                    //if (debug)
+                    //{
+                    //    Logger.Log("IsEventReady, AnimationReady with second entity check", "animation ready");
+                    //}
                     AnimationReady = true;
                     return;
                 }
             }
         }
-    }
 
         private static DateTimeOffset ParseTimestamp(string timestamp)
         {
@@ -143,8 +185,8 @@ namespace HearthstoneReplays.Events
             {
                 String[] split = timestamp.Split(':');
                 int hours = int.Parse(split[0]);
-                if (hours >= 24) 
-                {  
+                if (hours >= 24)
+                {
                     String newTs = "00:" + split[1] + ":" + split[2];
                     // We don't need to add a day here, because the computer's clock will also have 
                     // made the time leap to the next day

@@ -172,6 +172,7 @@
     <EmbeddedResource Include="TestData\toki_hero_power.txt" />
     <EmbeddedResource Include="TestData\mana_bind.txt" />
     <EmbeddedResource Include="TestData\local_player_leaderboard.txt" />
+    <EmbeddedResource Include="TestData\over_midnight.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />

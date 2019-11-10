@@ -13,7 +13,7 @@ using HearthstoneReplays.Events.Parsers;
 
 namespace HearthstoneReplays.Events
 {
-	public class NodeParser
+    public class NodeParser
     {
         public static bool DevMode = false;
 
@@ -89,7 +89,7 @@ namespace HearthstoneReplays.Events
 
         public void EnqueueGameEvent(List<GameEventProvider> providers)
         {
-            lock(listLock)
+            lock (listLock)
             {
                 var shouldUnqueuePredicates = providers
                     .Select(provider => provider.isDuplicatePredicate)
@@ -98,8 +98,8 @@ namespace HearthstoneReplays.Events
                 // As we process the queue when the animation is ready, we should not have a race condition 
                 // here, but it's still risky (vs preventing the insertion if a future event is a duplicate, but 
                 // which requires a lot of reengineering of the loop)
-                if (eventQueue != null 
-                    && eventQueue.Count > 0 
+                if (eventQueue != null
+                    && eventQueue.Count > 0
                     && shouldUnqueuePredicates != null
                     && shouldUnqueuePredicates.Count > 0)
                 {
@@ -116,7 +116,7 @@ namespace HearthstoneReplays.Events
         public void ReceiveAnimationLog(string data)
         {
             lock (listLock)
-            { 
+            {
                 if (eventQueue.Count > 0)
                 {
                     foreach (GameEventProvider provider in eventQueue)
@@ -124,6 +124,14 @@ namespace HearthstoneReplays.Events
                         provider.ReceiveAnimationLog(data, ParserState);
                     }
                 }
+            }
+        }
+
+        public void ClearQueue()
+        {
+            lock (listLock)
+            {
+                eventQueue.Clear();
             }
         }
 
@@ -191,10 +199,10 @@ namespace HearthstoneReplays.Events
                         {
                             return;
                         }
-                        if (!eventQueue.Any(p => p.AnimationReady) 
-                            && !ParserState.Ended
-                            // Safeguard - Don't wait too long for the animation in case we never receive it
-                            && DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).TotalMilliseconds < 5000)
+                        if (!eventQueue.Any(p => p.AnimationReady))
+                        // Safeguard - Don't wait too long for the animation in case we never receive it
+                        // With the arrival of Battlegrounds we can't do this anymore, as it spoils the game very fast
+                        //&& DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).TotalMilliseconds < 5000)
                         {
                             return;
                         }
@@ -212,6 +220,13 @@ namespace HearthstoneReplays.Events
                     lock (listLock)
                     {
                         var gameEvent = provider.GameEvent != null ? provider.GameEvent : provider.SupplyGameEvent();
+                        //if (provider.debug)
+                        //{
+                        //    Logger.Log("should provide event? " + (gameEvent != null), provider.CreationLogLine + " // " + provider.AnimationReady);
+                        //    Logger.Log(
+                        //        "animation ready stuff", 
+                        //        string.Join("\\n", eventQueue.Where(p => p.AnimationReady).Select(p => p.CreationLogLine)));
+                        //}
                         // This can happen because there are some conditions that are only resolved when we 
                         // have the full meta data, like dungeon run step
                         if (gameEvent != null)
@@ -242,7 +257,7 @@ namespace HearthstoneReplays.Events
                 {
                     // We leave some time so that events parsed later can be processed sooner (typiecally the case 
                     // for end-of-block events vs start-of-block events, like tag changes)
-                    isEvent=  eventQueue.Count > 0
+                    isEvent = eventQueue.Count > 0
                         && (DevMode || DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).TotalMilliseconds > 500);
                 }
                 return isEvent;
