@@ -18,7 +18,8 @@ namespace HearthstoneReplays.Parser.Handlers
 {
 	public class DataHandler
 	{
-		public int previousTimestampHours;
+		private int previousTimestampHours;
+        private int timestampHoursOffset = 0;
 
         //public int index;
 
@@ -36,6 +37,7 @@ namespace HearthstoneReplays.Parser.Handlers
 
             if (data == "CREATE_GAME")
             {
+                state.NodeParser.ClearQueue();
                 //Logger.Log("Handling create game", "");
                 var totalSeconds = BuildTotalSeconds(timestamp);
                 if (!state.Ended && state.NumberOfCreates >= 1)
@@ -635,8 +637,12 @@ namespace HearthstoneReplays.Parser.Handlers
 				int hours = int.Parse(split[0]);
 				if (hours < previousTimestampHours)
 				{
-					hours = previousTimestampHours + 1;
-					String newTs = hours + ":" + split[1] + ":" + split[2];
+                    if (hours + 24 > previousTimestampHours)
+                    {
+                        previousTimestampHours = hours + 1;
+                    }
+					hours = previousTimestampHours;
+                    String newTs = hours + ":" + split[1] + ":" + split[2];
 					return newTs;
 				}
 				previousTimestampHours = hours;
