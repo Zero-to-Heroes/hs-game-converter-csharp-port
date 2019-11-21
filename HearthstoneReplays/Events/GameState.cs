@@ -27,7 +27,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 			CurrentEntities = new Dictionary<int, FullEntity>();
             controllerEntity = new Dictionary<int, int>();
             gameEntityId = -1;
-            //CurrentEntities.Add(1, new FullEntity { Id = 1, Tags = new List<Tag>() });
             MulliganOver = false;
             MetaData = null;
             ParserState = state;

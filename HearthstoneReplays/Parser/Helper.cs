@@ -44,8 +44,8 @@ namespace HearthstoneReplays.Parser
             var match = Regexes.EntityRegex.Match(data);
 			if(match.Success)
 				return int.Parse(match.Groups[1].Value);
-			if(data == "GameEntity")
-				return 1; 
+            if (data == "GameEntity")
+                return state.CurrentGame.Data.Where(d => d is GameEntity).Select(d => d as GameEntity).FirstOrDefault().Id;
 			int numeric;
 			if(int.TryParse(data, out numeric))
 				return numeric;
