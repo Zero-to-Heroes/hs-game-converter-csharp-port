@@ -60,7 +60,10 @@ namespace HearthstoneReplays.Events.Parsers
                         entity.Id,
                         ParserState,
                         GameState,
-                        gameState),
+                        gameState,
+                        new {
+                            IsPremium = entity.GetTag(GameTag.PREMIUM) == 1
+                        }),
                     true,
                     node.CreationLogLine) };
         }
@@ -86,6 +89,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             var previousZone = GameState.CurrentEntities[showEntity.Entity].GetTag(GameTag.ZONE);
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var entity = GameState.CurrentEntities[showEntity.Entity];
             return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,
                     GameEvent.CreateProvider(
@@ -98,6 +102,7 @@ namespace HearthstoneReplays.Events.Parsers
                         gameState,
                         new {
                             CreatorCardId = creatorCardId, // Used when there is no cardId, so we can show at least the card that created it
+                            IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1
                         }),
                     true,
                     creationLogLine) };
@@ -135,6 +140,7 @@ namespace HearthstoneReplays.Events.Parsers
                         gameState,
                         new {
                             CreatorCardId = creatorCardId,
+                            IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1,
                         }),
                     true,
                     creationLogLine) };
