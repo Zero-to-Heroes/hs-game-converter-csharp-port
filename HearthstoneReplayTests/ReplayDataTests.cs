@@ -25,9 +25,9 @@ namespace HearthstoneReplayTests
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
             List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
-            Thread.Sleep(500);
-            string xml = new ReplayConverter().xmlFromReplay(replay);
-            Console.Write(xml);
+            Thread.Sleep(1000);
+            //string xml = new ReplayConverter().xmlFromReplay(replay);
+            //Console.Write(xml);
         }
 
         [TestMethod]
@@ -41,49 +41,69 @@ namespace HearthstoneReplayTests
                     new { EventName = "CARD_REMOVED_FROM_DECK", ExpectedEventCount = 3 },
                     new { EventName = "BURNED_CARD", ExpectedEventCount = 1 },
                     new { EventName = "CARD_STOLEN", ExpectedEventCount = 0 },
+                    new { EventName = "MINION_SUMMONED", ExpectedEventCount = 34 },
+                    new { EventName = "RECRUIT_CARD", ExpectedEventCount = 3 },
                 }},
                 new { FileName = "burned_cards", Events = new[]
                 {
                     new { EventName = "BURNED_CARD", ExpectedEventCount = 1 },
                     new { EventName = "CARD_STOLEN", ExpectedEventCount = 0 },
+                    new { EventName = "MINION_SUMMONED", ExpectedEventCount = 1 },
+                    new { EventName = "RECRUIT_CARD", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "mad_scientist", Events = new[]
                 {
                     new { EventName = "SECRET_PLAYED_FROM_DECK", ExpectedEventCount = 1 },
                     new { EventName = "CARD_STOLEN", ExpectedEventCount = 0 },
+                    new { EventName = "MINION_SUMMONED", ExpectedEventCount = 7 },
+                    new { EventName = "RECRUIT_CARD", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "new_meta_log", Events = new[]
                 {
                     new { EventName = "CARD_PLAYED", ExpectedEventCount = 41 },
                     new { EventName = "CARD_STOLEN", ExpectedEventCount = 0 },
+                    new { EventName = "MINION_SUMMONED", ExpectedEventCount = 13 },
+                    new { EventName = "RECRUIT_CARD", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "healing", Events = new[]
                 {
                     new { EventName = "HEALING", ExpectedEventCount = 25 },
                     new { EventName = "CARD_STOLEN", ExpectedEventCount = 0 },
+                    new { EventName = "MINION_SUMMONED", ExpectedEventCount = 1 },
+                    new { EventName = "RECRUIT_CARD", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "armor", Events = new[]
                 {
                     new { EventName = "ARMOR_CHANGED", ExpectedEventCount = 55 },
                     new { EventName = "CARD_STOLEN", ExpectedEventCount = 0 },
+                    new { EventName = "MINION_SUMMONED", ExpectedEventCount = 4 },
+                    new { EventName = "RECRUIT_CARD", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "steal_card", Events = new[]
                 {
                     new { EventName = "CARD_STOLEN", ExpectedEventCount = 2 },
+                    new { EventName = "MINION_SUMMONED", ExpectedEventCount = 3 },
+                    new { EventName = "RECRUIT_CARD", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "bulwark_of_death", Events = new[]
                 {
                     new { EventName = "SECRET_TRIGGERED", ExpectedEventCount = 2 },
                     new { EventName = "DEATHRATTLE_TRIGGERED", ExpectedEventCount = 12 },
+                    new { EventName = "MINION_SUMMONED", ExpectedEventCount = 10 },
+                    new { EventName = "RECRUIT_CARD", ExpectedEventCount = 1 },
                 }},
                 // Just check that no error is thrown
                 new { FileName = "toki_hero_power", Events = new[]
                 {
                     new { EventName = "NEW_GAME", ExpectedEventCount = 1 },
+                    new { EventName = "MINION_SUMMONED", ExpectedEventCount = 3 },
+                    new { EventName = "RECRUIT_CARD", ExpectedEventCount = 0 },
                 }},
-                new { FileName = "local_player_leaedrboard", Events = new[]
+                new { FileName = "local_player_leaderboard", Events = new[]
                 {
                     new { EventName = "LOCAL_PLAYER_LEADERBOARD_PLACE_CHANGED", ExpectedEventCount = 7 },
+                    new { EventName = "MINION_SUMMONED", ExpectedEventCount = 216 },
+                    new { EventName = "RECRUIT_CARD", ExpectedEventCount = 0 },
                 }},
             };
 

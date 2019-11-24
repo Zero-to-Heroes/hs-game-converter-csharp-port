@@ -63,9 +63,9 @@ namespace HearthstoneReplays.Events
 
         public void ReceiveAnimationLog(string data, ParserState state)
         {
-            //if (debug || data.Contains("PLAYSTATE"))
+            //if (debug)
             //{
-            //    Logger.Log("Receiving anomation log " + data, debug);
+            //    Logger.Log("\nReceiving anomation log " + data, debug);
             //}
             // Mark the event as ready to be emitted
             IsEventReady(data, state);
@@ -82,10 +82,10 @@ namespace HearthstoneReplays.Events
 
         private void IsEventReady(string data, ParserState state)
         {
-            //if (CreationLogLine == null)
-            //{
-            //    Logger.Log("Error Missing CreationLogLine for ", data);
-            //}
+            if (CreationLogLine == null)
+            {
+                Logger.Log("Error Missing CreationLogLine for ", data);
+            }
             data = data.Trim();
             //if (debug)
             //{
@@ -131,6 +131,25 @@ namespace HearthstoneReplays.Events
                     //}
                     AnimationReady = true;
                     return;
+                } 
+                // Patches the Pirate for instance doesn't log the cardId in the GS, but does in PTL
+                else
+                {
+                    var gsMatchForFullEntity = Regexes.EntityRegex.Match(CreationLogLine);
+                    if (gsMatchForFullEntity.Success)
+                    {
+                        var gsId = gsMatchForFullEntity.Groups[1];
+                        var gsDataWithOnlyEntityId = Regex.Replace(CreationLogLine, Regexes.EntityRegex.ToString(), "" + id);
+                        if (dataWithOnlyEntityId == gsDataWithOnlyEntityId)
+                        {
+                            //if (debug)
+                            //{ 
+                            //    Logger.Log("IsEventReady, AnimationReady with only entity id gsDataWithOnlyEntityId", "animation ready");
+                            //}
+                            AnimationReady = true;
+                            return;
+                        }
+                    }
                 }
             }
 
@@ -146,6 +165,7 @@ namespace HearthstoneReplays.Events
                 var ptlRawEntity = matchShowInGameState.Groups[1].Value;
                 var ptlEntity = helper.ParseEntity(ptlRawEntity, state);
 
+                //Logger.Log("comparing " + ptlRawEntity, gsRawEntity);
                 if (gsEntity == ptlEntity)
                 {
                     //if (debug)

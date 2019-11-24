@@ -21,7 +21,10 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return false;
+            return node.Type == typeof(TagChange)
+                && (node.Object as TagChange).Name == (int)GameTag.ZONE
+                && (node.Object as TagChange).Value == (int)Zone.PLAY
+                && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.DECK;
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -35,6 +38,30 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
+            var tagChange = node.Object as TagChange;
+            var entity = GameState.CurrentEntities[tagChange.Entity];
+            var cardId = entity.CardId;
+            var controllerId = entity.GetTag(GameTag.CONTROLLER);
+            if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
+            {
+                var gameState = GameEvent.BuildGameState(ParserState, GameState);
+                if (node.Type == typeof(TagChange) && (node.Object as TagChange).Entity == 5)
+                {
+                    Console.WriteLine("hop2 "  + node.CreationLogLine);
+                }
+                return new List<GameEventProvider> { GameEventProvider.Create(
+                    tagChange.TimeStamp,
+                    GameEvent.CreateProvider(
+                        "RECRUIT_CARD",
+                        cardId,
+                        controllerId,
+                        entity.Id,
+                        ParserState,
+                        GameState,
+                        gameState),
+                    true,
+                    node.CreationLogLine) };
+            }
             return null;
         }
 

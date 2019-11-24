@@ -1,6 +1,7 @@
 ﻿using HearthstoneReplays.Parser;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
+using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System.Collections.Generic;
 
 namespace HearthstoneReplays.Events.Parsers
