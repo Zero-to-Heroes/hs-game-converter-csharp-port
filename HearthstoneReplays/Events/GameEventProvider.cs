@@ -12,7 +12,7 @@ namespace HearthstoneReplays.Events
     {
         public Func<GameEvent> SupplyGameEvent { get; set; }
         public Func<GameEventProvider, bool> isDuplicatePredicate { get; set; }
-        public DateTimeOffset Timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
         public bool NeedMetaData { get; set; }
         public bool AnimationReady { get; set; }
         public string CreationLogLine { get; set; }
@@ -28,7 +28,7 @@ namespace HearthstoneReplays.Events
         }
 
         public static GameEventProvider Create(
-            string originalTimestamp,
+            DateTime originalTimestamp,
             Func<GameEvent> eventProvider,
             bool needMetaData,
             string creationLogLine,
@@ -38,7 +38,7 @@ namespace HearthstoneReplays.Events
         }
 
         public static GameEventProvider Create(
-            string originalTimestamp,
+            DateTime originalTimestamp,
             Func<GameEvent> eventProvider,
             Func<GameEventProvider, bool> isDuplicatePredicate,
             bool needMetaData,
@@ -47,7 +47,7 @@ namespace HearthstoneReplays.Events
         {
             var result = new GameEventProvider
             {
-                Timestamp = ParseTimestamp(originalTimestamp),
+                Timestamp = originalTimestamp,
                 SupplyGameEvent = eventProvider,
                 isDuplicatePredicate = isDuplicatePredicate,
                 NeedMetaData = needMetaData,
@@ -197,24 +197,6 @@ namespace HearthstoneReplays.Events
                     return;
                 }
             }
-        }
-
-        private static DateTimeOffset ParseTimestamp(string timestamp)
-        {
-            if (!string.IsNullOrEmpty(timestamp))
-            {
-                String[] split = timestamp.Split(':');
-                int hours = int.Parse(split[0]);
-                if (hours >= 24)
-                {
-                    String newTs = "00:" + split[1] + ":" + split[2];
-                    // We don't need to add a day here, because the computer's clock will also have 
-                    // made the time leap to the next day
-                    return DateTimeOffset.Parse(newTs);
-                }
-                return DateTimeOffset.Parse(timestamp);
-            }
-            return DateTimeOffset.MinValue;
         }
     }
 }

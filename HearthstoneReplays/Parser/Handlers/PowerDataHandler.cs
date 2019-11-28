@@ -18,7 +18,7 @@ namespace HearthstoneReplays.Parser.Handlers
 {
 	public class PowerDataHandler
 	{
-		public void Handle(string timestamp, string data, ParserState state)
+		public void Handle(DateTime timestamp, string data, ParserState state)
 		{
             state.NodeParser.ReceiveAnimationLog(data);
 

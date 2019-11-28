@@ -7,6 +7,7 @@ using HearthstoneReplays.Parser.ReplayData.Entities;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Parser.ReplayData.Meta;
 using HearthstoneReplays.Parser.ReplayData.Meta.Options;
+using System;
 
 #endregion
 
@@ -16,10 +17,27 @@ namespace HearthstoneReplays.Parser.ReplayData
 	{
         public readonly object listLock = new object();
 
-        [XmlAttribute("ts")]
-		public string TimeStamp { get; set; }
+        [XmlIgnore]
+		public DateTime TimeStamp { get; set; }
 
-		[XmlAttribute("buildNumber")]
+        [XmlAttribute("ts")]
+        public string TsForXml
+        {
+            get
+            {
+                var hours = TimeStamp.Hour;
+                if (hours < ReplayParser.start.Hour)
+                {
+                    hours += 24;
+                }
+                var timestampString = this.TimeStamp.ToString("HH:mm:ss.ffffff");
+                var split = timestampString.Split(':');
+                return ("" + hours).PadLeft(2, '0') + ":" + split[1] + ":" + split[2];
+            }
+            set => this.TimeStamp = DateTime.Parse(value);
+        }
+
+        [XmlAttribute("buildNumber")]
 		public int BuildNumber { get; set; }
 
 		[XmlAttribute("type")]
@@ -34,7 +52,7 @@ namespace HearthstoneReplays.Parser.ReplayData
 		[XmlAttribute("scenarioID")]
 		public int ScenarioID { get; set; }
 
-		[XmlElement("Block", typeof(Action))]
+		[XmlElement("Block", typeof(GameActions.Action))]
 		[XmlElement("Choices", typeof(Choices))]
 		[XmlElement("FullEntity", typeof(FullEntity))]
 		[XmlElement("GameEntity", typeof(GameEntity))]
@@ -77,9 +95,9 @@ namespace HearthstoneReplays.Parser.ReplayData
 
 		internal void ExtractData(List<GameData> result, GameData data)
 		{
-			if (data.GetType() == typeof(Action))
+			if (data.GetType() == typeof(GameActions.Action))
 			{
-				foreach (GameData gameData in ((Action) data).Data)
+				foreach (GameData gameData in ((GameActions.Action) data).Data)
 				{
 					result.Add(gameData);
 					ExtractData(result, gameData);

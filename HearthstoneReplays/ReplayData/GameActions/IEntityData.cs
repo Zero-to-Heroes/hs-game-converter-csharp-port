@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace HearthstoneReplays.Parser.ReplayData.GameActions
 {
     internal interface IEntityData
     {
-        string TimeStamp { get; set; }
+        DateTime TimeStamp { get; set; }
         string CardId { get; set; }
         int Entity { get; set; }
         List<Tag> Tags { get; set; }

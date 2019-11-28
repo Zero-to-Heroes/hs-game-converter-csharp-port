@@ -142,7 +142,7 @@ namespace HearthstoneReplays.Events.Parsers
             public int TargetEntityId;
             public int TargetControllerId;
             public int Healing;
-            public string Timestamp;
+            public DateTime Timestamp;
         }
     }
 }

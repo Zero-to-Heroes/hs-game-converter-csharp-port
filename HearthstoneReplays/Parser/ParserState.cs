@@ -103,7 +103,7 @@ namespace HearthstoneReplays.Parser
             get { return _localPlayer; }
         }
 
-        public void SetLocalPlayer(Player value, string timestamp, string data) { 
+        public void SetLocalPlayer(Player value, DateTime timestamp, string data) { 
 			_localPlayer = value;
             value.IsMainPlayer = true;
             var playerEntity = getPlayers().Find(player => player.PlayerId == value.PlayerId);
@@ -125,7 +125,7 @@ namespace HearthstoneReplays.Parser
             get { return _opponentPlayer; }
         }
         
-        public void SetOpponentPlayer(Player value, string timestamp, string data)
+        public void SetOpponentPlayer(Player value, DateTime timestamp, string data)
         {
             _opponentPlayer = value;
             value.IsMainPlayer = false;
@@ -199,7 +199,7 @@ namespace HearthstoneReplays.Parser
 			return players;
 		}
 
-		public void TryAssignLocalPlayer(string timestamp, string data)
+		public void TryAssignLocalPlayer(DateTime timestamp, string data)
 		{
 			// Only assign the local player once
 			if (LocalPlayer != null && OpponentPlayer != null)

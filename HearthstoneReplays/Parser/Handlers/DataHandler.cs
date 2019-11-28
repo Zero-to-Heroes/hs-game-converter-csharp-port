@@ -18,17 +18,12 @@ namespace HearthstoneReplays.Parser.Handlers
 {
 	public class DataHandler
 	{
-		private int previousTimestampHours;
-        private int timestampHoursOffset = 0;
-
         //public int index;
 
 		private Helper helper = new Helper();
 
-		public void Handle(string timestamp, string data, ParserState state, int previousTimestampTotalSeconds)
+		public void Handle(DateTime timestamp, string data, ParserState state, DateTime previousTimestamp)
         {
-            timestamp = NormalizeTimestamp(timestamp);
-            
 			var trimmed = data.Trim();
 			var indentLevel = data.Length - trimmed.Length;
 			data = trimmed;
@@ -39,10 +34,9 @@ namespace HearthstoneReplays.Parser.Handlers
             {
                 state.NodeParser.ClearQueue();
                 //Logger.Log("Handling create game", "");
-                var totalSeconds = BuildTotalSeconds(timestamp);
                 if (!state.Ended && state.NumberOfCreates >= 1)
                 {
-                    Logger.Log("Probable reconnect detected", "" + (totalSeconds - previousTimestampTotalSeconds));
+                    Logger.Log("Probable reconnect detected", "" + (timestamp - previousTimestamp));
                     state.ReconnectionOngoing = true;
                     state.NumberOfCreates++;
                     state.UpdateCurrentNode(typeof(Game));
@@ -55,7 +49,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 var newNode = new Node(typeof(Game), state.CurrentGame, 0, null, data);
                 state.CreateNewNode(newNode);
 				state.Node = newNode;
-                Logger.Log("Created a new game", "" + totalSeconds + "," + previousTimestampTotalSeconds);
+                Logger.Log("Created a new game", "" + timestamp + "," + previousTimestamp);
 				return;
 			}
 
@@ -627,40 +621,6 @@ namespace HearthstoneReplays.Parser.Handlers
                 }
                 state.CurrentPlayerId = helper.ParseEntity(rawEntity, state);
             }
-        }
-
-		private String NormalizeTimestamp(String timestamp)
-		{
-			if (!string.IsNullOrEmpty(timestamp))
-			{
-				String[] split = timestamp.Split(':');
-				int hours = int.Parse(split[0]);
-				if (hours < previousTimestampHours)
-				{
-                    if (hours + 24 > previousTimestampHours)
-                    {
-                        previousTimestampHours = hours + 1;
-                    }
-					hours = previousTimestampHours;
-                    String newTs = hours + ":" + split[1] + ":" + split[2];
-					return newTs;
-				}
-				previousTimestampHours = hours;
-			}
-			return timestamp;
-        }
-
-        private int BuildTotalSeconds(String timestamp)
-        {
-            if (!string.IsNullOrEmpty(timestamp))
-            {
-                String[] split = timestamp.Split(':');
-                int hours = int.Parse(split[0]);
-                int minutes = int.Parse(split[1]);
-                int seconds = int.Parse(split[2].Split('.')[0]);
-                return seconds + 60 * minutes + 3600 * hours;
-            }
-            return 0;
         }
     }
 }
