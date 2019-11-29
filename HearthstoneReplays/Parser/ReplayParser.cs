@@ -168,11 +168,12 @@ namespace HearthstoneReplays.Parser
             var logDateTime = DateTime.Parse(timestamp);
             // This means we got back in time, which is not possible, so it means we have gone to the next day
             // This won't work if we have sessions that span more than one day, but I think it's ok
-            if (logDateTime.Hour < start.Hour)
+            if (logDateTime < start)
             {
                 logDateTime = logDateTime.AddDays(1);
+                Logger.Log("Adding a day to timestamp ", logDateTime + " // " + start + " // " + timestamp + " // " + logDateTime);
             }
             return logDateTime;
-        }
+        } 
     }
 }

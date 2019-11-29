@@ -259,12 +259,18 @@ namespace HearthstoneReplays.Events
                     // for end-of-block events vs start-of-block events, like tag changes)
                     isEvent = eventQueue.Count > 0
                         && (DevMode || DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds > 500);
-                }
+                    //if (eventQueue.Count > 0)
+                    //{
+                    //    Logger.Log("Is event to process? " + isEvent, DateTime.Now + " // " 
+                    //        + eventQueue.First().Timestamp
+                    //        + " // " + DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds);
+                    //} 
+                }  
                 return isEvent;
             }
             catch (Exception ex)
             {
-                Logger.Log(ex.StackTrace, "" + eventQueue.Count);
+                Logger.Log(ex.StackTrace, "" + eventQueue.Count); 
                 Logger.Log("Exception while trying to determine event to process", ex.Message);
                 return false;
             }
