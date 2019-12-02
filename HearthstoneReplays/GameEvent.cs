@@ -77,6 +77,7 @@ namespace HearthstoneReplays
                 return gameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)zone)
                     .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
+                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) ==(int) CardType.MINION)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => BuildSmallEntity(entity))
                     .ToList();

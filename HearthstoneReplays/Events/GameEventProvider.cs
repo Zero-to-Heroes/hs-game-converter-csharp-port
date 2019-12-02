@@ -34,7 +34,7 @@ namespace HearthstoneReplays.Events
             string creationLogLine,
             bool debug = false)
         {
-            return Create(originalTimestamp, eventProvider, (a) => false, needMetaData, creationLogLine, debug);
+            return Create(originalTimestamp, eventProvider, (a) => false, needMetaData, creationLogLine, false);
         }
 
         public static GameEventProvider Create(
@@ -52,30 +52,30 @@ namespace HearthstoneReplays.Events
                 isDuplicatePredicate = isDuplicatePredicate,
                 NeedMetaData = needMetaData,
                 CreationLogLine = creationLogLine,
-                debug = debug,
+                debug = false,
             };
-            //if (debug)
-            //{
-            //    Logger.Log("Creating game event provider in debug " + result.debug, creationLogLine);
-            //}
+            if (debug)
+            {
+                Logger.Log("Creating game event provider in debug " + result.debug, creationLogLine);
+            }
             return result;
         }
 
         public void ReceiveAnimationLog(string data, ParserState state)
         {
-            //if (debug)
-            //{
-            //    Logger.Log("\nReceiving anomation log " + data, debug);
-            //}
+            if (debug)
+            {
+                Logger.Log("\nReceiving anomation log " + data, debug);
+            }
             // Mark the event as ready to be emitted
             IsEventReady(data, state);
             // And now's the time to compute the event itself
             if (AnimationReady)
             {
-                //if (debug)
-                //{
-                //    Logger.Log("IsEventReady, supplying game event", "");
-                //}
+                if (debug)
+                {
+                    Logger.Log("IsEventReady, supplying game event", "");
+                }
                 GameEvent = SupplyGameEvent();
             }
         }
@@ -87,17 +87,17 @@ namespace HearthstoneReplays.Events
                 Logger.Log("Error Missing CreationLogLine for ", data);
             }
             data = data.Trim();
-            //if (debug)
-            //{
-            //    Logger.Log("IsEventReady, data", data);
-            //}
+            if (debug)
+            {
+                Logger.Log("IsEventReady, data", data);
+            }
 
             if (data == CreationLogLine)
             {
-                //if (debug)
-                //{
-                //    Logger.Log("IsEventReady, AnimationReady", "animation ready");
-                //}
+                if (debug)
+                {
+                    Logger.Log("IsEventReady, AnimationReady", "animation ready");
+                }
                 AnimationReady = true;
                 return;
             }
@@ -108,10 +108,10 @@ namespace HearthstoneReplays.Events
             var creationLogWithoutZones = Regex.Replace(CreationLogLine, @"zonePos=\d", "");
             if (dataWithoutZones == creationLogWithoutZones)
             {
-                //if (debug)
-                //{
-                //    Logger.Log("IsEventReady, AnimationReady without zones", "animation ready");
-                //}
+                if (debug)
+                {
+                    Logger.Log("IsEventReady, AnimationReady without zones", "animation ready");
+                }
                 AnimationReady = true;
                 return;
             }
@@ -125,10 +125,10 @@ namespace HearthstoneReplays.Events
                 var dataWithOnlyEntityId = Regex.Replace(data, Regexes.EntityRegex.ToString(), "" + id);
                 if (dataWithOnlyEntityId == CreationLogLine)
                 {
-                    //if (debug)
-                    //{
-                    //    Logger.Log("IsEventReady, AnimationReady with only entity id", "animation ready");
-                    //}
+                    if (debug)
+                    {
+                        Logger.Log("IsEventReady, AnimationReady with only entity id", "animation ready");
+                    }
                     AnimationReady = true;
                     return;
                 } 
@@ -142,10 +142,10 @@ namespace HearthstoneReplays.Events
                         var gsDataWithOnlyEntityId = Regex.Replace(CreationLogLine, Regexes.EntityRegex.ToString(), "" + id);
                         if (dataWithOnlyEntityId == gsDataWithOnlyEntityId)
                         {
-                            //if (debug)
-                            //{ 
-                            //    Logger.Log("IsEventReady, AnimationReady with only entity id gsDataWithOnlyEntityId", "animation ready");
-                            //}
+                            if (debug)
+                            {
+                                Logger.Log("IsEventReady, AnimationReady with only entity id gsDataWithOnlyEntityId", "animation ready");
+                            }
                             AnimationReady = true;
                             return;
                         }
@@ -168,10 +168,10 @@ namespace HearthstoneReplays.Events
                 //Logger.Log("comparing " + ptlRawEntity, gsRawEntity);
                 if (gsEntity == ptlEntity)
                 {
-                    //if (debug)
-                    //{
-                    //    Logger.Log("IsEventReady, AnimationReady with entity check", "animation ready");
-                    //}
+                    if (debug)
+                    {
+                        Logger.Log("IsEventReady, AnimationReady with entity check", "animation ready");
+                    }
                     AnimationReady = true;
                     return;
                 }
@@ -189,10 +189,10 @@ namespace HearthstoneReplays.Events
 
                 if (gsEntity == ptlEntity)
                 {
-                    //if (debug)
-                    //{
-                    //    Logger.Log("IsEventReady, AnimationReady with second entity check", "animation ready");
-                    //}
+                    if (debug)
+                    {
+                        Logger.Log("IsEventReady, AnimationReady with second entity check", "animation ready");
+                    }
                     AnimationReady = true;
                     return;
                 }

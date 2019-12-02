@@ -171,7 +171,7 @@ namespace HearthstoneReplays.Parser
             if (logDateTime < start)
             {
                 logDateTime = logDateTime.AddDays(1);
-                Logger.Log("Adding a day to timestamp ", logDateTime + " // " + start + " // " + timestamp + " // " + logDateTime);
+                //Logger.Log("Adding a day to timestamp ", logDateTime + " // " + start + " // " + timestamp + " // " + logDateTime);
             }
             return logDateTime;
         } 

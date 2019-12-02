@@ -174,6 +174,7 @@
     <EmbeddedResource Include="TestData\local_player_leaderboard.txt" />
     <EmbeddedResource Include="TestData\over_midnight.txt" />
     <EmbeddedResource Include="TestData\over_midnight_small.txt" />
+    <EmbeddedResource Include="TestData\battlegrounds.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />

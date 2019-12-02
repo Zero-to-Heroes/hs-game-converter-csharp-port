@@ -38,6 +38,7 @@ namespace HearthstoneReplays.Events.Parsers
             var replayCopy = ParserState.Replay;
             var xmlReplay = new ReplayConverter().xmlFromReplay(replayCopy);
             var gameStateReport = GameState.BuildGameStateReport();
+            var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 () => new GameEvent

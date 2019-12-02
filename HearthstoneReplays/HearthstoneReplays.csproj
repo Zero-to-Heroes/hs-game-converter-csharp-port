@@ -111,6 +111,7 @@
     <Compile Include="Events\ActionParser.cs" />
     <Compile Include="Events\CardIds.cs" />
     <Compile Include="Events\GameEventProvider.cs" />
+    <Compile Include="Events\Parsers\CardRemovedFromBoardParser.cs" />
     <Compile Include="Events\Parsers\LocalPlayerLeaderboardPlaceChangedParser.cs" />
     <Compile Include="Events\Parsers\ChangeCardCreatorParser.cs" />
     <Compile Include="Events\Parsers\HealthDefChangeParser.cs" />
@@ -120,6 +121,9 @@
     <Compile Include="Events\Parsers\FirstPlayerParser.cs" />
     <Compile Include="Events\Parsers\MinionDiedParser.cs" />
     <Compile Include="Events\Parsers\ArmorChangeParser.cs" />
+    <Compile Include="Events\Parsers\MinionBackOnBoardParser.cs" />
+    <Compile Include="Events\Parsers\CardRevealedParser.cs" />
+    <Compile Include="Events\Parsers\HeroPowerChangedParser.cs" />
     <Compile Include="Events\Parsers\SecretPlayedFromDeckParser.cs" />
     <Compile Include="Events\Parsers\MainStepReadyParser.cs" />
     <Compile Include="Events\Parsers\DeathrattleTriggeredParser.cs" />
