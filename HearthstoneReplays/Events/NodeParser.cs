@@ -183,6 +183,7 @@ namespace HearthstoneReplays.Events
                 new ChangeCardCreatorParser(ParserState),
                 new LocalPlayerLeaderboardPlaceChangedParser(ParserState),
                 new HeroPowerChangedParser(ParserState),
+                new BattlegroundsPlayerBoardParser(ParserState),
             };
         }
 
