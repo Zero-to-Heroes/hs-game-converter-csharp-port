@@ -26,8 +26,8 @@ namespace HearthstoneReplayTests
             List<string> logFile = TestDataReader.GetInputFile("battlegrounds.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
             Thread.Sleep(1000);
-            string xml = new ReplayConverter().xmlFromReplay(replay);
-            Console.Write(xml);
+            //string xml = new ReplayConverter().xmlFromReplay(replay);
+            //Console.Write(xml);
         }
 
         [TestMethod]

@@ -100,6 +100,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -111,6 +112,8 @@
     <Compile Include="Events\ActionParser.cs" />
     <Compile Include="Events\CardIds.cs" />
     <Compile Include="Events\GameEventProvider.cs" />
+    <Compile Include="Events\Parsers\BattlegroundsPlayerLeaderboardPlaceUpdatedParser.cs" />
+    <Compile Include="Events\Parsers\BattlegroundsPlayerTechLevelUpdatedParser.cs" />
     <Compile Include="Events\Parsers\CardRemovedFromBoardParser.cs" />
     <Compile Include="Events\Parsers\LocalPlayerLeaderboardPlaceChangedParser.cs" />
     <Compile Include="Events\Parsers\ChangeCardCreatorParser.cs" />

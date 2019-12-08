@@ -55,7 +55,7 @@ namespace HearthstoneReplays.Events
                         List<GameEventProvider> providers = parser.CreateGameEventProviderFromNew(node);
                         if (providers != null)
                         {
-                            EnqueueGameEvent(providers);
+                            EnqueueGameEvent(providers.Where(provider => provider != null).ToList());
                         }
                     }
                 }
@@ -77,9 +77,9 @@ namespace HearthstoneReplays.Events
                 if (!node.Closed && parser.AppliesOnCloseNode(node))
                 {
                     List<GameEventProvider> providers = parser.CreateGameEventProviderFromClose(node);
-                    if (providers != null)
+                    if (providers != null && providers.Count > 0)
                     {
-                        EnqueueGameEvent(providers);
+                        EnqueueGameEvent(providers.Where(provider => provider != null).ToList());
                     }
                 }
             }
@@ -92,6 +92,7 @@ namespace HearthstoneReplays.Events
             lock (listLock)
             {
                 var shouldUnqueuePredicates = providers
+                    
                     .Select(provider => provider.isDuplicatePredicate)
                     .ToList();
                 // Remove duplicate events
@@ -184,6 +185,8 @@ namespace HearthstoneReplays.Events
                 new LocalPlayerLeaderboardPlaceChangedParser(ParserState),
                 new HeroPowerChangedParser(ParserState),
                 new BattlegroundsPlayerBoardParser(ParserState),
+                new BattlegroundsPlayerTechLevelUpdatedParser(ParserState),
+                new BattlegroundsPlayerLeaderboardPlaceUpdatedParser(ParserState),
             };
         }
 

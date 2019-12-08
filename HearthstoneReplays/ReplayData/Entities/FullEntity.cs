@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 
@@ -33,5 +35,17 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 		{
 			return !string.IsNullOrEmpty(CardId);
 		}
-	}
+
+        internal FullEntity Clone()
+        {
+            DataContractSerializer dcSer = new DataContractSerializer(this.GetType());
+            MemoryStream memoryStream = new MemoryStream();
+
+            dcSer.WriteObject(memoryStream, this);
+            memoryStream.Position = 0;
+
+            FullEntity newObject = (FullEntity)dcSer.ReadObject(memoryStream);
+            return newObject;
+        }
+    }
 }

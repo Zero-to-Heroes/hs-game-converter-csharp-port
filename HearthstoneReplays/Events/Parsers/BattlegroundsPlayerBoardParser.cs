@@ -24,8 +24,8 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
                 && node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.STEP
-                && (node.Object as TagChange).Value == (int)Step.MAIN_READY;
+                && (node.Object as TagChange).Name == (int)GameTag.NEXT_STEP
+                && (node.Object as TagChange).Value == (int)Step.MAIN_START_TRIGGERS;
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -43,12 +43,16 @@ namespace HearthstoneReplays.Events.Parsers
         private GameEventProvider CreateProvider(Node node, Player player)
         {
             var tagChange = node.Object as TagChange;
+            var heroes = GameState.CurrentEntities.Values
+                .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                .ToList();
             var hero = GameState.CurrentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
                 .FirstOrDefault();
-            Logger.Log("Hero " + hero.CardId, hero.Entity);
+            //Logger.Log("Hero " + hero.CardId, hero.Entity);
             if (hero?.CardId != null && hero.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl)
             {
                 // We don't use the game state builder here because we really need the full entities
@@ -56,8 +60,9 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
+                    .Select(entity => entity.Clone())
                     .ToList();
-                Logger.Log("board has " + board.Count + " entities", "");
+                //Logger.Log("board has " + board.Count + " entities", "");
                 return GameEventProvider.Create(
                    tagChange.TimeStamp,
                    () => new GameEvent
