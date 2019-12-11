@@ -53,7 +53,9 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
                 .FirstOrDefault();
             //Logger.Log("Hero " + hero.CardId, hero.Entity);
-            if (hero?.CardId != null && hero.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl)
+            if (hero?.CardId != null 
+                && hero.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl 
+                && hero.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
             {
                 // We don't use the game state builder here because we really need the full entities
                 var board = GameState.CurrentEntities.Values
