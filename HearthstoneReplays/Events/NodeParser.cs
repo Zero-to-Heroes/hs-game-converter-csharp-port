@@ -187,6 +187,7 @@ namespace HearthstoneReplays.Events
                 new BattlegroundsPlayerBoardParser(ParserState),
                 new BattlegroundsPlayerTechLevelUpdatedParser(ParserState),
                 new BattlegroundsPlayerLeaderboardPlaceUpdatedParser(ParserState),
+                new BattlegroundsHeroSelectionParser(ParserState),
             };
         }
 
