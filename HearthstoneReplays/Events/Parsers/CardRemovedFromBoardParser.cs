@@ -35,6 +35,11 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
+            if (!GameState.CurrentEntities.ContainsKey(tagChange.Entity))
+            {
+                Logger.Log("Could not find card to remove from board", node.CreationLogLine);
+                return null;
+            }
             var entity = GameState.CurrentEntities[tagChange.Entity];
             if (entity.GetTag(GameTag.ZONE) != (int)Zone.PLAY)
             {
