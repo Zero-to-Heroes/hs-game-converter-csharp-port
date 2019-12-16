@@ -22,30 +22,22 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return false;
+            return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+                && node.Type == typeof(TagChange)
+                && (node.Object as TagChange).Name == (int)GameTag.MULLIGAN_STATE
+                && (node.Object as TagChange).Value == (int)Mulligan.INPUT;
         }
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                && node.Type == typeof(Action)
-                && (node.Object as Action).Type == (int)BlockType.TRIGGER
-                && (node.Object as Action).Entity == GameState.GetGameEntity().Id
-                && (node.Object as Action).Data.Where(data => data is FullEntity).Count() >= 2;
+            return false;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            return null;
-        }
-
-        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
-        {
-            var action = node.Object as Action;
+            var tagChange = node.Object as TagChange;
             var playerId = ParserState.LocalPlayer.PlayerId;
-            var fullEntities = action.Data
-                .Where(data => data is FullEntity)
-                .Select(data => data as FullEntity)
+            var fullEntities = GameState.CurrentEntities.Values
                 .Where(data => data.GetTag(GameTag.CONTROLLER) == playerId)
                 .Where(data => data.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(data => data.GetTag(GameTag.ZONE) == (int)Zone.HAND)
@@ -55,7 +47,7 @@ namespace HearthstoneReplays.Events.Parsers
             if (fullEntities.Count > 0)
             {
                 return new List<GameEventProvider> { GameEventProvider.Create(
-                   action.TimeStamp,
+                   tagChange.TimeStamp,
                    () => new GameEvent
                    {
                        Type = "BATTLEGROUNDS_HERO_SELECTION",
@@ -68,6 +60,11 @@ namespace HearthstoneReplays.Events.Parsers
                    node.CreationLogLine
                 )};
             }
+            return null;
+        }
+
+        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
+        {
             return null;
         }
     }
