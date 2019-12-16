@@ -23,23 +23,21 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
-                && (node.Object as TagChange).Value == (int)Zone.GRAVEYARD;
+                && (node.Object as TagChange).Value == (int)Zone.GRAVEYARD
+                && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.HAND;
         }
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return false;
+            return node.Type == typeof(ShowEntity)
+                && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD
+                && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) == (int)Zone.HAND;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
-            var zoneInt = entity.GetTag(GameTag.ZONE) == -1 ? 0 : entity.GetTag(GameTag.ZONE);
-            if (zoneInt != (int)Zone.HAND)
-            {
-                return null;
-            }
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
@@ -51,7 +49,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     ParserState,
-                        GameState,
+                    GameState,
                     gameState),
                 true,
                 node.CreationLogLine) };
@@ -59,7 +57,23 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
-            return null;
+            var showEntity = node.Object as ShowEntity;
+            var entity = GameState.CurrentEntities[showEntity.Entity];
+            var cardId = entity.CardId;
+            var controllerId = entity.GetTag(GameTag.CONTROLLER);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                showEntity.TimeStamp,
+                GameEvent.CreateProvider(
+                    "DISCARD_CARD",
+                    cardId,
+                    controllerId,
+                    entity.Id,
+                    ParserState,
+                    GameState,
+                    gameState),
+                true,
+                node.CreationLogLine) };
         }
     }
 }

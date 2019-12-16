@@ -23,7 +23,7 @@ namespace HearthstoneReplayTests
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
-            List<string> logFile = TestDataReader.GetInputFile("bgs_kalthuzad.txt");
+            List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
             Thread.Sleep(1000);
             //string xml = new ReplayConverter().xmlFromReplay(replay);
@@ -38,10 +38,11 @@ namespace HearthstoneReplayTests
             {
                 new { FileName = "battlegrounds", Events = new[]
                 {
-                    new { EventName = "MINION_BACK_ON_BOARD", ExpectedEventCount = 83 },
-                    new { EventName = "CARD_REVEALED", ExpectedEventCount = 101 },
-                    new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 15 },
-                    new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 26 },
+                    new { EventName = "MINION_BACK_ON_BOARD", ExpectedEventCount = 84 },
+                    new { EventName = "CARD_REVEALED", ExpectedEventCount = 96 },
+                    new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 16 },
+                    new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 48 },
+                    new { EventName = "DISCARD_CARD", ExpectedEventCount = 2 },
                 }},
                 new { FileName = "army_of_the_dead", Events = new[]
                 {
@@ -53,6 +54,7 @@ namespace HearthstoneReplayTests
                     new { EventName = "CARD_REVEALED", ExpectedEventCount = 0 },
                     new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 2 },
                     new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 0 },
+                    new { EventName = "DISCARD_CARD", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "burned_cards", Events = new[]
                 {
@@ -63,6 +65,7 @@ namespace HearthstoneReplayTests
                     new { EventName = "CARD_REVEALED", ExpectedEventCount = 0 },
                     new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 2 },
                     new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 0 },
+                    new { EventName = "DISCARD_CARD", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "mad_scientist", Events = new[]
                 {
@@ -73,6 +76,7 @@ namespace HearthstoneReplayTests
                     new { EventName = "CARD_REVEALED", ExpectedEventCount = 3 },
                     new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 3 },
                     new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 0 },
+                    new { EventName = "DISCARD_CARD", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "new_meta_log", Events = new[]
                 {
@@ -83,6 +87,7 @@ namespace HearthstoneReplayTests
                     new { EventName = "CARD_REVEALED", ExpectedEventCount = 0 },
                     new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 2 },
                     new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 0 },
+                    new { EventName = "DISCARD_CARD", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "healing", Events = new[]
                 {
@@ -93,6 +98,7 @@ namespace HearthstoneReplayTests
                     new { EventName = "CARD_REVEALED", ExpectedEventCount = 0 },
                     new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 2 },
                     new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 0 },
+                    new { EventName = "DISCARD_CARD", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "armor", Events = new[]
                 {
@@ -103,6 +109,7 @@ namespace HearthstoneReplayTests
                     new { EventName = "CARD_REVEALED", ExpectedEventCount = 0 },
                     new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 2 },
                     new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 0 },
+                    new { EventName = "DISCARD_CARD", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "steal_card", Events = new[]
                 {
@@ -112,6 +119,7 @@ namespace HearthstoneReplayTests
                     new { EventName = "CARD_REVEALED", ExpectedEventCount = 0 },
                     new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 2 },
                     new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 0 },
+                    new { EventName = "DISCARD_CARD", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "bulwark_of_death", Events = new[]
                 {
@@ -122,6 +130,7 @@ namespace HearthstoneReplayTests
                     new { EventName = "CARD_REVEALED", ExpectedEventCount = 0 },
                     new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 2 },
                     new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 0 },
+                    new { EventName = "DISCARD_CARD", ExpectedEventCount = 0 },
                 }},
                 // Just check that no error is thrown
                 new { FileName = "toki_hero_power", Events = new[]
@@ -132,6 +141,7 @@ namespace HearthstoneReplayTests
                     new { EventName = "CARD_REVEALED", ExpectedEventCount = 0 },
                     new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 6 },
                     new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 0 },
+                    new { EventName = "DISCARD_CARD", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "local_player_leaderboard", Events = new[]
                 {
@@ -140,7 +150,8 @@ namespace HearthstoneReplayTests
                     new { EventName = "RECRUIT_CARD", ExpectedEventCount = 0 },
                     new { EventName = "CARD_REVEALED", ExpectedEventCount = 72 },
                     new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 12 },
-                    new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 22 },
+                    new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 35 },
+                    new { EventName = "DISCARD_CARD", ExpectedEventCount = 2 },
                 }},
             };
 
