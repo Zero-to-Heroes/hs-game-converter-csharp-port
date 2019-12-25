@@ -89,10 +89,10 @@ namespace HearthstoneReplays.Events
 
         public void EnqueueGameEvent(List<GameEventProvider> providers)
         {
+            //Logger.Log("Enqueueing game event", providers != null ? providers[0].CreationLogLine : null);
             lock (listLock)
             {
                 var shouldUnqueuePredicates = providers
-                    
                     .Select(provider => provider.isDuplicatePredicate)
                     .ToList();
                 // Remove duplicate events
@@ -111,6 +111,7 @@ namespace HearthstoneReplays.Events
                 }
                 eventQueue.AddRange(providers);
                 eventQueue = eventQueue.OrderBy(p => p.Timestamp).ToList();
+                //Logger.Log("Enqueued game event", providers != null ? providers[0].CreationLogLine : null);
             }
         }
 
@@ -199,6 +200,7 @@ namespace HearthstoneReplays.Events
             // post-processing of games
             while (IsEventToProcess())
             {
+                //Logger.Log("There is an event to process", eventQueue.Count == 0 ? "nothing" : eventQueue[0].CreationLogLine);
                 try
                 {
                     GameEventProvider provider;
@@ -240,6 +242,7 @@ namespace HearthstoneReplays.Events
                         // have the full meta data, like dungeon run step
                         if (gameEvent != null)
                         {
+                            //Logger.Log("Handling event", gameEvent.Type);
                             GameEventHandler.Handle(gameEvent);
                         }
                         else
@@ -270,10 +273,10 @@ namespace HearthstoneReplays.Events
                         && (DevMode || DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds > 500);
                     //if (eventQueue.Count > 0)
                     //{
-                    //    Logger.Log("Is event to process? " + isEvent, DateTime.Now + " // " 
+                    //    Logger.Log("Is event to process? " + isEvent, DateTime.Now + " // "
                     //        + eventQueue.First().Timestamp
                     //        + " // " + DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds);
-                    //} 
+                    //}
                 }  
                 return isEvent;
             }

@@ -11,6 +11,8 @@ using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.Handlers;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.Entities;
+using HearthstoneReplays.Parser;
+using HearthstoneReplays.Events;
 
 #endregion
 
@@ -78,6 +80,16 @@ namespace HearthstoneReplays.Parser
 
         public void ReadLine(string line)
         {
+            // Ignore timestamps when catching up with past events
+            if (line == "START_CATCHING_UP")
+            {
+                NodeParser.DevMode = true;
+            }
+            if (line == "END_CATCHING_UP")
+            {
+                NodeParser.DevMode = false;
+
+            }
             Match match;
             Regex logTypeRegex = null;
             if (logTypeRegex == null)
