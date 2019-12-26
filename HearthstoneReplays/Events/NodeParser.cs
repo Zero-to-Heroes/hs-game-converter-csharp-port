@@ -231,13 +231,13 @@ namespace HearthstoneReplays.Events
                     lock (listLock)
                     {
                         var gameEvent = provider.GameEvent != null ? provider.GameEvent : provider.SupplyGameEvent();
-                        if (provider.debug)
-                        {
-                            Logger.Log("should provide event? " + (gameEvent != null), provider.CreationLogLine + " // " + provider.AnimationReady);
-                            Logger.Log(
-                                "animation ready stuff",
-                                string.Join("\\n", eventQueue.Where(p => p.AnimationReady).Select(p => p.CreationLogLine)));
-                        }
+                        //if (provider.debug)
+                        //{
+                        //    Logger.Log("should provide event? " + (gameEvent != null), provider.CreationLogLine + " // " + provider.AnimationReady);
+                        //    Logger.Log(
+                        //        "animation ready stuff",
+                        //        string.Join("\\n", eventQueue.Where(p => p.AnimationReady).Select(p => p.CreationLogLine)));
+                        //}
                         // This can happen because there are some conditions that are only resolved when we 
                         // have the full meta data, like dungeon run step
                         if (gameEvent != null)

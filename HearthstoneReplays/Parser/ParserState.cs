@@ -230,15 +230,15 @@ namespace HearthstoneReplays.Parser
             {
                 showEntities = CurrentGame.FilterGameData(typeof(FullEntity)).Select(d => (IEntityData)d).ToList();
             }
-            // This doesn't work because some cards are revealed when drawn (like Aranasi Bloodmother) and mess up with
-            // this logic
-            // Adding a zone = HAND check to circumbent this
 			foreach (IEntityData entity in showEntities)
 			{
 				//Console.WriteLine("Considering entity: " + entity);
 				if (entity.CardId != null && entity.CardId.Length > 0 
-                    && GetTag(entity.Tags, GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT 
-                    && GetTag(entity.Tags, GameTag.ZONE) == (int)Zone.HAND)
+                    && GetTag(entity.Tags, GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT
+                    // We do this because some cards are revealed when drawn (like Aranasi Bloodmother) and mess up with
+                    // this logic
+                    // We can't use zone=HAND here because of Battlegrounds
+                    && GetTag(entity.Tags, GameTag.ZONE) != (int)Zone.DECK)
 				{
 					int entityId = entity.Entity;
 					BaseEntity fullEntity = GetEntity(entityId);

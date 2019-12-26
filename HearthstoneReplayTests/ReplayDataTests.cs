@@ -23,7 +23,7 @@ namespace HearthstoneReplayTests
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
-            List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
+            List<string> logFile = TestDataReader.GetInputFile("battlegrounds.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
             Thread.Sleep(1000);
             //string xml = new ReplayConverter().xmlFromReplay(replay);
@@ -155,6 +155,7 @@ namespace HearthstoneReplayTests
                 }},
             };
 
+            var errors = new List<string>();
             foreach (dynamic fileOutput in fileOutputs)
             {
                 var testedFileName = fileOutput.FileName as string;
@@ -182,9 +183,23 @@ namespace HearthstoneReplayTests
                     {
                         realEventCount = events[testedEventName];
                     }
-                    Assert.AreEqual(expectedEventCount, realEventCount, testedFileName + " / " + testedEventName);
+                    try
+                    {
+                        Assert.AreEqual(expectedEventCount, realEventCount, testedFileName + " / " + testedEventName);
+                    }
+                    catch (Exception e)
+                    {
+                        errors.Add(e.Message);
+                    }
                 }
             }
+
+            foreach (var error in errors)
+            {
+                Console.Error.WriteLine(error);
+            }
+
+            Assert.AreEqual(errors.Count, 0);
         }
 
         //[TestMethod]
