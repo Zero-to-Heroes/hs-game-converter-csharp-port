@@ -23,7 +23,7 @@ namespace HearthstoneReplayTests
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
-            List<string> logFile = TestDataReader.GetInputFile("battlegrounds.txt");
+            List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
             HearthstoneReplay replay = new ReplayParser().FromString(logFile);
             Thread.Sleep(1000);
             //string xml = new ReplayConverter().xmlFromReplay(replay);
