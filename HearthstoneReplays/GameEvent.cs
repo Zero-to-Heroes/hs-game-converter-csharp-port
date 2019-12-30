@@ -59,12 +59,12 @@ namespace HearthstoneReplays
                 Player = new
                 {
                     Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.LocalPlayer.PlayerId),
-                    Board = GameEvent.BuildZone(gameState, Zone.PLAY, parserState.LocalPlayer.PlayerId),
+                    Board = GameEvent.BuildBoard(gameState, parserState.LocalPlayer.PlayerId),
                 },
                 Opponent = new
                 {
                     Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.OpponentPlayer.PlayerId),
-                    Board = GameEvent.BuildZone(gameState, Zone.PLAY, parserState.OpponentPlayer.PlayerId),
+                    Board = GameEvent.BuildBoard(gameState, parserState.OpponentPlayer.PlayerId),
                 }
             };
             return result;
@@ -77,7 +77,6 @@ namespace HearthstoneReplays
                 return gameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)zone)
                     .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
-                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION || entity.GetTag(GameTag.CARDTYPE) == -1)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => BuildSmallEntity(entity))
                     .ToList();
@@ -86,6 +85,25 @@ namespace HearthstoneReplays
             {
                 Logger.Log("Warning: issue when trying to build zone " + e.Message, e.StackTrace);
                 return BuildZone(gameState, zone, playerId);
+            }
+        }
+
+        private static List<object> BuildBoard(GameState gameState, int playerId)
+        {
+            try
+            {
+                return gameState.CurrentEntities.Values
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
+                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
+                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
+                    .Select(entity => BuildSmallEntity(entity))
+                    .ToList();
+            }
+            catch (Exception e)
+            {
+                Logger.Log("Warning: issue when trying to build zone " + e.Message, e.StackTrace);
+                return BuildBoard(gameState, playerId);
             }
         }
 
