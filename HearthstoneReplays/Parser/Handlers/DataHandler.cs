@@ -103,13 +103,20 @@ namespace HearthstoneReplays.Parser.Handlers
                 }
                 var playerId = int.Parse(match.Groups[1].Value);
 				var playerName = match.Groups[2].Value;
-				var matchingPlayer = state.getPlayers()
-					.Where(player => player.PlayerId == playerId)
-					.First();
-                matchingPlayer.Name = playerName;
-                matchingPlayer.InitialName = playerName;
-                state.TryAssignLocalPlayer(timestamp, data);
-                Logger.Log("Tried to assign player name", data);
+                try
+                {
+				    var matchingPlayer = state.getPlayers()
+					    .Where(player => player.PlayerId == playerId)
+					    .First();
+                    matchingPlayer.Name = playerName;
+                    matchingPlayer.InitialName = playerName;
+                    state.TryAssignLocalPlayer(timestamp, data);
+                    Logger.Log("Tried to assign player name", data);
+                } 
+                catch (Exception e)
+                {
+                    Logger.Log("Exceptionw while assigning player name", data);
+                }
             }
 
 			match = Regexes.BuildNumber.Match(data);
