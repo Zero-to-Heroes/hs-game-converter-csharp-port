@@ -24,6 +24,7 @@ namespace HearthstoneReplays.Events.Parsers
             return node.Type == typeof(TagChange) 
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.HAND
+                && GameState.CurrentEntities.ContainsKey((node.Object as TagChange).Entity)
                 && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) != (int)Zone.DECK;
         }
 
