@@ -55,8 +55,7 @@ namespace HearthstoneReplays.Events.Parsers
                             };
                        },
                        true,
-                       node.CreationLogLine,
-                       true) };
+                       node.CreationLogLine) };
             }
             else if (tagChange.Value == (int)PlayState.TIED)
             {

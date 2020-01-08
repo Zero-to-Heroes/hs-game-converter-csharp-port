@@ -3,6 +3,7 @@
 using System;
 using System.Threading;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using HearthstoneReplays;
 using HearthstoneReplays.Events;
 using HearthstoneReplays.Parser;
@@ -23,11 +24,16 @@ namespace HearthstoneReplayTests
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
-            List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
-            HearthstoneReplay replay = new ReplayParser().FromString(logFile);
-            Thread.Sleep(1000);
-            //string xml = new ReplayConverter().xmlFromReplay(replay);
-            //Console.Write(xml);
+            List<string> logFile = TestDataReader.GetInputFile("bgs_high_cpu.txt");
+            var parser = new ReplayParser();
+            HearthstoneReplay replay = parser.FromString(logFile);
+            while (parser.State.NodeParser.eventQueue.Count > 0)
+            {
+                Thread.Sleep(100);
+            }
+            //Thread.Sleep(2000);
+            string xml = new ReplayConverter().xmlFromReplay(replay);
+            Console.Write(xml);
         }
 
         [TestMethod]

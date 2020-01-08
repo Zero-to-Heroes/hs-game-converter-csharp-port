@@ -68,6 +68,12 @@ namespace HearthstoneReplays.Parser.ReplayData
 		[XmlElement("ChosenEntities", typeof(ChosenEntities))]
 		public List<GameData> Data { get; set; }
 
+        public Game()
+        {
+            FormatType = -1;
+            GameType = -1;
+        }
+
         public void AddData(GameData data)
         {
             lock (listLock)

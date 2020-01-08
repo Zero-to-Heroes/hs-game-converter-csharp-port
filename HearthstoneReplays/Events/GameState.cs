@@ -72,8 +72,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         }
 
         public void PlayerEntity(PlayerEntity entity)
-		{
-			if (CurrentEntities.ContainsKey(entity.Id))
+        {
+            if (CurrentEntities.ContainsKey(entity.Id))
 			{
 				Logger.Log("error while parsing, playerEntity already present in memory", "" + entity.Id);
 				return;
@@ -94,8 +94,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         }
 
 		public void FullEntity(FullEntity entity, bool updating, string initialLog = null)
-		{
-			if (updating || CurrentEntities.ContainsKey(entity.Id))
+        {
+            if (updating || CurrentEntities.ContainsKey(entity.Id))
 			{
 				// This actually happens in a normal scenario, so we just ignore it
 				return;
@@ -224,8 +224,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         }
 
         public void TagChange(TagChange tagChange, string defChange, string initialLog = null)
-		{
-			if (!CurrentEntities.ContainsKey(tagChange.Entity))
+        {
+            if (!CurrentEntities.ContainsKey(tagChange.Entity))
 			{
 				//Logger.Log("error while parsing, tagchange doesn't have an entity in memory yet", "" + tagChange.Entity);
 				return;
@@ -236,14 +236,14 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 				existingTag = new Tag { Name = tagChange.Name };
 				CurrentEntities[tagChange.Entity].Tags.Add(existingTag);
 			}
-			RaiseTagChangeEvents(tagChange, existingTag.Value, defChange, initialLog);
-			existingTag.Value = tagChange.Value;
+            RaiseTagChangeEvents(tagChange, existingTag.Value, defChange, initialLog);
+            existingTag.Value = tagChange.Value;
 		}
 
         // Should only be used for ChangeEntity, and probably even this will be removed later on
 		public void Tag(Tag tag, int entityId)
-		{
-			if (!CurrentEntities.ContainsKey(entityId))
+        {
+            if (!CurrentEntities.ContainsKey(entityId))
 			{
 				Logger.Log("error while parsing, tag doesn't have an entity in memory yet", "" + entityId);
 				return;
@@ -283,15 +283,15 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             return 0;
         }
 
-        private async void RaiseTagChangeEvents(TagChange tagChange, int previousValue, string defChange, string initialLog = null)
-		{
-			// Wait until we have all the necessary data
-			while (ParserState.CurrentGame.FormatType == 0 
-                || ParserState.CurrentGame.GameType == 0 
-                || ParserState.LocalPlayer == null)
-			{
-				await Task.Delay(100);
-            }
+        private void RaiseTagChangeEvents(TagChange tagChange, int previousValue, string defChange, string initialLog = null)
+        {
+            // Wait until we have all the necessary data
+   //         while (ParserState.CurrentGame.FormatType == 0 
+   //             || ParserState.CurrentGame.GameType == 0 
+   //             || ParserState.LocalPlayer == null)
+			//{
+			//	await Task.Delay(100);
+   //         }
 
             if (tagChange.Name == (int)GameTag.GOLD_REWARD_STATE 
                 // This handles reconnects

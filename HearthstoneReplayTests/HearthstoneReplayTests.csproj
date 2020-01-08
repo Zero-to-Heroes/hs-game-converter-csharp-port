@@ -179,6 +179,8 @@
     <EmbeddedResource Include="TestData\bgs_kalthuzad.txt" />
     <EmbeddedResource Include="TestData\haerthstone_spell.txt" />
     <EmbeddedResource Include="TestData\hearthstone_spel_and_follow_up_game.txt" />
+    <EmbeddedResource Include="TestData\bgs_high_cpu.txt" />
+    <EmbeddedResource Include="TestData\bgs.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />

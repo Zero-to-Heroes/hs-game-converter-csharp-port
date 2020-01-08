@@ -34,7 +34,7 @@ namespace HearthstoneReplays.Events
             string creationLogLine,
             bool debug = false)
         {
-            return Create(originalTimestamp, eventProvider, (a) => false, needMetaData, creationLogLine, false);
+            return Create(originalTimestamp, eventProvider, (a) => false, needMetaData, creationLogLine, debug);
         }
 
         public static GameEventProvider Create(
@@ -52,7 +52,7 @@ namespace HearthstoneReplays.Events
                 isDuplicatePredicate = isDuplicatePredicate,
                 NeedMetaData = needMetaData,
                 CreationLogLine = creationLogLine,
-                debug = false,
+                debug = debug,
             };
             if (debug)
             {
@@ -63,6 +63,10 @@ namespace HearthstoneReplays.Events
 
         public void ReceiveAnimationLog(string data, ParserState state)
         {
+            if (GameEvent != null)
+            {
+                return;
+            }
             if (debug)
             {
                 Logger.Log("\nReceiving anomation log " + data, debug);
@@ -89,7 +93,7 @@ namespace HearthstoneReplays.Events
             data = data.Trim();
             if (debug)
             {
-                Logger.Log("IsEventReady, data", data);
+                Logger.Log("IsEventReady, data", data + " // " + CreationLogLine);
             }
 
             if (data == CreationLogLine)
@@ -121,8 +125,8 @@ namespace HearthstoneReplays.Events
             var ptlMatchForFullEntity = Regexes.EntityRegex.Match(data);
             if (ptlMatchForFullEntity.Success)
             {
-                var id = ptlMatchForFullEntity.Groups[1];
-                var dataWithOnlyEntityId = Regex.Replace(data, Regexes.EntityRegex.ToString(), "" + id);
+                var ptlId = ptlMatchForFullEntity.Groups[1];
+                var dataWithOnlyEntityId = Regex.Replace(data, Regexes.EntityRegex.ToString(), "" + ptlId);
                 if (dataWithOnlyEntityId == CreationLogLine)
                 {
                     if (debug)
@@ -139,12 +143,13 @@ namespace HearthstoneReplays.Events
                     if (gsMatchForFullEntity.Success)
                     {
                         var gsId = gsMatchForFullEntity.Groups[1];
-                        var gsDataWithOnlyEntityId = Regex.Replace(CreationLogLine, Regexes.EntityRegex.ToString(), "" + id);
+                        var gsDataWithOnlyEntityId = Regex.Replace(CreationLogLine, Regexes.EntityRegex.ToString(), "" + gsId);
                         if (dataWithOnlyEntityId == gsDataWithOnlyEntityId)
                         {
                             if (debug)
                             {
-                                Logger.Log("IsEventReady, AnimationReady with only entity id gsDataWithOnlyEntityId", "animation ready");
+                                Logger.Log("IsEventReady, AnimationReady with only entity id gsDataWithOnlyEntityId " + dataWithOnlyEntityId + " // " + gsDataWithOnlyEntityId,
+                                    CreationLogLine + " // " + data);
                             }
                             AnimationReady = true;
                             return;

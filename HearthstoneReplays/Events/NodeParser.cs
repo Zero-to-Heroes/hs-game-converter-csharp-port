@@ -16,9 +16,9 @@ namespace HearthstoneReplays.Events
     public class NodeParser
     {
         public static bool DevMode = false;
+        public List<GameEventProvider> eventQueue;
 
         private List<ActionParser> parsers;
-        private List<GameEventProvider> eventQueue;
         private Timer timer;
         private ParserState ParserState;
 
@@ -146,13 +146,15 @@ namespace HearthstoneReplays.Events
             return new List<ActionParser>()
             {
                 new NewGameParser(),
-                new CardPlayedFromHandParser(ParserState),
-                new SecretPlayedFromHandParser(ParserState),
                 new WinnerParser(ParserState),
                 new GameEndParser(ParserState),
+                new TurnStartParser(ParserState),
+                new FirstPlayerParser(ParserState),
+                new MainStepReadyParser(ParserState),
+                new CardPlayedFromHandParser(ParserState),
+                new SecretPlayedFromHandParser(ParserState),
                 new MulliganInputParser(ParserState),
                 new MulliganDoneParser(ParserState),
-                new TurnStartParser(ParserState),
                 new RumbleRunStepParser(ParserState),
                 new DungeonRunStepParser(ParserState),
                 new MonsterRunStepParser(ParserState),
@@ -172,15 +174,15 @@ namespace HearthstoneReplays.Events
                 new RecruitParser(ParserState),
                 new MinionBackOnBoardParser(ParserState),
                 new CardRevealedParser(ParserState),
+
                 new MinionSummonedParser(ParserState),
+
                 new FatigueParser(ParserState),
                 new DamageParser(ParserState),
                 new HealingParser(ParserState),
                 new BurnedCardParser(ParserState),
                 new MinionDiedParser(ParserState),
                 new SecretPlayedFromDeckParser(ParserState),
-                new FirstPlayerParser(ParserState),
-                new MainStepReadyParser(ParserState),
                 new ArmorChangeParser(ParserState),
                 new CardStolenParser(ParserState),
                 new SecretTriggeredParser(ParserState),
@@ -202,6 +204,10 @@ namespace HearthstoneReplays.Events
             // other event that should be processed first
             // Warning: this means the whole event parsing works in real-time, and is not suited for 
             // post-processing of games
+            //if (eventQueue.Any(p => p.CreationLogLine.Contains("TAG_CHANGE Entity=[entityName=Voidwalker id=3651 zone=PLAY zonePos=3 cardId=CS2_065 player=13] tag=ZONE value=REMOVEDFROMGAME")))
+            //{
+            //    Logger.Log("Provider to process", eventQueue[0].CreationLogLine);
+            //}
             while (IsEventToProcess())
             {
                 //Logger.Log("There is an event to process", eventQueue.Count == 0 ? "nothing" : eventQueue[0].CreationLogLine);
@@ -212,6 +218,7 @@ namespace HearthstoneReplays.Events
                     {
                         if (eventQueue.Count == 0)
                         {
+                            //Logger.Log("Queue empty", "");
                             return;
                         }
                         if (!eventQueue.Any(p => p.AnimationReady))
@@ -219,19 +226,29 @@ namespace HearthstoneReplays.Events
                         // With the arrival of Battlegrounds we can't do this anymore, as it spoils the game very fast
                         //&& DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).TotalMilliseconds < 5000)
                         {
+                            //Logger.Log("No animation ready", "");
                             return;
                         }
                         provider = eventQueue[0];
                         eventQueue.RemoveAt(0);
                     }
+                    //if (provider.CreationLogLine.Contains("TAG_CHANGE Entity=[entityName=Voidwalker id=3651 zone=PLAY zonePos=3 cardId=CS2_065 player=13] tag=ZONE value=REMOVEDFROMGAME"))
+                    //{
+                    //    Logger.Log("Provider to process 1.1", provider.NeedMetaData + " // " + ParserState.CurrentGame.FormatType 
+                    //        + " // " + ParserState.CurrentGame.GameType + " // " + ParserState.LocalPlayer);
+                    //}
                     if (provider.NeedMetaData)
                     {
                         // Wait until we have all the necessary data
-                        while (ParserState.CurrentGame.FormatType == 0 || ParserState.CurrentGame.GameType == 0 || ParserState.LocalPlayer == null)
+                        while (ParserState.CurrentGame.FormatType == -1 || ParserState.CurrentGame.GameType == -1 || ParserState.LocalPlayer == null)
                         {
                             await Task.Delay(100);
                         }
                     }
+                    //if (provider.CreationLogLine.Contains("TAG_CHANGE Entity=[entityName=Voidwalker id=3651 zone=PLAY zonePos=3 cardId=CS2_065 player=13] tag=ZONE value=REMOVEDFROMGAME"))
+                    //{
+                    //    Logger.Log("Provider to process 2", "");
+                    //}
                     lock (listLock)
                     {
                         ProcessGameEvent(provider);
@@ -248,19 +265,24 @@ namespace HearthstoneReplays.Events
         private void ProcessGameEvent(GameEventProvider provider)
         {
             var gameEvent = provider.GameEvent != null ? provider.GameEvent : provider.SupplyGameEvent();
-            //if (provider.debug)
+            //if (provider.CreationLogLine.Contains("3651")) // == "TAG_CHANGE Entity=[entityName=Voidwalker id=3651 zone=PLAY zonePos=3 cardId=CS2_065 player=13] tag=ZONE value=REMOVEDFROMGAMETAG_CHANGE Entity=[entityName=Voidwalker id=3651 zone=PLAY zonePos=3 cardId=CS2_065 player=13] tag=ZONE value=REMOVEDFROMGAME")
             //{
-            //    Logger.Log("should provide event? " + (gameEvent != null), provider.CreationLogLine + " // " + provider.AnimationReady);
-            //    Logger.Log(
-            //        "animation ready stuff",
-            //        string.Join("\\n", eventQueue.Where(p => p.AnimationReady).Select(p => p.CreationLogLine)));
+            //    Logger.Log("Handling debug provider", provider.CreationLogLine);
             //}
+            if (provider.debug)
+            {
+                Logger.Log("should provide event? " + (gameEvent != null), provider.CreationLogLine + " // " + provider.AnimationReady);
+                Logger.Log(
+                    "animation ready stuff",
+                    string.Join("\\n", eventQueue.Where(p => p.AnimationReady).Select(p => p.CreationLogLine)));
+            }
             // This can happen because there are some conditions that are only resolved when we 
             // have the full meta data, like dungeon run step
             if (gameEvent != null)
             {
                 //Logger.Log("Handling event", gameEvent.Type);
                 GameEventHandler.Handle(gameEvent);
+                //Logger.Log(DateTime.Now, "Handled event " + provider.Timestamp + " " + provider.CreationLogLine);
             }
             else
             {
@@ -282,11 +304,12 @@ namespace HearthstoneReplays.Events
                         && (DevMode || DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds > 500);
                     //if (eventQueue.Count > 0)
                     //{
-                    //    Logger.Log("Is event to process? " + isEvent, DateTime.Now + " // "
-                    //        + eventQueue.First().Timestamp
-                    //        + " // " + DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds);
+                    //    //    Logger.Log("Is event to process? " + isEvent, DateTime.Now + " // "
+                    //    //        + eventQueue.First().Timestamp
+                    //    //        + " // " + DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds);
+                    //    Logger.Log("Is event to process? " + isEvent, eventQueue[0].CreationLogLine);
                     //}
-                }  
+            }  
                 return isEvent;
             }
             catch (Exception ex)
