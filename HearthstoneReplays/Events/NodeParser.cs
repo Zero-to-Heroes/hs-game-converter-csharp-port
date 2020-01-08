@@ -133,6 +133,10 @@ namespace HearthstoneReplays.Events
         {
             lock (listLock)
             {
+                // We process all pending events. It can happen (typically with the Hearthstone spell) that 
+                // not all events receive their animation log, so we do it just to be sure there aren't any 
+                // left overs
+                eventQueue.ForEach(provider => ProcessGameEvent(provider));
                 eventQueue.Clear();
             }
         }
@@ -230,25 +234,7 @@ namespace HearthstoneReplays.Events
                     }
                     lock (listLock)
                     {
-                        var gameEvent = provider.GameEvent != null ? provider.GameEvent : provider.SupplyGameEvent();
-                        //if (provider.debug)
-                        //{
-                        //    Logger.Log("should provide event? " + (gameEvent != null), provider.CreationLogLine + " // " + provider.AnimationReady);
-                        //    Logger.Log(
-                        //        "animation ready stuff",
-                        //        string.Join("\\n", eventQueue.Where(p => p.AnimationReady).Select(p => p.CreationLogLine)));
-                        //}
-                        // This can happen because there are some conditions that are only resolved when we 
-                        // have the full meta data, like dungeon run step
-                        if (gameEvent != null)
-                        {
-                            //Logger.Log("Handling event", gameEvent.Type);
-                            GameEventHandler.Handle(gameEvent);
-                        }
-                        else
-                        {
-                            Logger.Log("Game event is null, so doing nothing", provider.CreationLogLine);
-                        }
+                        ProcessGameEvent(provider);
                     }
                 }
                 catch (Exception ex)
@@ -256,6 +242,29 @@ namespace HearthstoneReplays.Events
                     Logger.Log("Exception while parsing event queue " + ex.Message, ex.StackTrace);
                     return;
                 }
+            }
+        }
+
+        private void ProcessGameEvent(GameEventProvider provider)
+        {
+            var gameEvent = provider.GameEvent != null ? provider.GameEvent : provider.SupplyGameEvent();
+            //if (provider.debug)
+            //{
+            //    Logger.Log("should provide event? " + (gameEvent != null), provider.CreationLogLine + " // " + provider.AnimationReady);
+            //    Logger.Log(
+            //        "animation ready stuff",
+            //        string.Join("\\n", eventQueue.Where(p => p.AnimationReady).Select(p => p.CreationLogLine)));
+            //}
+            // This can happen because there are some conditions that are only resolved when we 
+            // have the full meta data, like dungeon run step
+            if (gameEvent != null)
+            {
+                //Logger.Log("Handling event", gameEvent.Type);
+                GameEventHandler.Handle(gameEvent);
+            }
+            else
+            {
+                Logger.Log("Game event is null, so doing nothing", provider.CreationLogLine);
             }
         }
 
