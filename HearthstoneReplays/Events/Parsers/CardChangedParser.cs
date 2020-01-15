@@ -28,6 +28,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return node.Type == typeof(ChangeEntity);
         }
+
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             return null;
@@ -49,6 +50,10 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[changeEntity.Entity];
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var creatorEntityId = changeEntity.GetTag(GameTag.CREATOR);
+            var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
+                ? GameState.CurrentEntities[creatorEntityId].CardId
+                : null;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 changeEntity.TimeStamp,
                 GameEvent.CreateProvider(
@@ -57,8 +62,11 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     ParserState,
-                        GameState,
-                    gameState),
+                    GameState,
+                    gameState,
+                    new {
+                        CreatorCardId = creatorEntityCardId,
+                    }),
                 true,
                 node.CreationLogLine) };
         }
