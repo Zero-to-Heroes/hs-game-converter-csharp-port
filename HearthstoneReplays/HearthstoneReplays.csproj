@@ -115,7 +115,9 @@
     <Compile Include="Events\Parsers\BattlegroundsHeroSelectionParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsPlayerLeaderboardPlaceUpdatedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsPlayerTechLevelUpdatedParser.cs" />
+    <Compile Include="Events\Parsers\DecklistUpdateParser.cs" />
     <Compile Include="Events\Parsers\CardRemovedFromBoardParser.cs" />
+    <Compile Include="Events\Parsers\InitialCardInDeckParser.cs" />
     <Compile Include="Events\Parsers\LocalPlayerLeaderboardPlaceChangedParser.cs" />
     <Compile Include="Events\Parsers\ChangeCardCreatorParser.cs" />
     <Compile Include="Events\Parsers\HealthDefChangeParser.cs" />

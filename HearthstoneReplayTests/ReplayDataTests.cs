@@ -24,7 +24,7 @@ namespace HearthstoneReplayTests
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
-            List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
+            List<string> logFile = TestDataReader.GetInputFile("plague_lord_one_run_defeat.txt");
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile);
             while (parser.State.NodeParser.eventQueue.Count > 0)
@@ -42,6 +42,10 @@ namespace HearthstoneReplayTests
             NodeParser.DevMode = true;
             var fileOutputs = new[]
             {
+                new { FileName = "plague_lord_one_run_defeat", Events = new[]
+                {
+                    new { EventName = "DECKLIST_UPDATE", ExpectedEventCount = 5 },
+                }},
                 new { FileName = "battlegrounds", Events = new[]
                 {
                     new { EventName = "MINION_BACK_ON_BOARD", ExpectedEventCount = 84 },

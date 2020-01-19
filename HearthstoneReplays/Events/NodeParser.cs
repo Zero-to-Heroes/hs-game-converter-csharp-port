@@ -174,9 +174,8 @@ namespace HearthstoneReplays.Events
                 new RecruitParser(ParserState),
                 new MinionBackOnBoardParser(ParserState),
                 new CardRevealedParser(ParserState),
-
+                new InitialCardInDeckParser(ParserState),
                 new MinionSummonedParser(ParserState),
-
                 new FatigueParser(ParserState),
                 new DamageParser(ParserState),
                 new HealingParser(ParserState),
@@ -195,6 +194,7 @@ namespace HearthstoneReplays.Events
                 new BattlegroundsPlayerTechLevelUpdatedParser(ParserState),
                 new BattlegroundsPlayerLeaderboardPlaceUpdatedParser(ParserState),
                 new BattlegroundsHeroSelectionParser(ParserState),
+                new DecklistUpdateParser(ParserState),
             };
         }
 
