@@ -112,6 +112,7 @@
     <Compile Include="Events\ActionParser.cs" />
     <Compile Include="Events\CardIds.cs" />
     <Compile Include="Events\GameEventProvider.cs" />
+    <Compile Include="Events\Parsers\GameRunningParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsHeroSelectionParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsPlayerLeaderboardPlaceUpdatedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsPlayerTechLevelUpdatedParser.cs" />
