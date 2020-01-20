@@ -41,6 +41,10 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var fullEntity = node.Object as FullEntity;
             var cardId = fullEntity.CardId;
+            if (fullEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.MINION)
+            {
+                return null;
+            }
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             var startingHealth = fullEntity.GetTag(GameTag.HEALTH);
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
