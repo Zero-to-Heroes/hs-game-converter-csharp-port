@@ -63,7 +63,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 Logger.Log("Could not find entity while looking for discard", showEntity.Entity);
             }
-            var cardId = entity?.CardId;
+            var cardId = entity?.CardId != null && entity.CardId.Length > 0 ? entity.CardId : showEntity.CardId;
             var controllerId = entity != null ? entity.GetTag(GameTag.CONTROLLER) : -1;
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
