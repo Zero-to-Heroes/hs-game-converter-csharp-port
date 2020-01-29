@@ -60,11 +60,13 @@ namespace HearthstoneReplays
                 {
                     Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.LocalPlayer.PlayerId),
                     Board = GameEvent.BuildBoard(gameState, parserState.LocalPlayer.PlayerId),
+                    Deck = GameEvent.BuildZone(gameState, Zone.DECK, parserState.LocalPlayer.PlayerId),
                 },
                 Opponent = new
                 {
                     Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.OpponentPlayer.PlayerId),
                     Board = GameEvent.BuildBoard(gameState, parserState.OpponentPlayer.PlayerId),
+                    Deck = GameEvent.BuildZone(gameState, Zone.DECK, parserState.OpponentPlayer.PlayerId),
                 }
             };
             return result;
