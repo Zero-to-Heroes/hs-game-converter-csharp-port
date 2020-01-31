@@ -26,5 +26,11 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
             var match = Tags.FirstOrDefault(t => t.Name == (int)tag);
             return match == null ? -1 : match.Value;
         }
+
+		public string GetPlayerClass()
+		{
+			var playerClass = GetTag(GameTag.CLASS);
+			return ((CardClass)playerClass).ToString();
+		}
     }
 }

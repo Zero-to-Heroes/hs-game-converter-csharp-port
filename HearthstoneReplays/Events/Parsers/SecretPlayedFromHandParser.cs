@@ -29,7 +29,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return node.Type == typeof(Parser.ReplayData.GameActions.Action) 
+            return node.Type == typeof(Parser.ReplayData.GameActions.Action)
                 && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.PLAY;
         }
 
@@ -42,6 +42,7 @@ namespace HearthstoneReplays.Events.Parsers
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
                 var gameState = GameEvent.BuildGameState(ParserState, GameState);
+                var playerClass = entity.GetPlayerClass();
                 return new List<GameEventProvider> { GameEventProvider.Create(
                        tagChange.TimeStamp,
                         GameEvent.CreateProvider(
@@ -51,7 +52,10 @@ namespace HearthstoneReplays.Events.Parsers
                             entity.Id,
                             ParserState,
                             GameState,
-                            gameState),
+                            gameState,
+                            new {
+                                PlayerClass = playerClass,
+                            }),
                        true,
                        node.CreationLogLine) };
             }
@@ -73,6 +77,7 @@ namespace HearthstoneReplays.Events.Parsers
                         var cardId = showEntity.CardId;
                         var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
                         var gameState = GameEvent.BuildGameState(ParserState, GameState);
+                        var playerClass = showEntity.GetPlayerClass();
                         // For now there can only be one card played per block
                         return new List<GameEventProvider> { GameEventProvider.Create(
                             action.TimeStamp,
@@ -83,7 +88,10 @@ namespace HearthstoneReplays.Events.Parsers
                                 showEntity.Entity,
                                 ParserState,
                                 GameState,
-                                gameState),
+                                gameState,
+                                new {
+                                    PlayerClass = playerClass,
+                                }),
                             true,
                             node.CreationLogLine) };
                     }

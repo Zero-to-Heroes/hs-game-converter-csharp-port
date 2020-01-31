@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
+using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 
 #endregion
@@ -46,6 +47,12 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
             FullEntity newObject = (FullEntity)dcSer.ReadObject(memoryStream);
             return newObject;
+        }
+
+        public string GetPlayerClass()
+        {
+            var playerClass = GetTag(GameTag.CLASS);
+            return ((CardClass)playerClass).ToString();
         }
     }
 }

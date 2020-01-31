@@ -44,6 +44,7 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var playerClass = showEntity.GetPlayerClass();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 GameEvent.CreateProvider(
@@ -52,8 +53,11 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     showEntity.Entity,
                     ParserState,
-                        GameState,
-                    gameState),
+                    GameState,
+                    gameState,
+                    new {
+                        PlayerClass = playerClass,
+                    }),
                 true,
                 node.CreationLogLine) };
         }

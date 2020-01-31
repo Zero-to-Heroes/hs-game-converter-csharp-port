@@ -131,15 +131,19 @@ namespace HearthstoneReplays.Parser
             value.IsMainPlayer = false;
             var playerEntity = getPlayers().Find(player => player.PlayerId == value.PlayerId);
             playerEntity.IsMainPlayer = value.IsMainPlayer;
-            NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
-                    timestamp,
-                    () => new GameEvent
-                    {
-                        Type = "OPPONENT_PLAYER",
-                        Value = this._opponentPlayer
-                    },
-                    false,
-                    data) });
+			var gameState = GameEvent.BuildGameState(this, GameState);
+			NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
+					timestamp,
+					() => new GameEvent
+					{
+						Type = "OPPONENT_PLAYER",
+						Value = new {
+							OpponentPlayer = this._opponentPlayer,
+							GameState = gameState,
+						}
+					},
+					false,
+					data) }); ;
         }
 
 		public void Reset()
