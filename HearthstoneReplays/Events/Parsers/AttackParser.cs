@@ -22,20 +22,43 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return node.Type == typeof(Parser.ReplayData.GameActions.Action)
-                && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.ATTACK;
+            return false;
         }
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return false;
+            return node.Type == typeof(Parser.ReplayData.GameActions.Action)
+                && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.ATTACK;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
+            return null;
+        }
+
+        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
+        {
+
             var action = node.Object as Parser.ReplayData.GameActions.Action;
-            var source = GameState.CurrentEntities[action.Entity];
-            var target = GameState.CurrentEntities[action.Target];
+            //if (action.Entity)
+            var proposedAttacker = action.Data
+                .Where(data => data.GetType() == typeof(TagChange))
+                .Select(data => (TagChange)data)
+                .Where(tagChange => tagChange.Name == (int)GameTag.PROPOSED_ATTACKER)
+                .FirstOrDefault() // Might use the last non-zero, in case of secrets? To be checked
+                .Value;
+            var proposedDefender = action.Data
+                .Where(data => data.GetType() == typeof(TagChange))
+                .Select(data => (TagChange)data)
+                .Where(tagChange => tagChange.Name == (int)GameTag.PROPOSED_DEFENDER)
+                .FirstOrDefault()
+                .Value;
+            if (!GameState.CurrentEntities.ContainsKey(proposedAttacker) || !GameState.CurrentEntities.ContainsKey(proposedDefender))
+            {
+                Logger.Log("Could not find entity or target", action.Entity + " // " + action.Target + " // " + node.CreationLogLine);
+            }
+            var source = GameState.CurrentEntities[proposedAttacker];
+            var target = GameState.CurrentEntities[proposedDefender];
             var eventType = "ATTACK_ON_UNKNOWN";
             if (target.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
             {
@@ -59,7 +82,7 @@ namespace HearthstoneReplays.Events.Parsers
                     -1,
                     ParserState,
                     GameState,
-                    gameState, 
+                    gameState,
                     new {
                         SourceCardId = sourceCardId,
                         SourceEntityId = source.Id,
@@ -69,13 +92,8 @@ namespace HearthstoneReplays.Events.Parsers
                         TargetControllerId = targetControllerId,
                     }),
                 true,
-                node.CreationLogLine) 
+                node.CreationLogLine)
             };
-        }
-
-        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
-        {
-            return null;
         }
     }
 }
