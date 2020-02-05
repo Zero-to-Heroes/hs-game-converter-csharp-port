@@ -41,17 +41,21 @@ namespace HearthstoneReplays
                     EntityId = entityId,
                     // We do it now so that the zone positions should have been resolved, while 
                     // if we compute it when the event is built, there is no guarantee of that
-                    GameState = BuildGameState(parserState, fullGameState),
+                    // BUT if we compute it now, we have no guarantee that the state matches what 
+                    // the state looked like when we built the event, so building it beforehand
+                    // is the way to go
+                    GameState = gameState, //fullGameState.BuildGameStateReport(),// gameState,
                     AdditionalProps = additionalProps
                 }
             };
         }
 
         // It needs to be built beforehand, as the game state we pass is not immutable
-        public static object BuildGameState(ParserState parserState, GameState gameState)
+        public static dynamic BuildGameState(ParserState parserState, GameState gameState)
         {
             if (parserState == null || parserState.LocalPlayer == null || parserState.OpponentPlayer == null)
             {
+                //Logger.Log("Can't build game state", "");
                 return new { };
             }
             

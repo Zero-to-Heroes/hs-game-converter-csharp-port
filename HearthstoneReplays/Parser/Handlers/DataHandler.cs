@@ -71,10 +71,14 @@ namespace HearthstoneReplays.Parser.Handlers
 
 			if (data == "BLOCK_END")
             {
+				// Logger.Log("Current node after end action", state.Node.CreationLogLine);
+				state.UpdateCurrentNode(typeof(Game), typeof(Action));
+				// Logger.Log("Preparing to end action", timestamp);
                 state.EndAction();
-                state.UpdateCurrentNode(typeof(Game), typeof(Action));
+				// Logger.Log("Current node after update // " + state.Node.Type + " // " + (state.Node.Type == typeof(Action)), state.Node.CreationLogLine);
 				state.Node = state.Node.Parent ?? state.Node;
-                return;
+				// Logger.Log("Current node is now", state.Node.CreationLogLine);
+				return;
 			}
 
 			var match = Regexes.ActionCreategameRegex.Match(data);
@@ -243,6 +247,7 @@ namespace HearthstoneReplays.Parser.Handlers
 					throw new Exception("Invalid node " + state.Node.Type);
                 var newNode = new Node(typeof(Action), action, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
+				// Logger.Log("Creating new node", newNode.CreationLogLine);
                 state.Node = newNode;
                 return;
 			}
@@ -285,7 +290,8 @@ namespace HearthstoneReplays.Parser.Handlers
 					throw new Exception("Invalid node " + state.Node.Type);
                 var newNode = new Node(typeof(Action), action, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
-                state.Node = newNode;
+				// Logger.Log("Creating new node short", newNode.CreationLogLine);
+				state.Node = newNode;
                 return;
 			}
 
@@ -323,7 +329,8 @@ namespace HearthstoneReplays.Parser.Handlers
                     throw new Exception("Invalid node " + state.Node.Type + " while parsing " + data);
                 var newNode = new Node(typeof(Action), action, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
-                state.Node = newNode;
+				// Logger.Log("Creating new old", newNode.CreationLogLine);
+				state.Node = newNode;
                 return;
 			}
 
@@ -461,8 +468,9 @@ namespace HearthstoneReplays.Parser.Handlers
 				    else
 					    throw new Exception("Invalid node " + state.Node.Type);
                     state.CreateNewNode(newNode);
-                }
-                state.Node = newNode;
+				}
+				// Logger.Log("Creating full entity", newNode.CreationLogLine);
+				state.Node = newNode;
                 //state.GameState.FullEntity(showEntity, updating, timestamp + " " + data);
 				return;
 			}

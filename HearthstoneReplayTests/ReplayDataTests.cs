@@ -24,7 +24,8 @@ namespace HearthstoneReplayTests
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
-            List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
+            // GameEventHandler.EventProvider = (evt) => { };
+            List<string> logFile = TestDataReader.GetInputFile("battlegrounds.txt");
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile);
             //while (parser.State.NodeParser.eventQueue.Count > 0)
@@ -44,7 +45,7 @@ namespace HearthstoneReplayTests
             {
                 new { FileName = "plague_lord_one_run_defeat", Events = new[]
                 {
-                    new { EventName = "DECKLIST_UPDATE", ExpectedEventCount = 5 },
+                    new { EventName = "DECKLIST_UPDATE", ExpectedEventCount = 2 },
                 }},
                 new { FileName = "battlegrounds", Events = new[]
                 {
@@ -101,7 +102,8 @@ namespace HearthstoneReplayTests
                 }},
                 new { FileName = "healing", Events = new[]
                 {
-                    new { EventName = "HEALING", ExpectedEventCount = 25 },
+                    //new { EventName = "HEALING", ExpectedEventCount = 25 },
+                    new { EventName = "HEALING", ExpectedEventCount = 26 },
                     new { EventName = "CARD_STOLEN", ExpectedEventCount = 0 },
                     new { EventName = "MINION_SUMMONED", ExpectedEventCount = 1 },
                     new { EventName = "RECRUIT_CARD", ExpectedEventCount = 0 },
@@ -200,6 +202,7 @@ namespace HearthstoneReplayTests
                     catch (Exception e)
                     {
                         errors.Add(e.Message);
+                        Console.WriteLine("Error while processing " + testedFileName + " / " + testedEventName + " / " + e.Message);
                     }
                 }
             }
