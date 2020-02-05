@@ -112,6 +112,8 @@
     <Compile Include="Events\ActionParser.cs" />
     <Compile Include="Events\CardIds.cs" />
     <Compile Include="Events\GameEventProvider.cs" />
+    <Compile Include="Events\Parsers\NumCardsPlayedThisTurnParser.cs" />
+    <Compile Include="Events\Parsers\AttackParser.cs" />
     <Compile Include="Events\Parsers\GameRunningParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsHeroSelectionParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsPlayerLeaderboardPlaceUpdatedParser.cs" />
@@ -134,6 +136,7 @@
     <Compile Include="Events\Parsers\SecretPlayedFromDeckParser.cs" />
     <Compile Include="Events\Parsers\MainStepReadyParser.cs" />
     <Compile Include="Events\Parsers\DeathrattleTriggeredParser.cs" />
+    <Compile Include="Events\Parsers\HeroPowerUsedParser.cs" />
     <Compile Include="Events\Parsers\SecretTriggeredParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsPlayerBoardParser.cs" />
     <Compile Include="Events\PlayerReport.cs" />

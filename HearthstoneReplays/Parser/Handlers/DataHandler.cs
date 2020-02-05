@@ -36,7 +36,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 //Logger.Log("Handling create game", "");
                 if (!state.Ended && state.NumberOfCreates >= 1)
                 {
-                    Logger.Log("Probable reconnect detected", "" + (timestamp - previousTimestamp));
+                    Logger.Log("Probable reconnect detected " + timestamp + " // " + previousTimestamp, "" + (timestamp - previousTimestamp));
                     state.ReconnectionOngoing = true;
                     state.NumberOfCreates++;
                     state.UpdateCurrentNode(typeof(Game));

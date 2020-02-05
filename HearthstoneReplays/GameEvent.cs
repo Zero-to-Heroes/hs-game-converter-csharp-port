@@ -54,8 +54,10 @@ namespace HearthstoneReplays
             {
                 return new { };
             }
+            
             var result = new
             {
+                ActivePlayerId = gameState.GetActivePlayerId(),
                 Player = new
                 {
                     Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.LocalPlayer.PlayerId),

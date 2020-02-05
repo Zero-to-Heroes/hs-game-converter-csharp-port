@@ -282,6 +282,18 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
             return 0;
         }
+        
+        public int GetActivePlayerId()
+        {
+            var activePlayer = CurrentEntities.Values
+                    .Where(e => e.Tags.Find(x => (x.Name == (int)GameTag.CURRENT_PLAYER && x.Value == 1)) != null)
+                    .FirstOrDefault();
+            var activePlayerEntityId = activePlayer.Id;
+            var activePlayerEntity = ParserState.CurrentGame.FilterGameData(typeof(PlayerEntity))
+                .Select(player => (PlayerEntity)player)
+                .First(player => player.Id == activePlayerEntityId);
+            return activePlayerEntity.PlayerId;
+        }
 
         private void RaiseTagChangeEvents(TagChange tagChange, int previousValue, string defChange, string initialLog = null)
         {
