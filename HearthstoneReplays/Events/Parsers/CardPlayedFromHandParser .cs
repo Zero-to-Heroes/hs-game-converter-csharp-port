@@ -41,6 +41,14 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
+                var targetId = -1;
+                string targetCardId = null;
+                if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+                {
+                    var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                    targetId = action.Target;
+                    targetCardId = targetId > 0 ? GameState.CurrentEntities[targetId].CardId : null;
+                }
                 var gameState = GameEvent.BuildGameState(ParserState, GameState);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
@@ -51,7 +59,11 @@ namespace HearthstoneReplays.Events.Parsers
                         entity.Id,
                         ParserState,
                         GameState,
-                        gameState),
+                        gameState,
+                        new {
+                            TargetEntityId = targetId,
+                            TargetCardId = targetCardId,
+                        }),
                     true,
                     node.CreationLogLine) };
             }
@@ -71,6 +83,8 @@ namespace HearthstoneReplays.Events.Parsers
                         var cardId = showEntity.CardId;
                         var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
                         var gameState = GameEvent.BuildGameState(ParserState, GameState);
+                        var targetId = action.Target;
+                        string targetCardId = targetId > 0 ? GameState.CurrentEntities[targetId].CardId : null;
                         // For now there can only be one card played per block
                         return new List<GameEventProvider> { GameEventProvider.Create(
                             action.TimeStamp,
@@ -80,8 +94,12 @@ namespace HearthstoneReplays.Events.Parsers
                                 controllerId,
                                 showEntity.Entity,
                                 ParserState,
-                        GameState,
-                                gameState),
+                                GameState,
+                                gameState,
+                                new {
+                                    TargetEntityId = targetId,
+                                    TargetCardId = targetCardId,
+                                }),
                             true,
                             node.CreationLogLine) };
                     }
