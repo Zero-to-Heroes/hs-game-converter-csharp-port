@@ -5,6 +5,7 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -39,6 +40,34 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             if (GameState.CurrentEntities[action.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
+                var parentAction = (node.Parent.Object as Parser.ReplayData.GameActions.Action);
+                object additionalProps = new { };
+                if (parentAction != null && parentAction.Type == (int)BlockType.ATTACK)
+                {
+                    var proposedAttackerEntityId = parentAction.Data
+                        .Where(data => data.GetType() == typeof(TagChange))
+                        .Select(data => (TagChange)data)
+                        .Where(tag => tag.Name == (int)GameTag.PROPOSED_ATTACKER)
+                        .FirstOrDefault()
+                        .Value;
+                    var proposedAttacker = GameState.CurrentEntities[proposedAttackerEntityId];
+                    var proposedDefenderEntityId = parentAction.Data
+                        .Where(data => data.GetType() == typeof(TagChange))
+                        .Select(data => (TagChange)data)
+                        .Where(tag => tag.Name == (int)GameTag.PROPOSED_DEFENDER)
+                        .FirstOrDefault()
+                        .Value;
+                    var proposedDefender = GameState.CurrentEntities[proposedDefenderEntityId];
+                    additionalProps = new
+                    {
+                        ProposedAttackerCardId = proposedAttacker.CardId,
+                        ProposedAttackerEntityId = proposedAttackerEntityId,
+                        ProposedAttackerControllerId = proposedAttacker.GetTag(GameTag.CONTROLLER),
+                        ProposedDefenderCardId = proposedDefender.CardId,
+                        ProposedDefenderEntityId = proposedDefenderEntityId,
+                        ProposedDefenderControllerId = proposedDefender.GetTag(GameTag.CONTROLLER),
+                    };
+                }
                 var gameState = GameEvent.BuildGameState(ParserState, GameState);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                        action.TimeStamp,
@@ -49,7 +78,8 @@ namespace HearthstoneReplays.Events.Parsers
                             entity.Id,
                             ParserState,
                             GameState,
-                            gameState),
+                            gameState,
+                            additionalProps),
                        true,
                        node.CreationLogLine) };
             }
