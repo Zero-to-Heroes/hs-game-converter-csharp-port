@@ -43,6 +43,8 @@ namespace HearthstoneReplays.Events.Parsers
                        Value = new {
                            Turn = (int)tagChange.Value,
                            GameState = gameState,
+                           LocalPlayer = ParserState.LocalPlayer,
+                           OpponentPlayer = ParserState.OpponentPlayer,
                        }
                    },
                    false,
