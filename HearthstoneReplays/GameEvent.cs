@@ -58,24 +58,45 @@ namespace HearthstoneReplays
                 //Logger.Log("Can't build game state", "");
                 return new { };
             }
-            
+
             var result = new
             {
                 ActivePlayerId = gameState.GetActivePlayerId(),
                 Player = new
                 {
+                    Hero = GameEvent.BuildHero(gameState, parserState.LocalPlayer.PlayerId),
                     Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.LocalPlayer.PlayerId),
                     Board = GameEvent.BuildBoard(gameState, parserState.LocalPlayer.PlayerId),
                     Deck = GameEvent.BuildZone(gameState, Zone.DECK, parserState.LocalPlayer.PlayerId),
                 },
                 Opponent = new
                 {
+                    Hero = GameEvent.BuildHero(gameState, parserState.OpponentPlayer.PlayerId),
                     Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.OpponentPlayer.PlayerId),
                     Board = GameEvent.BuildBoard(gameState, parserState.OpponentPlayer.PlayerId),
                     Deck = GameEvent.BuildZone(gameState, Zone.DECK, parserState.OpponentPlayer.PlayerId),
                 }
             };
             return result;
+        }
+
+        private static object BuildHero(GameState gameState, int playerId)
+        {
+            try
+            {
+                return gameState.CurrentEntities.Values
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
+                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
+                    .Select(entity => BuildSmallEntity(entity))
+                    .FirstOrDefault();
+            }
+            catch (Exception e)
+            {
+                Logger.Log("Warning: issue when trying to build hero " + e.Message, e.StackTrace);
+                return BuildHero(gameState, playerId);
+            }
         }
 
         private static List<object> BuildZone(GameState gameState, Zone zone, int playerId)
