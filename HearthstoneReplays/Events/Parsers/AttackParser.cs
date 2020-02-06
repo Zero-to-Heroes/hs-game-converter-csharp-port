@@ -22,38 +22,31 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return false;
+            return node.Type == typeof(TagChange) 
+                && (node.Object as TagChange).Name == (int)GameTag.DEFENDING
+                && (node.Object as TagChange).Value == 1;
         }
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return node.Type == typeof(Parser.ReplayData.GameActions.Action)
-                && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.ATTACK;
+            //return node.Type == typeof(Parser.ReplayData.GameActions.Action)
+            //    && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.ATTACK;
+            // DEFENDING is always set after ATTACKING, so by using DEFENDING we are sure both are set
+            return false;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            return null;
-        }
-
-        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
-        {
-
-            var action = node.Object as Parser.ReplayData.GameActions.Action;
+            var tagChange = node.Object as TagChange;
             //if (action.Entity)
-            var attackerId = action.Data
+            // DEFENDING tag is always set in an ATTACK action
+            var attackerId = (node.Parent.Object as Parser.ReplayData.GameActions.Action).Data
                 .Where(data => data.GetType() == typeof(TagChange))
                 .Select(data => (TagChange)data)
-                // ATTACKING is set once the attack goes through, otherwise it's PROPOSED_ATTACKER
-                .Where(tagChange => tagChange.Name == (int)GameTag.ATTACKING && tagChange.Value == 1)
-                .FirstOrDefault() // Might use the last non-zero, in case of secrets? To be checked
-                .Entity;
-            var defenderId = action.Data
-                .Where(data => data.GetType() == typeof(TagChange))
-                .Select(data => (TagChange)data)
-                .Where(tagChange => tagChange.Name == (int)GameTag.DEFENDING && tagChange.Value == 1)
+                .Where(tag => tag.Name == (int)GameTag.ATTACKING && tag.Value == 1)
                 .FirstOrDefault()
                 .Entity;
+            var defenderId = tagChange.Entity;
             if (!GameState.CurrentEntities.ContainsKey(attackerId) || !GameState.CurrentEntities.ContainsKey(defenderId))
             {
                 Logger.Log("Could not find entity or target", attackerId + " // " + defenderId + " // " + node.CreationLogLine);
@@ -75,7 +68,7 @@ namespace HearthstoneReplays.Events.Parsers
             var defenderControllerId = defender.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
-                action.TimeStamp,
+                tagChange.TimeStamp,
                 GameEvent.CreateProvider(
                     eventType,
                     null,
@@ -95,6 +88,11 @@ namespace HearthstoneReplays.Events.Parsers
                 true,
                 node.CreationLogLine)
             };
+        }
+
+        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
+        {
+            return null;
         }
     }
 }
