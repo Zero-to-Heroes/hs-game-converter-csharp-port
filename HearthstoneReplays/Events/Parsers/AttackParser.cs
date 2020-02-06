@@ -41,37 +41,38 @@ namespace HearthstoneReplays.Events.Parsers
 
             var action = node.Object as Parser.ReplayData.GameActions.Action;
             //if (action.Entity)
-            var proposedAttacker = action.Data
+            var attackerId = action.Data
                 .Where(data => data.GetType() == typeof(TagChange))
                 .Select(data => (TagChange)data)
-                .Where(tagChange => tagChange.Name == (int)GameTag.PROPOSED_ATTACKER)
+                // ATTACKING is set once the attack goes through, otherwise it's PROPOSED_ATTACKER
+                .Where(tagChange => tagChange.Name == (int)GameTag.ATTACKING && tagChange.Value == 1)
                 .FirstOrDefault() // Might use the last non-zero, in case of secrets? To be checked
-                .Value;
-            var proposedDefender = action.Data
+                .Entity;
+            var defenderId = action.Data
                 .Where(data => data.GetType() == typeof(TagChange))
                 .Select(data => (TagChange)data)
-                .Where(tagChange => tagChange.Name == (int)GameTag.PROPOSED_DEFENDER)
+                .Where(tagChange => tagChange.Name == (int)GameTag.DEFENDING && tagChange.Value == 1)
                 .FirstOrDefault()
-                .Value;
-            if (!GameState.CurrentEntities.ContainsKey(proposedAttacker) || !GameState.CurrentEntities.ContainsKey(proposedDefender))
+                .Entity;
+            if (!GameState.CurrentEntities.ContainsKey(attackerId) || !GameState.CurrentEntities.ContainsKey(defenderId))
             {
-                Logger.Log("Could not find entity or target", action.Entity + " // " + action.Target + " // " + node.CreationLogLine);
+                Logger.Log("Could not find entity or target", attackerId + " // " + defenderId + " // " + node.CreationLogLine);
             }
-            var source = GameState.CurrentEntities[proposedAttacker];
-            var target = GameState.CurrentEntities[proposedDefender];
-            var eventType = "ATTACK_ON_UNKNOWN";
-            if (target.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
+            var attacker = GameState.CurrentEntities[attackerId];
+            var defender = GameState.CurrentEntities[defenderId];
+            var eventType = "ATTACKING_UNKNOWN";
+            if (defender.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
             {
-                eventType = "ATTACK_ON_MINION";
+                eventType = "ATTACING_MINION";
             }
-            else if (target.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+            else if (defender.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
             {
-                eventType = "ATTACK_ON_HERO";
+                eventType = "ATTACKING_HERO";
             }
-            var sourceCardId = source.CardId;
-            var targetCardId = target.CardId;
-            var sourceControllerId = source.GetTag(GameTag.CONTROLLER);
-            var targetControllerId = target.GetTag(GameTag.CONTROLLER);
+            var attackerCardId = attacker.CardId;
+            var defenderCardId = defender.CardId;
+            var attackerControllerId = attacker.GetTag(GameTag.CONTROLLER);
+            var defenderControllerId = defender.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 action.TimeStamp,
@@ -84,12 +85,12 @@ namespace HearthstoneReplays.Events.Parsers
                     GameState,
                     gameState,
                     new {
-                        SourceCardId = sourceCardId,
-                        SourceEntityId = source.Id,
-                        SourceControllerId = sourceControllerId,
-                        TargetCardId = targetCardId,
-                        TargetEntityId = target.Id,
-                        TargetControllerId = targetControllerId,
+                        AttackerCardId = attackerCardId,
+                        AttackerEntityId = attacker.Id,
+                        AttackerControllerId = attackerControllerId,
+                        DefenderCardId = defenderCardId,
+                        DefenderEntityId = defender.Id,
+                        DefenderControllerId = defenderControllerId,
                     }),
                 true,
                 node.CreationLogLine)
