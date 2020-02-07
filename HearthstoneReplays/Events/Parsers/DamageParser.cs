@@ -44,6 +44,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .Select((meta) => meta as MetaData)
                 .Where((meta) => meta.Meta == (int)MetaDataType.DAMAGE);
             Dictionary<string, Dictionary<string, DamageInternal>> totalDamages = new Dictionary<string, Dictionary<string, DamageInternal>>();
+            var gameState = GameEvent.BuildGameState(ParserState, GameState);
             foreach (var damageTag in damageTags)
             {
                 foreach (var info in damageTag.MetaInfo)
@@ -110,6 +111,7 @@ namespace HearthstoneReplays.Events.Parsers
                             Targets = totalDamages[damageSource],
                             LocalPlayer = ParserState.LocalPlayer,
                             OpponentPlayer = ParserState.OpponentPlayer,
+                            GameState = gameState,
                         }
                     },
                     true,
