@@ -43,6 +43,10 @@ namespace HearthstoneReplayTests
             NodeParser.DevMode = true;
             var fileOutputs = new[]
             {
+                new { FileName = "desperate_measures", Events = new[]
+                {
+                    new { EventName = "SECRET_CREATED_IN_GAME", ExpectedEventCount = 2 },
+                }},
                 new { FileName = "plague_lord_one_run_defeat", Events = new[]
                 {
                     new { EventName = "DECKLIST_UPDATE", ExpectedEventCount = 2 },

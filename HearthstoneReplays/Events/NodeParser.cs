@@ -182,6 +182,7 @@ namespace HearthstoneReplays.Events
                 new BurnedCardParser(ParserState),
                 new MinionDiedParser(ParserState),
                 new SecretPlayedFromDeckParser(ParserState),
+                new SecretCreatedInGameParser(ParserState),
                 new ArmorChangeParser(ParserState),
                 new CardStolenParser(ParserState),
                 new SecretTriggeredParser(ParserState),
