@@ -30,7 +30,12 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return false;
+            // When the active player destroys a secret, it is fully revealed
+            var appliesToShowEntity = node.Type == typeof(ShowEntity)
+                && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD
+                && GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
+                && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) == (int)Zone.SECRET;
+            return appliesToShowEntity;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -57,7 +62,26 @@ namespace HearthstoneReplays.Events.Parsers
         // Typically the case when the opponent plays a quest or a secret
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
-            return null;
+            var showEntity = node.Object as ShowEntity;
+            var cardId = showEntity.CardId;
+            var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var playerClass = showEntity.GetPlayerClass();
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                showEntity.TimeStamp,
+                GameEvent.CreateProvider(
+                    "SECRET_DESTROYED",
+                    cardId,
+                    controllerId,
+                    showEntity.Entity,
+                    ParserState,
+                    GameState,
+                    gameState,
+                    new {
+                        PlayerClass = playerClass,
+                    }),
+                true,
+                node.CreationLogLine) };
         }
     }
 }
