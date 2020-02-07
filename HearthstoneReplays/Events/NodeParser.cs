@@ -141,68 +141,6 @@ namespace HearthstoneReplays.Events
             }
         }
 
-        private List<ActionParser> BuildActionParsers(ParserState ParserState)
-        {
-            return new List<ActionParser>()
-            {
-                new NewGameParser(),
-                new WinnerParser(ParserState),
-                new GameEndParser(ParserState),
-                new TurnStartParser(ParserState),
-                new FirstPlayerParser(ParserState),
-                new MainStepReadyParser(ParserState),
-                new CardPlayedFromHandParser(ParserState),
-                new SecretPlayedFromHandParser(ParserState),
-                new MulliganInputParser(ParserState),
-                new MulliganDoneParser(ParserState),
-                new RumbleRunStepParser(ParserState),
-                new DungeonRunStepParser(ParserState),
-                new MonsterRunStepParser(ParserState),
-                new PassiveBuffParser(ParserState),
-                new CardPresentOnGameStartParser(ParserState),
-                new CardDrawFromDeckParser(ParserState),
-                new ReceiveCardInHandParser(ParserState),
-                new CardBackToDeckParser(ParserState),
-                new DiscardedCardParser(ParserState),
-                new CardRemovedFromDeckParser(ParserState),
-                new CreateCardInDeckParser(ParserState),
-                new EndOfEchoInHandParser(ParserState),
-                new CardChangedParser(ParserState),
-                new CardRemovedFromHandParser(ParserState),
-                new CardRemovedFromBoardParser(ParserState),
-                new MinionOnBoardAttackUpdatedParser(ParserState),
-                new RecruitParser(ParserState),
-                new MinionBackOnBoardParser(ParserState),
-                new CardRevealedParser(ParserState),
-                new InitialCardInDeckParser(ParserState),
-                new MinionSummonedParser(ParserState),
-                new FatigueParser(ParserState),
-                new DamageParser(ParserState),
-                new HealingParser(ParserState),
-                new BurnedCardParser(ParserState),
-                new MinionDiedParser(ParserState),
-                new SecretPlayedFromDeckParser(ParserState),
-                new SecretCreatedInGameParser(ParserState),
-                new ArmorChangeParser(ParserState),
-                new CardStolenParser(ParserState),
-                new SecretTriggeredParser(ParserState),
-                new DeathrattleTriggeredParser(ParserState),
-                new HealthDefChangeParser(ParserState),
-                new ChangeCardCreatorParser(ParserState),
-                new LocalPlayerLeaderboardPlaceChangedParser(ParserState),
-                new HeroPowerChangedParser(ParserState),
-                new BattlegroundsPlayerBoardParser(ParserState),
-                new BattlegroundsPlayerTechLevelUpdatedParser(ParserState),
-                new BattlegroundsPlayerLeaderboardPlaceUpdatedParser(ParserState),
-                new BattlegroundsHeroSelectionParser(ParserState),
-                new DecklistUpdateParser(ParserState),
-                new GameRunningParser(ParserState),
-                new AttackParser(ParserState),
-                new NumCardsPlayedThisTurnParser(ParserState),
-                new HeroPowerUsedParser(ParserState),
-            };
-        }
-
         private async void ProcessGameEventQueue(Object source, ElapsedEventArgs e)
         {
             // If both the first events has just been added, wait a bit, so that we're sure there's no 
@@ -323,6 +261,69 @@ namespace HearthstoneReplays.Events
                 Logger.Log("Exception while trying to determine event to process", ex.Message);
                 return false;
             }
+        }
+
+        private List<ActionParser> BuildActionParsers(ParserState ParserState)
+        {
+            return new List<ActionParser>()
+            {
+                new NewGameParser(),
+                new WinnerParser(ParserState),
+                new GameEndParser(ParserState),
+                new TurnStartParser(ParserState),
+                new FirstPlayerParser(ParserState),
+                new MainStepReadyParser(ParserState),
+                new CardPlayedFromHandParser(ParserState),
+                new SecretPlayedFromHandParser(ParserState),
+                new MulliganInputParser(ParserState),
+                new MulliganDoneParser(ParserState),
+                new RumbleRunStepParser(ParserState),
+                new DungeonRunStepParser(ParserState),
+                new MonsterRunStepParser(ParserState),
+                new PassiveBuffParser(ParserState),
+                new CardPresentOnGameStartParser(ParserState),
+                new CardDrawFromDeckParser(ParserState),
+                new ReceiveCardInHandParser(ParserState),
+                new CardBackToDeckParser(ParserState),
+                new DiscardedCardParser(ParserState),
+                new CardRemovedFromDeckParser(ParserState),
+                new CreateCardInDeckParser(ParserState),
+                new EndOfEchoInHandParser(ParserState),
+                new CardChangedParser(ParserState),
+                new CardRemovedFromHandParser(ParserState),
+                new CardRemovedFromBoardParser(ParserState),
+                new MinionOnBoardAttackUpdatedParser(ParserState),
+                new RecruitParser(ParserState),
+                new MinionBackOnBoardParser(ParserState),
+                new CardRevealedParser(ParserState),
+                new InitialCardInDeckParser(ParserState),
+                new MinionSummonedParser(ParserState),
+                new FatigueParser(ParserState),
+                new DamageParser(ParserState),
+                new HealingParser(ParserState),
+                new BurnedCardParser(ParserState),
+                new MinionDiedParser(ParserState),
+                new SecretPlayedFromDeckParser(ParserState),
+                new SecretCreatedInGameParser(ParserState),
+                new SecretDestroyedParser(ParserState),
+                new ArmorChangeParser(ParserState),
+                new CardStolenParser(ParserState),
+                new SecretTriggeredParser(ParserState),
+                new DeathrattleTriggeredParser(ParserState),
+                new HealthDefChangeParser(ParserState),
+                new ChangeCardCreatorParser(ParserState),
+                new LocalPlayerLeaderboardPlaceChangedParser(ParserState),
+                new HeroPowerChangedParser(ParserState),
+                new BattlegroundsPlayerBoardParser(ParserState),
+                new BattlegroundsPlayerTechLevelUpdatedParser(ParserState),
+                new BattlegroundsPlayerLeaderboardPlaceUpdatedParser(ParserState),
+                new BattlegroundsHeroSelectionParser(ParserState),
+                new DecklistUpdateParser(ParserState),
+                new GameRunningParser(ParserState),
+                new AttackParser(ParserState),
+                new NumCardsPlayedThisTurnParser(ParserState),
+                new HeroPowerUsedParser(ParserState),
+            };
         }
     }
 }

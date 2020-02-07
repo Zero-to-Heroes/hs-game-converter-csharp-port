@@ -138,6 +138,7 @@
     <Compile Include="Events\Parsers\MainStepReadyParser.cs" />
     <Compile Include="Events\Parsers\DeathrattleTriggeredParser.cs" />
     <Compile Include="Events\Parsers\HeroPowerUsedParser.cs" />
+    <Compile Include="Events\Parsers\SecretDestroyedParser.cs" />
     <Compile Include="Events\Parsers\SecretTriggeredParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsPlayerBoardParser.cs" />
     <Compile Include="Events\PlayerReport.cs" />
