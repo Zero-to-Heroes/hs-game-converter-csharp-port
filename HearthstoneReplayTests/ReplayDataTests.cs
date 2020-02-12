@@ -58,7 +58,7 @@ namespace HearthstoneReplayTests
                     new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 16 },
                     new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 48 },
                     new { EventName = "DISCARD_CARD", ExpectedEventCount = 2 },
-                    new { EventName = "DECKLIST_UPDATE", ExpectedEventCount = 0 },
+                    new { EventName = "DECKLIST_UPDATE", ExpectedEventCount = 16 },
                 }},
                 new { FileName = "army_of_the_dead", Events = new[]
                 {
@@ -167,7 +167,7 @@ namespace HearthstoneReplayTests
                     new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 6 },
                     new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 0 },
                     new { EventName = "DISCARD_CARD", ExpectedEventCount = 0 },
-                    new { EventName = "DECKLIST_UPDATE", ExpectedEventCount = 4 }, // This is incorrect, but toki's hero power messes up a lot of stuff
+                    new { EventName = "DECKLIST_UPDATE", ExpectedEventCount = 2 }, // This is incorrect, but toki's hero power messes up a lot of stuff
                 }},
                 new { FileName = "local_player_leaderboard", Events = new[]
                 {
@@ -178,7 +178,7 @@ namespace HearthstoneReplayTests
                     new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 12 },
                     new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 35 },
                     new { EventName = "DISCARD_CARD", ExpectedEventCount = 2 },
-                    new { EventName = "DECKLIST_UPDATE", ExpectedEventCount = 0 },
+                    new { EventName = "DECKLIST_UPDATE", ExpectedEventCount = 23 },
                 }},
             };
 
@@ -227,7 +227,7 @@ namespace HearthstoneReplayTests
                 Console.Error.WriteLine(error);
             }
 
-            Assert.AreEqual(errors.Count, 0);
+            Assert.AreEqual(0, errors.Count);
         }
 
         //[TestMethod]

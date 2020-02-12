@@ -11,6 +11,11 @@ namespace HearthstoneReplays.Events.Parsers
 {
     public class DecklistUpdateParser : ActionParser
     {
+
+        private static List<int> DECK_ID_SCENARIOS = new List<int> { 
+            // ToT normal and heroic
+            3428, 3429, 3430, 3431, 3432, 3438, 3433, 3434, 3435, 3436, 3437, 3439, };
+
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
 
@@ -43,7 +48,16 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(data => data.GetType() == typeof(FullEntity))
                     .Select(data => (FullEntity)data)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.GetTag(GameTag.HERO_DECK_ID) > 0)
+                    .Where(entity =>
+                     {
+                         if (DECK_ID_SCENARIOS.Contains(ParserState?.CurrentGame?.ScenarioID ?? -1))
+                         {
+                             return entity.GetTag(GameTag.HERO_DECK_ID) > 0;
+
+                         }
+                         return entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO
+                             && entity.GetTag(GameTag.CONTROLLER) == ParserState.OpponentPlayer.PlayerId;
+                     })
                     .ToList();
             // Time the "new deck" action right after all the "create card in deck" ones
             var timestamp = action.Data
@@ -55,7 +69,9 @@ namespace HearthstoneReplays.Events.Parsers
                     .TimeStamp;
             return fullEntities.Select(fullEntity =>
                 {
-                    var deckId = fullEntity.GetTag(GameTag.HERO_DECK_ID);
+                    var deckId = DECK_ID_SCENARIOS.Contains(ParserState?.CurrentGame?.ScenarioID ?? -1)
+                        ? "" + fullEntity.GetTag(GameTag.HERO_DECK_ID)
+                        : fullEntity.CardId;
                     var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
                     return GameEventProvider.Create(
                         timestamp,
@@ -89,7 +105,16 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(data => data.GetType() == typeof(FullEntity))
                     .Select(data => (FullEntity)data)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.GetTag(GameTag.HERO_DECK_ID) > 0)
+                    .Where(entity =>
+                    {
+                        if (DecklistUpdateParser.DECK_ID_SCENARIOS.Contains(ParserState?.CurrentGame?.ScenarioID ?? -1))
+                        {
+                            return entity.GetTag(GameTag.HERO_DECK_ID) > 0;
+
+                        }
+                        return entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO
+                            && entity.GetTag(GameTag.CONTROLLER) == ParserState.OpponentPlayer.PlayerId;
+                    })
                     .ToList()
                     .Count > 0);
         }
