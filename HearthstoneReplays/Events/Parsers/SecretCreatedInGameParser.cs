@@ -26,8 +26,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-           return node.Type == typeof(FullEntity)
-                && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SECRET;
+            return node.Type == typeof(FullEntity)
+                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SECRET;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -46,10 +46,13 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
                 ? GameState.CurrentEntities[creatorEntityId].CardId
                 : null;
+            var eventName = fullEntity.GetTag(GameTag.QUEST) == 1
+                ? "QUEST_CREATED_IN_GAME"
+                : "SECRET_CREATED_IN_GAME";
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 GameEvent.CreateProvider(
-                    "SECRET_CREATED_IN_GAME",
+                    eventName,
                     cardId,
                     controllerId,
                     fullEntity.Entity,

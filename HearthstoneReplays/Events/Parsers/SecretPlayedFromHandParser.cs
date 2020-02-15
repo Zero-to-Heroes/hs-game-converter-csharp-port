@@ -41,12 +41,15 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
+                var eventName = GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.QUEST) == 1
+                    ? "QUEST_PLAYED"
+                    : "SECRET_PLAYED";
                 var gameState = GameEvent.BuildGameState(ParserState, GameState);
                 var playerClass = entity.GetPlayerClass();
                 return new List<GameEventProvider> { GameEventProvider.Create(
                        tagChange.TimeStamp,
                         GameEvent.CreateProvider(
-                            "SECRET_PLAYED",
+                            eventName,
                             cardId,
                             controllerId,
                             entity.Id,
@@ -78,11 +81,14 @@ namespace HearthstoneReplays.Events.Parsers
                         var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
                         var gameState = GameEvent.BuildGameState(ParserState, GameState);
                         var playerClass = showEntity.GetPlayerClass();
+                        var eventName = showEntity.GetTag(GameTag.QUEST) == 1
+                            ? "QUEST_PLAYED"
+                            : "SECRET_PLAYED";
                         // For now there can only be one card played per block
                         return new List<GameEventProvider> { GameEventProvider.Create(
                             action.TimeStamp,
                             GameEvent.CreateProvider(
-                                "SECRET_PLAYED",
+                                eventName,
                                 cardId,
                                 controllerId,
                                 showEntity.Entity,

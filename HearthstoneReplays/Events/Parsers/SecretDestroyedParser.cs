@@ -45,10 +45,13 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var eventName = entity.GetTag(GameTag.QUEST) == 1
+                ? "QUEST_DESTROYED"
+                : "SECRET_DESTROYED";
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 GameEvent.CreateProvider(
-                    "SECRET_DESTROYED",
+                    eventName,
                     cardId,
                     controllerId,
                     entity.Id,
@@ -67,10 +70,13 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             var playerClass = showEntity.GetPlayerClass();
+            var eventName = showEntity.GetTag(GameTag.QUEST) == 1
+                ? "QUEST_DESTROYED"
+                : "SECRET_DESTROYED";
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 GameEvent.CreateProvider(
-                    "SECRET_DESTROYED",
+                    eventName,
                     cardId,
                     controllerId,
                     showEntity.Entity,
