@@ -58,7 +58,7 @@ namespace HearthstoneReplayTests
                     new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 16 },
                     new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 48 },
                     new { EventName = "DISCARD_CARD", ExpectedEventCount = 2 },
-                    new { EventName = "DECKLIST_UPDATE", ExpectedEventCount = 16 },
+                    new { EventName = "DECKLIST_UPDATE", ExpectedEventCount = 0 },
                 }},
                 new { FileName = "army_of_the_dead", Events = new[]
                 {
@@ -178,7 +178,7 @@ namespace HearthstoneReplayTests
                     new { EventName = "HERO_POWER_CHANGED", ExpectedEventCount = 12 },
                     new { EventName = "BATTLEGROUNDS_PLAYER_BOARD", ExpectedEventCount = 35 },
                     new { EventName = "DISCARD_CARD", ExpectedEventCount = 2 },
-                    new { EventName = "DECKLIST_UPDATE", ExpectedEventCount = 23 },
+                    new { EventName = "DECKLIST_UPDATE", ExpectedEventCount = 0 },
                 }},
             };
 

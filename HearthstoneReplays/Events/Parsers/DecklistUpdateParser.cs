@@ -44,6 +44,17 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var action = node.Object as Parser.ReplayData.GameActions.Action;
+            var cardsCreatedInDeck = action.Data
+                    .Where(data => data.GetType() == typeof(FullEntity))
+                    .Select(data => (FullEntity)data)
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.DECK)
+                    .ToList();
+            if (cardsCreatedInDeck == null || cardsCreatedInDeck.Count == 0)
+            {
+                return null;
+            }
+            // Time the "new deck" action right after all the "create card in deck" ones
+            var timestamp = cardsCreatedInDeck.Last().TimeStamp;
             var fullEntities = action.Data
                     .Where(data => data.GetType() == typeof(FullEntity))
                     .Select(data => (FullEntity)data)
@@ -59,14 +70,6 @@ namespace HearthstoneReplays.Events.Parsers
                              && entity.GetTag(GameTag.CONTROLLER) == ParserState.OpponentPlayer.PlayerId;
                      })
                     .ToList();
-            // Time the "new deck" action right after all the "create card in deck" ones
-            var timestamp = action.Data
-                    .Where(data => data.GetType() == typeof(FullEntity))
-                    .Select(data => (FullEntity)data)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.DECK)
-                    .ToList()
-                    .Last()
-                    .TimeStamp;
             return fullEntities.Select(fullEntity =>
                 {
                     var deckId = DECK_ID_SCENARIOS.Contains(ParserState?.CurrentGame?.ScenarioID ?? -1)
