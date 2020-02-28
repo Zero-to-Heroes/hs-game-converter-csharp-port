@@ -51,7 +51,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             var previousZone = entity.GetTag(GameTag.ZONE) == -1 ? 0 : entity.GetTag(GameTag.ZONE);
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
-            
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     GameEvent.CreateProvider(
@@ -63,7 +63,8 @@ namespace HearthstoneReplays.Events.Parsers
                         GameState,
                         gameState,
                         new {
-                            IsPremium = entity.GetTag(GameTag.PREMIUM) == 1
+                            IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
+
                         }),
                     true,
                     node.CreationLogLine) };
@@ -85,7 +86,8 @@ namespace HearthstoneReplays.Events.Parsers
         private List<GameEventProvider> CreateEventFromShowEntity(Node node, string creationLogLine)
         {
             ShowEntity showEntity = node.Object as ShowEntity;
-            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, showEntity.GetTag(GameTag.CREATOR), node);
+            Logger.Log("Will add creator " + showEntity.GetTag(GameTag.CREATOR) + " //" + showEntity.GetTag(GameTag.DISPLAYED_CREATOR), "");
+            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creatorCardId, node, showEntity.CardId);
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             var previousZone = GameState.CurrentEntities[showEntity.Entity].GetTag(GameTag.ZONE);
@@ -112,7 +114,7 @@ namespace HearthstoneReplays.Events.Parsers
         private List<GameEventProvider> CreateEventFromFullEntity(Node node, string creationLogLine)
         {
             FullEntity fullEntity = node.Object as FullEntity;
-            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity.GetTag(GameTag.CREATOR), node);
+            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creatorCardId, node, fullEntity.CardId);
             if (cardId == null && GameState.CurrentTurn == 1 && fullEntity.GetTag(GameTag.ZONE_POSITION) == 5)
             {

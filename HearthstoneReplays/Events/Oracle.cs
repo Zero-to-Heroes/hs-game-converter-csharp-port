@@ -13,6 +13,26 @@ namespace HearthstoneReplays.Events
 {
     public class Oracle
     {
+        public static string FindCardCreatorCardId(GameState GameState, FullEntity entity, Node node)
+        {
+            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.CREATOR), node);
+            if (creatorCardId == null)
+            {
+                creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.DISPLAYED_CREATOR), node);
+            }
+            return creatorCardId;
+        }
+
+        public static string FindCardCreatorCardId(GameState GameState, ShowEntity entity, Node node)
+        {
+            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.CREATOR), node);
+            if (creatorCardId == null)
+            {
+                creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.DISPLAYED_CREATOR), node);
+            }
+            return creatorCardId;
+        }
+
         public static string FindCardCreatorCardId(GameState GameState, int creatorTag, Node node)
         {
             if (creatorTag != -1 && GameState.CurrentEntities.ContainsKey(creatorTag))
