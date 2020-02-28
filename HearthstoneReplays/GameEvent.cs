@@ -84,13 +84,17 @@ namespace HearthstoneReplays
         {
             try
             {
-                return gameState.CurrentEntities.Values
+                var hero = gameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => BuildSmallEntity(entity))
                     .FirstOrDefault();
+                return hero != null ? hero : new
+                {
+
+                };
             }
             catch (Exception e)
             {
