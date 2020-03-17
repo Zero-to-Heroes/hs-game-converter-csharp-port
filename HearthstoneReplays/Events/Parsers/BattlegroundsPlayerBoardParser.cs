@@ -6,6 +6,7 @@ using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using static HearthstoneReplays.Events.CardIds;
+using System;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -22,8 +23,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                && node.Type == typeof(TagChange)
+            return node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.NEXT_STEP
                 && (node.Object as TagChange).Value == (int)Step.MAIN_START_TRIGGERS;
         }
@@ -51,11 +51,12 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
+                .Where(entity => entity.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl 
+                    && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
                 .FirstOrDefault();
+            Logger.Log("Trying to handle board", "" + ParserState.CurrentGame.GameType + " // " + hero?.CardId);
             //Logger.Log("Hero " + hero.CardId, hero.Entity);
-            if (hero?.CardId != null 
-                && hero.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl 
-                && hero.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
+            if (hero?.CardId != null)
             {
                 // We don't use the game state builder here because we really need the full entities
                 var board = GameState.CurrentEntities.Values
@@ -64,21 +65,28 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
                     .Select(entity => entity.Clone())
                     .ToList();
+                var result = board.Select(entity => AddEchantments(GameState.CurrentEntities, entity)).ToList();
                 //Logger.Log("board has " + board.Count + " entities", "");
                 return GameEventProvider.Create(
                    tagChange.TimeStamp,
-                   () => new GameEvent
-                   {
-                       Type = "BATTLEGROUNDS_PLAYER_BOARD",
-                       Value = new
-                       {
-                           Hero = hero,
-                           CardId = hero.CardId,
-                           Board = board,
-                       }
-                   },
-                   false,
+                   () => ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+                        ? new GameEvent
+                           {
+                               Type = "BATTLEGROUNDS_PLAYER_BOARD",
+                               Value = new
+                               {
+                                   Hero = hero,
+                                   CardId = hero.CardId,
+                                   Board = result,
+                               }
+                           }
+                        : null,
+                   true,
                    node.CreationLogLine);
+            }
+            else
+            {
+                Logger.Log("Invalid hero", hero != null ? hero.CardId : "null hero");
             }
             return null;
         }
@@ -86,6 +94,37 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             return null;
+        }
+
+        private object AddEchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
+        {
+            var enchantments = currentEntities.Values
+                .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id)
+                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                .Select(entity => new
+                {
+                    EntityId = entity.Id,
+                    CardId = entity.CardId
+                })
+                .ToList();
+            //var test = currentEntities.Values
+            //    .Where(entity => entity.GetTag(GameTag.ATTACHED) > 0)
+            //    .Select(entity => entity.CardId)
+            //    .ToList();
+            //if (test.Count > 0)
+            //{
+            //    Logger.Log("Eeenchantments", test);
+            //}
+            dynamic result = new
+            {
+                CardId = fullEntity.CardId,
+                Entity = fullEntity.Entity,
+                Id = fullEntity.Id,
+                Tags = fullEntity.Tags,
+                TimeStamp = fullEntity.TimeStamp,
+                Enchantments = enchantments,
+            };
+            return result;
         }
     }
 }

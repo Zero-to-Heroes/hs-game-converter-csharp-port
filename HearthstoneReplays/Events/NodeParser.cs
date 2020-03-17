@@ -229,7 +229,7 @@ namespace HearthstoneReplays.Events
             }
             else
             {
-                //Logger.Log("Game event is null, so doing nothing", provider.CreationLogLine);
+                Logger.Log("Game event is null, so doing nothing", provider.CreationLogLine);
             }
         }
 
@@ -318,6 +318,7 @@ namespace HearthstoneReplays.Events
                 new BattlegroundsPlayerTechLevelUpdatedParser(ParserState),
                 new BattlegroundsPlayerLeaderboardPlaceUpdatedParser(ParserState),
                 new BattlegroundsHeroSelectionParser(ParserState),
+                new BattlegroundsNextOpponnentParser(ParserState),
                 new DecklistUpdateParser(ParserState),
                 new GameRunningParser(ParserState),
                 new AttackParser(ParserState),

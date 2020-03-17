@@ -112,6 +112,7 @@
     <Compile Include="Events\ActionParser.cs" />
     <Compile Include="Events\CardIds.cs" />
     <Compile Include="Events\GameEventProvider.cs" />
+    <Compile Include="Events\Parsers\BattlegroundsNextOpponnentParser.cs" />
     <Compile Include="Events\Parsers\NumCardsPlayedThisTurnParser.cs" />
     <Compile Include="Events\Parsers\AttackParser.cs" />
     <Compile Include="Events\Parsers\GameRunningParser.cs" />
