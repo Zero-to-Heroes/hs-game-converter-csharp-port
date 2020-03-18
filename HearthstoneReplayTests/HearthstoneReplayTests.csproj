@@ -186,6 +186,7 @@
     <EmbeddedResource Include="TestData\explosive_trap_kills_minion_freezing_not_triggered.txt" />
     <EmbeddedResource Include="TestData\desperate_measures.txt" />
     <EmbeddedResource Include="TestData\eater_of_secrets.txt" />
+    <EmbeddedResource Include="TestData\battlegrounds2.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />

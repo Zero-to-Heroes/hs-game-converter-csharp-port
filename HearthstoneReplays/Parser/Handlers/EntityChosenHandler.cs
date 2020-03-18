@@ -51,6 +51,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				var entity = helper.ParseEntity(rawEntity, state);
 				var choice = new Choice {Entity = entity, Index = index};
 				state.CurrentChosenEntites.Choices.Add(choice);
+				state.NodeParser.NewNode(new Node(typeof(Choice), choice, 0, null, data)); // It's not really a new node, but just a hack
 				return;
 			}
 			Console.WriteLine("Warning: Unhandled chosen entities: " + data);

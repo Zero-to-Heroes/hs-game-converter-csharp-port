@@ -37,7 +37,7 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var hero = GameState.CurrentEntities[tagChange.Entity];
             // The value is set to 0 when rotating the entities it seems
-            if (hero?.CardId != null && hero.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl && tagChange.Value > 0)
+            if (hero?.CardId != null && hero.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl && tagChange.Value > 1)
             {
                 return new List<GameEventProvider> {  GameEventProvider.Create(
                tagChange.TimeStamp,

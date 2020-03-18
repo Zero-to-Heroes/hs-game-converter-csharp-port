@@ -1,0 +1,74 @@
+﻿using HearthstoneReplays.Parser;
+using HearthstoneReplays.Parser.ReplayData;
+using HearthstoneReplays.Parser.ReplayData.GameActions;
+using System.Linq;
+using HearthstoneReplays.Enums;
+using HearthstoneReplays.Parser.ReplayData.Entities;
+using System.Collections.Generic;
+using static HearthstoneReplays.Events.CardIds;
+using System;
+using HearthstoneReplays.Parser.ReplayData.GameActions;
+using HearthstoneReplays.Parser.ReplayData.Meta;
+using HearthstoneReplays.Parser.ReplayData;
+
+namespace HearthstoneReplays.Events.Parsers
+{
+    public class BattlegroundsHeroSelectedParser : ActionParser
+    {
+        private GameState GameState { get; set; }
+        private ParserState ParserState { get; set; }
+
+        public BattlegroundsHeroSelectedParser(ParserState ParserState)
+        {
+            this.ParserState = ParserState;
+            this.GameState = ParserState.GameState;
+        }
+
+        public bool AppliesOnNewNode(Node node)
+        {
+            var theType = node.Type == typeof(Choice);
+            return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS 
+                && node.Type == typeof(Choice)
+                && ParserState.CurrentChosenEntites != null
+                && ParserState.CurrentChosenEntites.PlayerId == ParserState.LocalPlayer.Id;
+        }
+
+        public bool AppliesOnCloseNode(Node node)
+        {
+            return false;
+        }
+
+        public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
+        {
+            var choice = node.Object as Choice;
+            var chosenEntity = GameState.CurrentEntities[choice.Entity];
+            if (chosenEntity == null || chosenEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.HERO)
+            {
+                return null;
+            }
+            if (chosenEntity.GetTag(GameTag.CONTROLLER) != (int)ParserState.LocalPlayer.PlayerId)
+            {
+                return null;
+            }
+
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                choice.TimeStamp,
+                () => new GameEvent
+                {
+                    Type = "BATTLEGROUNDS_HERO_SELECTED",
+                    Value = new
+                    {
+                        CardId = chosenEntity.CardId,
+                    }
+                },
+                true,
+                node.CreationLogLine)
+            };
+        }
+
+        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
+        {
+            return null;
+        }
+    }
+}

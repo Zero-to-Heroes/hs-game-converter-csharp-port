@@ -42,7 +42,7 @@ namespace HearthstoneReplays.Events.Parsers
                     && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
                 .ToList();
             var hero = heroes == null || heroes.Count == 0 ? null : heroes[0];
-            Logger.Log("Next opponent player id", hero?.CardId);
+            //Logger.Log("Next opponent player id", hero?.CardId);
             if (hero?.CardId != null && hero.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl)
             {
                 return new List<GameEventProvider> {  GameEventProvider.Create(

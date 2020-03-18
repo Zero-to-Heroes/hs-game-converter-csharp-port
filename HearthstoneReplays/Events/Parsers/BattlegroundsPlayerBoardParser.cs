@@ -54,7 +54,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(entity => entity.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl 
                     && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
                 .FirstOrDefault();
-            Logger.Log("Trying to handle board", "" + ParserState.CurrentGame.GameType + " // " + hero?.CardId);
+            //Logger.Log("Trying to handle board", "" + ParserState.CurrentGame.GameType + " // " + hero?.CardId);
             //Logger.Log("Hero " + hero.CardId, hero.Entity);
             if (hero?.CardId != null)
             {
@@ -84,10 +84,10 @@ namespace HearthstoneReplays.Events.Parsers
                    true,
                    node.CreationLogLine);
             }
-            else
-            {
-                Logger.Log("Invalid hero", hero != null ? hero.CardId : "null hero");
-            }
+            //else
+            //{
+            //    Logger.Log("Invalid hero", hero != null ? hero.CardId : "null hero");
+            //}
             return null;
         }
 
