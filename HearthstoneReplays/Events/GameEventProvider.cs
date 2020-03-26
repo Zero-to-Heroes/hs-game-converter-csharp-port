@@ -30,7 +30,7 @@ namespace HearthstoneReplays.Events
         public static GameEventProvider Create(
             DateTime originalTimestamp,
             Func<GameEvent> eventProvider,
-            bool needMetaData,
+            bool needMetaData, 
             string creationLogLine,
             bool debug = false)
         {

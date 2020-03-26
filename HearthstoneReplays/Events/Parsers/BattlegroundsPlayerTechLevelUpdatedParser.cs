@@ -34,6 +34,14 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
+            if (node.Parent != null && node.Parent.Type == typeof(Action))
+            {
+                var parent = node.Parent.Object as Action;
+                if (parent.Type == (int)BlockType.TRIGGER)
+                {
+                    return null;
+                }
+            }
             var tagChange = node.Object as TagChange;
             var hero = GameState.CurrentEntities[tagChange.Entity];
             // The value is set to 0 when rotating the entities it seems

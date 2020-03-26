@@ -23,7 +23,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return node.Type == typeof(TagChange)
+            return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+                && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.NEXT_STEP
                 && (node.Object as TagChange).Value == (int)Step.MAIN_START_TRIGGERS;
         }

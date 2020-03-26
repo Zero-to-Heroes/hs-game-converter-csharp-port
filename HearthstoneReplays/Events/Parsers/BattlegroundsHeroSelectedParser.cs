@@ -26,7 +26,6 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            var theType = node.Type == typeof(Choice);
             return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS 
                 && node.Type == typeof(Choice)
                 && ParserState.CurrentChosenEntites != null
@@ -50,6 +49,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return null;
             }
+            //Logger.Log("Choice timestamp", choice.TimeStamp);
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 choice.TimeStamp,

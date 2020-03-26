@@ -45,18 +45,21 @@ namespace HearthstoneReplays.Events.Parsers
             //Logger.Log("Next opponent player id", hero?.CardId);
             if (hero?.CardId != null && hero.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl)
             {
-                return new List<GameEventProvider> {  GameEventProvider.Create(
-                       tagChange.TimeStamp,
-                       () => new GameEvent
-                       {
-                           Type = "BATTLEGROUNDS_NEXT_OPPONENT",
-                           Value = new
-                           {
-                               CardId = hero.CardId,
-                           }
-                       },
-                       false,
-               node.CreationLogLine) };
+                return new List<GameEventProvider> {  
+                    GameEventProvider.Create(
+                        tagChange.TimeStamp,
+                        () => new GameEvent
+                        {
+                            Type = "BATTLEGROUNDS_NEXT_OPPONENT",
+                            Value = new
+                            {
+                                CardId = hero.CardId,
+                            }
+                        },
+                        true,
+                        node.CreationLogLine,
+                        false) 
+                };
             }
             return null;
         }

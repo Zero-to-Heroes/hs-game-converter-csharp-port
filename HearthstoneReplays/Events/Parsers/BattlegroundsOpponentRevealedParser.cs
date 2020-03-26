@@ -28,7 +28,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return node.Type == typeof(FullEntity)
+            return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+                && node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SETASIDE
                 && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.HERO;
         }

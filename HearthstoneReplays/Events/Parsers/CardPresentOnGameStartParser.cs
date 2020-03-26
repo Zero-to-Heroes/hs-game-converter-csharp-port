@@ -41,7 +41,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var fullEntity = node.Object as FullEntity;
             var cardId = fullEntity.CardId;
-            if (fullEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.MINION)
+            if (fullEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.MINION || fullEntity.GetTag(GameTag.HAS_BEEN_REBORN) == 1)
             {
                 return null;
             }

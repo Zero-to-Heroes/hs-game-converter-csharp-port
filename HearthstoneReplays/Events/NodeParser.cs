@@ -48,6 +48,7 @@ namespace HearthstoneReplays.Events
                 {
                     return;
                 }
+                //Logger.Log("Receiving new node", node.CreationLogLine);
                 foreach (ActionParser parser in parsers)
                 {
                     if (parser.AppliesOnNewNode(node))
@@ -72,6 +73,7 @@ namespace HearthstoneReplays.Events
             {
                 return;
             }
+            //Logger.Log("Receiving close node", node.CreationLogLine);
             foreach (ActionParser parser in parsers)
             {
                 if (!node.Closed && parser.AppliesOnCloseNode(node))
@@ -164,7 +166,10 @@ namespace HearthstoneReplays.Events
                             //Logger.Log("Queue empty", "");
                             return;
                         }
-                        if (!eventQueue.Any(p => p.AnimationReady))
+                        //if (!eventQueue[0].AnimationReady)
+                        // We don't use the other form, as in BGS some lines are very similar and could trigger some false
+                        // animation ready calls (more specifically, things related to the GameEntity, like MAIN_STEP)
+                        if (!eventQueue.Where(p => !p.CreationLogLine.Contains("GameEntity")).Any(p => p.AnimationReady))
                         // Safeguard - Don't wait too long for the animation in case we never receive it
                         // With the arrival of Battlegrounds we can't do this anymore, as it spoils the game very fast
                         //&& DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).TotalMilliseconds < 5000)
@@ -188,10 +193,11 @@ namespace HearthstoneReplays.Events
                             await Task.Delay(100);
                         }
                     }
-                    //if (provider.CreationLogLine.Contains("TAG_CHANGE Entity=[entityName=Voidwalker id=3651 zone=PLAY zonePos=3 cardId=CS2_065 player=13] tag=ZONE value=REMOVEDFROMGAME"))
-                    //{
-                    //    Logger.Log("Provider to process 2", "");
-                    //}
+                    if (provider.debug)
+                    {
+                        Logger.Log("Will process next opp event" + provider.CreationLogLine, provider.AnimationReady);
+                        Logger.Log("Next animation ready", eventQueue.Find(p => p.AnimationReady)?.CreationLogLine);
+                    }
                     lock (listLock)
                     {
                         ProcessGameEvent(provider);
@@ -323,6 +329,7 @@ namespace HearthstoneReplays.Events
                 new BattlegroundsStartOfCombatParser(ParserState),
                 new BattlegroundsOpponentRevealedParser(ParserState),
                 new BattlegroundsHeroSelectedParser(ParserState),
+                new BattlegroundsBattleOverParser(ParserState),
                 new DecklistUpdateParser(ParserState),
                 new GameRunningParser(ParserState),
                 new AttackParser(ParserState),

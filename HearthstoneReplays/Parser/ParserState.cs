@@ -189,7 +189,7 @@ namespace HearthstoneReplays.Parser
 
 		public void UpdateCurrentNode(params System.Type[] types)
 		{
-			while(Node.Parent != null && types.All(x => x != Node.Type))
+			while(Node?.Parent != null && types.All(x => x != Node.Type))
 				Node = Node.Parent;
 		}
 

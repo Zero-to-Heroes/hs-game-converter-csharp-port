@@ -22,7 +22,7 @@ namespace HearthstoneReplays.Parser
     public class ReplayParser
     {
         public const string Version = "1.0";
-        public const int HearthstoneBuild = 15590;
+        public const int HearthstoneBuild = 43246;
 
         public static DateTime start; // The log is not aware of absolute time, time zones, etc. So we just represent it based on the user's computer
 
