@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Enums;
+using System;
 
 #endregion
 
@@ -39,5 +40,16 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             var match = Tags.FirstOrDefault(t => t.Name == (int)tag);
             return match == null ? defaultValue : match.Value;
         }
-	}
+
+        public List<Tag> GetTagsCopy()
+        {
+			return this.Tags
+				.Select(tag => new Tag
+				{
+					Name = tag.Name,
+					Value = tag.Value,
+				})
+				.ToList();
+        }
+    }
 }

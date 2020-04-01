@@ -53,6 +53,8 @@ namespace HearthstoneReplays.Events.Parsers
             }
             var attacker = GameState.CurrentEntities[attackerId];
             var defender = GameState.CurrentEntities[defenderId];
+            var defenderTags = defender.GetTagsCopy();
+            var attackerTags = attacker.GetTagsCopy();
             var eventType = "ATTACKING_UNKNOWN";
             if (defender.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
             {
@@ -81,11 +83,11 @@ namespace HearthstoneReplays.Events.Parsers
                         AttackerCardId = attackerCardId,
                         AttackerEntityId = attacker.Id,
                         AttackerControllerId = attackerControllerId,
-                        AttackerTags = attacker.Tags,
+                        AttackerTags = attackerTags,
                         DefenderCardId = defenderCardId,
                         DefenderEntityId = defender.Id,
                         DefenderControllerId = defenderControllerId,
-                        DefenderTags = defender.Tags
+                        DefenderTags = defenderTags
                     }),
                 true,
                 node.CreationLogLine)
