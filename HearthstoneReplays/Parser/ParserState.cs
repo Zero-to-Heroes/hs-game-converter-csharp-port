@@ -81,7 +81,8 @@ namespace HearthstoneReplays.Parser
                     }
                     if (_node != null && _node.Type == typeof(PlayerEntity))
                     {
-                        GameState.PlayerEntity(_node.Object as PlayerEntity);
+						NodeParser.CloseNode(_node);
+						GameState.PlayerEntity(_node.Object as PlayerEntity);
                     }
                     if (_node != null && _node.Type == typeof(GameEntity))
                     {

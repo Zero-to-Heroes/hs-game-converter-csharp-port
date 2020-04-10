@@ -19,18 +19,26 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public bool MulliganOver = false;
         public int CurrentTurn = 0;
         public dynamic MetaData;
+        // Because for BGS the first opponent player id is set as a tag of the player, instead 
+        // of a tag change. At the time it is revealed, we don't have the opponent's entity yet
+        // so we can't emit the event
+        public int NextBgsOpponentPlayerId;
+
         private int gameEntityId;
         private Dictionary<int, int> controllerEntity = new Dictionary<int, int>();
 
 		public void Reset(ParserState state)
 		{
 			CurrentEntities = new Dictionary<int, FullEntity>();
-            controllerEntity = new Dictionary<int, int>();
-            gameEntityId = -1;
             MulliganOver = false;
             MetaData = null;
             ParserState = state;
-		}
+            NextBgsOpponentPlayerId = -1;
+
+            controllerEntity = new Dictionary<int, int>();
+            gameEntityId = -1;
+
+        }
 
         public void GameEntity(GameEntity entity)
         {

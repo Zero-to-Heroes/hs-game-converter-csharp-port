@@ -142,7 +142,7 @@ namespace HearthstoneReplays.Events
                 }
                 else
                 {
-                    Logger.Log("event queue is empty", eventQueue.Count);
+                    //Logger.Log("event queue is empty", eventQueue.Count);
                 }
             }
         }

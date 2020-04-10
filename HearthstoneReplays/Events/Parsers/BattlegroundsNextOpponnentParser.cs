@@ -29,7 +29,9 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return false;
+            var isPlayerNode = node.Type == typeof(Player);
+            return node.Type == typeof(PlayerEntity)
+                && (node.Object as PlayerEntity).Tags.Find(tag => tag.Name == (int)GameTag.NEXT_OPPONENT_PLAYER_ID) != null;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -67,6 +69,11 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
+            // Because the first player is handled differently than the rest, we kind of hack our way
+            // there
+            GameState.NextBgsOpponentPlayerId = (node.Object as PlayerEntity).Tags
+                .Find(tag => tag.Name == (int)GameTag.NEXT_OPPONENT_PLAYER_ID)
+                .Value;
             return null;
         }
     }

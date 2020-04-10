@@ -47,10 +47,11 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
             var cardId = fullEntity.CardId;
-            return new List<GameEventProvider> { GameEventProvider.Create(
+            var result = new List<GameEventProvider>();
+            result.Add(GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "BATTLEGROUNDS_OPPONENT_REVEALED",
-                () => new GameEvent 
+                () => new GameEvent
                 {
                     Type = "BATTLEGROUNDS_OPPONENT_REVEALED",
                     Value = new
@@ -59,8 +60,27 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                 },
                 false,
-                node.CreationLogLine) 
-            };
+                node.CreationLogLine)
+            );
+            if (fullEntity.GetTag(GameTag.PLAYER_ID) == GameState.NextBgsOpponentPlayerId)
+            {
+                result.Add(GameEventProvider.Create(
+                        fullEntity.TimeStamp,
+                        "BATTLEGROUNDS_NEXT_OPPONENT",
+                        () => new GameEvent
+                        {
+                            Type = "BATTLEGROUNDS_NEXT_OPPONENT",
+                            Value = new
+                            {
+                                CardId = cardId,
+                            }
+                        },
+                        true,
+                        node.CreationLogLine,
+                        false));
+                GameState.NextBgsOpponentPlayerId = -1;
+            }
+            return result;
         }
     }
 }
