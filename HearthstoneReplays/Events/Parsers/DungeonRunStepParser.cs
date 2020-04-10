@@ -37,6 +37,7 @@ namespace HearthstoneReplays.Events.Parsers
             var runStep = 1 + (tagChange.Value - 15) / 5;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
+                "DUNGEON_RUN_STEP",
                 () => {
                     if (ParserState.CurrentGame.ScenarioID != (int)Scenario.DUNGEON_RUN)
                     {

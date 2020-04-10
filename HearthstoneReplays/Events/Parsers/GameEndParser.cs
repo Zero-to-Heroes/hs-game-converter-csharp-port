@@ -41,6 +41,7 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
+                "GAME_END",
                 () => new GameEvent
                 {
                     Type = "GAME_END",

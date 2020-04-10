@@ -40,6 +40,7 @@ namespace HearthstoneReplays.Events.Parsers
                 //Logger.Log("Creating event provider for WinnerParser", node.CreationLogLine);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                        tagChange.TimeStamp,
+                       "WINNER",
                        () => {
                             //Logger.Log("Providing game event for WinnerParser", node.CreationLogLine);
                             return new GameEvent
@@ -61,6 +62,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return new List<GameEventProvider> { GameEventProvider.Create(
                        tagChange.TimeStamp,
+                        "TIE",
                        () => new GameEvent
                        {
                            Type = "TIE"

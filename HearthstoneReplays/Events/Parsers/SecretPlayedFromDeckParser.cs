@@ -51,7 +51,8 @@ namespace HearthstoneReplays.Events.Parsers
                     ? "QUEST_PLAYED_FROM_DECK"
                     : "SECRET_PLAYED_FROM_DECK";
                 return new List<GameEventProvider> { GameEventProvider.Create(
-                       tagChange.TimeStamp,
+                        tagChange.TimeStamp,
+                        eventName,
                         GameEvent.CreateProvider(
                             eventName,
                             cardId,
@@ -81,6 +82,7 @@ namespace HearthstoneReplays.Events.Parsers
                 : "SECRET_PLAYED_FROM_DECK";
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
+                eventName,
                 GameEvent.CreateProvider(
                     eventName,
                     cardId,

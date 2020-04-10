@@ -98,6 +98,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var timestamp = totalHealings[healingSource].First().Value.Timestamp;
                 result.Add(GameEventProvider.Create(
                     timestamp,
+                    "HEALING",
                     // The structure of this event is too specific to be added to the generic GameEvent.CreateProvider() method
                     () => new GameEvent
                     {

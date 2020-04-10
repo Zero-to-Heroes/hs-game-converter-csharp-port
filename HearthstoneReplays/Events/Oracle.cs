@@ -93,6 +93,8 @@ namespace HearthstoneReplays.Events
                 case NonCollectible.Neutral.TheDarkness: return NonCollectible.Neutral.TheDarkness_DarknessCandleToken;
                 case Neutral.WeaselTunneler: return Neutral.WeaselTunneler;
                 case NonCollectible.Neutral.EliseStarseeker_MapToTheGoldenMonkeyToken: return NonCollectible.Neutral.EliseStarseeker_GoldenMonkeyToken;
+                case Demonhunter.UrzulHorror: return NonCollectible.Demonhunter.UrzulHorror_LostSoulToken;
+                case Druid.ArchsporeMsshifn: return NonCollectible.Druid.ArchsporeMsshifn_MsshifnPrimeToken;
                 case Druid.AstralTiger: return Druid.AstralTiger;
                 case Druid.JadeIdol: return Druid.JadeIdol;
                 case Druid.JungleGiants: return NonCollectible.Druid.JungleGiants_BarnabusTheStomperToken;
@@ -104,7 +106,9 @@ namespace HearthstoneReplays.Events
                 case Hunter.RaptorHatchling: return NonCollectible.Hunter.RaptorHatchling_RaptorPatriarchToken;
                 case Hunter.Springpaw: return NonCollectible.Hunter.Springpaw_LynxToken;
                 case Hunter.TheMarshQueen: return NonCollectible.Hunter.TheMarshQueen_QueenCarnassaToken;
+                case Hunter.ZixorApexPredator: return NonCollectible.Hunter.ZixorApexPredator_ZixorPrimeToken;
                 case Mage.ArchmageAntonidas: return Mage.Fireball;
+                case Mage.AstromancerSolarian: return NonCollectible.Mage.AstromancerSolarian_SolarianPrimeToken;
                 case Mage.DeckOfWonders: return NonCollectible.Mage.DeckofWonders_ScrollOfWonderToken;
                 case Mage.FlameGeyser: return NonCollectible.Neutral.FireFly_FlameElementalToken;
                 case Mage.ForgottenTorch: return NonCollectible.Mage.ForgottenTorch_RoaringTorchToken;
@@ -116,12 +120,15 @@ namespace HearthstoneReplays.Events
                 case Mage.SteamSurger: return Mage.FlameGeyser;
                 case Mage.VioletSpellwing: return Mage.ArcaneMissiles;
                 case Paladin.DrygulchJailor: return NonCollectible.Paladin.Reinforce_SilverHandRecruitToken;
+                case Paladin.MurgurMurgurgle: return NonCollectible.Paladin.MurgurMurgurgle_MurgurglePrimeToken;
                 case Paladin.TheLastKaleidosaur: return NonCollectible.Paladin.TheLastKaleidosaur_GalvadonToken;
                 case Paladin.SandwaspQueen: return NonCollectible.Paladin.SandwaspQueen_SandwaspToken;
                 case Priest.AwakenTheMakers: return NonCollectible.Priest.AwakentheMakers_AmaraWardenOfHopeToken;
                 case Priest.GildedGargoyle: return NonCollectible.Neutral.TheCoin;
                 case Priest.ExcavatedEvil: return Priest.ExcavatedEvil;
                 case Priest.ExtraArms: return NonCollectible.Priest.ExtraArms_MoreArmsToken;
+                case Priest.ReliquaryOfSouls: return NonCollectible.Priest.ReliquaryofSouls_ReliquaryPrimeToken;
+                case Rogue.Akama: return NonCollectible.Rogue.Akama_AkamaPrimeToken;
                 case Rogue.BeneathTheGrounds: return NonCollectible.Rogue.BeneaththeGrounds_NerubianAmbushToken;
                 case Rogue.BloodsailFlybooter: return NonCollectible.Rogue.BloodsailFlybooter_SkyPirateToken;
                 case Rogue.BoneBaron: return NonCollectible.Neutral.GrimNecromancer_SkeletonToken;
@@ -134,11 +141,13 @@ namespace HearthstoneReplays.Events
                 case Rogue.UmbralSkulker: return NonCollectible.Neutral.TheCoin;
                 case Rogue.Wanted: return NonCollectible.Neutral.Coin;
                 case Rogue.Waxadred: return NonCollectible.Rogue.Waxadred_WaxadredsCandleToken;
+                case Shaman.LadyVashj: return NonCollectible.Shaman.LadyVashj_VashjPrimeToken;
                 case Shaman.UniteTheMurlocs: return NonCollectible.Shaman.UnitetheMurlocs_MegafinToken;
                 case Shaman.WhiteEyes: return NonCollectible.Shaman.WhiteEyes_TheStormGuardianToken;
                 case Warlock.CurseOfRafaam: return NonCollectible.Warlock.CurseofRafaam_CursedToken;
                 case Warlock.HighPriestessJeklik: return Warlock.HighPriestessJeklik;
                 case Warlock.Impbalming: return NonCollectible.Warlock.Impbalming_WorthlessImpToken;
+                case Warlock.KanrethadEbonlocke: return NonCollectible.Warlock.KanrethadEbonlocke_KanrethadPrimeToken;
                 case Warlock.LakkariSacrifice: return NonCollectible.Warlock.LakkariSacrifice_NetherPortalToken1;
                 case Warlock.RinTheFirstDisciple: return NonCollectible.Warlock.RintheFirstDisciple_TheFirstSealToken;
                 case NonCollectible.Warlock.RintheFirstDisciple_TheFirstSealToken: return NonCollectible.Warlock.RintheFirstDisciple_TheSecondSealToken;
@@ -151,6 +160,7 @@ namespace HearthstoneReplays.Events
                 case Warrior.FirePlumesHeart: return NonCollectible.Warrior.FirePlumesHeart_SulfurasToken;
                 case Warrior.IronJuggernaut: return NonCollectible.Warrior.IronJuggernaut_BurrowingMineToken;
                 case Warrior.Wrenchcalibur: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
+                case Warrior.KargathBladefist: return NonCollectible.Warrior.KargathBladefist_KargathPrimeToken;
 
                 case Neutral.BalefulBanker:
                 case Neutral.DollmasterDorian:

@@ -73,6 +73,7 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
+                "CREATE_CARD_IN_DECK",
                 GameEvent.CreateProvider(
                     "CREATE_CARD_IN_DECK",
                     cardId,
@@ -96,6 +97,7 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
+                "CREATE_CARD_IN_DECK",
                 GameEvent.CreateProvider(
                     "CREATE_CARD_IN_DECK",
                     cardId,

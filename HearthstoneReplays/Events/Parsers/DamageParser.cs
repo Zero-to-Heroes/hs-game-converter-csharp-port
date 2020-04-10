@@ -22,7 +22,10 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return false;
+            return node.Type == typeof(TagChange)
+                && (node.Object as TagChange).Name == (int)GameTag.DAMAGE
+                // Rogue Damage tags, like the ones used to indicate the other heroes health change in BGS
+                && node.Parent.Type != typeof(Parser.ReplayData.GameActions.Action);
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -33,7 +36,38 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            return null;
+            var tagChange = node.Object as TagChange;
+            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var damages = new Dictionary<string, DamageInternal>();
+            var targetCardId = GameState.CurrentEntities[tagChange.Entity]?.CardId;
+            damages[targetCardId] = new DamageInternal
+            {
+                SourceControllerId = -1,
+                SourceEntityId = -1,
+                TargetControllerId = -1,
+                TargetEntityId = tagChange.Entity,
+                TargetCardId = targetCardId,
+                Damage = tagChange.Value,
+                Timestamp = tagChange.TimeStamp,
+            };
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                    tagChange.TimeStamp,
+                    "DAMAGE",
+                    // The structure of this event is too specific to be added to the generic GameEvent.CreateProvider() method
+                    () => new GameEvent
+                    {
+                        Type = "DAMAGE",
+                        Value = new
+                        {
+                            Targets = damages,
+                            LocalPlayer = ParserState.LocalPlayer,
+                            OpponentPlayer = ParserState.OpponentPlayer,
+                            GameState = gameState,
+                        }
+                    },
+                    true,
+                    node.CreationLogLine) 
+            };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
@@ -82,6 +116,7 @@ namespace HearthstoneReplays.Events.Parsers
                             SourceControllerId = sourceControllerId,
                             TargetEntityId = targetEntityId,
                             TargetControllerId = targetControllerId,
+                            TargetCardId = targetCardId,
                             Damage = 0,
                             Timestamp = info.TimeStamp,
                         };
@@ -99,6 +134,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var timestamp = totalDamages[damageSource].First().Value.Timestamp;
                 result.Add(GameEventProvider.Create(
                     timestamp,
+                    "DAMAGE",
                     // The structure of this event is too specific to be added to the generic GameEvent.CreateProvider() method
                     () => new GameEvent
                     {
@@ -166,6 +202,7 @@ namespace HearthstoneReplays.Events.Parsers
             public int SourceControllerId;
             public int TargetEntityId;
             public int TargetControllerId;
+            public string TargetCardId;
             public int Damage;
             public DateTime Timestamp;
         }

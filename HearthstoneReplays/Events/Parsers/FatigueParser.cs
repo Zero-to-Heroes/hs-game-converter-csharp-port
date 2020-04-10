@@ -37,6 +37,7 @@ namespace HearthstoneReplays.Events.Parsers
             var fatigueDamage = tagChange.Value;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
+                "FATIGUE_DAMAGE",
                 () => new GameEvent
                 {
                     Type = "FATIGUE_DAMAGE",

@@ -60,6 +60,7 @@ namespace HearthstoneReplays.Events.Parsers
                 object gameState = GameEvent.BuildGameState(ParserState, GameState);
                 result.Add(GameEventProvider.Create(
                     meta.TimeStamp,
+                    "BURNED_CARD",
                     GameEvent.CreateProvider(
                         "BURNED_CARD",
                         cardId,

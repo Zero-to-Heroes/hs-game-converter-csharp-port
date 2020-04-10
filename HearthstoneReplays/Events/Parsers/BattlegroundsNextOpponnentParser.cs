@@ -48,6 +48,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return new List<GameEventProvider> {  
                     GameEventProvider.Create(
                         tagChange.TimeStamp,
+                        "BATTLEGROUNDS_NEXT_OPPONENT",
                         () => new GameEvent
                         {
                             Type = "BATTLEGROUNDS_NEXT_OPPONENT",

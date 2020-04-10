@@ -123,10 +123,26 @@ namespace HearthstoneReplays.Events
             {
                 if (eventQueue.Count > 0)
                 {
+                    var readyProviders = new List<string>();
                     foreach (GameEventProvider provider in eventQueue)
                     {
-                        provider.ReceiveAnimationLog(data, ParserState);
+                        // Some events are recurring and have the same activation line (mostly those linked 
+                        // to the game entity), so we do this to not mark several animations as ready
+                        // from the same power log
+                        if (readyProviders.Contains(provider.EventName))
+                        {
+                            continue;
+                        }
+                        var animationNowReady = provider.ReceiveAnimationLog(data, ParserState);
+                        if (animationNowReady)
+                        {
+                            readyProviders.Add(provider.EventName);
+                        }
                     }
+                }
+                else
+                {
+                    Logger.Log("event queue is empty", eventQueue.Count);
                 }
             }
         }
@@ -166,10 +182,12 @@ namespace HearthstoneReplays.Events
                             //Logger.Log("Queue empty", "");
                             return;
                         }
-                        //if (!eventQueue[0].AnimationReady)
+                        // TODO: this spoils events in BGS, how to do it?
                         // We don't use the other form, as in BGS some lines are very similar and could trigger some false
                         // animation ready calls (more specifically, things related to the GameEntity, like MAIN_STEP)
-                        if (!eventQueue.Where(p => !p.CreationLogLine.Contains("GameEntity")).Any(p => p.AnimationReady))
+                        //if (!eventQueue.All(p => !p.CreationLogLine.Contains("GameEntity")) 
+                        //    && !eventQueue.Where(p => !p.CreationLogLine.Contains("GameEntity")).Any(p => p.AnimationReady))
+                        if (!eventQueue.Any(p => p.AnimationReady))
                         // Safeguard - Don't wait too long for the animation in case we never receive it
                         // With the arrival of Battlegrounds we can't do this anymore, as it spoils the game very fast
                         //&& DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).TotalMilliseconds < 5000)
@@ -231,6 +249,15 @@ namespace HearthstoneReplays.Events
             {
                 //Logger.Log("Handling event", gameEvent.Type);
                 GameEventHandler.Handle(gameEvent);
+                //if (gameEvent.Type == "GAME_END")
+                //{   
+                //    while (eventQueue.Count > 0)
+                //    {
+                //        provider = eventQueue[0];
+                //        eventQueue.RemoveAt(0);
+                //        ProcessGameEvent(provider);
+                //    }
+                //}
                 //Logger.Log(DateTime.Now, "Handled event " + provider.Timestamp + " " + provider.CreationLogLine);
             }
             else

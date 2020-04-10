@@ -54,6 +54,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
+                    "RECEIVE_CARD_IN_HAND",
                     GameEvent.CreateProvider(
                         "RECEIVE_CARD_IN_HAND",
                         cardId,
@@ -95,6 +96,7 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[showEntity.Entity];
             return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,
+                    "RECEIVE_CARD_IN_HAND",
                     GameEvent.CreateProvider(
                         "RECEIVE_CARD_IN_HAND",
                         cardId,
@@ -133,6 +135,7 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     fullEntity.TimeStamp,
+                    "RECEIVE_CARD_IN_HAND",
                     GameEvent.CreateProvider(
                         "RECEIVE_CARD_IN_HAND",
                         cardId,

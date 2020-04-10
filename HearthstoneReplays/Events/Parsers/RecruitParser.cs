@@ -51,6 +51,7 @@ namespace HearthstoneReplays.Events.Parsers
                 }
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
+                    "RECRUIT_CARD",
                     GameEvent.CreateProvider(
                         "RECRUIT_CARD",
                         cardId,
@@ -73,6 +74,7 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
+                "RECRUIT_CARD",
                 GameEvent.CreateProvider(
                     "RECRUIT_CARD",
                     cardId,

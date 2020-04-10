@@ -70,6 +70,7 @@ namespace HearthstoneReplays.Events.Parsers
                 //Logger.Log("board has " + board.Count + " entities", "");
                 return GameEventProvider.Create(
                    tagChange.TimeStamp,
+                   "BATTLEGROUNDS_PLAYER_BOARD",
                    () => ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
                         ? new GameEvent
                            {

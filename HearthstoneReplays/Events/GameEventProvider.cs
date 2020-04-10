@@ -15,6 +15,7 @@ namespace HearthstoneReplays.Events
         public DateTime Timestamp { get; set; }
         public bool NeedMetaData { get; set; }
         public bool AnimationReady { get; set; }
+        public string EventName{ get; set; }
         public string CreationLogLine { get; set; }
         public GameEvent GameEvent { get; private set; }
 
@@ -29,16 +30,18 @@ namespace HearthstoneReplays.Events
 
         public static GameEventProvider Create(
             DateTime originalTimestamp,
+            string eventName, // Used to give a "type" to the provider
             Func<GameEvent> eventProvider,
             bool needMetaData, 
             string creationLogLine,
             bool debug = false)
         {
-            return Create(originalTimestamp, eventProvider, (a) => false, needMetaData, creationLogLine, debug);
+            return Create(originalTimestamp, eventName, eventProvider, (a) => false, needMetaData, creationLogLine, debug);
         }
 
         public static GameEventProvider Create(
             DateTime originalTimestamp,
+            string eventName,
             Func<GameEvent> eventProvider,
             Func<GameEventProvider, bool> isDuplicatePredicate,
             bool needMetaData,
@@ -48,6 +51,7 @@ namespace HearthstoneReplays.Events
             var result = new GameEventProvider
             {
                 Timestamp = originalTimestamp,
+                EventName = eventName,
                 SupplyGameEvent = eventProvider,
                 isDuplicatePredicate = isDuplicatePredicate,
                 NeedMetaData = needMetaData,
@@ -61,11 +65,11 @@ namespace HearthstoneReplays.Events
             return result;
         }
 
-        public void ReceiveAnimationLog(string data, ParserState state)
+        public bool ReceiveAnimationLog(string data, ParserState state)
         {
             if (GameEvent != null)
             {
-                return;
+                return false;
             }
             if (debug)
             {
@@ -74,14 +78,16 @@ namespace HearthstoneReplays.Events
             // Mark the event as ready to be emitted
             IsEventReady(data, state);
             // And now's the time to compute the event itself
-            if (AnimationReady)
+            if (AnimationReady && GameEvent == null)
             {
                 if (debug)
                 {
                     Logger.Log("IsEventReady, supplying game event", "");
                 }
                 GameEvent = SupplyGameEvent();
+                return true;
             }
+            return false;
         }
 
         private void IsEventReady(string data, ParserState state)

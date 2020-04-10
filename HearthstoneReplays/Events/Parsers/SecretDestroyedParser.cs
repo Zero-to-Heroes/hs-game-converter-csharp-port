@@ -50,6 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
                 : "SECRET_DESTROYED";
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
+                eventName,
                 GameEvent.CreateProvider(
                     eventName,
                     cardId,
@@ -75,6 +76,7 @@ namespace HearthstoneReplays.Events.Parsers
                 : "SECRET_DESTROYED";
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
+                eventName,
                 GameEvent.CreateProvider(
                     eventName,
                     cardId,

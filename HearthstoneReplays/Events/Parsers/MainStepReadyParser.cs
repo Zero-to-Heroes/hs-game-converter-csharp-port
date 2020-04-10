@@ -36,6 +36,7 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             return new List<GameEventProvider> { GameEventProvider.Create(
                    tagChange.TimeStamp,
+                    "MAIN_STEP_READY",
                    () => new GameEvent
                    {
                        Type = "MAIN_STEP_READY"

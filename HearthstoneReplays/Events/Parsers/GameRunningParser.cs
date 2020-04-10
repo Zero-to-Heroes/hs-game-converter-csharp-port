@@ -44,6 +44,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .ToList();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
+                "GAME_RUNNING",
                 () => {
                     var playerDeckCount = stateCopy
                             .Where(entity => entity == ParserState.LocalPlayer.PlayerId)

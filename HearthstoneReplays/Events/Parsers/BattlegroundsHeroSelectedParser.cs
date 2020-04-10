@@ -53,6 +53,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 choice.TimeStamp,
+                "BATTLEGROUNDS_HERO_SELECTED",
                 () => new GameEvent
                 {
                     Type = "BATTLEGROUNDS_HERO_SELECTED",

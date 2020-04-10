@@ -41,6 +41,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
+                "HEALTH_DEF_CHANGED",
                 GameEvent.CreateProvider(
                     "HEALTH_DEF_CHANGED",
                     cardId,

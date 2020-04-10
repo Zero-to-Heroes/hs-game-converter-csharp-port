@@ -25,6 +25,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return new List<GameEventProvider> { GameEventProvider.Create(
                 (node.Object as Game).TimeStamp,
+                "NEW_GAME",
                 () => new GameEvent
                 {
                     Type = "NEW_GAME"

@@ -39,6 +39,7 @@ namespace HearthstoneReplays.Events.Parsers
             int runStep = 1 + (tagChange.Value - 20) / 5;
             return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
+                    "RUMBLE_RUN_STEP",
                     () => {
                          if (ParserState.CurrentGame.ScenarioID != (int)Scenario.RUMBLE_RUN)
                          {

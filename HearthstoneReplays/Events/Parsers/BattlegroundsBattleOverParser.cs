@@ -60,6 +60,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     action.TimeStamp,
+                     "BATTLEGROUNDS_BATTLE_RESULT",
                     () => new GameEvent
                     {
                         Type = "BATTLEGROUNDS_BATTLE_RESULT",
@@ -100,6 +101,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 action.TimeStamp,
+                "BATTLEGROUNDS_BATTLE_RESULT",
                 () => new GameEvent
                 {
                     Type = "BATTLEGROUNDS_BATTLE_RESULT",

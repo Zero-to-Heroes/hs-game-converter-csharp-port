@@ -50,6 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     action.TimeStamp,
+                    "HERO_POWER_USED",
                     GameEvent.CreateProvider(
                         "HERO_POWER_USED",
                         cardId,

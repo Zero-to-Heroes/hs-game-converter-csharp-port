@@ -78,6 +78,7 @@ namespace HearthstoneReplays.Events.Parsers
                     var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
                     return GameEventProvider.Create(
                         timestamp,
+                        "DECKLIST_UPDATE",
                         GameEvent.CreateProvider(
                             "DECKLIST_UPDATE",
                             null,

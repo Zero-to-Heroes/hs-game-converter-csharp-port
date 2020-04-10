@@ -40,6 +40,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
+                 "ARMOR_CHANGED",
                 () => new GameEvent
                 {
                     Type = "ARMOR_CHANGED",

@@ -43,6 +43,7 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
+                "DISCARD_CARD",
                 GameEvent.CreateProvider(
                     "DISCARD_CARD",
                     cardId,
@@ -68,6 +69,7 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
+                "DISCARD_CARD",
                 GameEvent.CreateProvider(
                     "DISCARD_CARD",
                     cardId,

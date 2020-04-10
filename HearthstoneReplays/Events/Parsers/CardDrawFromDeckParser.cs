@@ -24,7 +24,7 @@ namespace HearthstoneReplays.Events.Parsers
             return node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.HAND
-                && (GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.DECK 
+                && (GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.DECK
                     || GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == -1);
         }
 
@@ -50,6 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
+                "CARD_DRAW_FROM_DECK",
                 GameEvent.CreateProvider(
                     "CARD_DRAW_FROM_DECK",
                     cardId,
@@ -86,6 +87,7 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
+                "CARD_DRAW_FROM_DECK",
                 GameEvent.CreateProvider(
                     "CARD_DRAW_FROM_DECK",
                     cardId,
@@ -108,6 +110,7 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
+                "CARD_DRAW_FROM_DECK",
                 GameEvent.CreateProvider(
                     "CARD_DRAW_FROM_DECK",
                     cardId,

@@ -164,7 +164,8 @@ namespace HearthstoneReplays.Parser.Handlers
                 state.GameState.MetaData = metaData;
                 state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
-                    () => new GameEvent
+					"MATCH_METADATA",
+					() => new GameEvent
                     {
                         Type = "MATCH_METADATA",
                         Value = metaData

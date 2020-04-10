@@ -36,6 +36,7 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
+                "FIRST_PLAYER",
                 () => new GameEvent
                 {
                     Type = "FIRST_PLAYER",

@@ -42,6 +42,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
+                    "LOCAL_PLAYER_LEADERBOARD_PLACE_CHANGED",
                     GameEvent.CreateProvider(
                         "LOCAL_PLAYER_LEADERBOARD_PLACE_CHANGED",
                         null,

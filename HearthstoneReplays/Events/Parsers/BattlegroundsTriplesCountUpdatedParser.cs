@@ -41,6 +41,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return new List<GameEventProvider> {  GameEventProvider.Create(
                tagChange.TimeStamp,
+                "BATTLEGROUNDS_TRIPLE",
                () => new GameEvent
                {
                    Type = "BATTLEGROUNDS_TRIPLE",

@@ -51,6 +51,7 @@ namespace HearthstoneReplays.Events.Parsers
                 : "SECRET_CREATED_IN_GAME";
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
+                eventName,
                 GameEvent.CreateProvider(
                     eventName,
                     cardId,

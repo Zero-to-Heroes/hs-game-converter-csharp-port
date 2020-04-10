@@ -41,7 +41,8 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 var gameState = GameEvent.BuildGameState(ParserState, GameState);
                 return new List<GameEventProvider> { GameEventProvider.Create(
-                       action.TimeStamp,
+                        action.TimeStamp,
+                        "DEATHRATTLE_TRIGGERED",
                         GameEvent.CreateProvider(
                             "DEATHRATTLE_TRIGGERED",
                             cardId,
@@ -74,6 +75,7 @@ namespace HearthstoneReplays.Events.Parsers
                         // For now there can only be one card played per block
                         return new List<GameEventProvider> { GameEventProvider.Create(
                             action.TimeStamp,
+                            "SECRET_PLAYED",
                             GameEvent.CreateProvider(
                                 "SECRET_PLAYED",
                                 cardId,

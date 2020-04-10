@@ -48,7 +48,8 @@ namespace HearthstoneReplays.Events.Parsers
                 var gameState = GameEvent.BuildGameState(ParserState, GameState);
                 var playerClass = entity.GetPlayerClass();
                 return new List<GameEventProvider> { GameEventProvider.Create(
-                       tagChange.TimeStamp,
+                        tagChange.TimeStamp,
+                        eventName,
                         GameEvent.CreateProvider(
                             eventName,
                             cardId,
@@ -88,6 +89,7 @@ namespace HearthstoneReplays.Events.Parsers
                         // For now there can only be one card played per block
                         return new List<GameEventProvider> { GameEventProvider.Create(
                             action.TimeStamp,
+                            eventName,
                             GameEvent.CreateProvider(
                                 eventName,
                                 cardId,

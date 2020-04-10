@@ -47,6 +47,7 @@ namespace HearthstoneReplays.Events.Parsers
                 : null;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
+                "HERO_POWER_CHANGED",
                 GameEvent.CreateProvider(
                     "HERO_POWER_CHANGED",
                     cardId,

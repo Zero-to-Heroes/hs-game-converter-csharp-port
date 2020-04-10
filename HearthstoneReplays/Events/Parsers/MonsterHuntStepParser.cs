@@ -37,6 +37,7 @@ namespace HearthstoneReplays.Events.Parsers
             var runStep = 1 + (tagChange.Value - 10) / 5;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
+                "MONSTER_HUNT_STEP",
                 () => {
                     if (ParserState.CurrentGame.ScenarioID != (int)Scenario.MONSTER_HUNT)
                     {

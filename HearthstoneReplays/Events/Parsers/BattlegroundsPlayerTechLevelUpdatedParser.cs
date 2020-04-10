@@ -49,6 +49,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return new List<GameEventProvider> {  GameEventProvider.Create(
                tagChange.TimeStamp,
+               "BATTLEGROUNDS_TAVERN_UPGRADE",
                () => new GameEvent
                {
                    Type = "BATTLEGROUNDS_TAVERN_UPGRADE",

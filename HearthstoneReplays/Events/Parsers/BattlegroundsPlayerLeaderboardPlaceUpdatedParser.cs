@@ -40,6 +40,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return new List<GameEventProvider> {  GameEventProvider.Create(
                tagChange.TimeStamp,
+               "BATTLEGROUNDS_LEADERBOARD_PLACE",
                () => new GameEvent
                {
                    Type = "BATTLEGROUNDS_LEADERBOARD_PLACE",

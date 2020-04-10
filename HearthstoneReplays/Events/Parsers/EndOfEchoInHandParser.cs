@@ -50,6 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
+                "END_OF_ECHO_IN_HAND",
                 GameEvent.CreateProvider(
                     "END_OF_ECHO_IN_HAND",
                     cardId,

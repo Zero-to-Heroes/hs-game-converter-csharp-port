@@ -49,6 +49,7 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = fullEntity.CardId;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
+                "BATTLEGROUNDS_OPPONENT_REVEALED",
                 () => new GameEvent 
                 {
                     Type = "BATTLEGROUNDS_OPPONENT_REVEALED",

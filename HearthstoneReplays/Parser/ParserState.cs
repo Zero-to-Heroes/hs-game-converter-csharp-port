@@ -110,7 +110,8 @@ namespace HearthstoneReplays.Parser
             playerEntity.IsMainPlayer = value.IsMainPlayer;
             NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
-                    () => new GameEvent
+					"LOCAL_PLAYER",
+					() => new GameEvent
                     {
                         Type = "LOCAL_PLAYER",
                         Value = this._localPlayer
@@ -134,6 +135,7 @@ namespace HearthstoneReplays.Parser
 			var gameState = GameEvent.BuildGameState(this, GameState);
 			NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
 					timestamp,
+					"OPPONENT_PLAYER",
 					() => new GameEvent
 					{
 						Type = "OPPONENT_PLAYER",

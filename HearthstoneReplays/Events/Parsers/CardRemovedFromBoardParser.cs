@@ -55,6 +55,7 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
+                "CARD_REMOVED_FROM_BOARD",
                 GameEvent.CreateProvider(
                     "CARD_REMOVED_FROM_BOARD",
                     cardId,
