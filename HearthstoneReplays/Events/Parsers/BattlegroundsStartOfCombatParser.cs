@@ -25,7 +25,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
                 && node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.NEXT_STEP
+                && (node.Object as TagChange).Name == (int)GameTag.STEP
                 && (node.Object as TagChange).Value == (int)Step.MAIN_START_TRIGGERS
                 && GameState.GetGameEntity().GetTag(GameTag.BOARD_VISUAL_STATE) == 2;
         }
