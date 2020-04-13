@@ -63,7 +63,7 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = hero?.CardId;
             if (cardId == NonCollectible.Neutral.KelthuzadTavernBrawl2)
             {
-                Logger.Log("Fighting the ghost", "Trying to assign the previous card id");
+                //Logger.Log("Fighting the ghost", "Trying to assign the previous card id");
                 // Take the last one
                 var deadHero = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)

@@ -55,9 +55,25 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(act => act.Type == (int)BlockType.ATTACK)
                 .FirstOrDefault();
 
-
             if (attackAction == null)
             {
+                var opponentPlayerId = ParserState.OpponentPlayer.PlayerId;
+                var opponentHero = GameState.CurrentEntities.Values
+                    .Where(data => data.GetTag(GameTag.CONTROLLER) == opponentPlayerId)
+                    .Where(data => data.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                    .Where(data => data.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .FirstOrDefault();
+                var cardId = opponentHero?.CardId;
+                if (cardId == NonCollectible.Neutral.KelthuzadTavernBrawl2)
+                {
+                    // Find the nexwt_opponent_id
+                    var player = GameState.CurrentEntities[ParserState.LocalPlayer.Id];
+                    opponentPlayerId = player.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
+                    opponentHero = GameState.CurrentEntities.Values
+                        .Where(data => data.GetTag(GameTag.PLAYER_ID) == opponentPlayerId)
+                        .FirstOrDefault();
+                    cardId = opponentHero?.CardId;
+                }
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     action.TimeStamp,
                      "BATTLEGROUNDS_BATTLE_RESULT",
@@ -66,6 +82,7 @@ namespace HearthstoneReplays.Events.Parsers
                         Type = "BATTLEGROUNDS_BATTLE_RESULT",
                         Value = new
                         {
+                            Opponent = cardId,
                             Result = "tied"
                         }
                     },
@@ -96,7 +113,7 @@ namespace HearthstoneReplays.Events.Parsers
             var opponentEntityId = GameState.CurrentEntities[attackerEntityId].GetTag(GameTag.CONTROLLER) == ParserState.LocalPlayer.PlayerId
                 ? defenderEntityId
                 : attackerEntityId;
-            var opponent = GameState.CurrentEntities[opponentEntityId].CardId;
+            var opponentCardId = GameState.CurrentEntities[opponentEntityId].CardId;
             var damage = damageTag != null ? damageTag.Value : 0;
 
             return new List<GameEventProvider> { GameEventProvider.Create(
@@ -107,7 +124,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Type = "BATTLEGROUNDS_BATTLE_RESULT",
                     Value = new
                     {
-                        Opponent = opponent,
+                        Opponent = opponentCardId,
                         Result = result,
                         Damage = damage,
                     }
