@@ -26,7 +26,12 @@ namespace HearthstoneReplays.Events.Parsers
             return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
                 && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.NEXT_STEP
-                && (node.Object as TagChange).Value == (int)Step.MAIN_START_TRIGGERS;
+                && (node.Object as TagChange).Value == (int)Step.MAIN_START_TRIGGERS
+                // Only emit during combat phase
+                && GameState.GetGameEntity().GetTag(GameTag.TURN) > 0
+                && GameState.GetGameEntity().GetTag(GameTag.TURN) % 2 == 0;
+
+
         }
 
         public bool AppliesOnCloseNode(Node node)
