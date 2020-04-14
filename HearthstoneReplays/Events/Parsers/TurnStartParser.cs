@@ -35,13 +35,15 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             GameState.CurrentTurn = (int)tagChange.Value;
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
-            return new List<GameEventProvider> { GameEventProvider.Create(
+            var result = new List<GameEventProvider>();
+            result.Add(GameEventProvider.Create(
                    tagChange.TimeStamp,
                    "TURN_START",
                    () => new GameEvent
                    {
                        Type = "TURN_START",
-                       Value = new {
+                       Value = new
+                       {
                            Turn = (int)tagChange.Value,
                            GameState = gameState,
                            LocalPlayer = ParserState.LocalPlayer,
@@ -49,7 +51,21 @@ namespace HearthstoneReplays.Events.Parsers
                        }
                    },
                    false,
-                   node.CreationLogLine) };
+                   node.CreationLogLine));
+            // This seems the most reliable way to have the combat_start event as soon as possible
+            if (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS && tagChange.Value % 2 == 0) 
+            {
+                result.Add(GameEventProvider.Create(
+                    tagChange.TimeStamp,
+                    "BATTLEGROUNDS_COMBAT_START",
+                    () => new GameEvent
+                    {
+                        Type = "BATTLEGROUNDS_COMBAT_START"
+                    },
+                    false,
+                    node.CreationLogLine));
+            }
+            return result;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)

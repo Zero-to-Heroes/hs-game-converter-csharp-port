@@ -353,7 +353,7 @@ namespace HearthstoneReplays.Events
                 new BattlegroundsHeroSelectionParser(ParserState),
                 new BattlegroundsNextOpponnentParser(ParserState),
                 new BattlegroundsTriplesCountUpdatedParser(ParserState),
-                new BattlegroundsStartOfCombatParser(ParserState),
+                //new BattlegroundsStartOfCombatParser(ParserState),
                 new BattlegroundsOpponentRevealedParser(ParserState),
                 new BattlegroundsHeroSelectedParser(ParserState),
                 new BattlegroundsBattleOverParser(ParserState),
