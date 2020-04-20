@@ -37,7 +37,7 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var changeEntity = node.Object as ChangeEntity;
-            var eventName = "CARD_CHANGED";
+            string eventName = null;
             if (GameState.CurrentEntities[changeEntity.Entity].GetTag(GameTag.ZONE) == (int)Zone.PLAY)
             {
                 eventName = "CARD_CHANGED_ON_BOARD";
@@ -45,6 +45,14 @@ namespace HearthstoneReplays.Events.Parsers
             else if (GameState.CurrentEntities[changeEntity.Entity].GetTag(GameTag.ZONE) == (int)Zone.HAND)
             {
                 eventName = "CARD_CHANGED_IN_HAND";
+            }
+            else if (GameState.CurrentEntities[changeEntity.Entity].GetTag(GameTag.ZONE) == (int)Zone.DECK)
+            {
+                eventName = "CARD_CHANGED_IN_DECK";
+            }
+            if (eventName == null)
+            {
+                return null;
             }
             var cardId = changeEntity.CardId;
             var entity = GameState.CurrentEntities[changeEntity.Entity];
