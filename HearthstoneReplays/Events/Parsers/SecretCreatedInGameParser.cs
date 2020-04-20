@@ -21,7 +21,10 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return false;
+            return node.Type == typeof(TagChange)
+                && (node.Object as TagChange).Value == (int)Zone.SECRET
+                && (node.Object as TagChange).Name == (int)GameTag.ZONE
+                && GameState.CurrentEntities[(node.Object as TagChange).Entity]?.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE;
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -32,6 +35,40 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
+            var tagChange = node.Object as TagChange;
+            var entity = GameState.CurrentEntities[tagChange.Entity];
+            var cardId = entity.CardId;
+            var controllerId = entity.GetTag(GameTag.CONTROLLER);
+            if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
+            {
+                var eventName = GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.QUEST) == 1
+                        || GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.SIDEQUEST) == 1
+                    ? "QUEST_CREATED_IN_GAME"
+                    : "SECRET_CREATED_IN_GAME";
+                var gameState = GameEvent.BuildGameState(ParserState, GameState);
+                var playerClass = entity.GetPlayerClass();
+                var creatorEntityId = entity.GetTag(GameTag.CREATOR);
+                var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
+                    ? GameState.CurrentEntities[creatorEntityId].CardId
+                    : null;
+                return new List<GameEventProvider> { GameEventProvider.Create(
+                        tagChange.TimeStamp,
+                        eventName,
+                        GameEvent.CreateProvider(
+                            eventName,
+                            cardId,
+                            controllerId,
+                            entity.Id,
+                            ParserState,
+                            GameState,
+                            gameState,
+                            new {
+                                PlayerClass = playerClass,
+                                CreatorCardId = creatorEntityCardId,
+                            }),
+                       true,
+                       node.CreationLogLine) };
+            }
             return null;
         }
 
