@@ -23,26 +23,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            //return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-            //    && node.Type == typeof(TagChange)
-            //    && (node.Object as TagChange).Value == (int)Step.MAIN_START_TRIGGERS
-            //    // Only emit during combat phase
-            //    && GameState.GetGameEntity().GetTag(GameTag.TURN) > 0
-            //    && (((node.Object as TagChange).Name == (int)GameTag.NEXT_STEP && GameState.GetGameEntity().GetTag(GameTag.TURN) == 2)
-            //        || ((node.Object as TagChange).Name == (int)GameTag.STEP
-            //            && GameState.GetGameEntity().GetTag(GameTag.TURN) > 2 
-            //            && GameState.GetGameEntity().GetTag(GameTag.TURN) % 2 == 0));
             return false;
-            //return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-            //    && node.Type == typeof(TagChange)
-            //    && (node.Object as TagChange).Value == (int)Step.MAIN_START_TRIGGERS
-            //    && GameState.GetGameEntity().GetTag(GameTag.TURN) > 0
-            //    // First turn
-            //    && (((node.Object as TagChange).Name == (int)GameTag.NEXT_STEP && GameState.GetGameEntity().GetTag(GameTag.TURN) == 2)
-            //        // All the other turns
-            //        || ((node.Object as TagChange).Name == (int)GameTag.NEXT_STEP
-            //            && GameState.GetGameEntity().GetTag(GameTag.TURN) > 2
-            //            && GameState.GetGameEntity().GetTag(GameTag.TURN) % 2 == 0));
 
 
 
@@ -59,87 +40,6 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            var opponent = ParserState.OpponentPlayer;
-            var player = ParserState.LocalPlayer;
-            return new List<GameEventProvider> { CreateProvider(node, player), CreateProvider(node, opponent) };
-        }
-
-        private GameEventProvider CreateProvider(Node node, Player player)
-        {
-            var tagChange = node.Object as TagChange;
-            var heroes = GameState.CurrentEntities.Values
-                .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                .ToList();
-            var potentialHeroes = GameState.CurrentEntities.Values
-                .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
-                // Here we accept to face the ghost
-                .Where(entity => entity.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl)
-                .ToList();
-            var hero = potentialHeroes
-                //.Where(entity => entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
-                .FirstOrDefault();
-            //Logger.Log("Trying to handle board", "" + ParserState.CurrentGame.GameType + " // " + hero?.CardId);
-            //Logger.Log("Hero " + hero.CardId, hero.Entity);
-            var cardId = hero?.CardId;
-            if (cardId == NonCollectible.Neutral.KelthuzadTavernBrawl2)
-            {
-                //Logger.Log("Fighting the ghost", "Trying to assign the previous card id");
-                // Take the last one
-                var deadHero = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
-                    .Where(entity => entity.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl)
-                    .Where(entity => entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
-                    .OrderBy(entity => entity.Id)
-                    .LastOrDefault();
-                cardId = deadHero?.CardId;
-            }
-            // Happens in the first encounter
-            if (cardId == null)
-            {
-                var activePlayer = GameState.CurrentEntities[ParserState.LocalPlayer.Id];
-                var opponentPlayerId = activePlayer.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
-                hero = GameState.CurrentEntities.Values
-                    .Where(data => data.GetTag(GameTag.PLAYER_ID) == opponentPlayerId)
-                    .FirstOrDefault();
-                cardId = hero?.CardId;
-            }
-            if (cardId != null)
-            {
-                // We don't use the game state builder here because we really need the full entities
-                var board = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
-                    .Select(entity => entity.Clone())
-                    .ToList();
-                var result = board.Select(entity => AddEchantments(GameState.CurrentEntities, entity)).ToList();
-                //Logger.Log("board has " + board.Count + " entities", "");
-                return GameEventProvider.Create(
-                   tagChange.TimeStamp,
-                   "BATTLEGROUNDS_PLAYER_BOARD",
-                   () => ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                        ? new GameEvent
-                        {
-                            Type = "BATTLEGROUNDS_PLAYER_BOARD",
-                            Value = new
-                            {
-                                Hero = hero,
-                                CardId = cardId,
-                                Board = result,
-                            }
-                        }
-                        : null,
-                   true,
-                   node.CreationLogLine);
-            }
-            //else
-            //{
-            //    Logger.Log("Invalid hero", hero != null ? hero.CardId : "null hero");
-            //}
             return null;
         }
 
