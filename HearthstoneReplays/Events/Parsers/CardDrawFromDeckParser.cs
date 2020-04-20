@@ -48,6 +48,7 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity, node);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -60,7 +61,8 @@ namespace HearthstoneReplays.Events.Parsers
                     GameState,
                     gameState,
                     new {
-                        IsPremium = entity.GetTag(GameTag.PREMIUM) == 1
+                        IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
+                        CreatorCardId = creatorCardId,
                     }),
                 true,
                 node.CreationLogLine) };
@@ -70,21 +72,22 @@ namespace HearthstoneReplays.Events.Parsers
         {
             if (node.Type == typeof(ShowEntity))
             {
-                return CreateEventFromShowEntity(node.Object as ShowEntity, node.CreationLogLine);
+                return CreateEventFromShowEntity(node.Object as ShowEntity, node.CreationLogLine, node);
             }
             else if (node.Type == typeof(FullEntity))
             {
-                return CreateEventFromFullEntity(node.Object as FullEntity, node.CreationLogLine);
+                return CreateEventFromFullEntity(node.Object as FullEntity, node.CreationLogLine, node);
             }
             return null;
         }
 
-        private List<GameEventProvider> CreateEventFromShowEntity(ShowEntity showEntity, string creationLogLine)
+        private List<GameEventProvider> CreateEventFromShowEntity(ShowEntity showEntity, string creationLogLine, Node node)
         {
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             var entity = GameState.CurrentEntities[showEntity.Entity];
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -97,17 +100,19 @@ namespace HearthstoneReplays.Events.Parsers
                     GameState,
                     gameState,
                     new {
-                        IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1
+                        IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1,
+                        CreatorCardId = creatorCardId,
                     }),
                 true,
                 creationLogLine) };
         }
 
-        private List<GameEventProvider> CreateEventFromFullEntity(FullEntity fullEntity, string creationLogLine)
+        private List<GameEventProvider> CreateEventFromFullEntity(FullEntity fullEntity, string creationLogLine, Node node)
         {
             var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -120,7 +125,8 @@ namespace HearthstoneReplays.Events.Parsers
                     GameState,
                     gameState,
                     new {
-                        IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1
+                        IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1,
+                        CreatorCardId = creatorCardId,
                     }),
                 true,
                 creationLogLine) };
