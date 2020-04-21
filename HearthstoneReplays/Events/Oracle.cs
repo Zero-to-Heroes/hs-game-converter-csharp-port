@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using static HearthstoneReplays.Events.CardIds;
 using static HearthstoneReplays.Events.CardIds.Collectible;
 using HearthstoneReplays.Parser.ReplayData.Meta;
+using System.Linq;
 
 namespace HearthstoneReplays.Events
 {
@@ -282,9 +283,25 @@ namespace HearthstoneReplays.Events
                         && node.Parent.Parent?.Type == typeof(Parser.ReplayData.GameActions.Action))
                     {
                         var act = node.Parent.Parent.Object as Parser.ReplayData.GameActions.Action;
-                        return GameState.CurrentEntities[act.Entity].CardId;
+                        var existingEntity = GameState.CurrentEntities[act.Entity];
+                        return existingEntity.CardId;
                     }
                     return null;
+            }
+
+            // Libram of Wisdom
+            if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+            {
+                var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                if (action.Type == (int)BlockType.TRIGGER && action.TriggerKeyword == (int)GameTag.DEATHRATTLE)
+                {
+                    var attachedEnchantments = GameState.FindEnchantmentsAttachedTo(action.Entity);
+                    var isLibram = attachedEnchantments.Any(e  => e.CardId == NonCollectible.Paladin.LibramofWisdom_LightsWisdomEnchantment);
+                    if (isLibram)
+                    {
+                        return Paladin.LibramOfWisdom;
+                    }
+                }
             }
             return null;
         }

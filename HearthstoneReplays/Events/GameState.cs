@@ -325,5 +325,14 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 MulliganOver = true;
             }
         }
-	}
+
+        internal List<FullEntity> FindEnchantmentsAttachedTo(int entity)
+        {
+            if (!CurrentEntities.ContainsKey(entity))
+            {
+                return new List<FullEntity>();
+            }
+            return CurrentEntities.Values.Where(e => e.GetTag(GameTag.ATTACHED) == entity).ToList();
+        }
+    }
 }
