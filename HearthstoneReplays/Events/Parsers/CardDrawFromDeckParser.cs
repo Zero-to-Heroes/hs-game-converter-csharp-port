@@ -87,7 +87,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             var entity = GameState.CurrentEntities[showEntity.Entity];
             var gameState = GameEvent.BuildGameState(ParserState, GameState);
-            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
+            var creatorCardId = Oracle.GetCreatorFromTags(GameState, showEntity, node);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",

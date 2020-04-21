@@ -13,6 +13,25 @@ namespace HearthstoneReplays.Events
 {
     public class Oracle
     {
+        public static string GetCreatorFromTags(GameState gameState, FullEntity entity, Node node)
+        {
+            var creatorCardId = Oracle.GetCreatorCardIdFromTag(gameState, entity.GetTag(GameTag.CREATOR), entity);
+            if (creatorCardId == null)
+            {
+                creatorCardId = Oracle.GetCreatorCardIdFromTag(gameState, entity.GetTag(GameTag.DISPLAYED_CREATOR), entity);
+            }
+            return creatorCardId;
+        }
+        public static string GetCreatorFromTags(GameState gameState, ShowEntity entity, Node node)
+        {
+            var creatorCardId = Oracle.GetCreatorCardIdFromTag(gameState, entity.GetTag(GameTag.CREATOR), entity);
+            if (creatorCardId == null)
+            {
+                creatorCardId = Oracle.GetCreatorCardIdFromTag(gameState, entity.GetTag(GameTag.DISPLAYED_CREATOR), entity);
+            }
+            return creatorCardId;
+        }
+
         public static string FindCardCreatorCardId(GameState GameState, FullEntity entity, Node node)
         {
             var creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.CREATOR), node);
@@ -48,6 +67,26 @@ namespace HearthstoneReplays.Events
                     var creator = GameState.CurrentEntities[act.Entity];
                     return creator.CardId;
                 }
+            }
+            return null;
+        }
+
+        private static string GetCreatorCardIdFromTag(GameState gameState, int creatorTag, FullEntity entity)
+        {
+            if (creatorTag != -1 && gameState.CurrentEntities.ContainsKey(creatorTag))
+            {
+                var creator = gameState.CurrentEntities[creatorTag];
+                return creator.CardId;
+            }
+            return null;
+        }
+
+        private static string GetCreatorCardIdFromTag(GameState GameState, int creatorTag, ShowEntity entity)
+        {
+            if (creatorTag != -1 && GameState.CurrentEntities.ContainsKey(creatorTag))
+            {
+                var creator = GameState.CurrentEntities[creatorTag];
+                return creator.CardId;
             }
             return null;
         }
