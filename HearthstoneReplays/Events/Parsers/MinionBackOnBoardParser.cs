@@ -47,6 +47,7 @@ namespace HearthstoneReplays.Events.Parsers
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
                 var gameState = GameEvent.BuildGameState(ParserState, GameState);
+                var creatorCardId = Oracle.GetCreatorFromTags(GameState, entity, node);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "MINION_BACK_ON_BOARD",
@@ -57,7 +58,10 @@ namespace HearthstoneReplays.Events.Parsers
                         entity.Id,
                         ParserState,
                         GameState,
-                        gameState),
+                        gameState,
+                        new {
+                            CreatorCardId = creatorCardId,
+                        }),
                     true,
                     node.CreationLogLine) };
             }

@@ -303,6 +303,31 @@ namespace HearthstoneReplays.Events
                     }
                 }
             }
+
+            // Second card for Archivist Elysiana
+            if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+            {
+                var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                if (action.Type == (int)BlockType.POWER)
+                {
+                    var actionEntity = GameState.CurrentEntities[action.Entity];
+                    if (actionEntity.CardId == Neutral.ArchivistElysiana)
+                    {
+                        // Now let's find the ID of the card that was created right before
+                        var lastTagChange = action.Data
+                            .Where(data => data is TagChange)
+                            .Select(data => data as TagChange)
+                            .Where(tag => tag.Name == (int)GameTag.ZONE && tag.Value == (int)Zone.DECK)
+                            .LastOrDefault();
+                        if (lastTagChange != null)
+                        {
+                            var lastEntityId = lastTagChange.Entity;
+                            return GameState.CurrentEntities[lastEntityId]?.CardId;
+                        }
+                    }
+                }
+            }
+
             return null;
         }
     }
