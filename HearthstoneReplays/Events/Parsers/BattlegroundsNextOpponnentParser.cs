@@ -22,8 +22,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                && node.Type == typeof(TagChange)
+            return node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.NEXT_OPPONENT_PLAYER_ID;
         }
 
@@ -44,6 +43,12 @@ namespace HearthstoneReplays.Events.Parsers
                     && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
                 .ToList();
             var hero = heroes == null || heroes.Count == 0 ? null : heroes[0];
+            // Happens in some circumstances, though it's not clear for me which ones. Maybe
+            // when the future opponent isn't here yet, or when players take too long to join?
+            if (hero == null)
+            {
+                GameState.NextBgsOpponentPlayerId = tagChange.Value;
+            }
             //Logger.Log("Next opponent player id", hero?.CardId);
             if (hero?.CardId != null && hero.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl)
             {

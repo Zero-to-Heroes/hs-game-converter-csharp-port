@@ -8,12 +8,12 @@ using System.Collections.Generic;
 
 namespace HearthstoneReplays.Events.Parsers
 {
-    public class ArmorChangeParser : ActionParser
+    public class GalakrondInvokedParser : ActionParser
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
 
-        public ArmorChangeParser(ParserState ParserState)
+        public GalakrondInvokedParser(ParserState ParserState)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
@@ -22,7 +22,7 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnNewNode(Node node)
         {
             return node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.ARMOR;
+                && (node.Object as TagChange).Name == (int)GameTag.INVOKE_COUNTER;
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -33,30 +33,31 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
-            var entity = GameState.CurrentEntities[tagChange.Entity];
-            var initialArmor = entity.GetTag(GameTag.ARMOR);
-            var newArmor = tagChange.Value;
-            var cardId = entity.CardId;
+            FullEntity entity = GameState.CurrentEntities.TryGetValue(tagChange.Entity, out entity) ? entity : null;
+            if (entity == null)
+            {
+                return null;
+            }
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState);
             return new List<GameEventProvider> { GameEventProvider.Create(
-                tagChange.TimeStamp,
-                 "ARMOR_CHANGED",
-                () => new GameEvent
-                {
-                    Type = "ARMOR_CHANGED",
-                    Value = new
-                    {
-                        CardId = cardId,
-                        ControllerId = controllerId,
-                        LocalPlayer = ParserState.LocalPlayer,
-                        OpponentPlayer = ParserState.OpponentPlayer,
-                        ArmorChange = newArmor - initialArmor,
-                        TotalArmor = newArmor,
-                        EntityId = entity.Id, // Might be useful if we want to uniquely identify the minion
-                    }
-                },
-                true,
-                node.CreationLogLine) };
+                    tagChange.TimeStamp,
+                    "GALAKROND_INVOKED",
+                    GameEvent.CreateProvider(
+                        "GALAKROND_INVOKED",
+                        null,
+                        controllerId,
+                        entity.Id,
+                        ParserState,
+                        GameState,
+                        gameState,
+                        new
+                        {
+                            TotalInvoke = tagChange.Value,
+                        }
+                    ),
+                    true,
+                    node.CreationLogLine) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)

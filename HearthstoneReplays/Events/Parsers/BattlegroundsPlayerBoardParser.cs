@@ -118,6 +118,12 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
                     .Select(entity => entity.Clone())
                     .ToList();
+                var heroPower = GameState.CurrentEntities.Values
+                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER)
+                    .Select(entity => entity.Clone())
+                    .FirstOrDefault();
                 var result = board.Select(entity => AddEchantments(GameState.CurrentEntities, entity)).ToList();
                 //Logger.Log("board has " + board.Count + " entities", "");
                 return GameEventProvider.Create(
@@ -130,6 +136,7 @@ namespace HearthstoneReplays.Events.Parsers
                             Value = new
                             {
                                 Hero = hero,
+                                HeroPowerCardId = heroPower?.CardId,
                                 CardId = cardId,
                                 Board = result,
                             }

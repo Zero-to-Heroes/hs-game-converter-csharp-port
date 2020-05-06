@@ -187,7 +187,10 @@ namespace HearthstoneReplays.Events
                         // animation ready calls (more specifically, things related to the GameEntity, like MAIN_STEP)
                         //if (!eventQueue.All(p => !p.CreationLogLine.Contains("GameEntity")) 
                         //    && !eventQueue.Where(p => !p.CreationLogLine.Contains("GameEntity")).Any(p => p.AnimationReady))
-                        if (!eventQueue.Any(p => p.AnimationReady))
+                        // Heck for Battlegrounds
+                        if (!eventQueue
+                                .Where(p => !(p.CreationLogLine.Contains("GameEntity") && p.CreationLogLine.Contains("MAIN_READY")))
+                                .Any(p => p.AnimationReady))
                         // Safeguard - Don't wait too long for the animation in case we never receive it
                         // With the arrival of Battlegrounds we can't do this anymore, as it spoils the game very fast
                         //&& DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).TotalMilliseconds < 5000)
@@ -362,6 +365,7 @@ namespace HearthstoneReplays.Events
                 new AttackParser(ParserState),
                 new NumCardsPlayedThisTurnParser(ParserState),
                 new HeroPowerUsedParser(ParserState),
+                new GalakrondInvokedParser(ParserState),
             };
         }
     }

@@ -118,6 +118,7 @@
     <Compile Include="Events\Parsers\BattlegroundsBattleOverParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsStartOfCombatParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsTriplesCountUpdatedParser.cs" />
+    <Compile Include="Events\Parsers\GalakrondInvokedParser.cs" />
     <Compile Include="Events\Parsers\NumCardsPlayedThisTurnParser.cs" />
     <Compile Include="Events\Parsers\AttackParser.cs" />
     <Compile Include="Events\Parsers\GameRunningParser.cs" />

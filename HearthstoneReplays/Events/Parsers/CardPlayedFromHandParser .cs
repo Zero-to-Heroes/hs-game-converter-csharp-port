@@ -49,7 +49,7 @@ namespace HearthstoneReplays.Events.Parsers
                     targetId = action.Target;
                     targetCardId = targetId > 0 ? GameState.CurrentEntities[targetId].CardId : null;
                 }
-                var gameState = GameEvent.BuildGameState(ParserState, GameState);
+                var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "CARD_PLAYED",
@@ -64,6 +64,8 @@ namespace HearthstoneReplays.Events.Parsers
                         new {
                             TargetEntityId = targetId,
                             TargetCardId = targetCardId,
+                            Attack = entity.GetTag(GameTag.ATK),
+                            Health = entity.GetTag(GameTag.HEALTH),
                         }),
                     true,
                     node.CreationLogLine) };

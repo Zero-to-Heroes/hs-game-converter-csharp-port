@@ -124,6 +124,7 @@ namespace HearthstoneReplays.Events.Parsers
                 if (controller.GetTag(GameTag.CURRENT_PLAYER) != 1)
                 {
                     cardId = "GAME_005";
+                    creatorCardId = "GAME_005";
                 }
             }
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
