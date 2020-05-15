@@ -140,6 +140,7 @@
     <Compile Include="Events\Parsers\MinionBackOnBoardParser.cs" />
     <Compile Include="Events\Parsers\CardRevealedParser.cs" />
     <Compile Include="Events\Parsers\HeroPowerChangedParser.cs" />
+    <Compile Include="Events\Parsers\CardBuffedInHandParser.cs" />
     <Compile Include="Events\Parsers\SecretCreatedInGameParser.cs" />
     <Compile Include="Events\Parsers\SecretPlayedFromDeckParser.cs" />
     <Compile Include="Events\Parsers\MainStepReadyParser.cs" />

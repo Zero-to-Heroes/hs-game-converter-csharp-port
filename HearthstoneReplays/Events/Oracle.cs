@@ -92,6 +92,16 @@ namespace HearthstoneReplays.Events
             return null;
         }
 
+        //public static string FindBuffFromCardId(string buffingEntityCardId)
+        //{
+        //    switch (buffingEntityCardId)
+        //    {
+        //        case Paladin.GrimestreetEnforcer: return NonCollectible.Neutral.GrimestreetEnforcer_SmugglingEnchantment;
+        //        case Paladin.GrimestreetOutfitter: return NonCollectible.Neutral.GrimestreetOutfitter_SmugglingEnchantment;
+        //    }
+        //    return null;
+        //}
+
         public static string PredictCardId(GameState GameState, string creatorCardId, Node node, string inputCardId = null)
         {
             if (inputCardId != null && inputCardId.Length > 0)
@@ -173,7 +183,7 @@ namespace HearthstoneReplays.Events
                     case Mage.Rhonin: return Mage.ArcaneMissiles;
                     case Mage.SteamSurger: return Mage.FlameGeyser;
                     case Mage.VioletSpellwing: return Mage.ArcaneMissiles;
-                    case Paladin.DrygulchJailor: return NonCollectible.Paladin.Reinforce_SilverHandRecruitToken;
+                    case Paladin.DrygulchJailor: return NonCollectible.Paladin.SilverHandRecruitToken;
                     case Paladin.MurgurMurgurgle: return NonCollectible.Paladin.MurgurMurgurgle_MurgurglePrimeToken;
                     case Paladin.TheLastKaleidosaur: return NonCollectible.Paladin.TheLastKaleidosaur_GalvadonToken;
                     case Paladin.SandwaspQueen: return NonCollectible.Paladin.SandwaspQueen_SandwaspToken;

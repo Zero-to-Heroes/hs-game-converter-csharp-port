@@ -366,6 +366,7 @@ namespace HearthstoneReplays.Events
                 new NumCardsPlayedThisTurnParser(ParserState),
                 new HeroPowerUsedParser(ParserState),
                 new GalakrondInvokedParser(ParserState),
+                new CardBuffedInHandParser(ParserState),
             };
         }
     }
