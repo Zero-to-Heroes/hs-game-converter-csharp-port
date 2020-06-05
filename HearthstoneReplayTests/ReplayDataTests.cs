@@ -33,8 +33,8 @@ namespace HearthstoneReplayTests
             //    Thread.Sleep(100);
             //}
             Thread.Sleep(2000);
-            //string xml = new ReplayConverter().xmlFromReplay(replay);
-            //Console.Write(xml);
+            string xml = new ReplayConverter().xmlFromReplay(replay);
+            Console.Write(xml);
         }
 
         [TestMethod]

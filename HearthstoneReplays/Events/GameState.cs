@@ -23,6 +23,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         // of a tag change. At the time it is revealed, we don't have the opponent's entity yet
         // so we can't emit the event
         public int NextBgsOpponentPlayerId;
+        public bool SimulationTriggered;
 
         private int gameEntityId;
         private Dictionary<int, int> controllerEntity = new Dictionary<int, int>();

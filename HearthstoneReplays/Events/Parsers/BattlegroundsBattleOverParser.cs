@@ -115,6 +115,7 @@ namespace HearthstoneReplays.Events.Parsers
                 : attackerEntityId;
             var opponentCardId = GameState.CurrentEntities[opponentEntityId].CardId;
             var damage = damageTag != null ? damageTag.Value : 0;
+            GameState.SimulationTriggered = false;
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 action.TimeStamp,

@@ -34,9 +34,14 @@ namespace HearthstoneReplays.Events
             Func<GameEvent> eventProvider,
             bool needMetaData, 
             string creationLogLine,
+            bool animationReady = false,
             bool debug = false)
         {
-            return Create(originalTimestamp, eventName, eventProvider, (a) => false, needMetaData, creationLogLine, debug);
+            if (animationReady)
+            {
+                Logger.Log("Creating event with animation ready", creationLogLine);
+            }
+            return Create(originalTimestamp, eventName, eventProvider, (a) => false, needMetaData, creationLogLine, animationReady, debug);
         }
 
         public static GameEventProvider Create(
@@ -46,6 +51,7 @@ namespace HearthstoneReplays.Events
             Func<GameEventProvider, bool> isDuplicatePredicate,
             bool needMetaData,
             string creationLogLine,
+            bool animationReady = false,
             bool debug = false)
         {
             var result = new GameEventProvider
@@ -58,6 +64,7 @@ namespace HearthstoneReplays.Events
                 CreationLogLine = creationLogLine,
                 debug = debug,
             };
+            result.AnimationReady = animationReady;
             if (debug)
             {
                 Logger.Log("Creating game event provider in debug " + result.debug, creationLogLine);

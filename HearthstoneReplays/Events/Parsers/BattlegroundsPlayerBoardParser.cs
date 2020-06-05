@@ -24,9 +24,6 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnNewNode(Node node)
         {
             return false;
-
-
-
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -116,6 +113,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
+                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
                     .ToList();
                 var heroPower = GameState.CurrentEntities.Values
@@ -137,6 +135,7 @@ namespace HearthstoneReplays.Events.Parsers
                             {
                                 Hero = hero,
                                 HeroPowerCardId = heroPower?.CardId,
+                                HeroPowerUsed = heroPower?.GetTag(GameTag.EXHAUSTED) == 1 || heroPower?.GetTag(GameTag.PENDING_TRIGGER) == 1,
                                 CardId = cardId,
                                 Board = result,
                             }
