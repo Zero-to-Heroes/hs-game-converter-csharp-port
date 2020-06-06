@@ -45,7 +45,7 @@ namespace HearthstoneReplays.Events.Parsers
                         || GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.SIDEQUEST) == 1
                     ? "QUEST_PLAYED"
                     : "SECRET_PLAYED";
-                var gameState = GameEvent.BuildGameState(ParserState, GameState);
+                var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
                 var playerClass = entity.GetPlayerClass();
                 return new List<GameEventProvider> { GameEventProvider.Create(
                         tagChange.TimeStamp,
@@ -81,7 +81,7 @@ namespace HearthstoneReplays.Events.Parsers
                     {
                         var cardId = showEntity.CardId;
                         var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
-                        var gameState = GameEvent.BuildGameState(ParserState, GameState);
+                        var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
                         var playerClass = showEntity.GetPlayerClass();
                         var eventName = showEntity.GetTag(GameTag.QUEST) == 1 || showEntity.GetTag(GameTag.SIDEQUEST) == 1
                             ? "QUEST_PLAYED"

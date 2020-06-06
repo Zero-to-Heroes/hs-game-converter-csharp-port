@@ -40,7 +40,7 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
-            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "DISCARD_CARD",
@@ -66,7 +66,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
             var cardId = entity?.CardId != null && entity.CardId.Length > 0 ? entity.CardId : showEntity.CardId;
             var controllerId = entity != null ? entity.GetTag(GameTag.CONTROLLER) : -1;
-            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "DISCARD_CARD",

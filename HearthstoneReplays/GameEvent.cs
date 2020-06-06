@@ -53,7 +53,7 @@ namespace HearthstoneReplays
         }
 
         // It needs to be built beforehand, as the game state we pass is not immutable
-        public static dynamic BuildGameState(ParserState parserState, GameState gameState, TagChange tagChange = null)
+        public static dynamic BuildGameState(ParserState parserState, GameState gameState, TagChange tagChange, ShowEntity showEntity)
         {
             if (parserState == null || parserState.LocalPlayer == null || parserState.OpponentPlayer == null)
             {
@@ -66,23 +66,23 @@ namespace HearthstoneReplays
                 ActivePlayerId = gameState.GetActivePlayerId(),
                 Player = new
                 {
-                    Hero = GameEvent.BuildHero(gameState, parserState.LocalPlayer.PlayerId, tagChange),
-                    Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.LocalPlayer.PlayerId, tagChange),
-                    Board = GameEvent.BuildBoard(gameState, parserState.LocalPlayer.PlayerId, tagChange),
-                    Deck = GameEvent.BuildZone(gameState, Zone.DECK, parserState.LocalPlayer.PlayerId, tagChange),
+                    Hero = GameEvent.BuildHero(gameState, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
+                    Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
+                    Board = GameEvent.BuildBoard(gameState, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
+                    Deck = GameEvent.BuildZone(gameState, Zone.DECK, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
                 },
                 Opponent = new
                 {
-                    Hero = GameEvent.BuildHero(gameState, parserState.OpponentPlayer.PlayerId, tagChange),
-                    Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.OpponentPlayer.PlayerId, tagChange),
-                    Board = GameEvent.BuildBoard(gameState, parserState.OpponentPlayer.PlayerId, tagChange),
-                    Deck = GameEvent.BuildZone(gameState, Zone.DECK, parserState.OpponentPlayer.PlayerId, tagChange),
+                    Hero = GameEvent.BuildHero(gameState, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    Board = GameEvent.BuildBoard(gameState, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    Deck = GameEvent.BuildZone(gameState, Zone.DECK, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
                 }
             };
             return result;
         }
 
-        private static object BuildHero(GameState gameState, int playerId, TagChange tagChange = null)
+        private static object BuildHero(GameState gameState, int playerId, TagChange tagChange, ShowEntity showEntity)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace HearthstoneReplays
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
-                    .Select(entity => BuildSmallEntity(entity, tagChange))
+                    .Select(entity => BuildSmallEntity(entity, tagChange, showEntity))
                     .FirstOrDefault();
                 return hero != null ? hero : new
                 {
@@ -101,71 +101,94 @@ namespace HearthstoneReplays
             catch (Exception e)
             {
                 Logger.Log("Warning: issue when trying to build hero " + e.Message, e.StackTrace);
-                return BuildHero(gameState, playerId);
+                return BuildHero(gameState, playerId, tagChange, showEntity);
             }
         }
 
-        private static List<object> BuildZone(GameState gameState, Zone zone, int playerId, TagChange tagChange)
+        private static List<object> BuildZone(GameState gameState, Zone zone, int playerId, TagChange tagChange, ShowEntity showEntity)
         {
             try
             {
+                var entityToConsiderTC = tagChange?.Name == (int)GameTag.ZONE && tagChange?.Value == (int)zone ? tagChange.Entity : -1;
+                entityToConsiderTC = entityToConsiderTC != -1 && gameState.CurrentEntities[entityToConsiderTC]?.GetTag(GameTag.CONTROLLER) == playerId
+                    ? entityToConsiderTC
+                    : -1;
+                var entityToConsiderSE = showEntity?.GetTag(GameTag.ZONE) == (int)zone ? showEntity.Entity : -1;
+                entityToConsiderSE = entityToConsiderSE != -1 && gameState.CurrentEntities[entityToConsiderSE]?.GetTag(GameTag.CONTROLLER) == playerId
+                    ? entityToConsiderSE
+                    : -1;
+                var entityToExcludeTC = tagChange?.Name == (int)GameTag.ZONE && tagChange?.Value != (int)zone ? tagChange.Entity : -1;
+                var entityToExcludeSE = showEntity?.GetTag(GameTag.ZONE) > 0 && showEntity?.GetTag(GameTag.ZONE) != (int)zone ? showEntity.Entity : -1;
                 return gameState.CurrentEntities.Values
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)zone)
-                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
-                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
-                    .Select(entity => BuildSmallEntity(entity, tagChange))
+                    .Where(entity => entityToExcludeSE != entity.Entity 
+                        && entityToExcludeTC != entity.Entity 
+                        && (entity.GetTag(GameTag.ZONE) == (int)zone || entity.Entity == entityToConsiderTC || entity.Entity == entityToConsiderSE))
+                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId || entity.Entity == entityToConsiderTC || entity.Entity == entityToConsiderSE)
+                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION) == -1 ? 99 : entity.GetTag(GameTag.ZONE_POSITION))
+                    .Select(entity => BuildSmallEntity(entity, tagChange, showEntity))
                     .ToList();
             }
             catch (Exception e)
             {
                 Logger.Log("Warning: issue when trying to build zone " + e.Message, e.StackTrace);
-                return BuildZone(gameState, zone, playerId, tagChange);
+                return BuildZone(gameState, zone, playerId, tagChange, showEntity);
             }
         }
 
-        private static List<object> BuildBoard(GameState gameState, int playerId, TagChange tagChange)
+        private static List<object> BuildBoard(GameState gameState, int playerId, TagChange tagChange, ShowEntity showEntity)
         {
             try
             {
                 return gameState.CurrentEntities.Values
-                    .Where(entity => (entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY && !RemovedFromPlay(entity, tagChange))
-                        || PutInPlay(entity, tagChange))
+                    .Where(entity => (entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY && !RemovedFromPlay(entity, tagChange, showEntity))
+                        || PutInPlay(entity, tagChange, showEntity))
                     .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
-                    .Select(entity => BuildSmallEntity(entity, tagChange))
+                    .Select(entity => BuildSmallEntity(entity, tagChange, showEntity))
                     .ToList();
             }
             catch (Exception e)
             {
                 Logger.Log("Warning: issue when trying to build zone " + e.Message, e.StackTrace);
-                return BuildBoard(gameState, playerId, tagChange);
+                return BuildBoard(gameState, playerId, tagChange, showEntity);
             }
         }
 
-        private static bool RemovedFromPlay(FullEntity entity, TagChange tagChange = null)
+        private static bool RemovedFromPlay(FullEntity entity, TagChange tagChange, ShowEntity showEntity)
         {
-            if (tagChange == null)
+            if (tagChange == null && showEntity == null)
             {
                 return false;
             }
-            return tagChange.Entity == entity.Entity
+            var valueTC = tagChange != null
+                && tagChange.Entity == entity.Entity
                 && tagChange.Name == (int)GameTag.ZONE
                 && tagChange.Value != (int)Zone.PLAY;
+            var valueSE = showEntity != null
+                && showEntity.Entity == entity.Entity
+                && showEntity.GetTag(GameTag.ZONE) > 0
+                && showEntity.GetTag(GameTag.ZONE) != (int)Zone.PLAY;
+            return valueTC || valueSE;
         }
 
-        private static bool PutInPlay(FullEntity entity, TagChange tagChange = null)
+        private static bool PutInPlay(FullEntity entity, TagChange tagChange, ShowEntity showEntity)
         {
-            if (tagChange == null)
+            if (tagChange == null && showEntity == null)
             {
                 return false;
             }
-            return tagChange.Entity == entity.Entity
+            var valueTC = tagChange != null
+                && tagChange.Entity == entity.Entity
                 && tagChange.Name == (int)GameTag.ZONE
                 && tagChange.Value == (int)Zone.PLAY;
+            var valueSE = showEntity != null
+                && showEntity.Entity == entity.Entity
+                && showEntity.GetTag(GameTag.ZONE) == (int)Zone.PLAY;
+            return valueTC || valueSE;
         }
 
-        private static object BuildSmallEntity(BaseEntity entity, TagChange tagChange)
+        private static object BuildSmallEntity(BaseEntity entity, TagChange tagChange, ShowEntity showEntity)
         {
             string cardId = null;
             if (entity.GetType() == typeof(FullEntity))

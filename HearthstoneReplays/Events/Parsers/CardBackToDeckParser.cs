@@ -39,7 +39,7 @@ namespace HearthstoneReplays.Events.Parsers
             var initialZone = ((Zone)zoneInt).ToString();
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
-            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 zoneInt == (int)Zone.SETASIDE ? "CREATE_CARD_IN_DECK" : "CARD_BACK_TO_DECK",

@@ -47,7 +47,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             var startingHealth = fullEntity.GetTag(GameTag.HEALTH);
-            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CARD_ON_BOARD_AT_GAME_START",

@@ -45,7 +45,7 @@ namespace HearthstoneReplays.Events.Parsers
                         || GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.SIDEQUEST) == 1
                     ? "QUEST_CREATED_IN_GAME"
                     : "SECRET_CREATED_IN_GAME";
-                var gameState = GameEvent.BuildGameState(ParserState, GameState);
+                var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
                 var playerClass = entity.GetPlayerClass();
                 var creatorEntityId = entity.GetTag(GameTag.CREATOR);
                 var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
@@ -77,7 +77,7 @@ namespace HearthstoneReplays.Events.Parsers
             var fullEntity = node.Object as FullEntity;
             var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
-            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
             var playerClass = fullEntity.GetPlayerClass();
             var creatorEntityId = fullEntity.GetTag(GameTag.CREATOR);
             var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)

@@ -40,7 +40,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
-                var gameState = GameEvent.BuildGameState(ParserState, GameState);
+                var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "CARD_STOLEN",
@@ -68,7 +68,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = GameState.CurrentEntities[showEntity.Entity].GetTag(GameTag.CONTROLLER);
             if (GameState.CurrentEntities[showEntity.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
-                var gameState = GameEvent.BuildGameState(ParserState, GameState);
+                var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,
                     "CARD_STOLEN",

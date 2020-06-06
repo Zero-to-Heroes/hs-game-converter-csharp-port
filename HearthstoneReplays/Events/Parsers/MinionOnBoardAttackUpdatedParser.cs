@@ -39,7 +39,7 @@ namespace HearthstoneReplays.Events.Parsers
             var newAttack = tagChange.Value;
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "MINION_ON_BOARD_ATTACK_UPDATED",

@@ -57,7 +57,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Logger.Log("Could not identify burned card id", info.Entity);
                 }
                 var controllerId = entity.GetTag(GameTag.CONTROLLER);
-                object gameState = GameEvent.BuildGameState(ParserState, GameState);
+                object gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
                 result.Add(GameEventProvider.Create(
                     meta.TimeStamp,
                     "BURNED_CARD",

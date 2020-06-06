@@ -50,7 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             var previousZone = entity.GetTag(GameTag.ZONE) == -1 ? 0 : entity.GetTag(GameTag.ZONE);
-            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
@@ -92,7 +92,7 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = Oracle.PredictCardId(GameState, creatorCardId, node, showEntity.CardId);
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             var previousZone = GameState.CurrentEntities[showEntity.Entity].GetTag(GameTag.ZONE);
-            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
             var entity = GameState.CurrentEntities[showEntity.Entity];
             return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,
@@ -133,7 +133,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 previousZone = GameState.CurrentEntities[fullEntity.Id].GetTag(GameTag.ZONE);
             }
-            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     fullEntity.TimeStamp,
                     "RECEIVE_CARD_IN_HAND",

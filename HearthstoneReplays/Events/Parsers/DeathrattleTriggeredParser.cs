@@ -39,7 +39,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             if (GameState.CurrentEntities[action.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
-                var gameState = GameEvent.BuildGameState(ParserState, GameState);
+                var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                         action.TimeStamp,
                         "DEATHRATTLE_TRIGGERED",
@@ -71,7 +71,7 @@ namespace HearthstoneReplays.Events.Parsers
                     {
                         var cardId = showEntity.CardId;
                         var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
-                        var gameState = GameEvent.BuildGameState(ParserState, GameState);
+                        var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
                         // For now there can only be one card played per block
                         return new List<GameEventProvider> { GameEventProvider.Create(
                             action.TimeStamp,

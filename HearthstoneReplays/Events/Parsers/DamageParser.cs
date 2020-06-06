@@ -37,7 +37,7 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
-            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             var damages = new Dictionary<string, DamageInternal>();
             var targetCardId = GameState.CurrentEntities[tagChange.Entity]?.CardId;
             damages[targetCardId] = new DamageInternal
@@ -78,7 +78,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .Select((meta) => meta as MetaData)
                 .Where((meta) => meta.Meta == (int)MetaDataType.DAMAGE);
             Dictionary<string, Dictionary<string, DamageInternal>> totalDamages = new Dictionary<string, Dictionary<string, DamageInternal>>();
-            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
             foreach (var damageTag in damageTags)
             {
                 foreach (var info in damageTag.MetaInfo)

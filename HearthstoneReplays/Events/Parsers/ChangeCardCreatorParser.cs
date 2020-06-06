@@ -42,7 +42,7 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = string.IsNullOrEmpty(entity.CardId) ? null : entity.CardId;
             var creatorCardId = GameState.CurrentEntities[tagChange.Value]?.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
-            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "CARD_CREATOR_CHANGED",

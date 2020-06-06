@@ -70,7 +70,7 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorCardId = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creatorCardId, node, showEntity.CardId);
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
-            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "CREATE_CARD_IN_DECK",
@@ -94,7 +94,7 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creatorCardId, node, fullEntity.CardId);
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
-            var gameState = GameEvent.BuildGameState(ParserState, GameState);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CREATE_CARD_IN_DECK",
