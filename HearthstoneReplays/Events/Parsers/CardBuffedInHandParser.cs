@@ -19,6 +19,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             //CardIds.Collectible.Druid.DreampetalFlorist,
             //CardIds.Collectible.Druid.ImprisonedSatyr, 
+            CardIds.Collectible.Druid.PredatoryInstincts, 
             CardIds.Collectible.Hunter.ScavengersIngenuity, // not tested
             //CardIds.Collectible.Hunter.Emeriss,
             //CardIds.Collectible.Hunter.ForlornStalker,
@@ -26,6 +27,7 @@ namespace HearthstoneReplays.Events.Parsers
             //CardIds.Collectible.Hunter.Helboar,
             CardIds.Collectible.Hunter.HiddenCache,
             //CardIds.Collectible.Hunter.ScarletWebweaver,
+            CardIds.Collectible.Hunter.ScavengersIngenuity,
             //CardIds.Collectible.Hunter.ScrapShot,
             CardIds.Collectible.Hunter.ShakyZipgunner,
             CardIds.Collectible.Hunter.SmugglersCrate,
@@ -33,6 +35,7 @@ namespace HearthstoneReplays.Events.Parsers
             //CardIds.Collectible.Mage.ManaBind, // Redundant with creator
             //CardIds.Collectible.Mage.NagaSandWitch,
             //CardIds.Collectible.Mage.UnstablePortal, // Redundant with creator
+            CardIds.Collectible.Paladin.CallToAdventure, 
             //CardIds.Collectible.Paladin.DragonriderTalritha, 
             //CardIds.Collectible.Paladin.DragonSpeaker,
             //CardIds.Collectible.Paladin.FarrakiBattleaxe,
@@ -43,6 +46,7 @@ namespace HearthstoneReplays.Events.Parsers
             CardIds.Collectible.Paladin.SmugglersRun,
             CardIds.Collectible.Paladin.Valanyr, // not tested
             CardIds.Collectible.Priest.FateWeaver,
+            CardIds.Collectible.Priest.Shadowfiend,
             //CardIds.Collectible.Rogue.AnkaTheBuried, 
             CardIds.Collectible.Rogue.BlackjackStunner,
             CardIds.Collectible.Rogue.CheatDeath,
@@ -51,6 +55,7 @@ namespace HearthstoneReplays.Events.Parsers
             CardIds.Collectible.Rogue.SonyaShadowdancer,
             CardIds.Collectible.Rogue.WagglePick,
             CardIds.Collectible.Shaman.BogSlosher,
+            CardIds.Collectible.Shaman.FarSight,
             //CardIds.Collectible.Shaman.FirePlumeHarbinger, 
             CardIds.Collectible.Shaman.GrumbleWorldshaker,
             //CardIds.Collectible.Shaman.TheMistcaller,
@@ -61,9 +66,15 @@ namespace HearthstoneReplays.Events.Parsers
             //CardIds.Collectible.Warlock.SpiritOfTheBat, 
             CardIds.Collectible.Warlock.TheDarkPortal,
             //CardIds.Collectible.Warlock.VoidAnalyst,
+            CardIds.Collectible.Warlock.WilfredFizzlebang,
+            CardIds.Collectible.Warrior.AkaliTheRhino,
             //CardIds.Collectible.Warrior.Armagedillo, 
             CardIds.Collectible.Warrior.BrassKnuckles,
             //CardIds.Collectible.Warrior.BringItOn, 
+            CardIds.Collectible.Warrior.CorsairCache,
+            CardIds.Collectible.Warrior.GalakrondTheUnbreakable,
+            CardIds.NonCollectible.Warrior.GalakrondtheUnbreakable_GalakrondTheApocalypseToken,
+            CardIds.NonCollectible.Warrior.GalakrondtheUnbreakable_GalakrondAzerothsEndToken,
             CardIds.Collectible.Warrior.GrimestreetPawnbroker,
             CardIds.Collectible.Warrior.GrimyGadgeteer,
             //CardIds.Collectible.Warrior.HobartGrapplehammer, 
@@ -137,7 +148,8 @@ namespace HearthstoneReplays.Events.Parsers
                 .Select(data => data as MetaData)
                 .Where(meta => meta.Meta == (int)MetaDataType.TARGET)
                 .SelectMany(meta => meta.MetaInfo)
-                .Select(info => GameState.CurrentEntities[info.Entity])
+                .Select(info => GameState.CurrentEntities.ContainsKey(info.Entity) ? GameState.CurrentEntities[info.Entity] : null)
+                .Where(entity => entity != null)
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.HAND)
                 .ToList();
             if (entitiesBuffedInHand.Count == 0)

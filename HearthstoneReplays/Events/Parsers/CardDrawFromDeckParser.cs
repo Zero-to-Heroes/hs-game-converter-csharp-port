@@ -49,6 +49,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             var creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity, node);
+            var lastInfluencedByCardId = Oracle.FindCardCreatorCardId(GameState, entity, node, true);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -63,6 +64,7 @@ namespace HearthstoneReplays.Events.Parsers
                     new {
                         IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
                         CreatorCardId = creatorCardId,
+                        LastInfluencedByCardId = lastInfluencedByCardId,
                     }),
                 true,
                 node.CreationLogLine) };

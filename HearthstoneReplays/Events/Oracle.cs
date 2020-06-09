@@ -33,8 +33,18 @@ namespace HearthstoneReplays.Events
             return creatorCardId;
         }
 
-        public static string FindCardCreatorCardId(GameState GameState, FullEntity entity, Node node)
+        public static string FindCardCreatorCardId(GameState GameState, FullEntity entity, Node node, bool getLastInfluencedBy = false)
         {
+            // If the card is already present in the deck, and was not created explicitely, there is no creator
+            if (!getLastInfluencedBy 
+                && entity.GetTag(GameTag.CREATOR) == -1
+                && entity.GetTag(GameTag.DISPLAYED_CREATOR) == -1
+                && entity.GetTag(GameTag.CREATOR_DBID) == -1
+                && entity.GetTag(GameTag.ZONE) == (int)Zone.DECK)
+            {
+                return null;
+            }
+
             var creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.CREATOR), node);
             if (creatorCardId == null)
             {
