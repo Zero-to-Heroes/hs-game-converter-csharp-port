@@ -94,6 +94,13 @@ namespace HearthstoneReplays.Events
             //Logger.Log("Enqueueing game event", providers != null ? providers[0].CreationLogLine : null);
             lock (listLock)
             {
+                // Remove outstanding events
+                if (providers.Any(provider => provider.CreationLogLine.Contains("CREATE_GAME")) && eventQueue.Count > 0)
+                {
+                    Logger.Log("Purging queue of outstanding events", eventQueue.Count);
+                    ClearQueue();
+                }
+
                 var shouldUnqueuePredicates = providers
                     .Select(provider => provider.isDuplicatePredicate)
                     .ToList();
