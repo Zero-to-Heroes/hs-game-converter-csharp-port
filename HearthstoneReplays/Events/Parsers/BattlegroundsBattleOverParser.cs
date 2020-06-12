@@ -29,7 +29,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS 
+                    || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                 && node.Type == typeof(Action)
                 && (node.Object as Action).Type == (int)BlockType.TRIGGER
                 && (node.Object as Action).EffectIndex == 4; 

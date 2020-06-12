@@ -28,7 +28,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+                    || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                 && GameState.GetGameEntity().GetTag(GameTag.TURN) % 2 == 0
                 && node.Type == typeof(Parser.ReplayData.GameActions.Action)
                 && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER
@@ -127,7 +128,8 @@ namespace HearthstoneReplays.Events.Parsers
                 return GameEventProvider.Create(
                    action.TimeStamp,
                    "BATTLEGROUNDS_PLAYER_BOARD",
-                   () => ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+                   () => (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS 
+                            || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                         ? new GameEvent
                         {
                             Type = "BATTLEGROUNDS_PLAYER_BOARD",

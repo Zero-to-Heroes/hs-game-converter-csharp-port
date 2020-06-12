@@ -53,7 +53,9 @@ namespace HearthstoneReplays.Events.Parsers
                    false,
                    node.CreationLogLine));
             // This seems the most reliable way to have the combat_start event as soon as possible
-            if (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS && tagChange.Value % 2 == 0) 
+            if ((ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+                        || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY) 
+                    && tagChange.Value % 2 == 0) 
             {
                 result.Add(GameEventProvider.Create(
                     tagChange.TimeStamp,

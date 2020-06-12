@@ -33,7 +33,7 @@ namespace HearthstoneReplays.Events
             return creatorCardId;
         }
 
-        public static string FindCardCreatorCardId(GameState GameState, FullEntity entity, Node node, bool getLastInfluencedBy = false)
+        public static string FindCardCreatorCardId(GameState GameState, FullEntity entity, Node node, bool getLastInfluencedBy = true)
         {
             // If the card is already present in the deck, and was not created explicitely, there is no creator
             if (!getLastInfluencedBy 

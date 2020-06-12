@@ -26,7 +26,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS 
+            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+                    || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                 && node.Type == typeof(Choice)
                 && ParserState.CurrentChosenEntites != null
                 && ParserState.CurrentChosenEntites.PlayerId == ParserState.LocalPlayer.Id;

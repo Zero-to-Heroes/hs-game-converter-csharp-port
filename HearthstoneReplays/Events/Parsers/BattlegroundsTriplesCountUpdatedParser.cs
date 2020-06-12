@@ -22,7 +22,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+                    || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                 && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.PLAYER_TRIPLES;
         }
