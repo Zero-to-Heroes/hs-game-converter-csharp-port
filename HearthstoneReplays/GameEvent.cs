@@ -195,15 +195,16 @@ namespace HearthstoneReplays
             {
                 cardId = (entity as FullEntity).CardId;
             }
+            var newTags = tagChange != null && tagChange.Entity == entity.Id ? entity.GetTagsCopy(tagChange) : entity.GetTagsCopy();
             return new
             {
                 entityId = entity.Id,
                 cardId = cardId,
-                attack = tagChange?.Name == (int)GameTag.ATK && tagChange?.Entity == entity.Id 
-                    ? tagChange.Value 
+                attack = tagChange?.Name == (int)GameTag.ATK && tagChange?.Entity == entity.Id
+                    ? tagChange.Value
                     : entity.GetTag(GameTag.ATK),
                 health = entity.GetTag(GameTag.HEALTH),
-                tags = entity.GetTagsCopy()
+                tags = newTags
             };
         }
 
