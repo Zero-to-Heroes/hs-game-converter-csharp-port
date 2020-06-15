@@ -11,29 +11,29 @@ using System;
 
 namespace HearthstoneReplays.Parser.ReplayData.Entities
 {
-	[XmlInclude(typeof(GameEntity))]
-	[XmlInclude(typeof(PlayerEntity))]
-	[XmlInclude(typeof(FullEntity))]
-	public abstract class BaseEntity : GameData
-	{
-		[XmlAttribute("id")]
-		public int Id { get; set; }
+    [XmlInclude(typeof(GameEntity))]
+    [XmlInclude(typeof(PlayerEntity))]
+    [XmlInclude(typeof(FullEntity))]
+    public abstract class BaseEntity : GameData
+    {
+        [XmlAttribute("id")]
+        public int Id { get; set; }
 
-		[XmlElement("Tag", typeof(Tag))]
-		public List<Tag> Tags { get; set; }
+        [XmlElement("Tag", typeof(Tag))]
+        public List<Tag> Tags { get; set; }
 
-		public override bool Equals(object obj)
-		{
-			var other = obj as BaseEntity;
-			if(other == null)
-				return false;
-			return Id == other.Id && Tags.All(tag => other.Tags.Any(t1 => t1.Name == tag.Name && t1.Value == tag.Value));
-		}
+        public override bool Equals(object obj)
+        {
+            var other = obj as BaseEntity;
+            if (other == null)
+                return false;
+            return Id == other.Id && Tags.All(tag => other.Tags.Any(t1 => t1.Name == tag.Name && t1.Value == tag.Value));
+        }
 
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
 
         public int GetTag(GameTag tag, int defaultValue = -1)
         {
@@ -41,15 +41,28 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             return match == null ? defaultValue : match.Value;
         }
 
-        public List<Tag> GetTagsCopy()
-        {
-			return this.Tags
-				.Select(tag => new Tag
-				{
-					Name = tag.Name,
-					Value = tag.Value,
-				})
-				.ToList();
+        public List<Tag> GetTagsCopy(TagChange tagChange = null)
+        {            
+            var tagsCopy = this.Tags
+                .Select(tag => tagChange != null && tagChange.Name == tag.Name ? new Tag
+                {
+                    Name = tag.Name,
+                    Value = tagChange.Value,
+                } : new Tag
+                {
+                    Name = tag.Name,
+                    Value = tag.Value,
+                })
+                .ToList();
+            if (tagChange != null && !tagsCopy.Any(tag => tag.Name == tagChange.Name))
+            {
+                tagsCopy.Add(new Tag
+                {
+                    Name = tagChange.Name,
+                    Value = tagChange.Value,
+                });
+            }
+            return tagsCopy;
         }
     }
 }
