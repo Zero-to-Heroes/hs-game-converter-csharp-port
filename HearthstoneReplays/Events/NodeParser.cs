@@ -375,6 +375,7 @@ namespace HearthstoneReplays.Events
                 new GalakrondInvokedParser(ParserState),
                 new CardBuffedInHandParser(ParserState),
                 new MinionGoDormantParser(ParserState),
+                new BlockEndParser(ParserState),
             };
         }
     }
