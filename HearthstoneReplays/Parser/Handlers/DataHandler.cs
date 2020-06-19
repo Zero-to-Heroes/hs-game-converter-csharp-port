@@ -534,6 +534,11 @@ namespace HearthstoneReplays.Parser.Handlers
 			match = Regexes.ActionTagRegex.Match(data);
 			if(match.Success)
 			{
+				// This is not supported yet
+				if (data.Contains("CACHED_TAG_FOR_DORMANT_CHANGE"))
+				{
+					return;
+				}
                 // When in reconnect, we don't parse the GameEntity and 
                 // PlayerEntity nodes, so the tags think they are parsed while 
                 // under the Game root node
@@ -577,7 +582,9 @@ namespace HearthstoneReplays.Parser.Handlers
 					state.GameState.Tag(tag, ((ChangeEntity)state.Node.Object).Entity);
 				}
 				else
-					throw new Exception("Invalid node " + state.Node.Type + " -- " + data);
+				{
+					Logger.Log("Invalid node " + state.Node.Type, data);
+				}
 				return;
 			}
 		}
