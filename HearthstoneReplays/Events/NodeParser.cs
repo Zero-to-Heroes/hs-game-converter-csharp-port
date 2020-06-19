@@ -197,6 +197,11 @@ namespace HearthstoneReplays.Events
                         // Heck for Battlegrounds
                         if (!eventQueue
                                 .Where(p => !(p.CreationLogLine.Contains("GameEntity") && p.CreationLogLine.Contains("MAIN_READY")))
+                                // Not sure what that second condition is about, but these logs are all over the place in 
+                                // Battlegrounds, and are not specific to anything, so we can't really use them
+                                // as indicators that things have progressed
+                                .Where(p => !(p.CreationLogLine.Contains("BLOCK_START BlockType=TRIGGER") 
+                                    && p.CreationLogLine.Contains("EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=-1 Target=0 SubOption=-1 TriggerKeyword=0")))
                                 .Any(p => p.AnimationReady))
                         // Safeguard - Don't wait too long for the animation in case we never receive it
                         // With the arrival of Battlegrounds we can't do this anymore, as it spoils the game very fast
@@ -223,8 +228,9 @@ namespace HearthstoneReplays.Events
                     }
                     if (provider.debug)
                     {
-                        Logger.Log("Will process next opp event" + provider.CreationLogLine, provider.AnimationReady);
-                        Logger.Log("Next animation ready", eventQueue.Find(p => p.AnimationReady)?.CreationLogLine);
+                        Logger.Log("Will process next event " + provider.CreationLogLine, provider.AnimationReady);
+                        Logger.Log("Next animation ready ", eventQueue.Find(p => p.AnimationReady)?.CreationLogLine + " // "
+                            + eventQueue.Find(p => p.AnimationReady)?.GameEvent.Type);
                     }
                     lock (listLock)
                     {
@@ -272,7 +278,7 @@ namespace HearthstoneReplays.Events
             }
             else
             {
-                Logger.Log("Game event is null, so doing nothing", provider.CreationLogLine);
+                //Logger.Log("Game event is null, so doing nothing", provider.CreationLogLine);
             }
         }
 

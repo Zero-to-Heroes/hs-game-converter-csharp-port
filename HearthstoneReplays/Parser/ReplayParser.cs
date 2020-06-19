@@ -84,10 +84,12 @@ namespace HearthstoneReplays.Parser
             if (line == "START_CATCHING_UP")
             {
                 NodeParser.DevMode = true;
+                Logger.Log("Setting DevMode", NodeParser.DevMode);
             }
             if (line == "END_CATCHING_UP")
             {
                 NodeParser.DevMode = false;
+                Logger.Log("Setting DevMode", NodeParser.DevMode);
 
             }
             Match match;
