@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
+using HearthstoneReplays.Parser.ReplayData.Meta.Options;
 
 namespace HearthstoneReplays
 {
@@ -66,23 +67,23 @@ namespace HearthstoneReplays
                 ActivePlayerId = gameState.GetActivePlayerId(),
                 Player = new
                 {
-                    Hero = GameEvent.BuildHero(gameState, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
-                    Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
-                    Board = GameEvent.BuildBoard(gameState, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
-                    Deck = GameEvent.BuildZone(gameState, Zone.DECK, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
+                    Hero = GameEvent.BuildHero(gameState, parserState.Options, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
+                    Hand = GameEvent.BuildZone(gameState, parserState.Options, Zone.HAND, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
+                    Board = GameEvent.BuildBoard(gameState, parserState.Options, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
+                    Deck = GameEvent.BuildZone(gameState, parserState.Options, Zone.DECK, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
                 },
                 Opponent = new
                 {
-                    Hero = GameEvent.BuildHero(gameState, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
-                    Hand = GameEvent.BuildZone(gameState, Zone.HAND, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
-                    Board = GameEvent.BuildBoard(gameState, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
-                    Deck = GameEvent.BuildZone(gameState, Zone.DECK, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    Hero = GameEvent.BuildHero(gameState, parserState.Options, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    Hand = GameEvent.BuildZone(gameState, parserState.Options, Zone.HAND, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    Board = GameEvent.BuildBoard(gameState, parserState.Options, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    Deck = GameEvent.BuildZone(gameState, parserState.Options, Zone.DECK, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
                 }
             };
             return result;
         }
 
-        private static object BuildHero(GameState gameState, int playerId, TagChange tagChange, ShowEntity showEntity)
+        private static object BuildHero(GameState gameState, Options options, int playerId, TagChange tagChange, ShowEntity showEntity)
         {
             try
             {
@@ -91,7 +92,7 @@ namespace HearthstoneReplays
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
-                    .Select(entity => BuildSmallEntity(entity, tagChange, showEntity))
+                    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
                     .FirstOrDefault();
                 return hero != null ? hero : new
                 {
@@ -101,11 +102,11 @@ namespace HearthstoneReplays
             catch (Exception e)
             {
                 Logger.Log("Warning: issue when trying to build hero " + e.Message, e.StackTrace);
-                return BuildHero(gameState, playerId, tagChange, showEntity);
+                return BuildHero(gameState, options, playerId, tagChange, showEntity);
             }
         }
 
-        private static List<object> BuildZone(GameState gameState, Zone zone, int playerId, TagChange tagChange, ShowEntity showEntity)
+        private static List<object> BuildZone(GameState gameState, Options options, Zone zone, int playerId, TagChange tagChange, ShowEntity showEntity)
         {
             try
             {
@@ -120,22 +121,22 @@ namespace HearthstoneReplays
                 var entityToExcludeTC = tagChange?.Name == (int)GameTag.ZONE && tagChange?.Value != (int)zone ? tagChange.Entity : -1;
                 var entityToExcludeSE = showEntity?.GetTag(GameTag.ZONE) > 0 && showEntity?.GetTag(GameTag.ZONE) != (int)zone ? showEntity.Entity : -1;
                 return gameState.CurrentEntities.Values
-                    .Where(entity => entityToExcludeSE != entity.Entity 
-                        && entityToExcludeTC != entity.Entity 
+                    .Where(entity => entityToExcludeSE != entity.Entity
+                        && entityToExcludeTC != entity.Entity
                         && (entity.GetTag(GameTag.ZONE) == (int)zone || entity.Entity == entityToConsiderTC || entity.Entity == entityToConsiderSE))
                     .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId || entity.Entity == entityToConsiderTC || entity.Entity == entityToConsiderSE)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION) == -1 ? 99 : entity.GetTag(GameTag.ZONE_POSITION))
-                    .Select(entity => BuildSmallEntity(entity, tagChange, showEntity))
+                    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
                     .ToList();
             }
             catch (Exception e)
             {
                 Logger.Log("Warning: issue when trying to build zone " + e.Message, e.StackTrace);
-                return BuildZone(gameState, zone, playerId, tagChange, showEntity);
+                return BuildZone(gameState, options, zone, playerId, tagChange, showEntity);
             }
         }
 
-        private static List<object> BuildBoard(GameState gameState, int playerId, TagChange tagChange, ShowEntity showEntity)
+        private static List<object> BuildBoard(GameState gameState, Options options, int playerId, TagChange tagChange, ShowEntity showEntity)
         {
             try
             {
@@ -145,13 +146,13 @@ namespace HearthstoneReplays
                     .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
-                    .Select(entity => BuildSmallEntity(entity, tagChange, showEntity))
+                    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
                     .ToList();
             }
             catch (Exception e)
             {
                 Logger.Log("Warning: issue when trying to build zone " + e.Message, e.StackTrace);
-                return BuildBoard(gameState, playerId, tagChange, showEntity);
+                return BuildBoard(gameState, options, playerId, tagChange, showEntity);
             }
         }
 
@@ -188,7 +189,7 @@ namespace HearthstoneReplays
             return valueTC || valueSE;
         }
 
-        private static object BuildSmallEntity(BaseEntity entity, TagChange tagChange, ShowEntity showEntity)
+        private static object BuildSmallEntity(BaseEntity entity, Options options, TagChange tagChange, ShowEntity showEntity)
         {
             string cardId = null;
             if (entity.GetType() == typeof(FullEntity))
@@ -204,6 +205,12 @@ namespace HearthstoneReplays
                     ? tagChange.Value
                     : entity.GetTag(GameTag.ATK),
                 health = entity.GetTag(GameTag.HEALTH),
+                // Doesn't work because we get the options after the game state
+                //validOption = options != null && options.OptionList != null 
+                //    ? options.OptionList
+                //        .Where(option => option.Error == (int)PlayReq.NONE)
+                //        .Any(option => option.Entity == entity.Id) 
+                //    : false,
                 tags = newTags
             };
         }

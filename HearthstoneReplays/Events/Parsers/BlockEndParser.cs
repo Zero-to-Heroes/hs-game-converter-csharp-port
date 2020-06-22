@@ -1,5 +1,7 @@
-﻿using HearthstoneReplays.Parser;
+﻿using HearthstoneReplays.Enums;
+using HearthstoneReplays.Parser;
 using HearthstoneReplays.Parser.ReplayData.Entities;
+using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System.Collections.Generic;
 
 namespace HearthstoneReplays.Events.Parsers
@@ -17,7 +19,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return false;
+            return (node.Type == typeof(TagChange) && (node.Object as TagChange).Name == (int)GameTag.ATTACKABLE_BY_RUSH);
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -27,18 +29,34 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            return null;
+            var element = node.Object as TagChange;
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, element, null);
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                element.TimeStamp,
+                "GAME_STATE_UPDATE",
+                GameEvent.CreateProvider(
+                    "GAME_STATE_UPDATE",
+                    null,
+                    -1,
+                    -1,
+                    ParserState,
+                    GameState,
+                    gameState
+                ),
+                true,
+                node.CreationLogLine
+            )};
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
-            var action = node.Object as Parser.ReplayData.GameActions.Action;
+            var element = node.Object as Parser.ReplayData.GameActions.Action;
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
-                action.TimeStamp,
-                "BLOCK_END",
+                element.TimeStamp,
+                "GAME_STATE_UPDATE",
                 GameEvent.CreateProvider(
-                    "BLOCK_END",
+                    "GAME_STATE_UPDATE",
                     null,
                     -1,
                     -1,

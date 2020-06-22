@@ -24,17 +24,12 @@ namespace HearthstoneReplayTests
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
-            // GameEventHandler.EventProvider = (evt) => { };
             List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile);
-            //while (parser.State.NodeParser.eventQueue.Count > 0)
-            //{
-            //    Thread.Sleep(100); 
-            //}
             Thread.Sleep(2000);
-            string xml = new ReplayConverter().xmlFromReplay(replay);
-            Console.Write(xml);
+            //string xml = new ReplayConverter().xmlFromReplay(replay);
+            //Console.Write(xml);
         }
 
         [TestMethod]
