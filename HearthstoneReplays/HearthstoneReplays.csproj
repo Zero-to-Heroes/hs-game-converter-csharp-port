@@ -119,6 +119,8 @@
     <Compile Include="Events\Parsers\BattlegroundsStartOfCombatParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsTriplesCountUpdatedParser.cs" />
     <Compile Include="Events\Parsers\BlockEndParser.cs" />
+    <Compile Include="Events\Parsers\WeaponDestroyedParser.cs" />
+    <Compile Include="Events\Parsers\WeaponEquippedParser.cs" />
     <Compile Include="Events\Parsers\MinionGoDormantParser.cs" />
     <Compile Include="Events\Parsers\GalakrondInvokedParser.cs" />
     <Compile Include="Events\Parsers\NumCardsPlayedThisTurnParser.cs" />
