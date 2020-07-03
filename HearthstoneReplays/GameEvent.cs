@@ -68,6 +68,7 @@ namespace HearthstoneReplays
                 Player = new
                 {
                     Hero = GameEvent.BuildHero(gameState, parserState.Options, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
+                    Weapon = GameEvent.BuildWeapon(gameState, parserState.Options, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
                     Hand = GameEvent.BuildZone(gameState, parserState.Options, Zone.HAND, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
                     Board = GameEvent.BuildBoard(gameState, parserState.Options, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
                     Deck = GameEvent.BuildZone(gameState, parserState.Options, Zone.DECK, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
@@ -75,6 +76,7 @@ namespace HearthstoneReplays
                 Opponent = new
                 {
                     Hero = GameEvent.BuildHero(gameState, parserState.Options, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    Weapon = GameEvent.BuildWeapon(gameState, parserState.Options, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
                     Hand = GameEvent.BuildZone(gameState, parserState.Options, Zone.HAND, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
                     Board = GameEvent.BuildBoard(gameState, parserState.Options, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
                     Deck = GameEvent.BuildZone(gameState, parserState.Options, Zone.DECK, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
@@ -103,6 +105,28 @@ namespace HearthstoneReplays
             {
                 Logger.Log("Warning: issue when trying to build hero " + e.Message, e.StackTrace);
                 return BuildHero(gameState, options, playerId, tagChange, showEntity);
+            }
+        }
+
+        private static object BuildWeapon(GameState gameState, Options options, int playerId, TagChange tagChange, ShowEntity showEntity)
+        {
+            try
+            {
+                var weapon = gameState.CurrentEntities.Values
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.WEAPON)
+                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
+                    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
+                    .FirstOrDefault();
+                return weapon != null ? weapon : new
+                {
+
+                };
+            }
+            catch (Exception e)
+            {
+                Logger.Log("Warning: issue when trying to build weapon " + e.Message, e.StackTrace);
+                return BuildWeapon(gameState, options, playerId, tagChange, showEntity);
             }
         }
 
