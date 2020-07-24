@@ -83,13 +83,17 @@ namespace HearthstoneReplays.Parser
             // Ignore timestamps when catching up with past events
             if (line == "START_CATCHING_UP")
             {
-                NodeParser.DevMode = true;
-                Logger.Log("Setting DevMode", NodeParser.DevMode);
+                State.NodeParser.StartDevMode();
+                return;
+                //NodeParser.DevMode = true;
+                //Logger.Log("Setting Start DevMode", NodeParser.DevMode);
             }
             if (line == "END_CATCHING_UP")
             {
-                NodeParser.DevMode = false;
-                Logger.Log("Setting DevMode", NodeParser.DevMode);
+                State.NodeParser.StopDevMode();
+                return;
+                //NodeParser.DevMode = false;
+                //Logger.Log("Setting Stop DevMode", NodeParser.DevMode);
 
             }
             Match match;

@@ -108,6 +108,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums.cs" />
+    <Compile Include="Events\StopDevModeProvider.cs" />
+    <Compile Include="Events\StartDevModeProvider.cs" />
     <Compile Include="Events\Oracle.cs" />
     <Compile Include="Events\ActionParser.cs" />
     <Compile Include="Events\CardIds.cs" />

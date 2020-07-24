@@ -23,7 +23,7 @@ namespace HearthstoneReplays.Events
 
         public bool debug { get; set; }
 
-        private GameEventProvider()
+        protected GameEventProvider()
         {
 
         }
