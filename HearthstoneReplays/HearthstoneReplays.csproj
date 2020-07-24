@@ -116,6 +116,8 @@
     <Compile Include="Events\Parsers\BattlegroundsHeroSelectedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsOpponentRevealedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsBattleOverParser.cs" />
+    <Compile Include="Events\Parsers\CthunParser.cs" />
+    <Compile Include="Events\Parsers\JadeGolemParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsStartOfCombatParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsTriplesCountUpdatedParser.cs" />
     <Compile Include="Events\Parsers\BlockEndParser.cs" />

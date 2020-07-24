@@ -137,7 +137,7 @@ namespace HearthstoneReplays.Events.Parsers
                             {
                                 Hero = hero,
                                 HeroPowerCardId = heroPower?.CardId,
-                                HeroPowerUsed = heroPower?.GetTag(GameTag.EXHAUSTED) == 1 || heroPower?.GetTag(GameTag.PENDING_TRIGGER) == 1,
+                                HeroPowerUsed = heroPower?.GetTag(GameTag.EXHAUSTED) == 1 || heroPower?.GetTag(GameTag.BACON_HERO_POWER_ACTIVATED) == 1,
                                 CardId = cardId,
                                 Board = result,
                             }

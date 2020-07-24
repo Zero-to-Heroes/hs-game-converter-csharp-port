@@ -384,6 +384,8 @@ namespace HearthstoneReplays.Events
                 new CardBuffedInHandParser(ParserState),
                 new MinionGoDormantParser(ParserState),
                 new BlockEndParser(ParserState),
+                new JadeGolemParser(ParserState),
+                new CthunParser(ParserState),
             };
         }
     }
