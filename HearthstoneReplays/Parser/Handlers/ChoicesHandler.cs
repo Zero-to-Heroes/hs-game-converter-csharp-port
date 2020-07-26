@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.Meta;
@@ -17,6 +18,11 @@ namespace HearthstoneReplays.Parser.Handlers
 
 		public void Handle(DateTime timestamp, string data, ParserState state)
         {
+			//while (state.LocalPlayer?.Name == null)
+			//{
+			//	await Task.Delay(2);
+			//}
+
             // This happens for the first options when spectating a game that has already started
             if (state.CurrentGame == null || state.Node == null)
             {

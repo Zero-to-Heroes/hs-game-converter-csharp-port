@@ -34,12 +34,14 @@ namespace HearthstoneReplays.Parser
 		public Options Options { get; set; }
 		public Option CurrentOption { get; set; }
 		public object LastOption { get; set; }
-		public int FirstPlayerId { get; set; }
+		public int FirstPlayerEntityId { get; set; }
 	    public int CurrentPlayerId { get; set; }
 		public ChosenEntities CurrentChosenEntites { get; set; }
         public bool Ended { get; set; }
         public int NumberOfCreates { get; set; }
         public bool ReconnectionOngoing { get; set; }
+
+		//private Dictionary<int, string> _playerNames = new Dictionary<int, string>();
         //public string FullLog { get; set; } = "";
 
 		private Node _node;
@@ -97,6 +99,16 @@ namespace HearthstoneReplays.Parser
                 }
             }
 		}
+
+		//internal void SavePlayerNameAssignment(int playerId, string data)
+		//{
+		//	_playerNames.Add(playerId, data);
+		//}
+
+		//internal string GetPlayerAssignment(int playerId)
+		//{
+		//	return _playerNames[playerId];
+		//}
 
 		private Player _localPlayer;
 		public Player LocalPlayer
@@ -165,14 +177,15 @@ namespace HearthstoneReplays.Parser
 			Options = null;
 			CurrentOption = null;
 			LastOption = null;
-			FirstPlayerId = -1;
+			FirstPlayerEntityId = -1;
 			CurrentPlayerId = -1;
 			CurrentChosenEntites = null;
 			Ended = false;
             ReconnectionOngoing = false;
             //FullLog = "";
             NumberOfCreates = 0;
-            Logger.Log("resetting game state", "");
+			//_playerNames = new Dictionary<int, string>();
+			Logger.Log("resetting game state", "");
         }
 
         public void CreateNewNode(Node newNode)
@@ -206,87 +219,108 @@ namespace HearthstoneReplays.Parser
 			return players;
 		}
 
-		public void TryAssignLocalPlayer(DateTime timestamp, string data)
+		public bool TryAssignLocalPlayer(DateTime timestamp, string data)
 		{
-			// Only assign the local player once
-			if (LocalPlayer != null && OpponentPlayer != null)
+			try
 			{
-				return;
-			}
-
-			// Names are not assigned right away, so wait until all the data is present to notify
-			foreach (PlayerEntity player in getPlayers())
-			{
-                // SOme games against AI, eg Bob
-				if (player.Name == null && player.AccountHi != "0")
+				// Only assign the local player once
+				if (LocalPlayer != null && OpponentPlayer != null)
 				{
-					//Console.WriteLine("Player with no name: " + player);
-					return;
+					return true;
 				}
-				var playerEntityIdTag = player.Tags.Where(t => t.Name == (int)GameTag.HERO_ENTITY).First();
-				if (playerEntityIdTag == null)
-				{
-					return;
-				}
-			}
 
-			//Console.WriteLine("Trying to assign local player");
-			List<IEntityData> showEntities = CurrentGame.FilterGameData(typeof(ShowEntity)).Select(d => (IEntityData)d).ToList();
-            // Happens when facing Bob
-            if (showEntities.Count == 0)
-            {
-                showEntities = CurrentGame.FilterGameData(typeof(FullEntity)).Select(d => (IEntityData)d).ToList();
-            }
-			foreach (IEntityData entity in showEntities)
-			{
-				//Console.WriteLine("Considering entity: " + entity);
-				if (entity.CardId != null && entity.CardId.Length > 0 
-                    && GetTag(entity.Tags, GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT
-                    // We do this because some cards are revealed when drawn (like Aranasi Bloodmother) and mess up with
-                    // this logic
-                    // We can't use zone=HAND here because of Battlegrounds
-                    && GetTag(entity.Tags, GameTag.ZONE) != (int)Zone.DECK)
+				// Names are not assigned right away, so wait until all the data is present to notify
+				foreach (PlayerEntity player in getPlayers())
 				{
-					int entityId = entity.Entity;
-					BaseEntity fullEntity = GetEntity(entityId);
-					int controllerId = GetTag(fullEntity.Tags, GameTag.CONTROLLER);
-					//Console.WriteLine("Passed first step: " + entityId + ", " + fullEntity + ", " + controllerId);
-					foreach (PlayerEntity player in getPlayers())
+					// SOme games against AI, eg Bob
+					if (player.Name == null && player.AccountHi != "0")
 					{
-						if (GetTag(player.Tags, GameTag.CONTROLLER) == controllerId)
-						{
-							var newPlayer = Player.from(player);
-							var playerEntityId = player.Tags.Where(t => t.Name == (int)GameTag.HERO_ENTITY).First().Value;
-							FullEntity playerEntity = CurrentGame.Data
-								.Where(d => d is FullEntity)
-								.Select(d => (FullEntity)d)
-								.Where(e => e.Id == playerEntityId)
-								.First();
-							newPlayer.CardID = playerEntity.CardId;
-                            SetLocalPlayer(newPlayer, timestamp, data);
-						}
+						//Console.WriteLine("Player with no name: " + player);
+						return true;
 					}
-					if (LocalPlayer != null)
+
+					if (player.Tags.Count == 0)
 					{
+						return false;
+					}
+
+					var playerEntityIdTag = player.Tags.Where(t => t.Name == (int)GameTag.HERO_ENTITY).First();
+					if (playerEntityIdTag == null)
+					{
+						return true;
+					}
+				}
+
+				//Console.WriteLine("Trying to assign local player");
+				List<IEntityData> showEntities = CurrentGame.FilterGameData(typeof(ShowEntity)).Select(d => (IEntityData)d).ToList();
+				// Happens when facing Bob
+				if (showEntities.Count == 0)
+				{
+					showEntities = CurrentGame.FilterGameData(typeof(FullEntity)).Select(d => (IEntityData)d).ToList();
+				}
+
+				if (showEntities.Count == 0)
+				{
+					return false;
+				}
+
+
+				foreach (IEntityData entity in showEntities)
+				{
+					//Console.WriteLine("Considering entity: " + entity);
+					if (entity.CardId != null && entity.CardId.Length > 0
+						&& GetTag(entity.Tags, GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT
+						// We do this because some cards are revealed when drawn (like Aranasi Bloodmother) and mess up with
+						// this logic
+						// We can't use zone=HAND here because of Battlegrounds
+						&& GetTag(entity.Tags, GameTag.ZONE) != (int)Zone.DECK)
+					{
+						int entityId = entity.Entity;
+						BaseEntity fullEntity = GetEntity(entityId);
+						int controllerId = GetTag(fullEntity.Tags, GameTag.CONTROLLER);
+						//Console.WriteLine("Passed first step: " + entityId + ", " + fullEntity + ", " + controllerId);
 						foreach (PlayerEntity player in getPlayers())
 						{
-							if (player.Id == LocalPlayer.Id)
+							if (GetTag(player.Tags, GameTag.CONTROLLER) == controllerId)
 							{
-								continue;
+								var newPlayer = Player.from(player);
+								var playerEntityId = player.Tags.Where(t => t.Name == (int)GameTag.HERO_ENTITY).First().Value;
+								FullEntity playerEntity = CurrentGame.Data
+									.Where(d => d is FullEntity)
+									.Select(d => (FullEntity)d)
+									.Where(e => e.Id == playerEntityId)
+									.First();
+								newPlayer.CardID = playerEntity.CardId;
+								SetLocalPlayer(newPlayer, timestamp, data);
 							}
-							var newPlayer = Player.from(player);
-							var playerEntityId = player.Tags.Where(t => t.Name == (int)GameTag.HERO_ENTITY).First().Value;
-							FullEntity playerEntity = CurrentGame.Data
-								.Where(d => d is FullEntity)
-								.Select(d => (FullEntity)d)
-								.Where(e => e.Id == playerEntityId)
-								.First();
-							newPlayer.CardID = playerEntity.CardId;
-                            SetOpponentPlayer(newPlayer, timestamp, data);
 						}
-						return;
+						if (LocalPlayer != null)
+						{
+							foreach (PlayerEntity player in getPlayers())
+							{
+								if (player.Id == LocalPlayer.Id)
+								{
+									continue;
+								}
+								var newPlayer = Player.from(player);
+								var playerEntityId = player.Tags.Where(t => t.Name == (int)GameTag.HERO_ENTITY).First().Value;
+								FullEntity playerEntity = CurrentGame.Data
+									.Where(d => d is FullEntity)
+									.Select(d => (FullEntity)d)
+									.Where(e => e.Id == playerEntityId)
+									.First();
+								newPlayer.CardID = playerEntity.CardId;
+								SetOpponentPlayer(newPlayer, timestamp, data);
+							}
+							return true;
+						}
 					}
 				}
+				return true;
+			}
+			catch (Exception e)
+			{
+				return false;
 			}
 		}
 

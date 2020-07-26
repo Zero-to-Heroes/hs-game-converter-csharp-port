@@ -35,6 +35,9 @@ namespace HearthstoneReplays.Parser
 
         private DateTime previousTimestamp;
 
+        private bool powerTaskStarted;
+        private bool firstPowerTaskOver;
+
         public ReplayParser()
         {
             State = new ParserState();
@@ -44,6 +47,8 @@ namespace HearthstoneReplays.Parser
             entityChosenHandler = new EntityChosenHandler();
             optionsHandler = new OptionsHandler();
             previousTimestamp = default;
+            powerTaskStarted = false;
+            firstPowerTaskOver = false;
             start = DateTime.Now; // Don't use UTC, otherwise it won't match with the log info
         }
 
@@ -130,12 +135,28 @@ namespace HearthstoneReplays.Parser
         private void AddData(string timestamp, string method, string data)
         {
             var normalizedTimestamp = NormalizeTimestamp(timestamp);
+            if (method == "GameState.DebugPrintPower" && data == "CREATE_GAME")
+            {
+                powerTaskStarted = false;
+                firstPowerTaskOver = false;
+            }
             switch (method)
             {
                 case "GameState.DebugPrintPower":
                 case "GameState.DebugPrintGame":
-                    dataHandler.Handle(normalizedTimestamp, data, State, previousTimestamp);
-                    previousTimestamp = normalizedTimestamp;
+                    // For the game state init, we rely on the GameState log (mostly because otherwise the player
+                    // name assignment and the options won't have any state to rely on)
+                    // After that, we only use the powertasklist to avoid having to handle the delay between
+                    // state update and animation processing
+                    if (powerTaskStarted)
+                    {
+                        firstPowerTaskOver = true;
+                    }
+                    if (!firstPowerTaskOver)
+                    {
+                        dataHandler.Handle(normalizedTimestamp, data, State, previousTimestamp);
+                        previousTimestamp = normalizedTimestamp;
+                    }
                     break;
                 //case "GameState.SendChoices":
                 //	SendChoicesHandler.Handle(timestamp, data, State);
@@ -154,8 +175,13 @@ namespace HearthstoneReplays.Parser
                     previousTimestamp = normalizedTimestamp;
                     break;
                 case "PowerTaskList.DebugPrintPower":
-                    powerDataHandler.Handle(normalizedTimestamp, data, State);
-                    previousTimestamp = normalizedTimestamp;
+                    powerTaskStarted = true;
+                    // Use the powertasklist only once the initial state has been computed
+                    if (firstPowerTaskOver)
+                    {
+                        dataHandler.Handle(normalizedTimestamp, data, State, previousTimestamp);
+                        previousTimestamp = normalizedTimestamp;
+                    }
                     break;
                 //case "GameState.SendOption":
                 //	SendOptionHandler.Handle(timestamp, data, State);
@@ -192,6 +218,6 @@ namespace HearthstoneReplays.Parser
                 //Logger.Log("Adding a day to timestamp ", logDateTime + " // " + start + " // " + timestamp + " // " + logDateTime);
             }
             return logDateTime;
-        } 
+        }
     }
 }
