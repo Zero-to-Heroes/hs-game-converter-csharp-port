@@ -54,11 +54,19 @@ namespace HearthstoneReplays.Parser
 
 		public int GetPlayerIdFromName(string data, ParserState state)
 		{
-			var firstPlayer = (PlayerEntity)state.CurrentGame.Data.FirstOrDefault(x => (x is PlayerEntity) && ((PlayerEntity)x).Id == state.FirstPlayerId);
-			if(firstPlayer == null) throw new Exception("Could not find first player " + data);
-
-            var secondPlayer = (PlayerEntity)state.CurrentGame.Data.FirstOrDefault(x => (x is PlayerEntity) && ((PlayerEntity)x).Id != state.FirstPlayerId);
-            if(secondPlayer == null) throw new Exception("Could not find second player " + data);
+			var firstPlayer = (PlayerEntity)state.CurrentGame.Data
+				.FirstOrDefault(x => (x is PlayerEntity) && ((PlayerEntity)x).Id == state.FirstPlayerEntityId);
+			if (firstPlayer == null)
+			{
+				throw new Exception("Could not find first player " + data);
+			}
+			 
+            var secondPlayer = (PlayerEntity)state.CurrentGame.Data
+				.FirstOrDefault(x => (x is PlayerEntity) && ((PlayerEntity)x).Id != state.FirstPlayerEntityId);
+			if (secondPlayer == null)
+			{
+				throw new Exception("Could not find second player " + data);
+			}
 
             if (firstPlayer.Name == data) return firstPlayer.Id;
             if (secondPlayer.Name == data) return secondPlayer.Id;

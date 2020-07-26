@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Threading.Tasks;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.Meta.Options;
 
@@ -16,9 +17,14 @@ namespace HearthstoneReplays.Parser.Handlers
             if (state.CurrentGame == null || state.Node == null)
             {
                 return;
-            }
+			}
 
-            data = data.Trim();
+			//while (state.LocalPlayer?.Name == null)
+			//{
+			//	await Task.Delay(2);
+			//}
+
+			data = data.Trim();
 			var match = Regexes.SendOptionRegex.Match(data);
 			if(match.Success)
 			{

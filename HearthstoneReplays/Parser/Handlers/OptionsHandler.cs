@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.Meta.Options;
@@ -20,7 +21,12 @@ namespace HearthstoneReplays.Parser.Handlers
             if (state.CurrentGame == null || state.Node == null)
             {
                 return;
-            }
+			}
+
+			//while (state.LocalPlayer?.Name == null)
+			//{
+			//	await Task.Delay(2);
+			//}
 
 			data = data.Trim();
 			var match = Regexes.OptionsEntityRegex.Match(data);
