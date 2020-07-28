@@ -28,7 +28,8 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY
-                && node.Parent != null && node.Parent.Type == typeof(Game)
+                && node.Parent != null 
+                && node.Parent.Type == typeof(Game)
                 && !ParserState.ReconnectionOngoing;
         }
 
@@ -41,7 +42,8 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var fullEntity = node.Object as FullEntity;
             var cardId = fullEntity.CardId;
-            if (fullEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.MINION || fullEntity.GetTag(GameTag.HAS_BEEN_REBORN) == 1)
+            if ((fullEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.MINION && fullEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.HERO)
+                || fullEntity.GetTag(GameTag.HAS_BEEN_REBORN) == 1)
             {
                 return null;
             }
