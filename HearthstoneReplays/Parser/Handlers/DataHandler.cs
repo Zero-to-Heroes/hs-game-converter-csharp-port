@@ -287,44 +287,44 @@ namespace HearthstoneReplays.Parser.Handlers
                 return;
             }
 
-            match = Regexes.ActionStartRegex_8_4.Match(data);
-            if (match.Success)
-            {
-                state.ReconnectionOngoing = false;
-                var rawType = match.Groups[1].Value;
-                var rawEntity = match.Groups[2].Value;
-                var effectId = match.Groups[3].Value;
-                var effectIndex = match.Groups[4].Value;
-                var rawTarget = match.Groups[5].Value;
-                var entity = helper.ParseEntity(rawEntity, state);
-                var target = helper.ParseEntity(rawTarget, state);
-                var type = helper.ParseEnum<BlockType>(rawType);
-                var action = new Action
-                {
-                    Data = new List<GameData>(),
-                    Entity = entity,
-                    Target = target,
-                    TimeStamp = timestamp,
-                    Type = type
-                };
-                if (effectIndex != null && effectIndex.Length > 0)
-                {
-                    action.EffectIndex = int.Parse(effectIndex);
+            //match = Regexes.ActionStartRegex_8_4.Match(data);
+            //if (match.Success)
+            //{
+            //    state.ReconnectionOngoing = false;
+            //    var rawType = match.Groups[1].Value;
+            //    var rawEntity = match.Groups[2].Value;
+            //    var effectId = match.Groups[3].Value;
+            //    var effectIndex = match.Groups[4].Value;
+            //    var rawTarget = match.Groups[5].Value;
+            //    var entity = helper.ParseEntity(rawEntity, state);
+            //    var target = helper.ParseEntity(rawTarget, state);
+            //    var type = helper.ParseEnum<BlockType>(rawType);
+            //    var action = new Action
+            //    {
+            //        Data = new List<GameData>(),
+            //        Entity = entity,
+            //        Target = target,
+            //        TimeStamp = timestamp,
+            //        Type = type
+            //    };
+            //    if (effectIndex != null && effectIndex.Length > 0)
+            //    {
+            //        action.EffectIndex = int.Parse(effectIndex);
 
-                }
-                state.UpdateCurrentNode(typeof(Game), typeof(Action));
-                if (state.Node.Type == typeof(Game))
-                    ((Game)state.Node.Object).AddData(action);
-                else if (state.Node.Type == typeof(Action))
-                    ((Action)state.Node.Object).Data.Add(action);
-                else
-                    throw new Exception("Invalid node " + state.Node.Type + " while parsing " + data);
-                var newNode = new Node(typeof(Action), action, indentLevel, state.Node, data);
-                state.CreateNewNode(newNode);
-                // Logger.Log("Creating new old", newNode.CreationLogLine);
-                state.Node = newNode;
-                return;
-            }
+            //    }
+            //    state.UpdateCurrentNode(typeof(Game), typeof(Action));
+            //    if (state.Node.Type == typeof(Game))
+            //        ((Game)state.Node.Object).AddData(action);
+            //    else if (state.Node.Type == typeof(Action))
+            //        ((Action)state.Node.Object).Data.Add(action);
+            //    else
+            //        throw new Exception("Invalid node " + state.Node.Type + " while parsing " + data);
+            //    var newNode = new Node(typeof(Action), action, indentLevel, state.Node, data);
+            //    state.CreateNewNode(newNode);
+            //    // Logger.Log("Creating new old", newNode.CreationLogLine);
+            //    state.Node = newNode;
+            //    return;
+            //}
 
             match = Regexes.ActionMetadataRegex.Match(data);
             if (match.Success)
