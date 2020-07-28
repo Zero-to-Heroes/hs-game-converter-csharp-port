@@ -33,7 +33,7 @@ namespace HearthstoneReplays.Parser.Handlers
             if (data == "CREATE_GAME")
             {
                 state.NodeParser.ClearQueue();
-                //Logger.Log("Handling create game", "");
+                //Logger.Log("Handling create game", forceMatchOver);
                 if (!state.Ended && state.NumberOfCreates >= 1)
                 {
                     Logger.Log("Probable reconnect detected " + timestamp + " // " + previousTimestamp, "" + (timestamp - previousTimestamp));

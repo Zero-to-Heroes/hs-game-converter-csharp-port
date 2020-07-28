@@ -37,6 +37,7 @@ namespace HearthstoneReplays.Parser
 
         private bool powerTaskStarted;
         private bool firstPowerTaskOver;
+        private bool forceMatchOver;
 
         public ReplayParser()
         {
@@ -140,6 +141,16 @@ namespace HearthstoneReplays.Parser
                 powerTaskStarted = false;
                 firstPowerTaskOver = false;
             }
+            if (method == "GameState.DebugPrintPower" && data.Contains("TAG_CHANGE Entity=GameEntity tag=STATE value=COMPLETE"))
+            {
+                forceMatchOver = true;
+                Logger.Log("force match over", forceMatchOver);
+            }
+            if (method == "PowerTaskList.DebugPrintPower" && data.Contains("TAG_CHANGE Entity=GameEntity tag=STATE value=COMPLETE"))
+            {
+                forceMatchOver = false;
+                Logger.Log("force match over", forceMatchOver);
+            }
             switch (method)
             {
                 case "GameState.DebugPrintPower":
@@ -154,6 +165,17 @@ namespace HearthstoneReplays.Parser
                     }
                     if (!firstPowerTaskOver)
                     {
+                        // When doing a restart against the AI, the STATE=COMPLETE tagchange is only present in the GameState
+                        // and not in the PowerTaskList
+                        if (forceMatchOver && data == "CREATE_GAME")
+                        {
+                            dataHandler.Handle(
+                                normalizedTimestamp,
+                                "TAG_CHANGE Entity=GameEntity tag=STATE value=COMPLETE ", 
+                                State, 
+                                previousTimestamp);
+                            forceMatchOver = false;
+                        }
                         dataHandler.Handle(normalizedTimestamp, data, State, previousTimestamp);
                         previousTimestamp = normalizedTimestamp;
                     }
