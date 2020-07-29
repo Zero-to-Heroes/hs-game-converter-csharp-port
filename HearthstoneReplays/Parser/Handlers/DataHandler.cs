@@ -21,6 +21,7 @@ namespace HearthstoneReplays.Parser.Handlers
         //public int index;
 
 		private Helper helper = new Helper();
+		private GameMetaData metadata;
 
 		public void Handle(DateTime timestamp, string data, ParserState state, DateTime previousTimestamp)
         {
@@ -42,6 +43,12 @@ namespace HearthstoneReplays.Parser.Handlers
                     state.UpdateCurrentNode(typeof(Game));
                     return;
                 }
+				this.metadata = new GameMetaData() {
+					BuildNumber = -1,
+					FormatType = -1,
+					GameType = -1,
+					ScenarioID = -1,
+				};
                 state.Reset();
                 state.NumberOfCreates++;
 				state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
@@ -126,7 +133,8 @@ namespace HearthstoneReplays.Parser.Handlers
 			match = Regexes.BuildNumber.Match(data);
 			if (match.Success)
 			{
-				state.CurrentGame.BuildNumber = int.Parse(match.Groups[1].Value);
+				this.metadata.BuildNumber = int.Parse(match.Groups[1].Value);
+				//state.CurrentGame.BuildNumber = int.Parse(match.Groups[1].Value);
 			}
 
 			match = Regexes.GameType.Match(data);
@@ -134,7 +142,8 @@ namespace HearthstoneReplays.Parser.Handlers
 			{
 				var rawGameType = match.Groups[1].Value;
 				var gameType = helper.ParseEnum<GameType>(rawGameType);
-				state.CurrentGame.GameType = gameType;
+				this.metadata.GameType = gameType;
+				//state.CurrentGame.GameType = gameType;
 			}
 
 			match = Regexes.FormatType.Match(data);
@@ -142,7 +151,8 @@ namespace HearthstoneReplays.Parser.Handlers
 			{
 				var rawFormatType = match.Groups[1].Value;
 				var formatType = helper.ParseEnum<FormatType>(rawFormatType);
-				state.CurrentGame.FormatType = formatType;
+				this.metadata.FormatType = formatType;
+				//state.CurrentGame.FormatType = formatType;
 			}
 
 			match = Regexes.ScenarioID.Match(data);
@@ -151,25 +161,33 @@ namespace HearthstoneReplays.Parser.Handlers
                 if (state.ReconnectionOngoing)
                 {
                     return;
-                }
-                state.CurrentGame.ScenarioID = int.Parse(match.Groups[1].Value);
+				}
+				this.metadata.ScenarioID = int.Parse(match.Groups[1].Value);
+				//state.CurrentGame.ScenarioID = int.Parse(match.Groups[1].Value);
                 // This is a very peculiar log info, we don't fit it to the new events archi for now
-                var metaData = new
-                {
-                    BuildNumber = state.CurrentGame.BuildNumber,
-                    GameType = state.CurrentGame.GameType,
-                    FormatType = state.CurrentGame.FormatType,
-                    ScenarioID = state.CurrentGame.ScenarioID,
-                };
-                state.GameState.MetaData = metaData;
+                //var metaData = new
+                //{
+                //    BuildNumber = state.CurrentGame.BuildNumber,
+                //    GameType = state.CurrentGame.GameType,
+                //    FormatType = state.CurrentGame.FormatType,
+                //    ScenarioID = state.CurrentGame.ScenarioID,
+                //};
+                //state.GameState.MetaData = metaData;
                 state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
 					"MATCH_METADATA",
-					() => new GameEvent
-                    {
-                        Type = "MATCH_METADATA",
-                        Value = metaData
-                    },
+					() => {
+						state.CurrentGame.BuildNumber = metadata.BuildNumber;
+						state.CurrentGame.GameType = metadata.GameType;
+						state.CurrentGame.FormatType = metadata.FormatType;
+						state.CurrentGame.ScenarioID = metadata.ScenarioID;
+						state.GameState.MetaData = metadata;
+						return new GameEvent
+						{
+							Type = "MATCH_METADATA",
+							Value = this.metadata,
+						};
+					},
                     false,
                     data) });
 			}
