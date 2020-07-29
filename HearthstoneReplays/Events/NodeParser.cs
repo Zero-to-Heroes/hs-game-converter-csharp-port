@@ -133,18 +133,17 @@ namespace HearthstoneReplays.Events
                     ClearQueue();
                 }
 
-                //var priorityProviders = providers
-                //    .Where(p => p.EventName == "MATCH_METADATA" || p.EventName == "NEW_GAME")
-                //    .ToList();
-                //if (priorityProviders.Count > 0)
-                //{
-                //    priorityProviders
-                //        .OrderBy(p => p.Timestamp)
-                //        .ToList()
-                //        .ForEach(provider => ProcessGameEvent(provider));
-                //    metadataEmit = true;
-                //    return;
-                //}
+                var priorityProviders = providers
+                    .Where(p => p.EventName == "MATCH_METADATA" || p.EventName == "NEW_GAME")
+                    .ToList();
+                if (priorityProviders.Count > 0)
+                {
+                    priorityProviders
+                        .OrderBy(p => p.Timestamp)
+                        .ToList()
+                        .ForEach(provider => ProcessGameEvent(provider));
+                    return;
+                }
 
                 var shouldUnqueuePredicates = providers
                     .Select(provider => provider.isDuplicatePredicate)
@@ -167,6 +166,7 @@ namespace HearthstoneReplays.Events
                 }
                 eventQueue.AddRange(providers);
                 eventQueue = eventQueue.OrderBy(p => p.Timestamp).ToList();
+                eventQueue = eventQueue;
             }
         }
 
@@ -183,7 +183,7 @@ namespace HearthstoneReplays.Events
             }
         }
 
-        private async void ProcessGameEventQueue(Object source, ElapsedEventArgs e)
+        private void ProcessGameEventQueue(Object source, ElapsedEventArgs e)
         {
             while (IsEventToProcess())
             {
@@ -199,20 +199,28 @@ namespace HearthstoneReplays.Events
                             //Logger.Log("Queue empty", "");
                             return;
                         }
+                        // Metadata will be filled by the priority provider for MATCH_METADATA
+                        if (ParserState.CurrentGame.FormatType == -1
+                                || ParserState.CurrentGame.GameType == -1
+                                || ParserState.LocalPlayer == null)
+                        {
+
+                            return;
+                        }
                         provider = eventQueue[0];
                         eventQueue.RemoveAt(0);
                     }
-                    while (provider.NeedMetaData && (
-                            ParserState.CurrentGame.FormatType == -1 
-                                || ParserState.CurrentGame.GameType == -1 
-                                || ParserState.LocalPlayer == null))
-                    {
-                        // Wait until we have all the necessary data
-                        while (ParserState.CurrentGame.FormatType == -1 || ParserState.CurrentGame.GameType == -1 || ParserState.LocalPlayer == null)
-                        {
-                            await Task.Delay(100);
-                        }
-                    }
+                    //while (provider.NeedMetaData && (
+                    //        ParserState.CurrentGame.FormatType == -1 
+                    //            || ParserState.CurrentGame.GameType == -1 
+                    //            || ParserState.LocalPlayer == null))
+                    //{
+                    //    // Wait until we have all the necessary data
+                    //    while (ParserState.CurrentGame.FormatType == -1 || ParserState.CurrentGame.GameType == -1 || ParserState.LocalPlayer == null)
+                    //    {
+                    //        await Task.Delay(100);
+                    //    }
+                    //}
                     lock (listLock)
                     {
                         //Logger.Log("Acquierd list lock in processgameevent 2", "");
