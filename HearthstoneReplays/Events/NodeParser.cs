@@ -24,8 +24,6 @@ namespace HearthstoneReplays.Events
 
         private readonly Object listLock = new object();
 
-        private bool metadataEmit;
-
         public NodeParser()
         {
             eventQueue = new List<GameEventProvider>();
@@ -42,7 +40,6 @@ namespace HearthstoneReplays.Events
             // Logger.Log("before reset", eventQueue.Count);
             this.ParserState = ParserState;
             this.parsers = BuildActionParsers(ParserState);
-            this.metadataEmit = false;
             // Logger.Log("after reset", eventQueue.Count);
         }
 
@@ -136,18 +133,18 @@ namespace HearthstoneReplays.Events
                     ClearQueue();
                 }
 
-                var priorityProviders = providers
-                    .Where(p => p.EventName == "MATCH_METADATA" || p.EventName == "NEW_GAME")
-                    .ToList();
-                if (priorityProviders.Count > 0)
-                {
-                    priorityProviders
-                        .OrderBy(p => p.Timestamp)
-                        .ToList()
-                        .ForEach(provider => ProcessGameEvent(provider));
-                    metadataEmit = true;
-                    return;
-                }
+                //var priorityProviders = providers
+                //    .Where(p => p.EventName == "MATCH_METADATA" || p.EventName == "NEW_GAME")
+                //    .ToList();
+                //if (priorityProviders.Count > 0)
+                //{
+                //    priorityProviders
+                //        .OrderBy(p => p.Timestamp)
+                //        .ToList()
+                //        .ForEach(provider => ProcessGameEvent(provider));
+                //    metadataEmit = true;
+                //    return;
+                //}
 
                 var shouldUnqueuePredicates = providers
                     .Select(provider => provider.isDuplicatePredicate)
@@ -205,10 +202,10 @@ namespace HearthstoneReplays.Events
                         provider = eventQueue[0];
                         eventQueue.RemoveAt(0);
                     }
-                    while (provider.NeedMetaData && (!this.metadataEmit 
-                            || ParserState.CurrentGame.FormatType == -1 
-                            || ParserState.CurrentGame.GameType == -1 
-                            || ParserState.LocalPlayer == null))
+                    while (provider.NeedMetaData && (
+                            ParserState.CurrentGame.FormatType == -1 
+                                || ParserState.CurrentGame.GameType == -1 
+                                || ParserState.LocalPlayer == null))
                     {
                         // Wait until we have all the necessary data
                         while (ParserState.CurrentGame.FormatType == -1 || ParserState.CurrentGame.GameType == -1 || ParserState.LocalPlayer == null)

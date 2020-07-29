@@ -18,7 +18,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public Dictionary<string, int> EntityNames = new Dictionary<string, int>();
         public bool MulliganOver = false;
         public int CurrentTurn = 0;
-        public dynamic MetaData;
+        public GameMetaData MetaData;
         // Because for BGS the first opponent player id is set as a tag of the player, instead 
         // of a tag change. At the time it is revealed, we don't have the opponent's entity yet
         // so we can't emit the event

@@ -108,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums.cs" />
+    <Compile Include="Events\GameMetaData.cs" />
     <Compile Include="Events\StopDevModeProvider.cs" />
     <Compile Include="Events\StartDevModeProvider.cs" />
     <Compile Include="Events\Oracle.cs" />
