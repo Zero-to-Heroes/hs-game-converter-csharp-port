@@ -22,9 +22,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                    || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
-                && node.Type == typeof(TagChange)
+            return node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.MULLIGAN_STATE
                 && (node.Object as TagChange).Value == (int)Mulligan.INPUT;
         }
@@ -45,20 +43,29 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(data => data.GetTag(GameTag.BACON_HERO_CAN_BE_DRAFTED) == 1)
                 .ToList();
             fullEntities.Sort((a, b) => a.GetTag(GameTag.ZONE_POSITION) - b.GetTag(GameTag.ZONE_POSITION));
+            Logger.Log("will consider hero selection event", "" + fullEntities.Count);
             if (fullEntities.Count > 0)
             {
+                Logger.Log("will emit hero selection event", "");
                 return new List<GameEventProvider> { GameEventProvider.Create(
                    tagChange.TimeStamp,
                    "BATTLEGROUNDS_HERO_SELECTION",
-                   () => new GameEvent
-                   {
-                       Type = "BATTLEGROUNDS_HERO_SELECTION",
-                       Value = new
+                   () => {
+                       if (ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS
+                            && ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                        {
-                           CardIds = fullEntities.Select(entity => entity.CardId).ToList()
+                           return null;
                        }
+                       return new GameEvent
+                       {
+                           Type = "BATTLEGROUNDS_HERO_SELECTION",
+                           Value = new
+                           {
+                               CardIds = fullEntities.Select(entity => entity.CardId).ToList()
+                           }
+                       };
                    },
-                   false,
+                   true,
                    node.CreationLogLine
                 )};
             }

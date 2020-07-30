@@ -42,16 +42,23 @@ namespace HearthstoneReplays.Events.Parsers
                 return new List<GameEventProvider> {  GameEventProvider.Create(
                tagChange.TimeStamp,
                "BATTLEGROUNDS_LEADERBOARD_PLACE",
-               () => new GameEvent
-               {
-                   Type = "BATTLEGROUNDS_LEADERBOARD_PLACE",
-                   Value = new
-                   {
-                       CardId = hero.CardId,
-                       LeaderboardPlace = tagChange.Value,
-                   }
+               () => {
+                    if (ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS
+                        && ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+                    {
+                        return null;
+                    }
+                    return new GameEvent
+                    {
+                        Type = "BATTLEGROUNDS_LEADERBOARD_PLACE",
+                        Value = new
+                        {
+                            CardId = hero.CardId,
+                            LeaderboardPlace = tagChange.Value,
+                        }
+                    };
                },
-               false,
+               true,
                node.CreationLogLine) };
             }
             return null;

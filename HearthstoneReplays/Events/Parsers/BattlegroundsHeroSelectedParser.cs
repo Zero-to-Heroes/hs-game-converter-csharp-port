@@ -26,9 +26,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                    || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
-                && node.Type == typeof(Choice)
+            return node.Type == typeof(Choice)
                 && ParserState.CurrentChosenEntites != null
                 && ParserState.CurrentChosenEntites.PlayerId == ParserState.LocalPlayer.Id;
         }
@@ -55,13 +53,20 @@ namespace HearthstoneReplays.Events.Parsers
             return new List<GameEventProvider> { GameEventProvider.Create(
                 choice.TimeStamp,
                 "BATTLEGROUNDS_HERO_SELECTED",
-                () => new GameEvent
-                {
-                    Type = "BATTLEGROUNDS_HERO_SELECTED",
-                    Value = new
+                () => {
+                    if (ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS
+                        && ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                     {
-                        CardId = chosenEntity.CardId,
+                        return null;
                     }
+                    return new GameEvent
+                    {
+                        Type = "BATTLEGROUNDS_HERO_SELECTED",
+                        Value = new
+                        {
+                            CardId = chosenEntity.CardId,
+                        }
+                    };
                 },
                 true,
                 node.CreationLogLine)
