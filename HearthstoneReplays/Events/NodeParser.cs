@@ -204,7 +204,6 @@ namespace HearthstoneReplays.Events
                                 || ParserState.CurrentGame.GameType == -1
                                 || ParserState.LocalPlayer == null)
                         {
-
                             return;
                         }
                         provider = eventQueue[0];
