@@ -289,7 +289,7 @@ namespace HearthstoneReplays.Events
                         // With the arrival of Battlegrounds we can't do this anymore, as it spoils the game very fast
                         //&& DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).TotalMilliseconds < 5000)
                         {
-                            Logger.Log("No animation ready", "");
+                            Logger.Log("No animation ready", eventQueue[0].CreationLogLine);
                             return;
                         }
                         provider = eventQueue[0];
