@@ -52,13 +52,21 @@ namespace HearthstoneReplays.Events.Parsers
             result.Add(GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "BATTLEGROUNDS_OPPONENT_REVEALED",
-                () => new GameEvent
+                () =>
                 {
-                    Type = "BATTLEGROUNDS_OPPONENT_REVEALED",
-                    Value = new
+                    if (ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS
+                        && ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                     {
-                        CardId = cardId
+                        return null;
                     }
+                    return new GameEvent
+                    {
+                        Type = "BATTLEGROUNDS_OPPONENT_REVEALED",
+                        Value = new
+                        {
+                            CardId = cardId
+                        }
+                    };
                 },
                 false,
                 node.CreationLogLine)
@@ -68,13 +76,21 @@ namespace HearthstoneReplays.Events.Parsers
                 result.Add(GameEventProvider.Create(
                         fullEntity.TimeStamp,
                         "BATTLEGROUNDS_NEXT_OPPONENT",
-                        () => new GameEvent
+                        () =>
                         {
-                            Type = "BATTLEGROUNDS_NEXT_OPPONENT",
-                            Value = new
+                            if (ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS
+                                && ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                             {
-                                CardId = cardId,
+                                return null;
                             }
+                            return new GameEvent
+                            {
+                                Type = "BATTLEGROUNDS_NEXT_OPPONENT",
+                                Value = new
+                                {
+                                    CardId = cardId,
+                                }
+                            };
                         },
                         true,
                         node.CreationLogLine));
