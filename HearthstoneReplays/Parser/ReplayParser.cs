@@ -197,6 +197,7 @@ namespace HearthstoneReplays.Parser
                     previousTimestamp = normalizedTimestamp;
                     break;
                 case "PowerTaskList.DebugPrintPower":
+                case "PowerTaskList.DebugDump":
                     powerTaskStarted = true;
                     // Use the powertasklist only once the initial state has been computed
                     if (firstPowerTaskOver)

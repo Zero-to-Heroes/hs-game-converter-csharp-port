@@ -139,7 +139,7 @@ namespace HearthstoneReplays.Parser.Handlers
                     data) });
             }
 
-            if (data == "BLOCK_END")
+            if (data == "BLOCK_END" || data == "Block End=(null)")
             {
                 // Logger.Log("Current node after end action", state.Node.CreationLogLine);
                 state.UpdateCurrentNode(typeof(Game), typeof(Action));
