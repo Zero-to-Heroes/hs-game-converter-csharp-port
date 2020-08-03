@@ -139,7 +139,7 @@ namespace HearthstoneReplays.Parser.Handlers
                     data) });
             }
 
-            if (data == "BLOCK_END" || data == "Block End=(null)")
+            if (data == "BLOCK_END")
             {
                 // Logger.Log("Current node after end action", state.Node.CreationLogLine);
                 state.UpdateCurrentNode(typeof(Game), typeof(Action));
@@ -221,9 +221,15 @@ namespace HearthstoneReplays.Parser.Handlers
                 var target = helper.ParseEntity(rawTarget, state);
                 var type = helper.ParseEnum<BlockType>(rawType);
                 var triggerKeyword = helper.ParseEnum<GameTag>(rawTriggerKeyword);
+                var actionData = new List<GameData>();
+                if (state.CurrentChosenEntites != null)
+                {
+                    actionData.Add(state.CurrentChosenEntites);
+                    state.CurrentChosenEntites = null;
+                }
                 var action = new Action
                 {
-                    Data = new List<GameData>(),
+                    Data = actionData,
                     Entity = entity,
                     Target = target,
                     TimeStamp = timestamp,
@@ -264,9 +270,17 @@ namespace HearthstoneReplays.Parser.Handlers
                 var entity = helper.ParseEntity(rawEntity, state);
                 var target = helper.ParseEntity(rawTarget, state);
                 var type = helper.ParseEnum<BlockType>(rawType);
+
+                // Entity choices are displayed before the PowerTaskList
+                var actionData = new List<GameData>();
+                if (state.CurrentChosenEntites != null)
+                {
+                    actionData.Add(state.CurrentChosenEntites);
+                    state.CurrentChosenEntites = null;
+                }
                 var action = new Action
                 {
-                    Data = new List<GameData>(),
+                    Data = actionData,
                     Entity = entity,
                     Target = target,
                     TimeStamp = timestamp,

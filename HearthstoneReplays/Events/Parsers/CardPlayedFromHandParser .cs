@@ -29,8 +29,10 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return node.Type == typeof(Parser.ReplayData.GameActions.Action) 
-                && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.PLAY;
+            return node.Type == typeof(ShowEntity) 
+                && node.Parent != null
+                && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action)
+                && (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.PLAY;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -75,39 +77,34 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
-            var action = node.Object as Parser.ReplayData.GameActions.Action;
-            foreach (var data in action.Data) {
-                if (data.GetType() == typeof(ShowEntity))
-                {
-                    var showEntity = data as ShowEntity;
-                    if (showEntity.GetTag(GameTag.ZONE) == (int)Zone.PLAY 
-                        && showEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
-                    {
-                        var cardId = showEntity.CardId;
-                        var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
-                        var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
-                        var targetId = action.Target;
-                        string targetCardId = targetId > 0 ? GameState.CurrentEntities[targetId].CardId : null;
-                        // For now there can only be one card played per block
-                        return new List<GameEventProvider> { GameEventProvider.Create(
-                            action.TimeStamp,
-                            "CARD_PLAYED",
-                            GameEvent.CreateProvider(
-                                "CARD_PLAYED",
-                                cardId,
-                                controllerId,
-                                showEntity.Entity,
-                                ParserState,
-                                GameState,
-                                gameState,
-                                new {
-                                    TargetEntityId = targetId,
-                                    TargetCardId = targetCardId,
-                                }),
-                            true,
-                            node.CreationLogLine) };
-                    }
-                }
+            var showEntity = node.Object as ShowEntity;
+            var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+            if (showEntity.GetTag(GameTag.ZONE) == (int)Zone.PLAY 
+                && showEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
+            {
+                var cardId = showEntity.CardId;
+                var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
+                var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
+                var targetId = action.Target;
+                string targetCardId = targetId > 0 ? GameState.CurrentEntities[targetId].CardId : null;
+                // For now there can only be one card played per block
+                return new List<GameEventProvider> { GameEventProvider.Create(
+                    action.TimeStamp,
+                    "CARD_PLAYED",
+                    GameEvent.CreateProvider(
+                        "CARD_PLAYED",
+                        cardId,
+                        controllerId,
+                        showEntity.Entity,
+                        ParserState,
+                        GameState,
+                        gameState,
+                        new {
+                            TargetEntityId = targetId,
+                            TargetCardId = targetCardId,
+                        }),
+                    true,
+                    node.CreationLogLine) };
             }
             return null;
         }

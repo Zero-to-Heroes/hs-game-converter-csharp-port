@@ -44,8 +44,9 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Game)state.Node.Object).AddData(cEntities);
 				else if (state.Node.Type == typeof(Action))
 					((Action)state.Node.Object).Data.Add(cEntities);
-				else
-					throw new Exception("Invalid node " + state.Node.Type + " -- " + data);
+				//else
+					//ParserState.FutureChoices = cEntities;
+					//throw new Exception("Invalid node " + state.Node.Type + " -- " + data);
 				state.CurrentChosenEntites = cEntities;
 				return;
 			}
