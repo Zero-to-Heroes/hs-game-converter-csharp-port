@@ -289,7 +289,7 @@ namespace HearthstoneReplays.Events
                         // With the arrival of Battlegrounds we can't do this anymore, as it spoils the game very fast
                         //&& DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).TotalMilliseconds < 5000)
                         {
-                            Logger.Log("No animation ready", eventQueue[0].CreationLogLine);
+                            //Logger.Log("No animation ready", eventQueue[0].CreationLogLine);
                             return;
                         }
                         provider = eventQueue[0];
@@ -409,12 +409,12 @@ namespace HearthstoneReplays.Events
                     //    Logger.Log("Is event to process? " + isEvent, eventQueue[0].CreationLogLine);
                     //}
                 }
-                if (eventQueue.Count > 0 && !isEvent)
-                {
-                    Logger.Log("[csharp] too soon to process events", eventQueue.First().CreationLogLine);
-                    Logger.Log(DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds, "");
-                    Logger.Log(DateTime.Now, eventQueue.First().Timestamp);
-                }
+                //if (eventQueue.Count > 0 && !isEvent)
+                //{
+                //    Logger.Log("[csharp] too soon to process events", eventQueue.First().CreationLogLine);
+                //    Logger.Log(DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds, "");
+                //    Logger.Log(DateTime.Now, eventQueue.First().Timestamp);
+                //}
                 return isEvent;
             }
             catch (Exception ex)
@@ -452,6 +452,7 @@ namespace HearthstoneReplays.Events
                 new CreateCardInDeckParser(ParserState),
                 new EndOfEchoInHandParser(ParserState),
                 new CardChangedParser(ParserState),
+                new CardUpdatedInDeckParser(ParserState),
                 new CardRemovedFromHandParser(ParserState),
                 new CardRemovedFromBoardParser(ParserState),
                 new MinionOnBoardAttackUpdatedParser(ParserState),
