@@ -390,6 +390,25 @@ namespace HearthstoneReplays.Events
                 }
             }
 
+            // Keymaster Alabaster
+            if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+            {
+                var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                if (action.Type == (int)BlockType.TRIGGER)
+                {
+                    var actionEntity = GameState.CurrentEntities.ContainsKey(action.Entity)
+                            ? GameState.CurrentEntities[action.Entity]
+                            : null;
+                    if (actionEntity != null && GameState.LastCardDrawnEntityId > 0 && actionEntity.CardId == Neutral.KeymasterAlabaster)
+                    {
+                        var lastDrawnEntity = GameState.CurrentEntities.ContainsKey(GameState.LastCardDrawnEntityId)
+                            ? GameState.CurrentEntities[GameState.LastCardDrawnEntityId]
+                            : null;
+                        return lastDrawnEntity?.CardId;
+                    }
+                }
+            }
+
             // Libram of Wisdom
             if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
             {

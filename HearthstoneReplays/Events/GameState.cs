@@ -26,6 +26,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public int NextBgsOpponentPlayerId;
         public bool SimulationTriggered;
         public int LastCardPlayedEntityId;
+        public int LastCardDrawnEntityId;
 
         private int gameEntityId;
         private Dictionary<int, int> controllerEntity = new Dictionary<int, int>();
@@ -321,6 +322,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                     plagiarizes.ForEach(plagia => plagia.KnownCardIds.Add(entity.CardId));
                 }
             }
+        }
+
+        public void OnCardDrawn(int entityId)
+        {
+            LastCardDrawnEntityId = entityId;
         }
 
         public void OnNewTurn()

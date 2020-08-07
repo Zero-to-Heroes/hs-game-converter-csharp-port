@@ -48,24 +48,34 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
-            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity, node, false);
-            var lastInfluencedByCardId = Oracle.FindCardCreatorCardId(GameState, entity, node);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
-                GameEvent.CreateProvider(
-                    "CARD_DRAW_FROM_DECK",
-                    cardId,
-                    controllerId,
-                    entity.Id,
-                    ParserState,
-                    GameState,
-                    gameState,
-                    new {
-                        IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
-                        CreatorCardId = creatorCardId,
-                        LastInfluencedByCardId = lastInfluencedByCardId,
-                    }),
+                () => {
+                    // We do it here because of Keymaster Alabaster - we need to know the last card
+                    // that has been drawn
+                    var creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity, node, false);
+                    var lastInfluencedByCardId = Oracle.FindCardCreatorCardId(GameState, entity, node);
+                    GameState.OnCardDrawn(entity.Entity);
+                    return new GameEvent
+                    {
+                        Type =  "CARD_DRAW_FROM_DECK",
+                        Value = new
+                        {
+                            CardId = cardId,
+                            ControllerId = controllerId,
+                            LocalPlayer = ParserState.LocalPlayer,
+                            OpponentPlayer = ParserState.OpponentPlayer,
+                            EntityId = entity.Id,
+                            GameState = gameState,
+                            AdditionalProps = new {
+                                IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
+                                CreatorCardId = creatorCardId,
+                                LastInfluencedByCardId = lastInfluencedByCardId,
+                            }
+                        }
+                    };
+                },
                 true,
                 node.CreationLogLine) };
         }
@@ -89,22 +99,34 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             var entity = GameState.CurrentEntities[showEntity.Entity];
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
-            var creatorCardId = Oracle.GetCreatorFromTags(GameState, showEntity, node);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
-                GameEvent.CreateProvider(
-                    "CARD_DRAW_FROM_DECK",
-                    cardId,
-                    controllerId,
-                    showEntity.Entity,
-                    ParserState,
-                    GameState,
-                    gameState,
-                    new {
-                        IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1,
-                        CreatorCardId = creatorCardId,
-                    }),
+                () => {
+                    // We do it here because of Keymaster Alabaster - we need to know the last card
+                    // that has been drawn
+                    var creatorCardId = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
+                    var lastInfluencedByCardId = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
+                    GameState.OnCardDrawn(showEntity.Entity);
+                    return new GameEvent
+                    {
+                        Type =  "CARD_DRAW_FROM_DECK",
+                        Value = new
+                        {
+                            CardId = cardId,
+                            ControllerId = controllerId,
+                            LocalPlayer = ParserState.LocalPlayer,
+                            OpponentPlayer = ParserState.OpponentPlayer,
+                            EntityId = showEntity.Entity,
+                            GameState = gameState,
+                            AdditionalProps = new {
+                                IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1,
+                                CreatorCardId = creatorCardId,
+                                LastInfluencedByCardId = lastInfluencedByCardId,
+                            }
+                        }
+                    };
+                },
                 true,
                 creationLogLine) };
         }
@@ -114,22 +136,34 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
-            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
-                GameEvent.CreateProvider(
-                    "CARD_DRAW_FROM_DECK",
-                    cardId,
-                    controllerId,
-                    fullEntity.Id,
-                    ParserState,
-                    GameState,
-                    gameState,
-                    new {
-                        IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1,
-                        CreatorCardId = creatorCardId,
-                    }),
+                () => {
+                    // We do it here because of Keymaster Alabaster - we need to know the last card
+                    // that has been drawn
+                    var creatorCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node, false);
+                    var lastInfluencedByCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
+                    GameState.OnCardDrawn(fullEntity.Entity);
+                    return new GameEvent
+                    {
+                        Type =  "CARD_DRAW_FROM_DECK",
+                        Value = new
+                        {
+                            CardId = cardId,
+                            ControllerId = controllerId,
+                            LocalPlayer = ParserState.LocalPlayer,
+                            OpponentPlayer = ParserState.OpponentPlayer,
+                            EntityId = fullEntity.Entity,
+                            GameState = gameState,
+                            AdditionalProps = new {
+                                IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1 || fullEntity.GetTag(GameTag.PREMIUM) == 1,
+                                CreatorCardId = creatorCardId,
+                                LastInfluencedByCardId = lastInfluencedByCardId,
+                            }
+                        }
+                    };
+                },
                 true,
                 creationLogLine) };
         }
