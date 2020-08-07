@@ -89,7 +89,8 @@ namespace HearthstoneReplays.Events.Parsers
             ShowEntity showEntity = node.Object as ShowEntity;
             Logger.Log("Will add creator " + showEntity.GetTag(GameTag.CREATOR) + " //" + showEntity.GetTag(GameTag.DISPLAYED_CREATOR), "");
             var creatorCardId = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
-            var cardId = Oracle.PredictCardId(GameState, creatorCardId, node, showEntity.CardId);
+            var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, showEntity, node);
+            var cardId = Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, showEntity.CardId);
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             var previousZone = GameState.CurrentEntities[showEntity.Entity].GetTag(GameTag.ZONE);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
@@ -117,7 +118,8 @@ namespace HearthstoneReplays.Events.Parsers
         {
             FullEntity fullEntity = node.Object as FullEntity;
             var creatorCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
-            var cardId = Oracle.PredictCardId(GameState, creatorCardId, node, fullEntity.CardId);
+            var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, fullEntity, node);
+            var cardId = Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, fullEntity.CardId);
             if (cardId == null && GameState.CurrentTurn == 1 && fullEntity.GetTag(GameTag.ZONE_POSITION) == 5)
             {
                 var controller = GameState.GetController(fullEntity.GetTag(GameTag.CONTROLLER));

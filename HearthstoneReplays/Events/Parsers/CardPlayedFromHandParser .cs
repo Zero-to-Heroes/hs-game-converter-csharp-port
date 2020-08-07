@@ -50,6 +50,8 @@ namespace HearthstoneReplays.Events.Parsers
                     targetCardId = targetId > 0 ? GameState.CurrentEntities[targetId].CardId : null;
                 }
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
+                GameState.OnCardPlayed(tagChange.Entity);
+
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "CARD_PLAYED",
@@ -88,6 +90,7 @@ namespace HearthstoneReplays.Events.Parsers
                         var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
                         var targetId = action.Target;
                         string targetCardId = targetId > 0 ? GameState.CurrentEntities[targetId].CardId : null;
+                        GameState.OnCardPlayed(showEntity.Entity);
                         // For now there can only be one card played per block
                         return new List<GameEventProvider> { GameEventProvider.Create(
                             action.TimeStamp,

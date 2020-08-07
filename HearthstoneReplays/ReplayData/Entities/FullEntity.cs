@@ -32,6 +32,9 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
         }
 
+        [XmlIgnore]
+        public List<string> KnownCardIds = new List<string>();
+
         public bool ShouldSerializeCardId()
 		{
 			return !string.IsNullOrEmpty(CardId);

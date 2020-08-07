@@ -36,7 +36,7 @@ namespace HearthstoneReplays.Events
         public static string FindCardCreatorCardId(GameState GameState, FullEntity entity, Node node, bool getLastInfluencedBy = true)
         {
             // If the card is already present in the deck, and was not created explicitely, there is no creator
-            if (!getLastInfluencedBy 
+            if (!getLastInfluencedBy
                 && entity.GetTag(GameTag.CREATOR) == -1
                 && entity.GetTag(GameTag.DISPLAYED_CREATOR) == -1
                 && entity.GetTag(GameTag.CREATOR_DBID) == -1
@@ -61,6 +61,26 @@ namespace HearthstoneReplays.Events
                 creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.DISPLAYED_CREATOR), node);
             }
             return creatorCardId;
+        }
+
+        public static int FindCardCreatorEntityId(GameState GameState, FullEntity entity, Node node, bool getLastInfluencedBy = true)
+        {
+            // If the card is already present in the deck, and was not created explicitely, there is no creator
+            if (!getLastInfluencedBy
+                && entity.GetTag(GameTag.CREATOR) == -1
+                && entity.GetTag(GameTag.DISPLAYED_CREATOR) == -1
+                && entity.GetTag(GameTag.CREATOR_DBID) == -1
+                && entity.GetTag(GameTag.ZONE) == (int)Zone.DECK)
+            {
+                return -1;
+            }
+
+            return entity.GetTag(GameTag.CREATOR) != -1 ? entity.GetTag(GameTag.CREATOR) : entity.GetTag(GameTag.DISPLAYED_CREATOR);
+        }
+
+        public static int FindCardCreatorEntityId(GameState GameState, ShowEntity entity, Node node)
+        {
+            return entity.GetTag(GameTag.CREATOR) != -1 ? entity.GetTag(GameTag.CREATOR) : entity.GetTag(GameTag.DISPLAYED_CREATOR);
         }
 
         public static string FindCardCreatorCardId(GameState GameState, int creatorTag, Node node)
@@ -112,7 +132,7 @@ namespace HearthstoneReplays.Events
         //    return null;
         //}
 
-        public static string PredictCardId(GameState GameState, string creatorCardId, Node node, string inputCardId = null)
+        public static string PredictCardId(GameState GameState, string creatorCardId, int creatorEntityId, Node node, string inputCardId = null)
         {
             if (inputCardId != null && inputCardId.Length > 0)
             {
@@ -148,6 +168,7 @@ namespace HearthstoneReplays.Events
                     case Neutral.EliseStarseeker: return NonCollectible.Neutral.EliseStarseeker_MapToTheGoldenMonkeyToken;
                     case Neutral.FeralGibberer: return Neutral.FeralGibberer;
                     case Neutral.FireFly: return NonCollectible.Neutral.FireFly_FlameElementalToken;
+                    case Neutral.FishyFlyer: return NonCollectible.Neutral.FishyFlyer_SpectralFlyerToken;
                     case Neutral.HakkarTheSoulflayer: return NonCollectible.Neutral.HakkartheSoulflayer_CorruptedBloodToken;
                     case Neutral.HoardingDragon: return NonCollectible.Neutral.TheCoin;
                     case Neutral.IgneousElemental: return NonCollectible.Neutral.FireFly_FlameElementalToken;
@@ -160,6 +181,8 @@ namespace HearthstoneReplays.Events
                     case Neutral.PortalKeeper: return NonCollectible.Neutral.PortalKeeper_FelhoundPortalToken;
                     case Neutral.PortalOverfiend: return NonCollectible.Neutral.PortalKeeper_FelhoundPortalToken;
                     case Neutral.SeaforiumBomber: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
+                    case Neutral.SmugSenior: return NonCollectible.Neutral.SmugSenior_SpectralSeniorToken;
+                    case Neutral.SneakyDelinquent: return NonCollectible.Neutral.SneakyDelinquent_SpectralDelinquentToken;
                     case Neutral.SparkDrill: return NonCollectible.Neutral.SparkDrill_SparkToken;
                     case Neutral.SparkEngine: return NonCollectible.Neutral.SparkDrill_SparkToken;
                     case NonCollectible.Neutral.SurlyMob: return NonCollectible.Neutral.AngryMob;
@@ -168,6 +191,7 @@ namespace HearthstoneReplays.Events
                     case Neutral.WeaselTunneler: return Neutral.WeaselTunneler;
                     case NonCollectible.Neutral.EliseStarseeker_MapToTheGoldenMonkeyToken: return NonCollectible.Neutral.EliseStarseeker_GoldenMonkeyToken;
                     case Demonhunter.UrzulHorror: return NonCollectible.Demonhunter.UrzulHorror_LostSoulToken;
+                    case Demonhunter.Marrowslicer: return NonCollectible.Warlock.SchoolSpirits_SoulFragmentToken;
                     case Druid.ArchsporeMsshifn: return NonCollectible.Druid.ArchsporeMsshifn_MsshifnPrimeToken;
                     case Druid.AstralTiger: return Druid.AstralTiger;
                     case Druid.JadeIdol: return Druid.JadeIdol;
@@ -176,6 +200,7 @@ namespace HearthstoneReplays.Events
                     case Druid.SecureTheDeck: return Druid.Claw;
                     case Druid.WitchwoodApple: return NonCollectible.Druid.WitchwoodApple_TreantToken;
                     case Druid.YseraUnleashed: return NonCollectible.Druid.YseraUnleashed_DreamPortalToken;
+                    case Hunter.AdorableInfestation: return NonCollectible.Hunter.AdorableInfestation_MarsuulCubToken;
                     case Hunter.HalazziTheLynx: return NonCollectible.Hunter.Springpaw_LynxToken;
                     case Hunter.RaptorHatchling: return NonCollectible.Hunter.RaptorHatchling_RaptorPatriarchToken;
                     case Hunter.Springpaw: return NonCollectible.Hunter.Springpaw_LynxToken;
@@ -229,6 +254,9 @@ namespace HearthstoneReplays.Events
                     case NonCollectible.Warlock.RintheFirstDisciple_TheSecondSealToken: return NonCollectible.Warlock.RintheFirstDisciple_TheThirdSealToken;
                     case NonCollectible.Warlock.RintheFirstDisciple_TheFourthSealToken: return NonCollectible.Warlock.RintheFirstDisciple_TheFinalSealToken;
                     case NonCollectible.Warlock.RintheFirstDisciple_TheFinalSealToken: return NonCollectible.Warlock.RintheFirstDisciple_AzariTheDevourerToken;
+                    case Warlock.SchoolSpirits: return NonCollectible.Warlock.SchoolSpirits_SoulFragmentToken;
+                    case Warlock.SoulShear: return NonCollectible.Warlock.SchoolSpirits_SoulFragmentToken;
+                    case Warlock.SpiritJailer: return NonCollectible.Warlock.SchoolSpirits_SoulFragmentToken;
                     case Warrior.ClockworkGoblin: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
                     case Warrior.DirehornHatchling: return NonCollectible.Warrior.DirehornHatchling_DirehornMatriarchToken;
                     case Warrior.ExploreUngoro: return NonCollectible.Warrior.ExploreUnGoro_ChooseYourPathToken;
@@ -262,6 +290,12 @@ namespace HearthstoneReplays.Events
                             }
                         }
                         return null;
+
+                    case Shaman.DiligentNotetaker:
+                        var lastPlayedEntity = GameState.CurrentEntities.ContainsKey(GameState.LastCardPlayedEntityId)
+                            ? GameState.CurrentEntities[GameState.LastCardPlayedEntityId]
+                            : null;
+                        return lastPlayedEntity?.CardId;
 
                     case Neutral.AugmentedElekk:
                         // The parent action is Augmented Elekk trigger, which is not the one we're interested in
@@ -322,6 +356,24 @@ namespace HearthstoneReplays.Events
                             return existingEntity.CardId;
                         }
                         return null;
+                }
+            }
+
+            // Plagiarize
+            if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+            {
+                var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                if (action.Type == (int)BlockType.TRIGGER && action.TriggerKeyword == (int)GameTag.SECRET)
+                {
+                    var actionEntity = GameState.CurrentEntities.ContainsKey(action.Entity)
+                            ? GameState.CurrentEntities[action.Entity]
+                            : null;
+                    if (actionEntity != null && actionEntity.KnownCardIds.Count > 0 && actionEntity.CardId == CardIds.Collectible.Rogue.Plagiarize)
+                    {
+                        var nextCardToCreatePlagia = actionEntity.KnownCardIds[0];
+                        actionEntity.KnownCardIds.RemoveAt(0);
+                        return nextCardToCreatePlagia;
+                    }
                 }
             }
 

@@ -4,17 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HearthstoneReplays.Enums;
+using HearthstoneReplays.Events;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 #endregion
 
 namespace HearthstoneReplays.Parser.ReplayData.Entities
 {
-	public class GameState
-	{
-		public ParserState ParserState;
+    public class GameState
+    {
+        public ParserState ParserState;
 
-		public Dictionary<int, FullEntity> CurrentEntities = new Dictionary<int, FullEntity>();
+        public Dictionary<int, FullEntity> CurrentEntities = new Dictionary<int, FullEntity>();
         public Dictionary<string, int> EntityNames = new Dictionary<string, int>();
         public bool MulliganOver = false;
         public int CurrentTurn = 0;
@@ -24,13 +25,14 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         // so we can't emit the event
         public int NextBgsOpponentPlayerId;
         public bool SimulationTriggered;
+        public int LastCardPlayedEntityId;
 
         private int gameEntityId;
         private Dictionary<int, int> controllerEntity = new Dictionary<int, int>();
 
-		public void Reset(ParserState state)
-		{
-			CurrentEntities = new Dictionary<int, FullEntity>();
+        public void Reset(ParserState state)
+        {
+            CurrentEntities = new Dictionary<int, FullEntity>();
             MulliganOver = false;
             MetaData = null;
             ParserState = state;
@@ -83,9 +85,9 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public void PlayerEntity(PlayerEntity entity)
         {
             if (CurrentEntities.ContainsKey(entity.Id))
-			{
-				Logger.Log("error while parsing, playerEntity already present in memory", "" + entity.Id);
-				return;
+            {
+                Logger.Log("error while parsing, playerEntity already present in memory", "" + entity.Id);
+                return;
             }
             var newTags = new List<Tag>();
             foreach (var oldTag in entity.Tags)
@@ -93,30 +95,30 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 newTags.Add(new Tag { Name = oldTag.Name, Value = oldTag.Value });
             }
             var fullEntity = new FullEntity { Id = entity.Id, Tags = newTags, TimeStamp = entity.TimeStamp };
-			CurrentEntities.Add(entity.Id, fullEntity);
+            CurrentEntities.Add(entity.Id, fullEntity);
             controllerEntity.Add(entity.PlayerId, entity.Id);
-		}
+        }
 
         public FullEntity GetController(int controllerId)
         {
             return CurrentEntities[controllerEntity[controllerId]];
         }
 
-		public void FullEntity(FullEntity entity, bool updating, string initialLog = null)
+        public void FullEntity(FullEntity entity, bool updating, string initialLog = null)
         {
             if (updating || CurrentEntities.ContainsKey(entity.Id))
-			{
-				// This actually happens in a normal scenario, so we just ignore it
-				return;
-			}
+            {
+                // This actually happens in a normal scenario, so we just ignore it
+                return;
+            }
 
             var newTags = new List<Tag>();
             foreach (var oldTag in entity.Tags)
             {
                 newTags.Add(new Tag { Name = oldTag.Name, Value = oldTag.Value });
             }
-			var fullEntity = new FullEntity { CardId = entity.CardId, Id = entity.Id, Tags = newTags, TimeStamp = entity.TimeStamp };
-			CurrentEntities.Add(entity.Id, fullEntity);
+            var fullEntity = new FullEntity { CardId = entity.CardId, Id = entity.Id, Tags = newTags, TimeStamp = entity.TimeStamp };
+            CurrentEntities.Add(entity.Id, fullEntity);
         }
 
         // Used in case of reconnt
@@ -235,36 +237,36 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public void TagChange(TagChange tagChange, string defChange, string initialLog = null)
         {
             if (!CurrentEntities.ContainsKey(tagChange.Entity))
-			{
-				//Logger.Log("error while parsing, tagchange doesn't have an entity in memory yet", "" + tagChange.Entity);
-				return;
-			}
-			var existingTag = CurrentEntities[tagChange.Entity].Tags.Find((tag) => tag.Name == tagChange.Name);
-			if (existingTag == null)
-			{
-				existingTag = new Tag { Name = tagChange.Name };
-				CurrentEntities[tagChange.Entity].Tags.Add(existingTag);
-			}
+            {
+                //Logger.Log("error while parsing, tagchange doesn't have an entity in memory yet", "" + tagChange.Entity);
+                return;
+            }
+            var existingTag = CurrentEntities[tagChange.Entity].Tags.Find((tag) => tag.Name == tagChange.Name);
+            if (existingTag == null)
+            {
+                existingTag = new Tag { Name = tagChange.Name };
+                CurrentEntities[tagChange.Entity].Tags.Add(existingTag);
+            }
             RaiseTagChangeEvents(tagChange, existingTag.Value, defChange, initialLog);
             existingTag.Value = tagChange.Value;
-		}
+        }
 
         // Should only be used for ChangeEntity, and probably even this will be removed later on
-		public void Tag(Tag tag, int entityId)
+        public void Tag(Tag tag, int entityId)
         {
             if (!CurrentEntities.ContainsKey(entityId))
-			{
-				Logger.Log("error while parsing, tag doesn't have an entity in memory yet", "" + entityId);
-				return;
-			}
-			var existingTag = CurrentEntities[entityId].Tags.Find((t) => tag.Name == t.Name);
-			if (existingTag == null)
-			{
-				existingTag = new Tag { Name = tag.Name };
-				CurrentEntities[entityId].Tags.Add(existingTag);
-			}
-			existingTag.Value = tag.Value;
-		}
+            {
+                Logger.Log("error while parsing, tag doesn't have an entity in memory yet", "" + entityId);
+                return;
+            }
+            var existingTag = CurrentEntities[entityId].Tags.Find((t) => tag.Name == t.Name);
+            if (existingTag == null)
+            {
+                existingTag = new Tag { Name = tag.Name };
+                CurrentEntities[entityId].Tags.Add(existingTag);
+            }
+            existingTag.Value = tag.Value;
+        }
 
         public int PlayerIdFromEntityName(string data)
         {
@@ -291,7 +293,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
             return 0;
         }
-        
+
         public int GetActivePlayerId()
         {
             var activePlayer = CurrentEntities.Values
@@ -304,17 +306,43 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             return activePlayerEntity.PlayerId;
         }
 
+        public void OnCardPlayed(int entityId)
+        {
+            LastCardPlayedEntityId = entityId;
+            if (CurrentEntities.ContainsKey(entityId))
+            {
+                var plagiarizes = CurrentEntities.Values
+                    //.Where(e => e.CardId == CardIds.Collectible.Rogue.Plagiarize) // We don't know it's plagiarize, so add it to all secrets
+                    .Where(e => e.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
+                    .ToList();
+                if (plagiarizes.Count > 0)
+                {
+                    var entity = CurrentEntities[entityId];
+                    plagiarizes.ForEach(plagia => plagia.KnownCardIds.Add(entity.CardId));
+                }
+            }
+        }
+
+        public void OnNewTurn()
+        {
+            var plagiarizes = CurrentEntities.Values
+                    .Where(e => e.CardId == CardIds.Collectible.Rogue.Plagiarize)
+                    .Where(e => e.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
+                    .ToList();
+            plagiarizes.ForEach(plagia => plagia.KnownCardIds.Clear());
+        }
+
         private void RaiseTagChangeEvents(TagChange tagChange, int previousValue, string defChange, string initialLog = null)
         {
             // Wait until we have all the necessary data
-   //         while (ParserState.CurrentGame.FormatType == 0 
-   //             || ParserState.CurrentGame.GameType == 0 
-   //             || ParserState.LocalPlayer == null)
-			//{
-			//	await Task.Delay(100);
-   //         }
+            //         while (ParserState.CurrentGame.FormatType == 0 
+            //             || ParserState.CurrentGame.GameType == 0 
+            //             || ParserState.LocalPlayer == null)
+            //{
+            //	await Task.Delay(100);
+            //         }
 
-            if (tagChange.Name == (int)GameTag.GOLD_REWARD_STATE 
+            if (tagChange.Name == (int)GameTag.GOLD_REWARD_STATE
                 // This handles reconnects
                 || (tagChange.Name == (int)GameTag.STATE && tagChange.Value == (int)State.COMPLETE))
             {

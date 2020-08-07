@@ -190,6 +190,7 @@
     <EmbeddedResource Include="TestData\bttlegrounds-ghost.txt" />
     <EmbeddedResource Include="TestData\libram_of_wisdom.txt" />
     <EmbeddedResource Include="TestData\handbuff.txt" />
+    <EmbeddedResource Include="TestData\educated_elekk_opponent.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />

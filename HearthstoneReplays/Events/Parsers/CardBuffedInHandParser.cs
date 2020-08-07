@@ -94,6 +94,9 @@ namespace HearthstoneReplays.Events.Parsers
             //CardIds.Collectible.Neutral.HelplessHatchling, 
             //CardIds.Collectible.Neutral.HistoryBuff,
             //CardIds.Collectible.Neutral.TastyFlyfish, 
+
+            //CardIds.Collectible.Warlock.Felosophy,
+            //CardIds.Collectible.Neutral.PotionOfIllusion,
         };
 
         public CardBuffedInHandParser(ParserState ParserState)
