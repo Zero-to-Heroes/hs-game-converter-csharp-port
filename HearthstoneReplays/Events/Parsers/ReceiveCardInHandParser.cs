@@ -21,7 +21,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return node.Type == typeof(TagChange) 
+            return node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.HAND
                 && GameState.CurrentEntities.ContainsKey((node.Object as TagChange).Entity)
@@ -117,18 +117,6 @@ namespace HearthstoneReplays.Events.Parsers
         private List<GameEventProvider> CreateEventFromFullEntity(Node node, string creationLogLine)
         {
             FullEntity fullEntity = node.Object as FullEntity;
-            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
-            var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, fullEntity, node);
-            var cardId = Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, fullEntity.CardId);
-            if (cardId == null && GameState.CurrentTurn == 1 && fullEntity.GetTag(GameTag.ZONE_POSITION) == 5)
-            {
-                var controller = GameState.GetController(fullEntity.GetTag(GameTag.CONTROLLER));
-                if (controller.GetTag(GameTag.CURRENT_PLAYER) != 1)
-                {
-                    cardId = "GAME_005";
-                    creatorCardId = "GAME_005";
-                }
-            }
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             var previousZone = 0;
             if (GameState.CurrentEntities.ContainsKey(fullEntity.Id))
@@ -139,18 +127,39 @@ namespace HearthstoneReplays.Events.Parsers
             return new List<GameEventProvider> { GameEventProvider.Create(
                     fullEntity.TimeStamp,
                     "RECEIVE_CARD_IN_HAND",
-                    GameEvent.CreateProvider(
-                        "RECEIVE_CARD_IN_HAND",
-                        cardId,
-                        controllerId,
-                        fullEntity.Id,
-                        ParserState,
-                        GameState,
-                        gameState,
-                        new {
-                            CreatorCardId = creatorCardId,
-                            IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1,
-                        }),
+                    () => {
+                        // We do it here because of Diligent Notetaker - we have to know the last
+                        // card played before assigning anything
+                        var creatorCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
+                        var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, fullEntity, node);
+                        var cardId = Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, fullEntity.CardId);
+                        if (cardId == null && GameState.CurrentTurn == 1 && fullEntity.GetTag(GameTag.ZONE_POSITION) == 5)
+                        {
+                            var controller = GameState.GetController(fullEntity.GetTag(GameTag.CONTROLLER));
+                            if (controller.GetTag(GameTag.CURRENT_PLAYER) != 1)
+                            {
+                                cardId = "GAME_005";
+                                creatorCardId = "GAME_005";
+                            }
+                        }
+                        return new GameEvent
+                        {
+                            Type =  "RECEIVE_CARD_IN_HAND",
+                            Value = new
+                            {
+                                CardId = cardId,
+                                ControllerId = controllerId,
+                                LocalPlayer = ParserState.LocalPlayer,
+                                OpponentPlayer = ParserState.OpponentPlayer,
+                                EntityId = fullEntity.Id,
+                                GameState = gameState,
+                                AdditionalProps = new {
+                                    CreatorCardId = creatorCardId,
+                                    IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1,
+                                }
+                            }
+                        };
+                    },
                     true,
                     creationLogLine) };
         }

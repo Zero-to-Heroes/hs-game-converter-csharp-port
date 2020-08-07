@@ -30,26 +30,34 @@ namespace HearthstoneReplays
             ParserState parserState,
             GameState fullGameState,
             object gameState,
-            object additionalProps = null)
+            object additionalProps = null,
+            System.Action preprocess = null)
         {
-            return () => new GameEvent
+            return () =>
             {
-                Type = type,
-                Value = new
+                if (preprocess != null)
                 {
-                    CardId = cardId,
-                    ControllerId = controllerId,
-                    LocalPlayer = parserState.LocalPlayer,
-                    OpponentPlayer = parserState.OpponentPlayer,
-                    EntityId = entityId,
-                    // We do it now so that the zone positions should have been resolved, while 
-                    // if we compute it when the event is built, there is no guarantee of that
-                    // BUT if we compute it now, we have no guarantee that the state matches what 
-                    // the state looked like when we built the event, so building it beforehand
-                    // is the way to go
-                    GameState = gameState, //fullGameState.BuildGameStateReport(),// gameState,
-                    AdditionalProps = additionalProps
+                    preprocess.Invoke();
                 }
+                return new GameEvent
+                {
+                    Type = type,
+                    Value = new
+                    {
+                        CardId = cardId,
+                        ControllerId = controllerId,
+                        LocalPlayer = parserState.LocalPlayer,
+                        OpponentPlayer = parserState.OpponentPlayer,
+                        EntityId = entityId,
+                        // We do it now so that the zone positions should have been resolved, while 
+                        // if we compute it when the event is built, there is no guarantee of that
+                        // BUT if we compute it now, we have no guarantee that the state matches what 
+                        // the state looked like when we built the event, so building it beforehand
+                        // is the way to go
+                        GameState = gameState, //fullGameState.BuildGameStateReport(),// gameState,
+                        AdditionalProps = additionalProps
+                    }
+                };
             };
         }
 

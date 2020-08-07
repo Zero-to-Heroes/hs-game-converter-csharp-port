@@ -47,7 +47,7 @@ namespace HearthstoneReplays.Events.Parsers
                     : "SECRET_PLAYED";
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
                 var playerClass = entity.GetPlayerClass();
-                GameState.OnCardPlayed(tagChange.Entity);
+                System.Action preprocess = () => GameState.OnCardPlayed(tagChange.Entity);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                         tagChange.TimeStamp,
                         eventName,
@@ -61,7 +61,8 @@ namespace HearthstoneReplays.Events.Parsers
                             gameState,
                             new {
                                 PlayerClass = playerClass,
-                            }),
+                            },
+                            preprocess),
                        true,
                        node.CreationLogLine) };
             }
@@ -87,7 +88,7 @@ namespace HearthstoneReplays.Events.Parsers
                         var eventName = showEntity.GetTag(GameTag.QUEST) == 1 || showEntity.GetTag(GameTag.SIDEQUEST) == 1
                             ? "QUEST_PLAYED"
                             : "SECRET_PLAYED";
-                        GameState.OnCardPlayed(showEntity.Entity);
+                        System.Action preprocess = () => GameState.OnCardPlayed(showEntity.Entity);
                         // For now there can only be one card played per block
                         return new List<GameEventProvider> { GameEventProvider.Create(
                             action.TimeStamp,
@@ -102,7 +103,8 @@ namespace HearthstoneReplays.Events.Parsers
                                 gameState,
                                 new {
                                     PlayerClass = playerClass,
-                                }),
+                                },
+                                preprocess),
                             true,
                             node.CreationLogLine) };
                     }

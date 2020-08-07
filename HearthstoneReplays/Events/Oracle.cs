@@ -291,12 +291,6 @@ namespace HearthstoneReplays.Events
                         }
                         return null;
 
-                    case Shaman.DiligentNotetaker:
-                        var lastPlayedEntity = GameState.CurrentEntities.ContainsKey(GameState.LastCardPlayedEntityId)
-                            ? GameState.CurrentEntities[GameState.LastCardPlayedEntityId]
-                            : null;
-                        return lastPlayedEntity?.CardId;
-
                     case Neutral.AugmentedElekk:
                         // The parent action is Augmented Elekk trigger, which is not the one we're interested in
                         // Its parent is the one that created the new entity
@@ -368,11 +362,30 @@ namespace HearthstoneReplays.Events
                     var actionEntity = GameState.CurrentEntities.ContainsKey(action.Entity)
                             ? GameState.CurrentEntities[action.Entity]
                             : null;
-                    if (actionEntity != null && actionEntity.KnownCardIds.Count > 0 && actionEntity.CardId == CardIds.Collectible.Rogue.Plagiarize)
+                    if (actionEntity != null && actionEntity.KnownCardIds.Count > 0 && actionEntity.CardId == Rogue.Plagiarize)
                     {
                         var nextCardToCreatePlagia = actionEntity.KnownCardIds[0];
                         actionEntity.KnownCardIds.RemoveAt(0);
                         return nextCardToCreatePlagia;
+                    }
+                }
+            }
+
+            // Diligent Notetaker
+            if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+            {
+                var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                if (action.Type == (int)BlockType.TRIGGER && action.TriggerKeyword == (int)GameTag.SPELLBURST)
+                {
+                    var actionEntity = GameState.CurrentEntities.ContainsKey(action.Entity)
+                            ? GameState.CurrentEntities[action.Entity]
+                            : null;
+                    if (actionEntity != null && GameState.LastCardPlayedEntityId > 0 && actionEntity.CardId == Shaman.DiligentNotetaker)
+                    {
+                        var lastPlayedEntity = GameState.CurrentEntities.ContainsKey(GameState.LastCardPlayedEntityId)
+                            ? GameState.CurrentEntities[GameState.LastCardPlayedEntityId]
+                            : null;
+                        return lastPlayedEntity?.CardId;
                     }
                 }
             }
