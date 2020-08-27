@@ -19,7 +19,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             //CardIds.Collectible.Druid.DreampetalFlorist,
             //CardIds.Collectible.Druid.ImprisonedSatyr, 
-            CardIds.Collectible.Druid.PredatoryInstincts, 
+            CardIds.Collectible.Druid.PredatoryInstincts,
             CardIds.Collectible.Hunter.ScavengersIngenuity, // not tested
             //CardIds.Collectible.Hunter.Emeriss,
             //CardIds.Collectible.Hunter.ForlornStalker,
@@ -97,6 +97,47 @@ namespace HearthstoneReplays.Events.Parsers
 
             //CardIds.Collectible.Warlock.Felosophy,
             //CardIds.Collectible.Neutral.PotionOfIllusion,
+        };
+
+        private Dictionary<string, string> buffs = new Dictionary<string, string>()
+        {
+            { CardIds.Collectible.Druid.PredatoryInstincts, CardIds.NonCollectible.Neutral.PredatoryInstincts_PredatoryInstinctsEnchantment },
+            { CardIds.Collectible.Hunter.FreezingTrap, CardIds.NonCollectible.Hunter.FreezingTrap_TrappedEnchantment},
+            { CardIds.Collectible.Hunter.HiddenCache, CardIds.NonCollectible.Hunter.HiddenCache_SmugglingEnchantment},
+            { CardIds.Collectible.Hunter.ScavengersIngenuity, CardIds.NonCollectible.Neutral.ScavengersIngenuity_PackTacticsEnchantment},
+            { CardIds.Collectible.Hunter.ShakyZipgunner, CardIds.NonCollectible.Neutral.ShakyZipgunner_SmugglingEnchantment},
+            { CardIds.Collectible.Hunter.SmugglersCrate, CardIds.NonCollectible.Neutral.SmugglersCrate_SmugglingEnchantment},
+            { CardIds.Collectible.Hunter.TroggBeastrager, CardIds.NonCollectible.Hunter.TroggBeastrager_SmugglingEnchantment},
+            { CardIds.Collectible.Paladin.CallToAdventure, CardIds.NonCollectible.Neutral.CalltoAdventure_HeroicEnchantment },
+            { CardIds.Collectible.Paladin.GrimscaleChum, CardIds.NonCollectible.Neutral.GrimscaleChum_SmugglingEnchantment},
+            { CardIds.Collectible.Paladin.GrimestreetEnforcer, CardIds.NonCollectible.Neutral.GrimestreetEnforcer_SmugglingEnchantment},
+            { CardIds.Collectible.Paladin.GrimestreetOutfitter, CardIds.NonCollectible.Neutral.GrimestreetOutfitter_SmugglingEnchantment},
+            { CardIds.Collectible.Paladin.SmugglersRun, CardIds.NonCollectible.Paladin.SmugglersRun_SmugglingEnchantment},
+            { CardIds.Collectible.Priest.FateWeaver, CardIds.NonCollectible.Priest.FateWeaver_DraconicFateEnchantment},
+            { CardIds.Collectible.Priest.Shadowfiend, CardIds.NonCollectible.Priest.Shadowfiend_ShadowfiendedEnchantment},
+            { CardIds.Collectible.Rogue.BlackjackStunner, CardIds.NonCollectible.Neutral.BlackjackStunner_StunnedEnchantment},
+            { CardIds.Collectible.Rogue.CheatDeath, CardIds.NonCollectible.Neutral.CheatDeath_CloseCallEnchantment},
+            { CardIds.Collectible.Rogue.Shadowcaster, CardIds.NonCollectible.Neutral.Shadowcaster_FlickeringDarknessEnchantment},
+            { CardIds.Collectible.Rogue.Shadowstep, CardIds.NonCollectible.Neutral.CheatDeath_CloseCallEnchantment},
+            { CardIds.Collectible.Rogue.SonyaShadowdancer, CardIds.NonCollectible.Neutral.SonyaShadowdancer_SonyasShadowEnchantment},
+            { CardIds.Collectible.Rogue.WagglePick, CardIds.NonCollectible.Neutral.CheatDeath_CloseCallEnchantment},
+            { CardIds.Collectible.Shaman.BogSlosher, CardIds.NonCollectible.Shaman.BogSlosher_SloshedEnchantment},
+            { CardIds.Collectible.Shaman.FarSight, CardIds.NonCollectible.Shaman.FarSight_FarSightEnchantment},
+            { CardIds.Collectible.Shaman.GrumbleWorldshaker, CardIds.NonCollectible.Neutral.GrumbleWorldshaker_GrumblyTumblyEnchantment},
+            { CardIds.Collectible.Warlock.ClutchmotherZavas, CardIds.NonCollectible.Warlock.ClutchmotherZavas_RemembranceEnchantment},
+            { CardIds.Collectible.Warlock.TheDarkPortal, CardIds.NonCollectible.Neutral.TheDarkPortal_DarkPortalEnchantment},
+            { CardIds.Collectible.Warlock.WilfredFizzlebang, CardIds.NonCollectible.Warlock.WilfredFizzlebang_MasterSummonerEnchantment},
+            { CardIds.Collectible.Warrior.AkaliTheRhino, CardIds.NonCollectible.Warrior.AkalitheRhino_RhinoSkinEnchantment},
+            { CardIds.Collectible.Warrior.BrassKnuckles, CardIds.NonCollectible.Neutral.BrassKnuckles_SmugglingEnchantment},
+            { CardIds.Collectible.Warrior.CorsairCache, CardIds.NonCollectible.Warrior.CorsairCache_VoidSharpenedEnchantment},
+            { CardIds.Collectible.Warrior.GalakrondTheUnbreakable, CardIds.NonCollectible.Neutral.GalakrondtheUnbreakable_GalakrondsStrengthEnchantment1},
+            { CardIds.NonCollectible.Warrior.GalakrondtheUnbreakable_GalakrondTheApocalypseToken, CardIds.NonCollectible.Neutral.GalakrondtheUnbreakable_GalakrondsStrengthEnchantment2},
+            { CardIds.NonCollectible.Warrior.GalakrondtheUnbreakable_GalakrondAzerothsEndToken, CardIds.NonCollectible.Neutral.GalakrondtheUnbreakable_GalakrondsStrengthEnchantment3},
+            { CardIds.Collectible.Warrior.GrimestreetPawnbroker, CardIds.NonCollectible.Neutral.GrimestreetPawnbroker_SmugglingEnchantment},
+            { CardIds.Collectible.Warrior.GrimyGadgeteer, CardIds.NonCollectible.Neutral.GrimyGadgeteer_SmugglingEnchantment},
+            { CardIds.Collectible.Warrior.StolenGoods, CardIds.NonCollectible.Neutral.StolenGoods_SmugglingEnchantment},
+            { CardIds.Collectible.Neutral.EmperorThaurissan, CardIds.NonCollectible.Neutral.EmperorThaurissan_ImperialFavorEnchantment },
+            { CardIds.Collectible.Neutral.GrimestreetSmuggler, CardIds.NonCollectible.Neutral.GrimestreetSmuggler_SmugglingEnchantment},
         };
 
         public CardBuffedInHandParser(ParserState ParserState)
@@ -177,6 +218,7 @@ namespace HearthstoneReplays.Events.Parsers
                             new
                             {
                                 BuffingEntityCardId = actionEntity.CardId,
+                                BuffCardId = buffs[actionEntity.CardId]
                             }),
                         true,
                         creationLogLine);

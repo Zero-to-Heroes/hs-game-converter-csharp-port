@@ -96,6 +96,19 @@ namespace HearthstoneReplays.Events
                 if (GameState.CurrentEntities.ContainsKey(act.Entity))
                 {
                     var creator = GameState.CurrentEntities[act.Entity];
+                    // Spoecial case for Draem Portals, since for some reasons a Dream Portal the nests the next 
+                    // action (which can lead to nested dream portal blocks)
+                    if (creator.CardId == CardIds.NonCollectible.Druid.YseraUnleashed_DreamPortalToken)
+                    {
+                        if (node.Object.GetType() == typeof(ShowEntity))
+                        {
+                            var handledEntity = (node.Object as ShowEntity);
+                            if (handledEntity.GetTag(GameTag.ZONE) == (int)Zone.HAND)
+                            {
+                                return null;
+                            }
+                        }
+                    }
                     return creator.CardId;
                 }
             }
