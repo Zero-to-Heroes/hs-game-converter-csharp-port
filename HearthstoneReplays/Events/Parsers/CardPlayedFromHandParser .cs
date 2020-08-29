@@ -21,6 +21,14 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
+            // In this case, it's not a "play"
+            var isTriggerPhase = (node.Parent == null
+                       || node.Parent.Type != typeof(Parser.ReplayData.GameActions.Action)
+                       || (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER);
+            if (isTriggerPhase)
+            {
+                return false;
+            }
             return node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.PLAY
