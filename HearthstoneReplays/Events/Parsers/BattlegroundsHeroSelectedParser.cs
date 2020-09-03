@@ -59,12 +59,15 @@ namespace HearthstoneReplays.Events.Parsers
                     {
                         return null;
                     }
+
                     return new GameEvent
                     {
                         Type = "BATTLEGROUNDS_HERO_SELECTED",
                         Value = new
                         {
                             CardId = chosenEntity.CardId,
+                            LocalPlayer = ParserState.LocalPlayer,
+                            OpponentPlayer = ParserState.OpponentPlayer,
                         }
                     };
                 },

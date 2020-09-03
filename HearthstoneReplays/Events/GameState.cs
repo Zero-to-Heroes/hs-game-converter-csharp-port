@@ -27,6 +27,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public bool SimulationTriggered;
         public int LastCardPlayedEntityId;
         public int LastCardDrawnEntityId;
+        public bool BgCombatStarted;
 
         private int gameEntityId;
         private Dictionary<int, int> controllerEntity = new Dictionary<int, int>();
@@ -42,6 +43,14 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             controllerEntity = new Dictionary<int, int>();
             gameEntityId = -1;
 
+        }
+
+        public void StartTurn()
+        {
+            if (CurrentTurn % 2 == 1)
+            {
+                BgCombatStarted = false;
+            }
         }
 
         public void GameEntity(GameEntity entity)
