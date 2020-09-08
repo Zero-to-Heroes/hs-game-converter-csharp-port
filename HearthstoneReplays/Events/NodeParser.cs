@@ -87,6 +87,7 @@ namespace HearthstoneReplays.Events
             catch (Exception e)
             {
                 Logger.Log("Coulnt not apply parsers to new node, ignoring node and moving on " + e.Message, e.StackTrace);
+                throw e;
             }
         }
 

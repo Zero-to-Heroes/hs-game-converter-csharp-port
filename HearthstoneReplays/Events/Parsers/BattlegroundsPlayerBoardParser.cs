@@ -62,6 +62,10 @@ namespace HearthstoneReplays.Events.Parsers
             //return null;
             //var action = node.Object as Parser.ReplayData.GameActions.Action;
             var parentAction = (node.Parent.Object as Parser.ReplayData.GameActions.Action);
+            if (parentAction == null)
+            {
+                return null;
+            }
             var entity = GameState.CurrentEntities[parentAction.Entity];
             if (entity.CardId != "TB_BaconShop_8P_PlayerE")
             {
