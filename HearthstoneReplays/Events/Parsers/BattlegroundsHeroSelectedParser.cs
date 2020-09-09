@@ -48,6 +48,13 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return null;
             }
+            // Heroes proposed at the start are in hand, as opposed to heroes discovered by 
+            // Lord Barov's hero power
+            if (chosenEntity.GetTag(GameTag.ZONE) != (int)Zone.HAND)
+            {
+                return null;
+            }
+
             //Logger.Log("Choice timestamp", choice.TimeStamp);
 
             return new List<GameEventProvider> { GameEventProvider.Create(
