@@ -25,7 +25,7 @@ namespace HearthstoneReplays.Events.Parsers
             return node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ATK
                 && GameState.CurrentEntities.ContainsKey((node.Object as TagChange).Entity)
-                && GameState.CurrentEntities[((node.Object as TagChange).Entity)].CardId == CardIds.NonCollectible.Neutral.Cthun;
+                && GameState.CurrentEntities[((node.Object as TagChange).Entity)].CardId == NonCollectible.Neutral.Cthun;
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -35,6 +35,20 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
+            // Special case for Crystal Core which, for an unknown reason, shows C'Thun even if it's not present in the deck
+            if (node.Parent != null && node.Parent.Type == typeof(Action))
+            {
+                var parentAction = node.Parent.Object as Action;
+                if (GameState.CurrentEntities.ContainsKey(parentAction.Entity))
+                {
+                    var parentEntity = GameState.CurrentEntities[parentAction.Entity];
+                    if (parentAction.Type == (int)BlockType.POWER && parentEntity.CardId == NonCollectible.Rogue.TheCavernsBelow_CrystalCoreTokenUNGORO)
+                    {
+                        return null;
+                    }
+                }
+            }
+
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
@@ -50,7 +64,7 @@ namespace HearthstoneReplays.Events.Parsers
                     entity.Id,
                     ParserState,
                     GameState,
-                    gameState, 
+                    gameState,
                     new {
                         CthunSize = tagChange.Value,
                     }),
