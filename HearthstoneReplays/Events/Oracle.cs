@@ -403,6 +403,21 @@ namespace HearthstoneReplays.Events
                 }
             }
 
+            // Libram of Wisdom
+            if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+            {
+                var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                if (action.Type == (int)BlockType.TRIGGER && action.TriggerKeyword == (int)GameTag.DEATHRATTLE)
+                {
+                    var attachedEnchantments = GameState.FindEnchantmentsAttachedTo(action.Entity);
+                    var isLibram = attachedEnchantments.Any(e => e.CardId == NonCollectible.Paladin.LibramofWisdom_LightsWisdomEnchantment);
+                    if (isLibram)
+                    {
+                        return Paladin.LibramOfWisdom;
+                    }
+                }
+            }
+
             // Keymaster Alabaster
             if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
             {
@@ -418,21 +433,6 @@ namespace HearthstoneReplays.Events
                             ? GameState.CurrentEntities[GameState.LastCardDrawnEntityId]
                             : null;
                         return lastDrawnEntity?.CardId;
-                    }
-                }
-            }
-
-            // Libram of Wisdom
-            if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
-            {
-                var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
-                if (action.Type == (int)BlockType.TRIGGER && action.TriggerKeyword == (int)GameTag.DEATHRATTLE)
-                {
-                    var attachedEnchantments = GameState.FindEnchantmentsAttachedTo(action.Entity);
-                    var isLibram = attachedEnchantments.Any(e => e.CardId == NonCollectible.Paladin.LibramofWisdom_LightsWisdomEnchantment);
-                    if (isLibram)
-                    {
-                        return Paladin.LibramOfWisdom;
                     }
                 }
             }

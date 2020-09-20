@@ -65,7 +65,6 @@ namespace HearthstoneReplays.Events.Parsers
                         gameState,
                         new {
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
-
                         }),
                     true,
                     node.CreationLogLine) };
@@ -87,7 +86,7 @@ namespace HearthstoneReplays.Events.Parsers
         private List<GameEventProvider> CreateEventFromShowEntity(Node node, string creationLogLine)
         {
             ShowEntity showEntity = node.Object as ShowEntity;
-            Logger.Log("Will add creator " + showEntity.GetTag(GameTag.CREATOR) + " //" + showEntity.GetTag(GameTag.DISPLAYED_CREATOR), "");
+            //Logger.Log("Will add creator " + showEntity.GetTag(GameTag.CREATOR) + " //" + showEntity.GetTag(GameTag.DISPLAYED_CREATOR), "");
             var creatorCardId = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
             var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, showEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, showEntity.CardId);
@@ -95,6 +94,7 @@ namespace HearthstoneReplays.Events.Parsers
             var previousZone = GameState.CurrentEntities[showEntity.Entity].GetTag(GameTag.ZONE);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
             var entity = GameState.CurrentEntities[showEntity.Entity];
+            // Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, showEntity.CardId);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,
                     "RECEIVE_CARD_IN_HAND",
@@ -142,6 +142,9 @@ namespace HearthstoneReplays.Events.Parsers
                                 creatorCardId = "GAME_005";
                             }
                         }
+                        //var a = "t";
+                        //Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
+                        //Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, fullEntity.CardId);
                         return new GameEvent
                         {
                             Type =  "RECEIVE_CARD_IN_HAND",

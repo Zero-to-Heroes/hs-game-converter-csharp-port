@@ -20,7 +20,7 @@ namespace HearthstoneReplayTests
 	public class ReplayDataTests
 	{
 		[TestMethod]
-		public void Test()  
+		public void Test()
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
