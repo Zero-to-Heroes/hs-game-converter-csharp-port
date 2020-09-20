@@ -28,10 +28,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                    || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
-                && node.Type == typeof(FullEntity)
-                && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SETASIDE
+            return node.Type == typeof(FullEntity)
+                && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SETASIDE 
                 && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.HERO;
         }
 
@@ -45,6 +43,7 @@ namespace HearthstoneReplays.Events.Parsers
             var fullEntity = node.Object as FullEntity;
             if (ParserState.OpponentPlayer?.PlayerId != fullEntity.GetTag(GameTag.CONTROLLER))
             {
+                //Logger.Log("Not returning an opponent_revealed", "");
                 return null;
             }
             var cardId = fullEntity.CardId;
@@ -57,8 +56,10 @@ namespace HearthstoneReplays.Events.Parsers
                     if (ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS
                         && ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                     {
+                        //Logger.Log("Not returning an opponent_revealed", "in event provider");
                         return null;
                     }
+                    //Logger.Log("Returning opponent revealed", "in event provider");
                     return new GameEvent
                     {
                         Type = "BATTLEGROUNDS_OPPONENT_REVEALED",
