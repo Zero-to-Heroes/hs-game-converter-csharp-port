@@ -153,7 +153,9 @@ namespace HearthstoneReplays.Events
                 eventQueue = eventQueue
                     .Where(p => !(p is StartDevModeProvider))
                     .Where(p => !(p is StopDevModeProvider))
-                    .OrderBy(p => p.Timestamp).ToList();
+                    .OrderByDescending(p => p.ShortCircuit)
+                    .ThenBy(p => p.Timestamp)
+                    .ToList();
                 if (startDevModeIndex >= 0)
                 {
                     eventQueue.Insert(0, new StartDevModeProvider());
@@ -278,7 +280,9 @@ namespace HearthstoneReplays.Events
                         //if (!eventQueue.All(p => !p.CreationLogLine.Contains("GameEntity")) 
                         //    && !eventQueue.Where(p => !p.CreationLogLine.Contains("GameEntity")).Any(p => p.AnimationReady))
                         // Heck for Battlegrounds
-                        if (!DevMode && !eventQueue
+                        if (!DevMode 
+                            && !eventQueue.First().ShortCircuit
+                            && !eventQueue
                                 .Where(p => !(p.CreationLogLine.Contains("GameEntity") && p.CreationLogLine.Contains("MAIN_READY")))
                                 // Not sure what that second condition is about, but these logs are all over the place in 
                                 // Battlegrounds, and are not specific to anything, so we can't really use them
@@ -401,6 +405,7 @@ namespace HearthstoneReplays.Events
                         && (
                             DevMode
                             || eventQueue.First() is StartDevModeProvider
+                            || eventQueue.First().ShortCircuit
                             || DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds > 500);
                     //if (eventQueue.Count > 0)
                     //{

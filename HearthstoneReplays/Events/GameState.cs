@@ -45,13 +45,13 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         }
 
-        public void StartTurn()
-        {
-            if (CurrentTurn % 2 == 1)
-            {
-                BgCombatStarted = false;
-            }
-        }
+        //public void StartTurn()
+        //{
+        //    if (CurrentTurn % 2 == 1)
+        //    {
+        //        BgCombatStarted = false;
+        //    }
+        //}
 
         public void GameEntity(GameEntity entity)
         {
@@ -340,6 +340,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public void OnNewTurn()
         {
+            if (CurrentTurn % 2 == 1)
+            {
+                BgCombatStarted = false;
+            }
+
             var plagiarizes = CurrentEntities.Values
                     .Where(e => e.CardId == CardIds.Collectible.Rogue.Plagiarize)
                     .Where(e => e.GetTag(GameTag.ZONE) == (int)Zone.SECRET)

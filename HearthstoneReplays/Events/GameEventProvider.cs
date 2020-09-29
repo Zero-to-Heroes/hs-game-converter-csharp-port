@@ -15,6 +15,7 @@ namespace HearthstoneReplays.Events
         public DateTime Timestamp { get; set; }
         public bool NeedMetaData { get; set; }
         public bool AnimationReady { get; set; }
+        public bool ShortCircuit { get; set; }
         public string EventName{ get; set; }
         public string CreationLogLine { get; set; }
         public GameEvent GameEvent { get; private set; }
@@ -23,7 +24,7 @@ namespace HearthstoneReplays.Events
 
         public bool debug { get; set; }
 
-        protected GameEventProvider()
+        public GameEventProvider()
         {
 
         }
@@ -35,13 +36,14 @@ namespace HearthstoneReplays.Events
             bool needMetaData, 
             string creationLogLine,
             bool animationReady = false,
-            bool debug = false)
+            bool debug = false,
+            bool shortCircuit = false)
         {
             if (animationReady)
             {
                 Logger.Log("Creating event with animation ready", creationLogLine);
             }
-            return Create(originalTimestamp, eventName, eventProvider, (a) => false, needMetaData, creationLogLine, animationReady, debug);
+            return Create(originalTimestamp, eventName, eventProvider, (a) => false, needMetaData, creationLogLine, animationReady, debug, shortCircuit);
         }
 
         public static GameEventProvider Create(
@@ -52,7 +54,8 @@ namespace HearthstoneReplays.Events
             bool needMetaData,
             string creationLogLine,
             bool animationReady = false,
-            bool debug = false)
+            bool debug = false,
+            bool shortCircuit = false)
         {
             var result = new GameEventProvider
             {
@@ -62,6 +65,7 @@ namespace HearthstoneReplays.Events
                 isDuplicatePredicate = isDuplicatePredicate,
                 NeedMetaData = needMetaData,
                 CreationLogLine = creationLogLine,
+                ShortCircuit = shortCircuit,
                 debug = debug,
             };
             result.AnimationReady = animationReady;
