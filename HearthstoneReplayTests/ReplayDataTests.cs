@@ -11,6 +11,7 @@ using HearthstoneReplays.Parser.ReplayData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 #endregion
 
@@ -22,6 +23,25 @@ namespace HearthstoneReplayTests
 		[TestMethod]
 		public void Test()
 		{
+            DateTime now = DateTime.Now;
+            DateTime before = now.AddSeconds(-2);
+            List<GameEventProvider> testList = new List<GameEventProvider>();
+            testList.Add(new GameEventProvider()
+            {
+                ShortCircuit = false,
+                Timestamp = before,
+            });
+            testList.Add(new GameEventProvider()
+            {
+                ShortCircuit = true,
+                Timestamp = now,
+            });
+            var hop = testList
+                    .OrderByDescending(p => p.ShortCircuit)
+                    .ThenBy(p => p.Timestamp)
+                    .ToList();
+
+
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
             List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
