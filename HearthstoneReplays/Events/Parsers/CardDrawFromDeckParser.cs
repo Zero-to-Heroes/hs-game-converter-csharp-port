@@ -47,15 +47,18 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
+            var gameState= GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
+            // If we compute this when triggering the event, we will get a "gift" icon because the 
+            // card is already in hand
+            var wasInDeck = entity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
                 () => {
                     // We do it here because of Keymaster Alabaster - we need to know the last card
                     // that has been drawn
-                    var creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity, node, false);
-                    var lastInfluencedByCardId = Oracle.FindCardCreatorCardId(GameState, entity, node);
+                    var creatorCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, entity, node, false);
+                    var lastInfluencedByCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, entity, node);
                     GameState.OnCardDrawn(entity.Entity);
                     return new GameEvent
                     {
@@ -99,14 +102,15 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             var entity = GameState.CurrentEntities[showEntity.Entity];
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
+            var wasInDeck = entity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
                 () => {
                     // We do it here because of Keymaster Alabaster - we need to know the last card
                     // that has been drawn
-                    var creatorCardId = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
-                    var lastInfluencedByCardId = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
+                    var creatorCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, showEntity, node);
+                    var lastInfluencedByCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, showEntity, node);
                     GameState.OnCardDrawn(showEntity.Entity);
                     return new GameEvent
                     {
@@ -136,14 +140,15 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
+            var wasInDeck = fullEntity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
                 () => {
                     // We do it here because of Keymaster Alabaster - we need to know the last card
                     // that has been drawn
-                    var creatorCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node, false);
-                    var lastInfluencedByCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
+                    var creatorCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, fullEntity, node, false);
+                    var lastInfluencedByCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
                     GameState.OnCardDrawn(fullEntity.Entity);
                     return new GameEvent
                     {
