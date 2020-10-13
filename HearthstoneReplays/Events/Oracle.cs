@@ -196,6 +196,7 @@ namespace HearthstoneReplays.Events
                     case Neutral.SeaforiumBomber: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
                     case Neutral.SmugSenior: return NonCollectible.Neutral.SmugSenior_SpectralSeniorToken;
                     case Neutral.SneakyDelinquent: return NonCollectible.Neutral.SneakyDelinquent_SpectralDelinquentToken;
+                    case Neutral.SoldierOfFortune: return NonCollectible.Neutral.TheCoin;
                     case Neutral.SparkDrill: return NonCollectible.Neutral.SparkDrill_SparkToken;
                     case Neutral.SparkEngine: return NonCollectible.Neutral.SparkDrill_SparkToken;
                     case NonCollectible.Neutral.SurlyMob: return NonCollectible.Neutral.AngryMob;
@@ -404,19 +405,23 @@ namespace HearthstoneReplays.Events
             }
 
             // Libram of Wisdom
-            if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+            if (node.Type == typeof(FullEntity) && (node.Object as FullEntity).SubSpellInEffect == "Librams_SpawnToHand_Book")
             {
-                var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
-                if (action.Type == (int)BlockType.TRIGGER && action.TriggerKeyword == (int)GameTag.DEATHRATTLE)
-                {
-                    var attachedEnchantments = GameState.FindEnchantmentsAttachedTo(action.Entity);
-                    var isLibram = attachedEnchantments.Any(e => e.CardId == NonCollectible.Paladin.LibramofWisdom_LightsWisdomEnchantment);
-                    if (isLibram)
-                    {
-                        return Paladin.LibramOfWisdom;
-                    }
-                }
+                return Paladin.LibramOfWisdom;
             }
+            //if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+            //{
+            //    var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+            //    if (action.Type == (int)BlockType.TRIGGER && action.TriggerKeyword == (int)GameTag.DEATHRATTLE)
+            //    {
+            //        var attachedEnchantments = GameState.FindEnchantmentsAttachedTo(action.Entity);
+            //        var isLibram = attachedEnchantments.Any(e => e.CardId == NonCollectible.Paladin.LibramofWisdom_LightsWisdomEnchantment);
+            //        if (isLibram)
+            //        {
+            //            return Paladin.LibramOfWisdom;
+            //        }
+            //    }
+            //}
 
             // Keymaster Alabaster
             if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))

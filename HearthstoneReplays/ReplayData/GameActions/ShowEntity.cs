@@ -21,6 +21,9 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
 		[XmlElement("Tag", typeof(Tag))]
 		public List<Tag> Tags { get; set; }
 
+		[XmlIgnore]
+		public string SubSpellInEffect { get; set; }
+
         public int GetTag(GameTag tag)
         {
             var match = Tags.FirstOrDefault(t => t.Name == (int)tag);

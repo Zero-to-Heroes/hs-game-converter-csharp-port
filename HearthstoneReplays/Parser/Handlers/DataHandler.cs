@@ -22,6 +22,7 @@ namespace HearthstoneReplays.Parser.Handlers
 
 		private Helper helper = new Helper();
 		private GameMetaData metadata;
+		private string currentSubSpell;
 
 		public void Handle(DateTime timestamp, string data, ParserState state, DateTime previousTimestamp)
         {
@@ -392,6 +393,19 @@ namespace HearthstoneReplays.Parser.Handlers
                 return;
 			}
 
+			match = Regexes.SubSpellStartRegex.Match(data);
+			if (match.Success)
+			{
+				var subSpellPrefab = match.Groups[1].Value;
+				this.currentSubSpell = subSpellPrefab;
+			}
+
+
+			if (data == "SUB_SPELL_END")
+			{
+				this.currentSubSpell = null;
+			}
+
 			match = Regexes.ActionShowEntityRegex.Match(data);
 			if(match.Success)
             {
@@ -401,6 +415,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				var entity = helper.ParseEntity(rawEntity, state);
 
 				var showEntity = new ShowEntity {CardId = cardId, Entity = entity, Tags = new List<Tag>(), TimeStamp = timestamp};
+				showEntity.SubSpellInEffect = this.currentSubSpell;
 				state.UpdateCurrentNode(typeof(Game), typeof(Action));
 				if(state.Node.Type == typeof(Game))
 					((Game)state.Node.Object).AddData(showEntity);
@@ -474,16 +489,17 @@ namespace HearthstoneReplays.Parser.Handlers
                 //Console.WriteLine("updating entityname " + rawEntity + " for full log " + timestamp + " " + data);
                 state.GameState.UpdateEntityName(rawEntity);
 
-                var showEntity = new FullEntity {CardId = cardId, Id = entity, Tags = new List<Tag>(), TimeStamp = timestamp};
+                var fullEntity = new FullEntity {CardId = cardId, Id = entity, Tags = new List<Tag>(), TimeStamp = timestamp};
+				fullEntity.SubSpellInEffect = this.currentSubSpell;
 				state.UpdateCurrentNode(typeof(Game), typeof(Action));
 
-                var newNode = new Node(typeof(FullEntity), showEntity, indentLevel, state.Node, data);
+                var newNode = new Node(typeof(FullEntity), fullEntity, indentLevel, state.Node, data);
                 if (!state.ReconnectionOngoing)
                 {
 				    if(state.Node.Type == typeof(Game))
-					    ((Game)state.Node.Object).AddData(showEntity);
+					    ((Game)state.Node.Object).AddData(fullEntity);
 				    else if(state.Node.Type == typeof(Action))
-					    ((Action)state.Node.Object).Data.Add(showEntity);
+					    ((Action)state.Node.Object).Data.Add(fullEntity);
 				    else
 					    throw new Exception("Invalid node " + state.Node.Type);
                     state.CreateNewNode(newNode);
