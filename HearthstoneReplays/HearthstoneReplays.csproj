@@ -110,6 +110,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Events\GameMetaData.cs" />
     <Compile Include="Events\Parsers\CardUpdatedInDeckParser.cs" />
+    <Compile Include="Events\Parsers\EntityUpdateParser.cs" />
     <Compile Include="Events\StopDevModeProvider.cs" />
     <Compile Include="Events\StartDevModeProvider.cs" />
     <Compile Include="Events\Oracle.cs" />
@@ -201,7 +202,6 @@
     <Compile Include="Parser\Handlers\OptionsHandler.cs" />
     <Compile Include="Parser\Handlers\SendChoicesHandler.cs" />
     <Compile Include="Parser\Handlers\SendOptionHandler.cs" />
-    <Compile Include="Parser\Handlers\SubSpell.cs" />
     <Compile Include="Parser\Helper.cs" />
     <Compile Include="Parser\Node.cs" />
     <Compile Include="Parser\ParserState.cs" />

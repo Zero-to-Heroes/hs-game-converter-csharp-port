@@ -506,6 +506,7 @@ namespace HearthstoneReplays.Events
                 new BlockEndParser(ParserState),
                 new JadeGolemParser(ParserState),
                 new CthunParser(ParserState),
+                new EntityUpdateParser(ParserState),
             };
         }
     }
