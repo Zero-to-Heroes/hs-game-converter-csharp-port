@@ -235,6 +235,15 @@ namespace HearthstoneReplays.Events
             }
         }
 
+        // Not sure what that second condition is about, but these logs are all over the place in 
+        // Battlegrounds, and are not specific to anything, so we can't really use them
+        // as indicators that things have progressed
+        private List<string> ignoredLogLines = new List<string>()
+        {
+            "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=-1 Target=0 SubOption=-1 TriggerKeyword=0",
+            "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=6 Target=0 SubOption=-1 TriggerKeyword=0",
+
+        };
         private async void ProcessGameEventQueue(Object source, ElapsedEventArgs e)
         {
             // If both the first events has just been added, wait a bit, so that we're sure there's no 
@@ -284,11 +293,9 @@ namespace HearthstoneReplays.Events
                             && !eventQueue.First().ShortCircuit
                             && !eventQueue
                                 .Where(p => !(p.CreationLogLine.Contains("GameEntity") && p.CreationLogLine.Contains("MAIN_READY")))
-                                // Not sure what that second condition is about, but these logs are all over the place in 
-                                // Battlegrounds, and are not specific to anything, so we can't really use them
-                                // as indicators that things have progressed
-                                .Where(p => !(p.CreationLogLine.Contains("BLOCK_START BlockType=TRIGGER")
-                                    && p.CreationLogLine.Contains("EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=-1 Target=0 SubOption=-1 TriggerKeyword=0")))
+                                .Where(p => !p.CreationLogLine.Contains("BLOCK_START BlockType=TRIGGER") 
+                                    && ignoredLogLines.All(line => !p.CreationLogLine.Contains(line)))
+                                .Where(p => p.EventName != "ENTITY_UPDATE")
                                 .Any(p => p.AnimationReady))
                         // Safeguard - Don't wait too long for the animation in case we never receive it
                         // With the arrival of Battlegrounds we can't do this anymore, as it spoils the game very fast
@@ -299,6 +306,24 @@ namespace HearthstoneReplays.Events
                         }
                         provider = eventQueue[0];
                         eventQueue.RemoveAt(0);
+                        if (provider.debug)
+                        {
+                            Logger.Log("Will process event", provider.EventName);
+                            Logger.Log("creationLogLine", provider.CreationLogLine);
+                            Logger.Log("animatiuonReady", provider.AnimationReady);
+                            Logger.Log("ShortCircuit", provider.ShortCircuit);
+                            Logger.Log("First event queue ShortCircuit", eventQueue.First().ShortCircuit);
+                            var animationReady = eventQueue
+                                .Where(p => !(p.CreationLogLine.Contains("GameEntity") && p.CreationLogLine.Contains("MAIN_READY")))
+                                .Where(p => !p.CreationLogLine.Contains("BLOCK_START BlockType=TRIGGER")
+                                    && ignoredLogLines.All(line => !p.CreationLogLine.Contains(line)))
+                                .Where(p => p.EventName != "ENTITY_UPDATE")
+                                .ToList();
+                            Logger.Log("First event queue animationReady", animationReady.Any(p => p.AnimationReady));
+                            Logger.Log("First event queue animationReady event", animationReady.Any(p => p.AnimationReady) 
+                                ? animationReady.First().CreationLogLine : null );
+
+                        }
                     }
                     //if (provider.CreationLogLine.Contains("TAG_CHANGE Entity=[entityName=Voidwalker id=3651 zone=PLAY zonePos=3 cardId=CS2_065 player=13] tag=ZONE value=REMOVEDFROMGAME"))
                     //{
