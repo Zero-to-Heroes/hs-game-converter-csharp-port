@@ -192,6 +192,7 @@
     <EmbeddedResource Include="TestData\handbuff.txt" />
     <EmbeddedResource Include="TestData\educated_elekk_opponent.txt" />
     <EmbeddedResource Include="TestData\duplicate.txt" />
+    <EmbeddedResource Include="TestData\plagiarize.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />

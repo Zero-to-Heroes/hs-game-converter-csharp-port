@@ -395,10 +395,19 @@ namespace HearthstoneReplays.Events
                     var actionEntity = GameState.CurrentEntities.ContainsKey(action.Entity)
                             ? GameState.CurrentEntities[action.Entity]
                             : null;
-                    if (actionEntity != null && actionEntity.KnownCardIds.Count > 0 && actionEntity.CardId == Rogue.Plagiarize)
+                    if (actionEntity != null && actionEntity.KnownEntityIds.Count > 0 && actionEntity.CardId == Rogue.Plagiarize)
                     {
-                        var nextCardToCreatePlagia = actionEntity.KnownCardIds[0];
-                        actionEntity.KnownCardIds.RemoveAt(0);
+                        var plagiarizeController = actionEntity.GetTag(GameTag.CONTROLLER);
+                        var entitiesPlayedByActivePlayer = actionEntity.KnownEntityIds
+                            .Select(entityId => GameState.CurrentEntities[entityId])
+                            .Where(card => card.GetTag(GameTag.CONTROLLER) != -1 && card.GetTag(GameTag.CONTROLLER) != plagiarizeController)
+                            .ToList();
+                        if (entitiesPlayedByActivePlayer.Count == 0)
+                        {
+                            return null;
+                        }
+                        var nextCardToCreatePlagia = entitiesPlayedByActivePlayer[0].CardId;
+                        actionEntity.KnownEntityIds.Remove(entitiesPlayedByActivePlayer[0].Entity);
                         return nextCardToCreatePlagia;
                     }
                 }

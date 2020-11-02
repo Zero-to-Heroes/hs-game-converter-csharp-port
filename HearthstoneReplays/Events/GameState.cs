@@ -327,8 +327,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                     .ToList();
                 if (plagiarizes.Count > 0)
                 {
-                    var entity = CurrentEntities[entityId];
-                    plagiarizes.ForEach(plagia => plagia.KnownCardIds.Add(entity.CardId));
+                    plagiarizes.ForEach(plagia => plagia.KnownEntityIds.Add(entityId));
                 }
             }
         }
@@ -344,12 +343,16 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             {
                 BgCombatStarted = false;
             }
+        }
 
+        public void ClearPlagiarize()
+        {
+            // If there are secrets that work over several turns, this won't work
             var plagiarizes = CurrentEntities.Values
-                    .Where(e => e.CardId == CardIds.Collectible.Rogue.Plagiarize)
+                    //.Where(e => e.CardId == CardIds.Collectible.Rogue.Plagiarize)
                     .Where(e => e.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
                     .ToList();
-            plagiarizes.ForEach(plagia => plagia.KnownCardIds.Clear());
+            plagiarizes.ForEach(plagia => plagia.KnownEntityIds.Clear());
         }
 
         private void RaiseTagChangeEvents(TagChange tagChange, int previousValue, string defChange, string initialLog = null)
