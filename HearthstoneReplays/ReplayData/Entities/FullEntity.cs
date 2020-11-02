@@ -60,5 +60,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             var playerClass = GetTag(GameTag.CLASS);
             return ((CardClass)playerClass).ToString();
         }
+
+        internal int GetController()
+        {
+            return GetTag(GameTag.CONTROLLER);
+        }
     }
 }

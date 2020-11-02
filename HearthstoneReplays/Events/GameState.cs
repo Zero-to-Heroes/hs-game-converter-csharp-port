@@ -29,6 +29,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public int LastCardDrawnEntityId;
         public bool BgCombatStarted;
 
+        public Dictionary<int, List<FullEntity>> EntityIdsOnBoardWhenPlayingPotionOfIllusion = null;
+
         private int gameEntityId;
         private Dictionary<int, int> controllerEntity = new Dictionary<int, int>();
 
@@ -328,6 +330,20 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 if (plagiarizes.Count > 0)
                 {
                     plagiarizes.ForEach(plagia => plagia.KnownEntityIds.Add(entityId));
+                }
+
+                var playedEntity = CurrentEntities[entityId];
+                if (playedEntity.CardId == CardIds.Collectible.Neutral.PotionOfIllusion)
+                {
+                    this.EntityIdsOnBoardWhenPlayingPotionOfIllusion = CurrentEntities.Values
+                        .Where(entity => (entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY))
+                        .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
+                        .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
+                        .GroupBy(entity => entity.GetTag(GameTag.CONTROLLER))
+                        .ToDictionary(g => g.Key, g => g.ToList());
+                } else
+                {
+                    this.EntityIdsOnBoardWhenPlayingPotionOfIllusion = null;
                 }
             }
         }

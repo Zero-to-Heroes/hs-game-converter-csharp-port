@@ -383,6 +383,26 @@ namespace HearthstoneReplays.Events
                             }
                         }
                         return null;
+
+                    case Neutral.PotionOfIllusion:
+                        if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+                        {
+                            var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                            var existingEntity = GameState.CurrentEntities[act.Entity];
+                            var controllerId = existingEntity.GetController();
+
+                            if (GameState.EntityIdsOnBoardWhenPlayingPotionOfIllusion != null)
+                            {
+                                var boardLeftToHandleForPlayer = GameState.EntityIdsOnBoardWhenPlayingPotionOfIllusion[controllerId];
+                                if (boardLeftToHandleForPlayer.Count > 0)
+                                {
+                                    var entityToCopy = boardLeftToHandleForPlayer[0];
+                                    GameState.EntityIdsOnBoardWhenPlayingPotionOfIllusion[controllerId].RemoveAt(0);
+                                    return entityToCopy.CardId;
+                                }
+                            }
+                        }
+                        return null;
                 }
             }
 
