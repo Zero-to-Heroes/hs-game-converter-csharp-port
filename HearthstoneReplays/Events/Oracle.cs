@@ -168,14 +168,14 @@ namespace HearthstoneReplays.Events
                 switch (creatorCardId)
                 {
                     case Neutral.AncientShade: return NonCollectible.Neutral.AncientShade_AncientCurseToken;
-                    case NonCollectible.Neutral.AngryMob: return NonCollectible.Neutral.CrazedMob;
+                    case NonCollectible.Neutral.AngryMobGILNEAS: return NonCollectible.Neutral.CrazedMobGILNEAS;
                     case Neutral.BadLuckAlbatross: return NonCollectible.Neutral.BadLuckAlbatross_AlbatrossToken;
                     case Neutral.BananaBuffoon: return NonCollectible.Neutral.BananaBuffoon_BananasToken;
                     case Neutral.BootyBayBookie: return NonCollectible.Neutral.TheCoin;
                     case Neutral.BurglyBully: return NonCollectible.Neutral.TheCoin;
-                    case NonCollectible.Neutral.CoinPouch: return NonCollectible.Neutral.SackOfCoins;
-                    case NonCollectible.Neutral.CreepyCurio: return NonCollectible.Neutral.HauntedCurio;
-                    case NonCollectible.Neutral.HauntedCurio: return NonCollectible.Neutral.CursedCurio;
+                    case NonCollectible.Neutral.CoinPouchGILNEAS: return NonCollectible.Neutral.SackOfCoinsGILNEAS;
+                    case NonCollectible.Neutral.CreepyCurioGILNEAS: return NonCollectible.Neutral.HauntedCurioGILNEAS;
+                    case NonCollectible.Neutral.HauntedCurioGILNEAS: return NonCollectible.Neutral.CursedCurioGILNEAS;
                     case Neutral.Doomcaller: return Neutral.Cthun;
                     case Neutral.EliseTheTrailblazer: return NonCollectible.Neutral.ElisetheTrailblazer_UngoroPackToken;
                     case Neutral.EliseStarseeker: return NonCollectible.Neutral.EliseStarseeker_MapToTheGoldenMonkeyToken;
@@ -188,9 +188,9 @@ namespace HearthstoneReplays.Events
                     case Neutral.InfestedGoblin: return NonCollectible.Neutral.ScarabEgg_ScarabToken;
                     case Neutral.KingMukla: return NonCollectible.Neutral.Bananas;
                     case Neutral.LicensedAdventurer: return NonCollectible.Neutral.TheCoin;
-                    case NonCollectible.Neutral.MilitiaHorn: return NonCollectible.Neutral.VeteransMilitiaHorn;
+                    case NonCollectible.Neutral.MilitiaHornGILNEAS: return NonCollectible.Neutral.VeteransMilitiaHornGILNEAS;
                     case Neutral.MuklaTyrantOfTheVale: return NonCollectible.Neutral.Bananas;
-                    case NonCollectible.Neutral.OldMilitiaHorn: return NonCollectible.Neutral.MilitiaHorn;
+                    case NonCollectible.Neutral.OldMilitiaHornGILNEAS: return NonCollectible.Neutral.MilitiaHornGILNEAS;
                     case Neutral.PortalKeeper: return NonCollectible.Neutral.PortalKeeper_FelhoundPortalToken;
                     case Neutral.PortalOverfiend: return NonCollectible.Neutral.PortalKeeper_FelhoundPortalToken;
                     case Neutral.SeaforiumBomber: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
@@ -199,13 +199,15 @@ namespace HearthstoneReplays.Events
                     case Neutral.SoldierOfFortune: return NonCollectible.Neutral.TheCoin;
                     case Neutral.SparkDrill: return NonCollectible.Neutral.SparkDrill_SparkToken;
                     case Neutral.SparkEngine: return NonCollectible.Neutral.SparkDrill_SparkToken;
-                    case NonCollectible.Neutral.SurlyMob: return NonCollectible.Neutral.AngryMob;
+                    case NonCollectible.Neutral.SurlyMobGILNEAS: return NonCollectible.Neutral.AngryMobGILNEAS;
                     case NonCollectible.Neutral.TheCandle: return NonCollectible.Neutral.TheCandle;
                     case NonCollectible.Neutral.TheDarkness: return NonCollectible.Neutral.TheDarkness_DarknessCandleToken;
                     case Neutral.WeaselTunneler: return Neutral.WeaselTunneler;
                     case NonCollectible.Neutral.EliseStarseeker_MapToTheGoldenMonkeyToken: return NonCollectible.Neutral.EliseStarseeker_GoldenMonkeyToken;
                     case Demonhunter.UrzulHorror: return NonCollectible.Demonhunter.UrzulHorror_LostSoulToken;
                     case Demonhunter.Marrowslicer: return NonCollectible.Warlock.SchoolSpirits_SoulFragmentToken;
+                    case Demonhunter.TwinSlice: return NonCollectible.Demonhunter.TwinSlice_SecondSliceToken;
+                    case NonCollectible.Demonhunter.InfernalStrike1: return NonCollectible.Demonhunter.TwinSlice_SecondSliceToken;
                     case Druid.ArchsporeMsshifn: return NonCollectible.Druid.ArchsporeMsshifn_MsshifnPrimeToken;
                     case Druid.AstralTiger: return Druid.AstralTiger;
                     case Druid.JadeIdol: return Druid.JadeIdol;
@@ -364,6 +366,23 @@ namespace HearthstoneReplays.Events
                             return existingEntity.CardId;
                         }
                         return null;
+
+                    case Mage.Duplicate:
+                        if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+                        {
+                            var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                            if (act.Type == (int)BlockType.TRIGGER)
+                            {
+                                var metaData = act.Data.Where(data => data is MetaData).Select(data => data as MetaData).FirstOrDefault();
+                                if (metaData != null && metaData.Meta == (int)MetaDataType.HISTORY_TARGET && metaData.MetaInfo != null && metaData.MetaInfo.Count > 0)
+                                {
+                                    var entityId = metaData.MetaInfo[0].Entity;
+                                    var existingEntity = GameState.CurrentEntities[entityId];
+                                    return existingEntity?.CardId;
+                                }
+                            }
+                        }
+                        return null;
                 }
             }
 
@@ -409,19 +428,6 @@ namespace HearthstoneReplays.Events
             {
                 return Paladin.LibramOfWisdom;
             }
-            //if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
-            //{
-            //    var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
-            //    if (action.Type == (int)BlockType.TRIGGER && action.TriggerKeyword == (int)GameTag.DEATHRATTLE)
-            //    {
-            //        var attachedEnchantments = GameState.FindEnchantmentsAttachedTo(action.Entity);
-            //        var isLibram = attachedEnchantments.Any(e => e.CardId == NonCollectible.Paladin.LibramofWisdom_LightsWisdomEnchantment);
-            //        if (isLibram)
-            //        {
-            //            return Paladin.LibramOfWisdom;
-            //        }
-            //    }
-            //}
 
             // Keymaster Alabaster
             if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))

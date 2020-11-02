@@ -25,7 +25,7 @@ namespace HearthstoneReplayTests
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
-            List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
+            List<string> logFile = TestDataReader.GetInputFile("duplicate.txt");
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile);
             Thread.Sleep(2000);
