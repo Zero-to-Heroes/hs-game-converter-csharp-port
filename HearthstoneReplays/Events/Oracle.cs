@@ -109,6 +109,7 @@ namespace HearthstoneReplays.Events
                             }
                         }
                     }
+
                     return creator.CardId;
                 }
             }

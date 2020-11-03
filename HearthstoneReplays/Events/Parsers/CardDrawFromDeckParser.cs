@@ -55,10 +55,12 @@ namespace HearthstoneReplays.Events.Parsers
                 tagChange.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
                 () => {
+                    var entityId = tagChange.Entity;
                     // We do it here because of Keymaster Alabaster - we need to know the last card
                     // that has been drawn
                     var creatorCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, entity, node, false);
-                    var lastInfluencedByCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, entity, node);
+                    // Always return this info, and the client has a list of public card creators they are allowed to show
+                    var lastInfluencedByCardId = Oracle.FindCardCreatorCardId(GameState, entity, node);
                     GameState.OnCardDrawn(entity.Entity);
                     return new GameEvent
                     {
@@ -110,7 +112,7 @@ namespace HearthstoneReplays.Events.Parsers
                     // We do it here because of Keymaster Alabaster - we need to know the last card
                     // that has been drawn
                     var creatorCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, showEntity, node);
-                    var lastInfluencedByCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, showEntity, node);
+                    var lastInfluencedByCardId = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
                     GameState.OnCardDrawn(showEntity.Entity);
                     return new GameEvent
                     {
@@ -148,7 +150,7 @@ namespace HearthstoneReplays.Events.Parsers
                     // We do it here because of Keymaster Alabaster - we need to know the last card
                     // that has been drawn
                     var creatorCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, fullEntity, node, false);
-                    var lastInfluencedByCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
+                    var lastInfluencedByCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
                     GameState.OnCardDrawn(fullEntity.Entity);
                     return new GameEvent
                     {
