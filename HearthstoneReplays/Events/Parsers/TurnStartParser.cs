@@ -40,13 +40,13 @@ namespace HearthstoneReplays.Events.Parsers
             // This event system is sometimes a mess - in some cases we want to reset the info when the event is sent
             // and in others we want to reset the game state, so as it is processed
             GameState.ClearPlagiarize();
+            // FIXME?: maybe this should not be inside the event provider, but rather apply on the GameState
+            GameState.OnNewTurn();
             result.Add(GameEventProvider.Create(
                    tagChange.TimeStamp,
                    "TURN_START",
                    () =>
                    {
-                       // FIXME?: maybe this should not be inside the event provider, but rather apply on the GameState
-                       GameState.OnNewTurn();
                        return new GameEvent
                        {
                            Type = "TURN_START",
