@@ -42,7 +42,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Type = "MULLIGAN_INPUT"
                 },
                 false,
-                node.CreationLogLine) };
+                node) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)

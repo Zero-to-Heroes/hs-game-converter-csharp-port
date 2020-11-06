@@ -92,7 +92,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 DeckId = deckId,
                             }),
                         true,
-                        node.CreationLogLine);
+                        node);
                 })
                 .ToList();
         }

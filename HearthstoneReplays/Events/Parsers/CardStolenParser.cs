@@ -56,7 +56,7 @@ namespace HearthstoneReplays.Events.Parsers
                             newControllerId = tagChange.Value
                         }),
                     true,
-                    node.CreationLogLine) };
+                    node) };
             }
             return null;
         }
@@ -84,7 +84,7 @@ namespace HearthstoneReplays.Events.Parsers
                             newControllerId = showEntity.GetTag(GameTag.CONTROLLER)
                         }),
                     true,
-                    node.CreationLogLine) };
+                    node) };
             }
             return null;
         }

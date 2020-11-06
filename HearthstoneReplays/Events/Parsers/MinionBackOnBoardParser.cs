@@ -63,7 +63,7 @@ namespace HearthstoneReplays.Events.Parsers
                             CreatorCardId = creatorCardId,
                         }),
                     true,
-                    node.CreationLogLine) };
+                    node) };
             }
             return null;
         }

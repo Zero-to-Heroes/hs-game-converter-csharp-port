@@ -61,7 +61,7 @@ namespace HearthstoneReplays.Events.Parsers
                    }
                },
                false,
-               node.CreationLogLine) };
+               node) };
             }
             return null;
         }

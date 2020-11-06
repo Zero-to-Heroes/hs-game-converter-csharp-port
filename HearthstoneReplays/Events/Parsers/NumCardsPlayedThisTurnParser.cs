@@ -52,7 +52,7 @@ namespace HearthstoneReplays.Events.Parsers
                         NumCardsPlayed = cardsPlayed,
                     }),
                 true,
-                node.CreationLogLine) };
+                node) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)

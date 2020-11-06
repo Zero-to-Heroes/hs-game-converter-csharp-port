@@ -69,7 +69,7 @@ namespace HearthstoneReplays.Events.Parsers
                         CthunSize = tagChange.Value,
                     }),
                 true,
-                node.CreationLogLine) };
+                node) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)

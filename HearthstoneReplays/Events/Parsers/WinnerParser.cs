@@ -56,7 +56,7 @@ namespace HearthstoneReplays.Events.Parsers
                             };
                        },
                        true,
-                       node.CreationLogLine) };
+                       node) };
             }
             else if (tagChange.Value == (int)PlayState.TIED)
             {
@@ -68,7 +68,7 @@ namespace HearthstoneReplays.Events.Parsers
                            Type = "TIE"
                        },
                        true,
-                       node.CreationLogLine) };
+                       node) };
             }
             return null;
         }

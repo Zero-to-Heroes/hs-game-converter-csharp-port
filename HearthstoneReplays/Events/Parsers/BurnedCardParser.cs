@@ -90,7 +90,7 @@ namespace HearthstoneReplays.Events.Parsers
                         return obj != null && (obj.CardId as string) == cardId;
                     },
                     true,
-                    node.CreationLogLine));
+                    node));
             }
             return result;
         }

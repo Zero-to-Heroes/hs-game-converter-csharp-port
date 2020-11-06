@@ -86,7 +86,7 @@ namespace HearthstoneReplays.Events.Parsers
                         CreatorCardId = creatorCardId, // Used when there is no cardId, so we can show at least the card that created it
                     }),
                 true,
-                node.CreationLogLine) };
+                node) };
         }
 
         private List<GameEventProvider> CreateFromFullEntity(Node node)
@@ -112,7 +112,7 @@ namespace HearthstoneReplays.Events.Parsers
                         CreatorCardId = creatorCardId, // Used when there is no cardId, so we can show "created by ..."
                     }),
                 true,
-                node.CreationLogLine) };
+                node) };
         }
     }
 }

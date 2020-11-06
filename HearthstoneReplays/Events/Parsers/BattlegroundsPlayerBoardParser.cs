@@ -192,7 +192,7 @@ namespace HearthstoneReplays.Events.Parsers
                         }
                         : null,
                    true,
-                   node.CreationLogLine,
+                   node,
                    false,
                    false,
                    true // Don't wait until the animation is ready, so we send the board state right away

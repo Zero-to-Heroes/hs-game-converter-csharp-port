@@ -53,7 +53,7 @@ namespace HearthstoneReplays.Events.Parsers
                         GolemSize = tagChange.Value,
                     }),
                 true,
-                node.CreationLogLine) };
+                node) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)

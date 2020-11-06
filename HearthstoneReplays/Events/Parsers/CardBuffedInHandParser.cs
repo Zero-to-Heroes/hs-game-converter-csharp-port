@@ -168,10 +168,10 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var action = node.Object as Parser.ReplayData.GameActions.Action;
-            return CreateEventProviderForAction(node, node.CreationLogLine);
+            return CreateEventProviderForAction(node);
         }
 
-        private List<GameEventProvider> CreateEventProviderForAction(Node node, string creationLogLine)
+        private List<GameEventProvider> CreateEventProviderForAction(Node node)
         {
             var action = node.Object as Parser.ReplayData.GameActions.Action;
             if (!GameState.CurrentEntities.ContainsKey(action.Entity))
@@ -221,7 +221,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 BuffCardId = buffs[actionEntity.CardId]
                             }),
                         true,
-                        creationLogLine);
+                        node);
                 })
                 .ToList();
             return result;

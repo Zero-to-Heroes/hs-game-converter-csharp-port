@@ -195,6 +195,8 @@
     <EmbeddedResource Include="TestData\plagiarize.txt" />
     <EmbeddedResource Include="TestData\potion_of_illusion.txt" />
     <EmbeddedResource Include="TestData\corsair_cache.txt" />
+    <EmbeddedResource Include="TestData\passive_trigger.txt" />
+    <EmbeddedResource Include="TestData\baku.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />

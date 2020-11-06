@@ -155,6 +155,7 @@ namespace HearthstoneReplays.Events
                     .Where(p => !(p is StopDevModeProvider))
                     .OrderByDescending(p => p.ShortCircuit)
                     .ThenBy(p => p.Timestamp)
+                    .ThenBy(p => p.Index)
                     .ToList();
                 if (startDevModeIndex >= 0)
                 {

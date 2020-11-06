@@ -70,7 +70,7 @@ namespace HearthstoneReplays.Events.Parsers
                     };
                 },
                 false,
-                node.CreationLogLine)
+                node)
             );
             if (fullEntity.GetTag(GameTag.PLAYER_ID) == GameState.NextBgsOpponentPlayerId)
             {
@@ -94,7 +94,7 @@ namespace HearthstoneReplays.Events.Parsers
                             };
                         },
                         true,
-                        node.CreationLogLine));
+                        node));
                 GameState.NextBgsOpponentPlayerId = -1;
             }
             return result;

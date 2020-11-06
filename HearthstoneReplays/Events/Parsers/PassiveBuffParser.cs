@@ -28,7 +28,10 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return false;
+            return node.Type == typeof(ShowEntity)
+                && (node.Object as ShowEntity).IsInPlay()
+                && (node.Object as ShowEntity).GetTag(GameTag.DUNGEON_PASSIVE_BUFF) == 1
+                && (node.Object as ShowEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.SPELL;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -52,14 +55,30 @@ namespace HearthstoneReplays.Events.Parsers
                         GameState,
                         gameState),
                     true,
-                    node.CreationLogLine) };
+                    node) };
             }
             return null;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
-            return null;
+            var showEntity = node.Object as ShowEntity;
+            var cardId = showEntity.CardId;
+            var controllerId = ParserState.GetTag(showEntity.Tags, GameTag.CONTROLLER);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                showEntity.TimeStamp,
+                "PASSIVE_BUFF",
+                GameEvent.CreateProvider(
+                    "PASSIVE_BUFF",
+                    cardId,
+                    controllerId,
+                    showEntity.Entity,
+                    ParserState,
+                    GameState,
+                    gameState),
+                true,
+                node) };
         }
     }
 }

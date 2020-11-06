@@ -25,12 +25,12 @@ namespace HearthstoneReplayTests
 		{
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
-            List<string> logFile = TestDataReader.GetInputFile("corsair_cache.txt");
+            List<string> logFile = TestDataReader.GetInputFile("passive_trigger.txt");
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile);
             Thread.Sleep(2000);
-            //string xml = new ReplayConverter().xmlFromReplay(replay);
-            //Console.Write(xml);
+            string xml = new ReplayConverter().xmlFromReplay(replay);
+            Console.Write(xml);
         }
 
         [TestMethod]

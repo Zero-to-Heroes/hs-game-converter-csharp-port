@@ -31,7 +31,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Type = "NEW_GAME"
                 },
                 false,
-                node.CreationLogLine) };
+                node) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)

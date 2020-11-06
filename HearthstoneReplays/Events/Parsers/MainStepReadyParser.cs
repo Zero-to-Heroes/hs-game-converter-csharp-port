@@ -42,7 +42,7 @@ namespace HearthstoneReplays.Events.Parsers
                        Type = "MAIN_STEP_READY"
                    },
                    false,
-                   node.CreationLogLine) };
+                   node) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)

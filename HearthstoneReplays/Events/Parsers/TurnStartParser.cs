@@ -60,7 +60,7 @@ namespace HearthstoneReplays.Events.Parsers
                        };
                    },
                    false,
-                   node.CreationLogLine));
+                   node));
             // This seems the most reliable way to have the combat_start event as soon as possible
             if ((ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
                         || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
@@ -74,7 +74,7 @@ namespace HearthstoneReplays.Events.Parsers
                         Type = "BATTLEGROUNDS_COMBAT_START"
                     },
                     false,
-                    node.CreationLogLine));
+                    node));
             }
             return result;
         }

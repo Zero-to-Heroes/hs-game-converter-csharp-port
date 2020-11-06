@@ -60,7 +60,7 @@ namespace HearthstoneReplays.Events.Parsers
                     GameState,
                     gameState),
                 true,
-                node.CreationLogLine) };
+                node) };
         }
 
         // Typically the case when the opponent plays a quest or a secret
@@ -89,7 +89,7 @@ namespace HearthstoneReplays.Events.Parsers
                         PlayerClass = playerClass,
                     }),
                 true,
-                node.CreationLogLine) };
+                node) };
         }
     }
 }

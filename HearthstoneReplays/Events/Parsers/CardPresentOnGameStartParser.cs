@@ -63,7 +63,7 @@ namespace HearthstoneReplays.Events.Parsers
                         Health = startingHealth
                     }),
                 true,
-                node.CreationLogLine) };
+                node) };
         }
     }
 }

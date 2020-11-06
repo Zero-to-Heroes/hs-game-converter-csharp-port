@@ -91,7 +91,7 @@ namespace HearthstoneReplays.Events.Parsers
                         DefenderTags = defenderTags
                     }),
                 true,
-                node.CreationLogLine)
+                node)
             };
         }
 

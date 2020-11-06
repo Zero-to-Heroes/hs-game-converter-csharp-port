@@ -61,7 +61,7 @@ namespace HearthstoneReplays.Events.Parsers
                         GameState,
                         gameState),
                     true,
-                    node.CreationLogLine) };
+                    node) };
             }
             return null;
         }
@@ -84,7 +84,7 @@ namespace HearthstoneReplays.Events.Parsers
                         GameState,
                     gameState),
                 true,
-                node.CreationLogLine) };
+                node) };
         }
     }
 }

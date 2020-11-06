@@ -82,23 +82,23 @@ namespace HearthstoneReplays.Events.Parsers
                     };
                 },
                 true,
-                node.CreationLogLine) };
+                node) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             if (node.Type == typeof(ShowEntity))
             {
-                return CreateEventFromShowEntity(node.Object as ShowEntity, node.CreationLogLine, node);
+                return CreateEventFromShowEntity(node.Object as ShowEntity, node);
             }
             else if (node.Type == typeof(FullEntity))
             {
-                return CreateEventFromFullEntity(node.Object as FullEntity, node.CreationLogLine, node);
+                return CreateEventFromFullEntity(node.Object as FullEntity, node);
             }
             return null;
         }
 
-        private List<GameEventProvider> CreateEventFromShowEntity(ShowEntity showEntity, string creationLogLine, Node node)
+        private List<GameEventProvider> CreateEventFromShowEntity(ShowEntity showEntity, Node node)
         {
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
@@ -134,10 +134,10 @@ namespace HearthstoneReplays.Events.Parsers
                     };
                 },
                 true,
-                creationLogLine) };
+                node) };
         }
 
-        private List<GameEventProvider> CreateEventFromFullEntity(FullEntity fullEntity, string creationLogLine, Node node)
+        private List<GameEventProvider> CreateEventFromFullEntity(FullEntity fullEntity, Node node)
         {
             var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
@@ -172,7 +172,7 @@ namespace HearthstoneReplays.Events.Parsers
                     };
                 },
                 true,
-                creationLogLine) };
+                node) };
         }
     }
 }

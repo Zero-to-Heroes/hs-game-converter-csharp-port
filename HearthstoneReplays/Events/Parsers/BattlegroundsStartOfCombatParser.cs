@@ -47,7 +47,7 @@ namespace HearthstoneReplays.Events.Parsers
                         Type = "BATTLEGROUNDS_COMBAT_START"
                     },
                     false,
-                    node.CreationLogLine) 
+                    node) 
             };
         }
 

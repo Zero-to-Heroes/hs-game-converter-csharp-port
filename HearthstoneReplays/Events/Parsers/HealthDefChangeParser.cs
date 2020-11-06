@@ -54,7 +54,7 @@ namespace HearthstoneReplays.Events.Parsers
                         NewHealth = defHealthChange,
                     }),
                 true,
-                node.CreationLogLine) };
+                node) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)

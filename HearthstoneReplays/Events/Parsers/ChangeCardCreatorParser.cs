@@ -58,7 +58,7 @@ namespace HearthstoneReplays.Events.Parsers
                             CreatorCardId = creatorCardId,
                         }),
                     true,
-                    node.CreationLogLine) };
+                    node) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)

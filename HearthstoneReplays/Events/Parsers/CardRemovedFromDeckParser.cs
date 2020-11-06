@@ -64,23 +64,23 @@ namespace HearthstoneReplays.Events.Parsers
                         GameState,
                     gameState),
                 true,
-                node.CreationLogLine) };
+                node) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             if (node.Type == typeof(ShowEntity))
             {
-                return CreateEventFromShowEntity(node, node.Object as ShowEntity, node.CreationLogLine);
+                return CreateEventFromShowEntity(node, node.Object as ShowEntity);
             }
             else if (node.Type == typeof(FullEntity))
             {
-                return CreateEventFromFullEntity(node, node.Object as FullEntity, node.CreationLogLine);
+                return CreateEventFromFullEntity(node, node.Object as FullEntity);
             }
             return null;
         }
 
-        private List<GameEventProvider> CreateEventFromShowEntity(Node node, ShowEntity showEntity, string creationLogLine)
+        private List<GameEventProvider> CreateEventFromShowEntity(Node node, ShowEntity showEntity)
         {
             // Check that this is not a "Burned card", as they both manifest by a ShowEntity
             // with a graveyard zone
@@ -117,10 +117,10 @@ namespace HearthstoneReplays.Events.Parsers
                         GameState,
                     gameState),
                 true,
-                creationLogLine) };
+                node) };
         }
 
-        private List<GameEventProvider> CreateEventFromFullEntity(Node node, FullEntity fullEntity, string creationLogLine)
+        private List<GameEventProvider> CreateEventFromFullEntity(Node node, FullEntity fullEntity)
         {
             if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
             {
@@ -152,7 +152,7 @@ namespace HearthstoneReplays.Events.Parsers
                         GameState,
                     gameState),
                 true,
-                creationLogLine) };
+                node) };
         }
     }
 }

@@ -65,7 +65,7 @@ namespace HearthstoneReplays.Events.Parsers
                     GameState,
                     gameState),
                 true,
-                node.CreationLogLine) };
+                node) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)

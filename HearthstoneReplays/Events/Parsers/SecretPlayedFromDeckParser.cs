@@ -65,7 +65,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 PlayerClass = playerClass,
                             }),
                        true,
-                       node.CreationLogLine) };
+                       node) };
             }
             return null;
         }
@@ -95,7 +95,7 @@ namespace HearthstoneReplays.Events.Parsers
                         PlayerClass = playerClass,
                     }),
                 true,
-                node.CreationLogLine) };
+                node) };
         }
     }
 }

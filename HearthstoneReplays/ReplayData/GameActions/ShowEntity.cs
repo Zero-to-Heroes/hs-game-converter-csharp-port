@@ -35,5 +35,10 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
 			var playerClass = GetTag(GameTag.CLASS);
 			return ((CardClass)playerClass).ToString();
 		}
+
+		public bool IsInPlay()
+		{
+			return GetTag(GameTag.ZONE) == (int)Zone.PLAY;
+		}
     }
 }

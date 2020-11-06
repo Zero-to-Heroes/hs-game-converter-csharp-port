@@ -18,6 +18,7 @@ namespace HearthstoneReplays.Events
         public bool ShortCircuit { get; set; }
         public string EventName{ get; set; }
         public string CreationLogLine { get; set; }
+        public int Index { get; set; }
         public GameEvent GameEvent { get; private set; }
 
         private Helper helper = new Helper();
@@ -34,16 +35,16 @@ namespace HearthstoneReplays.Events
             string eventName, // Used to give a "type" to the provider
             Func<GameEvent> eventProvider,
             bool needMetaData, 
-            string creationLogLine,
+            Node node,
             bool animationReady = false,
             bool debug = false,
             bool shortCircuit = false)
         {
             if (animationReady)
             {
-                Logger.Log("Creating event with animation ready", creationLogLine);
+                Logger.Log("Creating event with animation ready", node.CreationLogLine);
             }
-            return Create(originalTimestamp, eventName, eventProvider, (a) => false, needMetaData, creationLogLine, animationReady, debug, shortCircuit);
+            return Create(originalTimestamp, eventName, eventProvider, (a) => false, needMetaData, node, animationReady, debug, shortCircuit);
         }
 
         public static GameEventProvider Create(
@@ -52,14 +53,17 @@ namespace HearthstoneReplays.Events
             Func<GameEvent> eventProvider,
             Func<GameEventProvider, bool> isDuplicatePredicate,
             bool needMetaData,
-            string creationLogLine,
+            Node node,
             bool animationReady = false,
             bool debug = false,
             bool shortCircuit = false)
         {
+            string creationLogLine = node.CreationLogLine;
+            int index = node.Index;
             var result = new GameEventProvider
             {
                 Timestamp = originalTimestamp,
+                Index = index,
                 EventName = eventName,
                 SupplyGameEvent = eventProvider,
                 isDuplicatePredicate = isDuplicatePredicate,

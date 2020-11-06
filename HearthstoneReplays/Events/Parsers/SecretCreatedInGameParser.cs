@@ -67,7 +67,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 CreatorCardId = creatorEntityCardId,
                             }),
                        true,
-                       node.CreationLogLine) };
+                       node) };
             }
             return null;
         }
@@ -102,7 +102,7 @@ namespace HearthstoneReplays.Events.Parsers
                         CreatorCardId = creatorEntityCardId,
                     }),
                 true,
-                node.CreationLogLine) };
+                node) };
         }
     }
 }

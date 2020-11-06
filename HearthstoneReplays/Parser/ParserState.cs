@@ -118,7 +118,8 @@ namespace HearthstoneReplays.Parser
                         Value = this._localPlayer
                     },
                     false,
-                    data) });
+					new Node(null, null, 0, null, data)
+			)});
 		}
 
 		private Player _opponentPlayer;
@@ -146,7 +147,8 @@ namespace HearthstoneReplays.Parser
 						}
 					},
 					false,
-					data) }); ;
+					new Node(null, null, 0, null, data)
+			)}); ;
         }
 
 		public void Reset()

@@ -67,23 +67,23 @@ namespace HearthstoneReplays.Events.Parsers
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
                         }),
                     true,
-                    node.CreationLogLine) };
+                    node) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             if (node.Type == typeof(ShowEntity))
             {
-                return CreateEventFromShowEntity(node, node.CreationLogLine);
+                return CreateEventFromShowEntity(node);
             }
             else if (node.Type == typeof(FullEntity))
             {
-                return CreateEventFromFullEntity(node, node.CreationLogLine);
+                return CreateEventFromFullEntity(node);
             }
             return null;
         }
 
-        private List<GameEventProvider> CreateEventFromShowEntity(Node node, string creationLogLine)
+        private List<GameEventProvider> CreateEventFromShowEntity(Node node)
         {
             ShowEntity showEntity = node.Object as ShowEntity;
             //Logger.Log("Will add creator " + showEntity.GetTag(GameTag.CREATOR) + " //" + showEntity.GetTag(GameTag.DISPLAYED_CREATOR), "");
@@ -111,10 +111,10 @@ namespace HearthstoneReplays.Events.Parsers
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1
                         }),
                     true,
-                    creationLogLine) };
+                    node) };
         }
 
-        private List<GameEventProvider> CreateEventFromFullEntity(Node node, string creationLogLine)
+        private List<GameEventProvider> CreateEventFromFullEntity(Node node)
         {
             FullEntity fullEntity = node.Object as FullEntity;
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
@@ -164,7 +164,7 @@ namespace HearthstoneReplays.Events.Parsers
                         };
                     },
                     true,
-                    creationLogLine) };
+                    node) };
         }
     }
 }
