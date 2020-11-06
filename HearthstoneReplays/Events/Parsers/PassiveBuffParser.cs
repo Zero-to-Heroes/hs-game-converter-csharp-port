@@ -40,7 +40,8 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
             var controllerId = ParserState.GetTag(entity.Tags, GameTag.CONTROLLER);
-            if (ParserState.GetTag(entity.Tags, GameTag.DUNGEON_PASSIVE_BUFF) == 1)
+            if (ParserState.GetTag(entity.Tags, GameTag.DUNGEON_PASSIVE_BUFF) == 1 
+                && ParserState.GetTag(entity.Tags, GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
                 return new List<GameEventProvider> { GameEventProvider.Create(
