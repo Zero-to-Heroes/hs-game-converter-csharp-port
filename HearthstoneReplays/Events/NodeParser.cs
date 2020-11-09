@@ -470,6 +470,7 @@ namespace HearthstoneReplays.Events
                 new CardPlayedFromHandParser(ParserState),
                 new SecretPlayedFromHandParser(ParserState),
                 new MulliganInputParser(ParserState),
+                new MulliganDealingParser(ParserState),
                 new MulliganDoneParser(ParserState),
                 new RumbleRunStepParser(ParserState),
                 new DungeonRunStepParser(ParserState),
