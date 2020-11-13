@@ -172,8 +172,8 @@ namespace HearthstoneReplays.Events
                     case NonCollectible.Neutral.AngryMobGILNEAS: return NonCollectible.Neutral.CrazedMobGILNEAS;
                     case Neutral.BadLuckAlbatross: return NonCollectible.Neutral.BadLuckAlbatross_AlbatrossToken;
                     case Neutral.BananaBuffoon: return NonCollectible.Neutral.BananaBuffoon_BananasToken;
-                    case Neutral.BootyBayBookie: return NonCollectible.Neutral.TheCoin;
-                    case Neutral.BurglyBully: return NonCollectible.Neutral.TheCoin;
+                    case Neutral.BootyBayBookie: return NonCollectible.Neutral.TheCoinBasic;
+                    case Neutral.BurglyBully: return NonCollectible.Neutral.TheCoinBasic;
                     case NonCollectible.Neutral.CoinPouchGILNEAS: return NonCollectible.Neutral.SackOfCoinsGILNEAS;
                     case NonCollectible.Neutral.CreepyCurioGILNEAS: return NonCollectible.Neutral.HauntedCurioGILNEAS;
                     case NonCollectible.Neutral.HauntedCurioGILNEAS: return NonCollectible.Neutral.CursedCurioGILNEAS;
@@ -184,11 +184,11 @@ namespace HearthstoneReplays.Events
                     case Neutral.FireFly: return NonCollectible.Neutral.FireFly_FlameElementalToken;
                     case Neutral.FishyFlyer: return NonCollectible.Neutral.FishyFlyer_SpectralFlyerToken;
                     case Neutral.HakkarTheSoulflayer: return NonCollectible.Neutral.HakkartheSoulflayer_CorruptedBloodToken;
-                    case Neutral.HoardingDragon: return NonCollectible.Neutral.TheCoin;
+                    case Neutral.HoardingDragon: return NonCollectible.Neutral.TheCoinBasic;
                     case Neutral.IgneousElemental: return NonCollectible.Neutral.FireFly_FlameElementalToken;
-                    case Neutral.InfestedGoblin: return NonCollectible.Neutral.ScarabEgg_ScarabToken;
+                    case Neutral.InfestedGoblin: return NonCollectible.Neutral.WrappedGolem_ScarabToken;
                     case Neutral.KingMukla: return NonCollectible.Neutral.Bananas;
-                    case Neutral.LicensedAdventurer: return NonCollectible.Neutral.TheCoin;
+                    case Neutral.LicensedAdventurer: return NonCollectible.Neutral.TheCoinBasic;
                     case NonCollectible.Neutral.MilitiaHornGILNEAS: return NonCollectible.Neutral.VeteransMilitiaHornGILNEAS;
                     case Neutral.MuklaTyrantOfTheVale: return NonCollectible.Neutral.Bananas;
                     case NonCollectible.Neutral.OldMilitiaHornGILNEAS: return NonCollectible.Neutral.MilitiaHornGILNEAS;
@@ -197,7 +197,7 @@ namespace HearthstoneReplays.Events
                     case Neutral.SeaforiumBomber: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
                     case Neutral.SmugSenior: return NonCollectible.Neutral.SmugSenior_SpectralSeniorToken;
                     case Neutral.SneakyDelinquent: return NonCollectible.Neutral.SneakyDelinquent_SpectralDelinquentToken;
-                    case Neutral.SoldierOfFortune: return NonCollectible.Neutral.TheCoin;
+                    case Neutral.SoldierOfFortune: return NonCollectible.Neutral.TheCoinBasic;
                     case Neutral.SparkDrill: return NonCollectible.Neutral.SparkDrill_SparkToken;
                     case Neutral.SparkEngine: return NonCollectible.Neutral.SparkDrill_SparkToken;
                     case NonCollectible.Neutral.SurlyMobGILNEAS: return NonCollectible.Neutral.AngryMobGILNEAS;
@@ -241,7 +241,7 @@ namespace HearthstoneReplays.Events
                     case Paladin.SandwaspQueen: return NonCollectible.Paladin.SandwaspQueen_SandwaspToken;
                     case Paladin.BronzeHerald: return NonCollectible.Paladin.BronzeHerald_BronzeDragonToken;
                     case Priest.AwakenTheMakers: return NonCollectible.Priest.AwakentheMakers_AmaraWardenOfHopeToken;
-                    case Priest.GildedGargoyle: return NonCollectible.Neutral.TheCoin;
+                    case Priest.GildedGargoyle: return NonCollectible.Neutral.TheCoinBasic;
                     case Priest.ExcavatedEvil: return Priest.ExcavatedEvil;
                     case Priest.ExtraArms: return NonCollectible.Priest.ExtraArms_MoreArmsToken;
                     case Priest.ReliquaryOfSouls: return NonCollectible.Priest.ReliquaryofSouls_ReliquaryPrimeToken;
@@ -255,7 +255,7 @@ namespace HearthstoneReplays.Events
                     case Rogue.RazorpetalVolley: return NonCollectible.Rogue.RazorpetalVolley_RazorpetalToken;
                     case Rogue.ShadowOfDeath: return NonCollectible.Rogue.ShadowofDeath_ShadowToken;
                     case Rogue.TheCavernsBelow: return NonCollectible.Rogue.TheCavernsBelow_CrystalCoreTokenUNGORO;
-                    case Rogue.UmbralSkulker: return NonCollectible.Neutral.TheCoin;
+                    case Rogue.UmbralSkulker: return NonCollectible.Neutral.TheCoinBasic;
                     case Rogue.Wanted: return NonCollectible.Neutral.Coin;
                     case Rogue.Waxadred: return NonCollectible.Rogue.Waxadred_WaxadredsCandleToken;
                     case Shaman.LadyVashj: return NonCollectible.Shaman.LadyVashj_VashjPrimeToken;
