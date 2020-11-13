@@ -172,6 +172,7 @@ namespace HearthstoneReplays.Events
                     case NonCollectible.Neutral.AngryMobGILNEAS: return NonCollectible.Neutral.CrazedMobGILNEAS;
                     case Neutral.BadLuckAlbatross: return NonCollectible.Neutral.BadLuckAlbatross_AlbatrossToken;
                     case Neutral.BananaBuffoon: return NonCollectible.Neutral.BananaBuffoon_BananasToken;
+                    case Neutral.BananaVendor: return NonCollectible.Neutral.BananaVendor_BananasToken;
                     case Neutral.BootyBayBookie: return NonCollectible.Neutral.TheCoinBasic;
                     case Neutral.BurglyBully: return NonCollectible.Neutral.TheCoinBasic;
                     case NonCollectible.Neutral.CoinPouchGILNEAS: return NonCollectible.Neutral.SackOfCoinsGILNEAS;
@@ -207,6 +208,7 @@ namespace HearthstoneReplays.Events
                     case NonCollectible.Neutral.EliseStarseeker_MapToTheGoldenMonkeyToken: return NonCollectible.Neutral.EliseStarseeker_GoldenMonkeyToken;
                     case Demonhunter.UrzulHorror: return NonCollectible.Demonhunter.UrzulHorror_LostSoulToken;
                     case Demonhunter.Marrowslicer: return NonCollectible.Warlock.SchoolSpirits_SoulFragmentToken;
+                    case Demonhunter.ThrowGlaive: return Collectible.Demonhunter.ThrowGlaive; // TO CHECK
                     case Demonhunter.TwinSlice: return NonCollectible.Demonhunter.TwinSlice_SecondSliceToken;
                     case NonCollectible.Demonhunter.InfernalStrike1: return NonCollectible.Demonhunter.TwinSlice_SecondSliceToken;
                     case Druid.ArchsporeMsshifn: return NonCollectible.Druid.ArchsporeMsshifn_MsshifnPrimeToken;
@@ -225,6 +227,7 @@ namespace HearthstoneReplays.Events
                     case Hunter.ZixorApexPredator: return NonCollectible.Hunter.ZixorApexPredator_ZixorPrimeToken;
                     case Mage.ArchmageAntonidas: return Mage.Fireball;
                     case Mage.AstromancerSolarian: return NonCollectible.Mage.AstromancerSolarian_SolarianPrimeToken;
+                    case Mage.ConfectionCyclone: return NonCollectible.Mage.ConfectionCyclone_SugarElementalToken;
                     case Mage.DeckOfWonders: return NonCollectible.Mage.DeckofWonders_ScrollOfWonderToken;
                     case Mage.FlameGeyser: return NonCollectible.Neutral.FireFly_FlameElementalToken;
                     case Mage.ForgottenTorch: return NonCollectible.Mage.ForgottenTorch_RoaringTorchToken;
@@ -274,6 +277,7 @@ namespace HearthstoneReplays.Events
                     case Warlock.SchoolSpirits: return NonCollectible.Warlock.SchoolSpirits_SoulFragmentToken;
                     case Warlock.SoulShear: return NonCollectible.Warlock.SchoolSpirits_SoulFragmentToken;
                     case Warlock.SpiritJailer: return NonCollectible.Warlock.SchoolSpirits_SoulFragmentToken;
+                    case Warrior.BumperCar: return NonCollectible.Neutral.BumperCar_DarkmoonRiderToken;
                     case Warrior.ClockworkGoblin: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
                     case Warrior.DirehornHatchling: return NonCollectible.Warrior.DirehornHatchling_DirehornMatriarchToken;
                     case Warrior.ExploreUngoro: return NonCollectible.Warrior.ExploreUnGoro_ChooseYourPathToken;

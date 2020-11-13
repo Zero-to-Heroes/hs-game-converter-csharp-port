@@ -307,6 +307,7 @@ namespace HearthstoneReplays.Enums
 
     public enum GameTag
     {
+        INVALID = 0,
         TAG_NOT_SET = 1,
         IGNORE_DAMAGE = 1,
         TAG_SCRIPT_DATA_NUM_1 = 2,
