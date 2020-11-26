@@ -190,7 +190,10 @@ namespace HearthstoneReplays.Parser.Handlers
 						};
 					},
                     false,
-                    new Node(null, null, 0, null, data)) });
+                    new Node(null, null, 0, null, data),
+					false,
+					false,
+					true) });
 			}
 
 			match = Regexes.ActionCreategamePlayerRegex.Match(data);

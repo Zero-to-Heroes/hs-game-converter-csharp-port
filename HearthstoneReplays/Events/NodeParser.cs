@@ -22,6 +22,8 @@ namespace HearthstoneReplays.Events
         private Timer timer;
         private ParserState ParserState;
 
+        private bool waitingForMetaData;
+
         private readonly Object listLock = new object();
 
         public NodeParser()
@@ -289,6 +291,11 @@ namespace HearthstoneReplays.Events
                         // animation ready calls (more specifically, things related to the GameEntity, like MAIN_STEP)
                         //if (!eventQueue.All(p => !p.CreationLogLine.Contains("GameEntity")) 
                         //    && !eventQueue.Where(p => !p.CreationLogLine.Contains("GameEntity")).Any(p => p.AnimationReady))
+                        // So that things don't break while in DevMode
+                        if (waitingForMetaData && !eventQueue.First().ShortCircuit)
+                        {
+                            return;
+                        }
                         // Heck for Battlegrounds
                         if (!DevMode 
                             && !eventQueue.First().ShortCircuit
@@ -333,12 +340,14 @@ namespace HearthstoneReplays.Events
                     //}
                     if (provider.NeedMetaData)
                     {
+                        waitingForMetaData = true;
                         // Wait until we have all the necessary data
                         while (ParserState.CurrentGame.FormatType == -1 || ParserState.CurrentGame.GameType == -1 || ParserState.LocalPlayer == null)
                         {
                             //Logger.Log("[csharp] waiting for metadata", "");
                             await Task.Delay(100);
                         }
+                        waitingForMetaData = false;
                     }
                     if (provider.debug)
                     {

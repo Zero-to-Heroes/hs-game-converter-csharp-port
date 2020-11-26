@@ -197,6 +197,9 @@
     <EmbeddedResource Include="TestData\corsair_cache.txt" />
     <EmbeddedResource Include="TestData\passive_trigger.txt" />
     <EmbeddedResource Include="TestData\baku.txt" />
+    <EmbeddedResource Include="TestData\mask_of_mimicry.txt" />
+    <EmbeddedResource Include="TestData\bring_on_recruits.txt" />
+    <EmbeddedResource Include="TestData\sac_of_coins.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />
