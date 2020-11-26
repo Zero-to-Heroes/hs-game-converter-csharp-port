@@ -176,6 +176,9 @@ namespace HearthstoneReplays.Events
                     case Neutral.BootyBayBookie: return NonCollectible.Neutral.TheCoinBasic;
                     case Neutral.BurglyBully: return NonCollectible.Neutral.TheCoinBasic;
                     case NonCollectible.Neutral.CoinPouchGILNEAS: return NonCollectible.Neutral.SackOfCoinsGILNEAS;
+                    case NonCollectible.Neutral.SackOfCoinsGILNEAS: return NonCollectible.Neutral.HeftySackOfCoinsGILNEAS;
+                    case NonCollectible.Neutral.CoinPouchTavernBrawl: return NonCollectible.Neutral.SackOfCoinsTavernBrawl;
+                    case NonCollectible.Neutral.SackOfCoinsTavernBrawl: return NonCollectible.Neutral.HeftySackOfCoinsTavernBrawl;
                     case NonCollectible.Neutral.CreepyCurioGILNEAS: return NonCollectible.Neutral.HauntedCurioGILNEAS;
                     case NonCollectible.Neutral.HauntedCurioGILNEAS: return NonCollectible.Neutral.CursedCurioGILNEAS;
                     case Neutral.Doomcaller: return Neutral.Cthun;
