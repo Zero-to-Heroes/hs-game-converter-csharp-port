@@ -241,6 +241,7 @@ namespace HearthstoneReplays.Events
                     case Mage.Rhonin: return Mage.ArcaneMissiles;
                     case Mage.SteamSurger: return Mage.FlameGeyser;
                     case Mage.VioletSpellwing: return Mage.ArcaneMissiles;
+                    case NonCollectible.Paladin.BringOnRecruits: return NonCollectible.Paladin.SilverHandRecruitToken;
                     case Paladin.DrygulchJailor: return NonCollectible.Paladin.SilverHandRecruitToken;
                     case Paladin.MurgurMurgurgle: return NonCollectible.Paladin.MurgurMurgurgle_MurgurglePrimeToken;
                     case Paladin.TheLastKaleidosaur: return NonCollectible.Paladin.TheLastKaleidosaur_GalvadonToken;
