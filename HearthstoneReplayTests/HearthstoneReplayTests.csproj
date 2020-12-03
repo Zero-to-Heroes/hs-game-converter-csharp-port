@@ -200,6 +200,8 @@
     <EmbeddedResource Include="TestData\mask_of_mimicry.txt" />
     <EmbeddedResource Include="TestData\bring_on_recruits.txt" />
     <EmbeddedResource Include="TestData\sac_of_coins.txt" />
+    <EmbeddedResource Include="TestData\lady_liadrin.txt" />
+    <EmbeddedResource Include="TestData\eyesor.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />

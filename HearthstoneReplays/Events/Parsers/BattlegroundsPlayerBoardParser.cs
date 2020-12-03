@@ -12,6 +12,10 @@ namespace HearthstoneReplays.Events.Parsers
 {
     public class BattlegroundsPlayerBoardParser : ActionParser
     {
+        private static List<string> COMPETING_BATTLE_START_HERO_POWERS = new List<string>() {
+            NonCollectible.Neutral.RebornRitesTavernBrawl,
+            NonCollectible.Neutral.SwattingInsectsTavernBrawl,
+        };
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
 
@@ -23,7 +27,6 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            //return false;
             return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
                     || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                 && GameState.GetGameEntity().GetTag(GameTag.TURN) % 2 == 0
@@ -33,22 +36,16 @@ namespace HearthstoneReplays.Events.Parsers
                     || (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.DEATHS
                     // Basically trigger as soon as we can, and just leave some room for the Lich King's hero power
                     // Here we assume that hero powers are triggered first, before Start of Combat events
-                    // The issue is if two hero powers (including the Lich King) compete
+                    // The issue is if two hero powers (including the Lich King) compete, which is the case when Al'Akir triggers first for instance
                     || ((node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER
-                        && GameState.CurrentEntities[(node.Object as Parser.ReplayData.GameActions.Action).Entity].CardId 
-                            != NonCollectible.Neutral.RebornRitesTavernBrawl)
+                        && !COMPETING_BATTLE_START_HERO_POWERS.Contains(
+                            GameState.CurrentEntities[(node.Object as Parser.ReplayData.GameActions.Action).Entity].CardId))
                     );
         }
 
         public bool AppliesOnCloseNode(Node node)
         {
             return false;
-            //return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-            //        || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
-            //    && GameState.GetGameEntity().GetTag(GameTag.TURN) % 2 == 0
-            //    && node.Type == typeof(Parser.ReplayData.GameActions.Action)
-            //    && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER
-            //    && (node.Object as Parser.ReplayData.GameActions.Action).EffectIndex == -1;
         }
 
         // In case a start of combat / Hero Power effect only damages a minion, this is not an issue
@@ -72,14 +69,6 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
-            //var hasHero = action.Data
-            //    .Where(data => data.GetType() == typeof(FullEntity))
-            //    .Select(data => data as FullEntity)
-            //    .Any(data => data.CardId?.Contains("HERO") ?? false);
-            //if (!hasHero)
-            //{
-            //    return null;
-            //}
             GameState.BgCombatStarted = true;
 
             var opponent = ParserState.OpponentPlayer;
@@ -90,25 +79,6 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             return null;
-            //var action = node.Object as Parser.ReplayData.GameActions.Action;
-            //var entity = GameState.CurrentEntities[action.Entity];
-            //if (entity.CardId != "TB_BaconShop_8P_PlayerE")
-            //{
-            //    return null;
-            //}
-
-            //var hasHero = action.Data
-            //    .Where(data => data.GetType() == typeof(FullEntity))
-            //    .Select(data => data as FullEntity)
-            //    .Any(data => data.CardId?.Contains("HERO") ?? false);
-            //if (!hasHero)
-            //{
-            //    return null;
-            //}
-
-            //var opponent = ParserState.OpponentPlayer;
-            //var player = ParserState.LocalPlayer;
-            //return new List<GameEventProvider> { CreateProviderFromAction(node, player), CreateProviderFromAction(node, opponent) };
         }
 
         private GameEventProvider CreateProviderFromAction(Node node, Player player)
