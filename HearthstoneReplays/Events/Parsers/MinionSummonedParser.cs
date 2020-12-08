@@ -35,13 +35,16 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            var isMinionPlayed = (node.Parent != null
-                    && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action)
-                    && (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.PLAY);
-            if (isMinionPlayed)
-            {
-                return false;
-            }
+            // This is not enough, as it prevents summoned minions from being detected if they are 
+            // created in the same action as the play, i.e. a reborn minion being destroyed by 
+            // Deathwing that would spawn something
+            //var isMinionPlayed = (node.Parent != null
+            //        && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action)
+            //        && (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.PLAY);
+            //if (isMinionPlayed)
+            //{
+            //    return false;
+            //}
             var createFromFullEntity = node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY
                 && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.MINION
@@ -88,6 +91,23 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
+            // Prevent the same minion from being created twice, once from the PLAY block
+            // and once from the Entity block
+            var isPlayBlock = (node.Parent != null
+                    && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action)
+                    && (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.PLAY);
+            if (isPlayBlock)
+            {
+                var parentAction = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                var createdEntityId = node.Type == typeof(FullEntity) 
+                    ? (node.Object as FullEntity).Entity 
+                    : (node.Object as ShowEntity).Entity;
+                if (createdEntityId == parentAction.Entity)
+                {
+                    return null;
+                }
+            }
+
             if (node.Type == typeof(FullEntity))
             {
                 return CreateFromFullEntity(node);
