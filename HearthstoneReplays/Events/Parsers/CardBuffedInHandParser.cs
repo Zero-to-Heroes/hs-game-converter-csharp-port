@@ -15,8 +15,10 @@ namespace HearthstoneReplays.Events.Parsers
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
 
+        // When adding an entity to this list, also add the corresponding buff in the map below
         private List<string> validBuffers = new List<string>()
         {
+            CardIds.Collectible.Demonhunter.SkullOfGuldan,
             //CardIds.Collectible.Druid.DreampetalFlorist,
             //CardIds.Collectible.Druid.ImprisonedSatyr, 
             CardIds.Collectible.Druid.PredatoryInstincts,
@@ -101,6 +103,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         private Dictionary<string, string> buffs = new Dictionary<string, string>()
         {
+            { CardIds.Collectible.Demonhunter.SkullOfGuldan, CardIds.NonCollectible.Neutral.SkullofGuldan_EmbracePowerEnchantment },
             { CardIds.Collectible.Druid.PredatoryInstincts, CardIds.NonCollectible.Neutral.PredatoryInstincts_PredatoryInstinctsEnchantment },
             { CardIds.Collectible.Hunter.FreezingTrap, CardIds.NonCollectible.Hunter.FreezingTrap_TrappedEnchantment},
             { CardIds.Collectible.Hunter.HiddenCache, CardIds.NonCollectible.Hunter.HiddenCache_SmugglingEnchantment},
@@ -153,11 +156,11 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            var isPower = node.Type == typeof(Parser.ReplayData.GameActions.Action)
-                 && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.POWER;
-            var isTrigger = node.Type == typeof(Parser.ReplayData.GameActions.Action)
-                 && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER;
-            return isPower || isTrigger;
+            // Use the meta node and not the action so that we can properly sequence events thanks to the 
+            // node's index
+            return node.Type == typeof(MetaData)
+                 && (node.Object as MetaData).Meta == (int)MetaDataType.TARGET;
+
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -167,18 +170,28 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
-            var action = node.Object as Parser.ReplayData.GameActions.Action;
-            return CreateEventProviderForAction(node);
+            return CreateEventProviderForMeta(node);
         }
 
-        private List<GameEventProvider> CreateEventProviderForAction(Node node)
-        {
-            var action = node.Object as Parser.ReplayData.GameActions.Action;
+        private List<GameEventProvider> CreateEventProviderForMeta(Node node)
+        {     
+            var isPower = node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action)
+                 && (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.POWER;
+            var isTrigger = node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action)
+                 && (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER;
+            if (!isPower && !isTrigger)
+            {
+                return null;
+            }
+
+
+            var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
             if (!GameState.CurrentEntities.ContainsKey(action.Entity))
             {
                 Logger.Log("Missing entity key", "" + action.Entity);
                 return null;
             }
+
             var actionEntity = GameState.CurrentEntities[action.Entity];
             var bufferCardId = actionEntity.CardId;
             // Because some cards have an animation that reveal the buffed cards, and others don't, 
@@ -187,25 +200,18 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return null;
             }
-            var entitiesBuffedInHand = action.Data
-                .Where(data => data.GetType() == typeof(MetaData))
-                .Select(data => data as MetaData)
-                .Where(meta => meta.Meta == (int)MetaDataType.TARGET)
-                .SelectMany(meta => meta.MetaInfo)
+
+            var meta = node.Object as MetaData;
+            var entitiesBuffedInHand = meta.MetaInfo
                 .Select(info => GameState.CurrentEntities.ContainsKey(info.Entity) ? GameState.CurrentEntities[info.Entity] : null)
                 .Where(entity => entity != null)
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.HAND)
                 .ToList();
-            if (entitiesBuffedInHand.Count == 0)
-            {
-                return null;
-            }
-            var controllerId = actionEntity.GetTag(GameTag.CONTROLLER);
-            var result = entitiesBuffedInHand
+            return entitiesBuffedInHand
                 .Select(entity =>
                 {
                     return GameEventProvider.Create(
-                        action.TimeStamp,
+                        meta.TimeStamp,
                         "CARD_BUFFED_IN_HAND",
                         GameEvent.CreateProvider(
                             "CARD_BUFFED_IN_HAND",
@@ -224,7 +230,6 @@ namespace HearthstoneReplays.Events.Parsers
                         node);
                 })
                 .ToList();
-            return result;
         }
     }
 }

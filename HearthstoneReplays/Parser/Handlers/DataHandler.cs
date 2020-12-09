@@ -366,7 +366,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				var info = match.Groups[3].Value;
 				var parsedData = helper.ParseEntity(rawData, state);
 				var meta = helper.ParseEnum<MetaDataType>(rawMeta);
-				var metaData = new MetaData {Data = parsedData, Info = int.Parse(info), Meta = meta, MetaInfo = new List<Info>()};
+				var metaData = new MetaData {Data = parsedData, Info = int.Parse(info), Meta = meta, MetaInfo = new List<Info>(), TimeStamp = timestamp};
 				state.UpdateCurrentNode(typeof(Action));
 				if (state.Node.Type == typeof(Action))
 					((Action)state.Node.Object).Data.Add(metaData);
