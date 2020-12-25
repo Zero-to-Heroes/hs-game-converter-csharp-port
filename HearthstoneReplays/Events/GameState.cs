@@ -24,10 +24,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         // of a tag change. At the time it is revealed, we don't have the opponent's entity yet
         // so we can't emit the event
         public int NextBgsOpponentPlayerId;
-        public bool SimulationTriggered;
+        public bool BattleResultSent;
+        //public bool SimulationTriggered;
         public int LastCardPlayedEntityId;
         public int LastCardDrawnEntityId;
-        public bool BgCombatStarted;
+        public string BgsCurrentBattleOpponent;
 
         public Dictionary<int, List<FullEntity>> EntityIdsOnBoardWhenPlayingPotionOfIllusion = null;
 
@@ -36,15 +37,20 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public void Reset(ParserState state)
         {
-            CurrentEntities = new Dictionary<int, FullEntity>();
-            MulliganOver = false;
-            MetaData = null;
             ParserState = state;
+            CurrentEntities = new Dictionary<int, FullEntity>();
+            EntityNames = new Dictionary<string, int>();
+            MulliganOver = false;
+            CurrentTurn = 0;
+            MetaData = null;
             NextBgsOpponentPlayerId = -1;
-
-            controllerEntity = new Dictionary<int, int>();
+            BattleResultSent = false;
+            LastCardPlayedEntityId = -1;
+            LastCardDrawnEntityId = -1;
+            BgsCurrentBattleOpponent = null;
+            EntityIdsOnBoardWhenPlayingPotionOfIllusion = null;
             gameEntityId = -1;
-
+            controllerEntity = new Dictionary<int, int>();
         }
 
         //public void StartTurn()
@@ -357,7 +363,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         {
             if (CurrentTurn % 2 == 1)
             {
-                BgCombatStarted = false;
+                BgsCurrentBattleOpponent = null;
             }
         }
 

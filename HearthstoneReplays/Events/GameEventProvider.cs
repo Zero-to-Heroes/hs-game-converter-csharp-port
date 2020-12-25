@@ -68,7 +68,7 @@ namespace HearthstoneReplays.Events
                 SupplyGameEvent = eventProvider,
                 isDuplicatePredicate = isDuplicatePredicate,
                 NeedMetaData = needMetaData,
-                CreationLogLine = creationLogLine,
+                CreationLogLine = creationLogLine?.Trim(),
                 ShortCircuit = shortCircuit,
                 debug = debug,
             };
@@ -111,6 +111,7 @@ namespace HearthstoneReplays.Events
             {
                 Logger.Log("Error Missing CreationLogLine for ", data);
             }
+
             data = data.Trim();
             if (debug)
             {
@@ -126,6 +127,7 @@ namespace HearthstoneReplays.Events
                 AnimationReady = true;
                 return;
             }
+
             // In the case of discarded cards, the position in the zone can change between 
             // the GameState and PowerTaskList logs, so we do a check without taking 
             // the zone position into account
@@ -141,13 +143,12 @@ namespace HearthstoneReplays.Events
                 return;
             }
 
-            // And sometimes the full entity is logged in PTL, while only the entity is logged 
-            // in GS
+            // And sometimes the full entity is logged in PTL, while only the entity is logged in GS
             var ptlMatchForFullEntity = Regexes.EntityRegex.Match(data);
             if (ptlMatchForFullEntity.Success)
             {
                 var ptlId = ptlMatchForFullEntity.Groups[1];
-                var dataWithOnlyEntityId = Regex.Replace(data, Regexes.EntityRegex.ToString(), "" + ptlId);
+                var dataWithOnlyEntityId = Regex.Replace(data, Regexes.EntityRegex.ToString(), "ID=" + ptlId);
                 if (dataWithOnlyEntityId == CreationLogLine)
                 {
                     if (debug)
@@ -202,6 +203,7 @@ namespace HearthstoneReplays.Events
                     return;
                 }
             }
+
             // Special case for PowerTaskList Updating an entity that was only created in GameState
             var matchCreationInGameState = Regexes.ActionFullEntityCreatingRegex.Match(CreationLogLine);
             var matchUpdateInPowerTaskList = Regexes.ActionFullEntityUpdatingRegex.Match(data);

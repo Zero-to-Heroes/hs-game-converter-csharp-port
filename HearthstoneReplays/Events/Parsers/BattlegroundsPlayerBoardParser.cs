@@ -30,7 +30,7 @@ namespace HearthstoneReplays.Events.Parsers
             return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
                     || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                 && GameState.GetGameEntity().GetTag(GameTag.TURN) % 2 == 0
-                && !GameState.BgCombatStarted
+                && GameState.BgsCurrentBattleOpponent == null
                 && node.Type == typeof(Parser.ReplayData.GameActions.Action)
                 && ((node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.ATTACK
                     || (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.DEATHS
@@ -69,11 +69,9 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
-            GameState.BgCombatStarted = true;
-
             var opponent = ParserState.OpponentPlayer;
             var player = ParserState.LocalPlayer;
-            return new List<GameEventProvider> { CreateProviderFromAction(node, player), CreateProviderFromAction(node, opponent) };
+            return new List<GameEventProvider> { CreateProviderFromAction(node, player, false), CreateProviderFromAction(node, opponent, true) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
@@ -81,7 +79,7 @@ namespace HearthstoneReplays.Events.Parsers
             return null;
         }
 
-        private GameEventProvider CreateProviderFromAction(Node node, Player player)
+        private GameEventProvider CreateProviderFromAction(Node node, Player player, bool isOpponent)
         {
             var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
             var heroes = GameState.CurrentEntities.Values
@@ -101,6 +99,10 @@ namespace HearthstoneReplays.Events.Parsers
             //Logger.Log("Trying to handle board", "" + ParserState.CurrentGame.GameType + " // " + hero?.CardId);
             //Logger.Log("Hero " + hero.CardId, hero.Entity);
             var cardId = hero?.CardId;
+            if (isOpponent)
+            {
+                GameState.BgsCurrentBattleOpponent = cardId;
+            }
             if (cardId == NonCollectible.Neutral.KelthuzadTavernBrawl2)
             {
                 //Logger.Log("Fighting the ghost", "Trying to assign the previous card id");

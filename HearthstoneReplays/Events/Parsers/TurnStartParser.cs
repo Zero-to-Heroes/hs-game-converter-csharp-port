@@ -66,6 +66,7 @@ namespace HearthstoneReplays.Events.Parsers
                         || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                     && tagChange.Value % 2 == 0)
             {
+                GameState.BattleResultSent = false;
                 result.Add(GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "BATTLEGROUNDS_COMBAT_START",

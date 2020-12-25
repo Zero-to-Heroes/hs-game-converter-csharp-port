@@ -244,7 +244,7 @@ namespace HearthstoneReplays.Events
         private List<string> ignoredLogLines = new List<string>()
         {
             "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=-1 Target=0 SubOption=-1 TriggerKeyword=0",
-            "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=6 Target=0 SubOption=-1 TriggerKeyword=0",
+            "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=5 Target=0 SubOption=-1 TriggerKeyword=0",
 
         };
         private async void ProcessGameEventQueue(Object source, ElapsedEventArgs e)
@@ -304,6 +304,10 @@ namespace HearthstoneReplays.Events
                                 .Where(p => !p.CreationLogLine.Contains("BLOCK_START BlockType=TRIGGER") 
                                     && ignoredLogLines.All(line => !p.CreationLogLine.Contains(line)))
                                 .Where(p => p.EventName != "ENTITY_UPDATE")
+                                .Where(p => 
+                                    !(ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS 
+                                        || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+                                    || p.EventName != "CARD_REMOVED_FROM_DECK")
                                 .Any(p => p.AnimationReady))
                         // Safeguard - Don't wait too long for the animation in case we never receive it
                         // With the arrival of Battlegrounds we can't do this anymore, as it spoils the game very fast
@@ -349,13 +353,15 @@ namespace HearthstoneReplays.Events
                         }
                         waitingForMetaData = false;
                     }
-                    if (provider.debug)
-                    {
-                        Logger.Log("[csharp] Will process next event " + provider.CreationLogLine, provider.AnimationReady);
-                        Logger.Log("[csharp] Next animation ready ", eventQueue.Find(p => p.AnimationReady)?.CreationLogLine + " // "
-                            + eventQueue.Find(p => p.AnimationReady)?.GameEvent.Type);
-                    }
-                    lock (listLock)
+                    //if (!provider.AnimationReady || provider.debug)
+                    //{
+                    //    var next = eventQueue.Find(p => p.AnimationReady);
+                    //    Logger.Log("[csharp] Will process next event " + provider.Timestamp + " " + provider.CreationLogLine, 
+                    //        provider.Index + " // " + provider.AnimationReady);
+                    //    Logger.Log("[csharp] Next animation ready " + next?.Timestamp + " " + next?.CreationLogLine,
+                    //        next?.Index + " // " + next?.GameEvent?.Type + " // " + next?.EventName);
+                    //}
+                    lock (listLock) 
                     {
                         //Logger.Log("Acquierd list lock in processgameevent 2", "");
                         ProcessGameEvent(provider);

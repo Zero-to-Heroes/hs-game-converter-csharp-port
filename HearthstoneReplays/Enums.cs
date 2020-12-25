@@ -826,6 +826,15 @@ namespace HearthstoneReplays.Enums
         STUDY = 1414,
         BACON_ODD_PLAYER_OUT = 1415,
         BACON_MINION_IS_LEVEL_TWO = 1421,
+        // This tag has no official name, but it seems to be present (with either a 0 or 1 value, sometimes both) 
+        //when it is the final attack of the battle, even if there is no attack (tie)
+        // 1487 also seems closely related to it, as it is set at the same time
+        // Found a block where 1422 was not set, but BACON_HIGHLIGHT_ATTACKING_MINION_DURING_COMBAT was
+        // But also found a case where 1487 was no set in case of a tie
+        // For now I have seen no case where neither BACON_HIGHLIGHT_ATTACKING_MINION_DURING_COMBAT nor 1422 was set
+        // It looks like the actual value of this tag can change from game to game
+        _BACON_FINAL_ATTACK_OF_BATTLE = 1422,
+        //_BACON_FINAL_ATTACK_OF_BATTLE = 1487, 
         BACON_IS_KEL_THUZAD = 1423,
         BACON_HIGHLIGHT_ATTACKING_MINION_DURING_COMBAT = 1424,
         SPELLBURST = 1427,
@@ -897,6 +906,7 @@ namespace HearthstoneReplays.Enums
         DARKMOON_TICKET = 1776,
         NUM_SPELLS_PLAYED_THIS_GAME = 1780,
         BACON_COMEONECOMEALL = 1789,
+        SHOW_DISCOVER_FROM_DECK = 1816,
     }
 
     public enum GameType

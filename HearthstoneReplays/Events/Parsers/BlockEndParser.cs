@@ -19,12 +19,17 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return (node.Type == typeof(TagChange) && (node.Object as TagChange).Name == (int)GameTag.ATTACKABLE_BY_RUSH);
+            return ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS
+                && ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS_FRIENDLY
+                && node.Type == typeof(TagChange) 
+                && (node.Object as TagChange).Name == (int)GameTag.ATTACKABLE_BY_RUSH;
         }
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return node.Type == typeof(Parser.ReplayData.GameActions.Action);
+            return ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS
+                && ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS_FRIENDLY
+                && node.Type == typeof(Parser.ReplayData.GameActions.Action);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)

@@ -24,21 +24,45 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return false;
+            // The tag change is only used as a fallback mechanism in case no battle result was sent
+            // This can happen in case of draws sometimes
+            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+                    || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+                && !GameState.BattleResultSent
+                && node.Type == typeof(TagChange)
+                && (node.Object as TagChange).Name == (int)GameTag.BOARD_VISUAL_STATE
+                && (node.Object as TagChange).Value == 1;
         }
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS 
+            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
                     || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                 && node.Type == typeof(Action)
                 && (node.Object as Action).Type == (int)BlockType.TRIGGER
-                && (node.Object as Action).EffectIndex == 5; 
+                && (node.Object as Action).EffectIndex == 6; 
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            return null;
+            GameState.BattleResultSent = true;
+            var tagChange = node.Object as TagChange;
+            string opponentCardId = GameState.BgsCurrentBattleOpponent;
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                    tagChange.TimeStamp,
+                     "BATTLEGROUNDS_BATTLE_RESULT",
+                    () => new GameEvent
+                    {
+                        Type = "BATTLEGROUNDS_BATTLE_RESULT",
+                        Value = new
+                        {
+                            Opponent = opponentCardId,
+                            Result = "tied"
+                        }
+                    },
+                    true,
+                    node)
+                };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
@@ -50,6 +74,17 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
+            var isAttackNode = action.Data
+                .Where(data => data.GetType() == typeof(TagChange))
+                .Select(data => data as TagChange)
+                .Where(tag => (tag.Name == (int)GameTag.BACON_HIGHLIGHT_ATTACKING_MINION_DURING_COMBAT && tag.Value == 0))
+                .Count() > 0;
+            if (!isAttackNode)
+            {
+                return null;
+            }
+
+            GameState.BattleResultSent = true;
             var attackAction = action.Data
                 .Where(data => data.GetType() == typeof(Action))
                 .Select(data => data as Action)
@@ -116,7 +151,6 @@ namespace HearthstoneReplays.Events.Parsers
                 : attackerEntityId;
             var opponentCardId = GameState.CurrentEntities[opponentEntityId].CardId;
             var damage = damageTag != null ? damageTag.Value : 0;
-            GameState.SimulationTriggered = false;
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 action.TimeStamp,

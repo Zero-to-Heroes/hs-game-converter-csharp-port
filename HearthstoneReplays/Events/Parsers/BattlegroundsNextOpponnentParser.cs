@@ -36,6 +36,16 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
+            var isInAction = node.Parent != null && node.Parent.Type == typeof(Action);
+            // Only consider the tag changes that are at the root
+            // This double tag change notif was introduced in a recent update (19.0 or 19.2). 
+            // It can probably be useful if we're able to see for each player who their next opponent will be,
+            // but for now since we only care about the main player we keep things simple
+            if (isInAction)
+            {
+                return null;
+            }
+
             var heroes = GameState.CurrentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == tagChange.Value)
@@ -65,7 +75,9 @@ namespace HearthstoneReplays.Events.Parsers
                             }
                         },
                         true,
-                        node) 
+                        node,
+                        false,
+                        false) 
                 };
             }
             return null;
