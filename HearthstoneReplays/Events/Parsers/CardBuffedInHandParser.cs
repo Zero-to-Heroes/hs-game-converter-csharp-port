@@ -141,6 +141,7 @@ namespace HearthstoneReplays.Events.Parsers
             { CardIds.Collectible.Warrior.GrimestreetPawnbroker, CardIds.NonCollectible.Neutral.GrimestreetPawnbroker_SmugglingEnchantment},
             { CardIds.Collectible.Warrior.GrimyGadgeteer, CardIds.NonCollectible.Neutral.GrimyGadgeteer_SmugglingEnchantment},
             { CardIds.Collectible.Warrior.StolenGoods, CardIds.NonCollectible.Neutral.StolenGoods_SmugglingEnchantment},
+            { CardIds.Collectible.Neutral.DonHancho, CardIds.NonCollectible.Neutral.DonHanCho_SmugglingEnchantment },
             { CardIds.Collectible.Neutral.EmperorThaurissan, CardIds.NonCollectible.Neutral.EmperorThaurissan_ImperialFavorEnchantment },
             { CardIds.Collectible.Neutral.GrimestreetSmuggler, CardIds.NonCollectible.Neutral.GrimestreetSmuggler_SmugglingEnchantment},
         };
