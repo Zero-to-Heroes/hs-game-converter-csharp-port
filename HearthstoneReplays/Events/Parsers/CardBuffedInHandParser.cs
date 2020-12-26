@@ -22,7 +22,6 @@ namespace HearthstoneReplays.Events.Parsers
             //CardIds.Collectible.Druid.DreampetalFlorist,
             //CardIds.Collectible.Druid.ImprisonedSatyr, 
             CardIds.Collectible.Druid.PredatoryInstincts,
-            CardIds.Collectible.Hunter.ScavengersIngenuity, // not tested
             //CardIds.Collectible.Hunter.Emeriss,
             //CardIds.Collectible.Hunter.ForlornStalker,
             CardIds.Collectible.Hunter.FreezingTrap,
@@ -117,6 +116,7 @@ namespace HearthstoneReplays.Events.Parsers
             { CardIds.Collectible.Paladin.GrimestreetEnforcer, CardIds.NonCollectible.Neutral.GrimestreetEnforcer_SmugglingEnchantment},
             { CardIds.Collectible.Paladin.GrimestreetOutfitter, CardIds.NonCollectible.Neutral.GrimestreetOutfitter_SmugglingEnchantment},
             { CardIds.Collectible.Paladin.SmugglersRun, CardIds.NonCollectible.Paladin.SmugglersRun_SmugglingEnchantment},
+            { CardIds.Collectible.Paladin.Valanyr, CardIds.NonCollectible.Paladin.Valanyr_ValanyrReequipEffectDummy},
             { CardIds.Collectible.Priest.FateWeaver, CardIds.NonCollectible.Priest.FateWeaver_DraconicFateEnchantment},
             { CardIds.Collectible.Priest.Shadowfiend, CardIds.NonCollectible.Priest.Shadowfiend_ShadowfiendedEnchantment},
             { CardIds.Collectible.Rogue.BlackjackStunner, CardIds.NonCollectible.Neutral.BlackjackStunner_StunnedEnchantment},
