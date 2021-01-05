@@ -69,9 +69,34 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
+            var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
             var opponent = ParserState.OpponentPlayer;
             var player = ParserState.LocalPlayer;
-            return new List<GameEventProvider> { CreateProviderFromAction(node, player, false), CreateProviderFromAction(node, opponent, true) };
+
+            var playerBoard = CreateProviderFromAction(node, player, false);
+            var opponentBoard = CreateProviderFromAction(node, opponent, true);
+
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                   action.TimeStamp,
+                   "BATTLEGROUNDS_PLAYER_BOARD",
+                   () => (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+                            || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+                        ? new GameEvent
+                        {
+                            Type = "BATTLEGROUNDS_PLAYER_BOARD",
+                            Value = new
+                            {
+                                PlayerBoard = playerBoard,
+                                OpponentBoard = opponentBoard,
+                            }
+                        }
+                        : null,
+                   true,
+                   node,
+                   false,
+                   false,
+                   true // Don't wait until the animation is ready, so we send the board state right away
+               ) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
@@ -79,7 +104,7 @@ namespace HearthstoneReplays.Events.Parsers
             return null;
         }
 
-        private GameEventProvider CreateProviderFromAction(Node node, Player player, bool isOpponent)
+        private PlayerBoard CreateProviderFromAction(Node node, Player player, bool isOpponent)
         {
             var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
             var heroes = GameState.CurrentEntities.Values
@@ -144,36 +169,16 @@ namespace HearthstoneReplays.Events.Parsers
                     .FirstOrDefault();
                 var heroPowerUsed = heroPower?.GetTag(GameTag.EXHAUSTED) == 1 || heroPower?.GetTag(GameTag.BACON_HERO_POWER_ACTIVATED) == 1;
                 var result = board.Select(entity => AddEchantments(GameState.CurrentEntities, entity)).ToList();
-                //Logger.Log("board has " + board.Count + " entities", "");
-                return GameEventProvider.Create(
-                   action.TimeStamp,
-                   "BATTLEGROUNDS_PLAYER_BOARD",
-                   () => (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS 
-                            || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
-                        ? new GameEvent
-                        {
-                            Type = "BATTLEGROUNDS_PLAYER_BOARD",
-                            Value = new
-                            {
-                                Hero = hero,
-                                HeroPowerCardId = heroPower?.CardId,
-                                HeroPowerUsed = heroPowerUsed,
-                                CardId = cardId,
-                                Board = result,
-                            }
-                        }
-                        : null,
-                   true,
-                   node,
-                   false,
-                   false,
-                   true // Don't wait until the animation is ready, so we send the board state right away
-               );
+
+                return new PlayerBoard()
+                {
+                    Hero = hero,
+                    HeroPowerCardId = heroPower?.CardId,
+                    HeroPowerUsed = heroPowerUsed,
+                    CardId = cardId,
+                    Board = result,
+                };
             }
-            //else
-            //{
-            //    Logger.Log("Invalid hero", hero != null ? hero.CardId : "null hero");
-            //}
             return null;
         }
 
@@ -207,5 +212,19 @@ namespace HearthstoneReplays.Events.Parsers
             };
             return result;
         }
+
+        internal class PlayerBoard
+        {
+            public FullEntity Hero { get; set; }
+
+            public string HeroPowerCardId { get; set; }
+            
+            public bool HeroPowerUsed { get; set; }
+            
+            public string CardId { get; set; }
+            
+            public List<object> Board{ get; set; }
+        }
     }
 }
+
