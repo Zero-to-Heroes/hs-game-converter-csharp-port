@@ -73,8 +73,8 @@ namespace HearthstoneReplays.Events.Parsers
             var opponent = ParserState.OpponentPlayer;
             var player = ParserState.LocalPlayer;
 
-            var playerBoard = CreateProviderFromAction(node, player, false);
-            var opponentBoard = CreateProviderFromAction(node, opponent, true);
+            var playerBoard = CreateProviderFromAction(node, player, false, player);
+            var opponentBoard = CreateProviderFromAction(node, opponent, true, player);
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                    action.TimeStamp,
@@ -104,7 +104,7 @@ namespace HearthstoneReplays.Events.Parsers
             return null;
         }
 
-        private PlayerBoard CreateProviderFromAction(Node node, Player player, bool isOpponent)
+        private PlayerBoard CreateProviderFromAction(Node node, Player player, bool isOpponent, Player mainPlayer)
         {
             var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
             var heroes = GameState.CurrentEntities.Values
@@ -130,16 +130,26 @@ namespace HearthstoneReplays.Events.Parsers
             }
             if (cardId == NonCollectible.Neutral.KelthuzadTavernBrawl2)
             {
-                //Logger.Log("Fighting the ghost", "Trying to assign the previous card id");
-                // Take the last one
-                var deadHero = GameState.CurrentEntities.Values
+                // Finding the one that is flagged as the player's NEXT_OPPONENT
+                var playerEntity = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == mainPlayer.PlayerId)
                     .Where(entity => entity.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl)
                     .Where(entity => entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
                     .OrderBy(entity => entity.Id)
                     .LastOrDefault();
-                cardId = deadHero?.CardId;
+                var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
+
+                var nextOpponentCandidates = GameState.CurrentEntities.Values
+                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                    .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
+                    .Where(entity => entity.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl
+                        && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
+                    .ToList();
+                var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
+
+                cardId = nextOpponent?.CardId;
             }
             // Happens in the first encounter
             if (cardId == null)
@@ -218,12 +228,12 @@ namespace HearthstoneReplays.Events.Parsers
             public FullEntity Hero { get; set; }
 
             public string HeroPowerCardId { get; set; }
-            
+
             public bool HeroPowerUsed { get; set; }
-            
+
             public string CardId { get; set; }
-            
-            public List<object> Board{ get; set; }
+
+            public List<object> Board { get; set; }
         }
     }
 }
