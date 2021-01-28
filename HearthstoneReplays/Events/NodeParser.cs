@@ -541,6 +541,7 @@ namespace HearthstoneReplays.Events
                 new GameRunningParser(ParserState),
                 new AttackParser(ParserState),
                 new NumCardsPlayedThisTurnParser(ParserState),
+                new NumCardsDrawnThisTurnParser(ParserState),
                 new HeroPowerUsedParser(ParserState),
                 new GalakrondInvokedParser(ParserState),
                 new CardBuffedInHandParser(ParserState),

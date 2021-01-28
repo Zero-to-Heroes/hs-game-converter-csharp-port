@@ -907,6 +907,9 @@ namespace HearthstoneReplays.Enums
         NUM_SPELLS_PLAYED_THIS_GAME = 1780,
         BACON_COMEONECOMEALL = 1789,
         SHOW_DISCOVER_FROM_DECK = 1816,
+        MINI_SET = 1824,
+        CANT_TRIGGER_DEATHRATTLE = 1831,
+        CANT_MOVE_MINION = 1848,
     }
 
     public enum GameType
@@ -1252,6 +1255,7 @@ namespace HearthstoneReplays.Enums
         ADVENTURE_HERO_POWER = 13,
         ARCANE_ORBS = 14,
         DECK = 15,
+        MINI_SET = 16,
     }
 
     public enum State

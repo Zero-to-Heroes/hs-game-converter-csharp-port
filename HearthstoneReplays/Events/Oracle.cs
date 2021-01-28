@@ -191,10 +191,10 @@ namespace HearthstoneReplays.Events
                     case Neutral.HoardingDragon: return NonCollectible.Neutral.TheCoinBasic;
                     case Neutral.IgneousElemental: return NonCollectible.Neutral.FireFly_FlameElementalToken;
                     case Neutral.InfestedGoblin: return NonCollectible.Neutral.WrappedGolem_ScarabToken;
-                    case Neutral.KingMukla: return NonCollectible.Neutral.Bananas;
+                    case Neutral.KingMukla: return NonCollectible.Neutral.BananasMissions;
                     case Neutral.LicensedAdventurer: return NonCollectible.Neutral.TheCoinBasic;
                     case NonCollectible.Neutral.MilitiaHornGILNEAS: return NonCollectible.Neutral.VeteransMilitiaHornGILNEAS;
-                    case Neutral.MuklaTyrantOfTheVale: return NonCollectible.Neutral.Bananas;
+                    case Neutral.MuklaTyrantOfTheVale: return NonCollectible.Neutral.BananasMissions;
                     case NonCollectible.Neutral.OldMilitiaHornGILNEAS: return NonCollectible.Neutral.MilitiaHornGILNEAS;
                     case Neutral.PortalKeeper: return NonCollectible.Neutral.PortalKeeper_FelhoundPortalToken;
                     case Neutral.PortalOverfiend: return NonCollectible.Neutral.PortalKeeper_FelhoundPortalToken;
@@ -231,6 +231,7 @@ namespace HearthstoneReplays.Events
                     case Mage.ArchmageAntonidas: return Mage.Fireball;
                     case Mage.AstromancerSolarian: return NonCollectible.Mage.AstromancerSolarian_SolarianPrimeToken;
                     case Mage.ConfectionCyclone: return NonCollectible.Mage.ConfectionCyclone_SugarElementalToken;
+                    case Mage.ConjureManaBiscuit: return NonCollectible.Mage.ConjureManaBiscuit_ManaBiscuitToken;
                     case Mage.DeckOfWonders: return NonCollectible.Mage.DeckofWonders_ScrollOfWonderToken;
                     case Mage.FlameGeyser: return NonCollectible.Neutral.FireFly_FlameElementalToken;
                     case Mage.ForgottenTorch: return NonCollectible.Mage.ForgottenTorch_RoaringTorchToken;
