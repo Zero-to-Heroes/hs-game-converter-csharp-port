@@ -63,19 +63,33 @@ namespace HearthstoneReplays.Events.Parsers
                    node));
             // This seems the most reliable way to have the combat_start event as soon as possible
             if ((ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                        || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
-                    && tagChange.Value % 2 == 0)
+                        || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY))
             {
-                GameState.BattleResultSent = false;
-                result.Add(GameEventProvider.Create(
-                    tagChange.TimeStamp,
-                    "BATTLEGROUNDS_COMBAT_START",
-                    () => new GameEvent
-                    {
-                        Type = "BATTLEGROUNDS_COMBAT_START"
-                    },
-                    false,
-                    node));
+                if (tagChange.Value % 2 == 0)
+                {
+                    GameState.BattleResultSent = false;
+                    result.Add(GameEventProvider.Create(
+                        tagChange.TimeStamp,
+                        "BATTLEGROUNDS_COMBAT_START",
+                        () => new GameEvent
+                        {
+                            Type = "BATTLEGROUNDS_COMBAT_START"
+                        },
+                        false,
+                        node));
+                }
+                else
+                {
+                    result.Add(GameEventProvider.Create(
+                        tagChange.TimeStamp,
+                        "BATTLEGROUNDS_RECRUIT_PHASE",
+                        () => new GameEvent
+                        {
+                            Type = "BATTLEGROUNDS_RECRUIT_PHASE"
+                        },
+                        false,
+                        node));
+                }
             }
             return result;
         }
