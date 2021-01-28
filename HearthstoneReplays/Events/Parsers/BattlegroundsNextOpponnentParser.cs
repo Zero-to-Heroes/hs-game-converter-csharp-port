@@ -41,7 +41,8 @@ namespace HearthstoneReplays.Events.Parsers
             // This double tag change notif was introduced in a recent update (19.0 or 19.2). 
             // It can probably be useful if we're able to see for each player who their next opponent will be,
             // but for now since we only care about the main player we keep things simple
-            if (isInAction)
+            // Except for the first turn, where the info is only sent in an action
+            if (isInAction && (node.Parent.Object as Action).Entity != GameState.GetGameEntity()?.Entity)
             {
                 return null;
             }
