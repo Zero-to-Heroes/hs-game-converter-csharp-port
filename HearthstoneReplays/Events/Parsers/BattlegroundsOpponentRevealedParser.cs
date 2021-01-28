@@ -65,7 +65,8 @@ namespace HearthstoneReplays.Events.Parsers
                         Type = "BATTLEGROUNDS_OPPONENT_REVEALED",
                         Value = new
                         {
-                            CardId = cardId
+                            CardId = cardId,
+                            LeaderboardPlace = fullEntity.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE),
                         }
                     };
                 },
@@ -90,6 +91,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 Value = new
                                 {
                                     CardId = cardId,
+                                    LeaderboardPlace = fullEntity.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE),
                                 }
                             };
                         },
