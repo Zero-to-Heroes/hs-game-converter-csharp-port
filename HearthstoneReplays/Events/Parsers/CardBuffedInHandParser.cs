@@ -227,7 +227,7 @@ namespace HearthstoneReplays.Events.Parsers
                             new
                             {
                                 BuffingEntityCardId = actionEntity.CardId,
-                                BuffCardId = buffs[actionEntity.CardId]
+                                BuffCardId = buffs.ContainsKey(actionEntity.CardId) ? buffs[actionEntity.CardId] : null,
                             }),
                         true,
                         node);
