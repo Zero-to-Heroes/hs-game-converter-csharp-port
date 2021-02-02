@@ -28,6 +28,7 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnCloseNode(Node node)
         {
             return node.Type == typeof(Parser.ReplayData.GameActions.ShowEntity)
+                && GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
                 && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.CONTROLLER) 
                         != (node.Object as ShowEntity).GetTag(GameTag.CONTROLLER);
         }
