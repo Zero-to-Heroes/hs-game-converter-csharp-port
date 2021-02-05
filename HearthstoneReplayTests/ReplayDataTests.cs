@@ -17,14 +17,21 @@ using System.Linq;
 
 namespace HearthstoneReplayTests
 {
-	[TestClass]
-	public class ReplayDataTests
-	{
-		[TestMethod]
-		public void Test()
-		{
+    [TestClass]
+    public class ReplayDataTests
+    {
+        [TestMethod]
+        public void Test()
+        {
             NodeParser.DevMode = true;
-            GameEventHandler.EventProvider = (evt) => Console.WriteLine(evt + ",");
+            GameEventHandler.EventProvider = (evt) =>
+            {
+                var shouldLog = evt.Contains("BATTLEGROUNDS_TAVERN_UPGRADE");
+                if (shouldLog)
+                {
+                    Console.WriteLine(evt + ",");
+                }
+            };
             List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile);
@@ -189,7 +196,7 @@ namespace HearthstoneReplayTests
                     var value = 0;
                     if (events.ContainsKey(evtName))
                     {
-                        value = events[evtName]; 
+                        value = events[evtName];
                     }
                     events[evtName] = value + 1;
                 };

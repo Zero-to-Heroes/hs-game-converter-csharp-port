@@ -35,16 +35,37 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            if (node.Parent != null && node.Parent.Type == typeof(Action))
-            {
-                var parent = node.Parent.Object as Action;
-                if (parent.Type == (int)BlockType.TRIGGER)
-                {
-                    return null;
-                }
-            }
             var tagChange = node.Object as TagChange;
+            // The arrival of spells introduced a change: now the tag_change can arrive during 
+            // a discover, and so is considered as part of the ongoing action, even though the 
+            // indentation in the power.log clearly indicate that it's not
+            // But since there is no BLOCK_END, the parser has no way to know it's an independant
+            // change
+            //if (node.Parent != null && node.Parent.Type == typeof(Action))
+            //{
+            //    var parent = node.Parent.Object as Action;
+            //    if (parent.Type == (int)BlockType.TRIGGER)
+            //    {
+            //        return null;
+            //    }
+            //}
             var hero = GameState.CurrentEntities[tagChange.Entity];
+            if (hero == null)
+            {
+                return null;
+            }
+
+            // So we add a safeguard to avoid duplicated info
+            var heroCardId = hero.CardId;
+            var heroes = GameState.CurrentEntities.Values
+                .Where(entity => entity.CardId == heroCardId)
+                .Where(entity => entity.GetTag(GameTag.PLAYER_TECH_LEVEL) >= tagChange.Value)
+                .ToList();
+            if (heroes.Count > 0)
+            {
+                return null;
+            }
+
             // The value is set to 0 when rotating the entities it seems
             if (hero?.CardId != null && hero.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl && tagChange.Value > 1)
             {
