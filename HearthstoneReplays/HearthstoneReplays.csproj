@@ -113,6 +113,8 @@
     <Compile Include="Events\Parsers\EntityUpdateParser.cs" />
     <Compile Include="Events\Parsers\MulliganDealingParser.cs" />
     <Compile Include="Events\Parsers\NumCardsDrawnThisTurnParser.cs" />
+    <Compile Include="Events\Parsers\ResourcesUsedThisTurnParser.cs" />
+    <Compile Include="Events\Parsers\ResourcesThisTurnParser.cs" />
     <Compile Include="Events\StopDevModeProvider.cs" />
     <Compile Include="Events\StartDevModeProvider.cs" />
     <Compile Include="Events\Oracle.cs" />
