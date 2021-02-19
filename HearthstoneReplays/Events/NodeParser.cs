@@ -537,6 +537,11 @@ namespace HearthstoneReplays.Events
                 new BattlegroundsOpponentRevealedParser(ParserState),
                 new BattlegroundsHeroSelectedParser(ParserState),
                 new BattlegroundsBattleOverParser(ParserState),
+                new BattlegroundsRerollParser(ParserState),
+                new BattlegroundFreezeParser(ParserState),
+                new BattlegroundsMinionsBoughtParser(ParserState),
+                new BattlegroundsMinionsSoldParser(ParserState),
+                new BattlegroundsHeroKilledParser(ParserState),
                 new DecklistUpdateParser(ParserState),
                 new GameRunningParser(ParserState),
                 new AttackParser(ParserState),
@@ -550,6 +555,8 @@ namespace HearthstoneReplays.Events
                 new JadeGolemParser(ParserState),
                 new CthunParser(ParserState),
                 new EntityUpdateParser(ParserState),
+                new ResourcesThisTurnParser(ParserState),
+                new ResourcesUsedThisTurnParser(ParserState),
             };
         }
     }

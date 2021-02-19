@@ -37,9 +37,11 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
+            var impactedEntity = GameState.CurrentEntities[tagChange.Entity];
+            var previousDamage = impactedEntity.GetTag(GameTag.DAMAGE, 0);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             var damages = new Dictionary<string, DamageInternal>();
-            var targetCardId = GameState.CurrentEntities[tagChange.Entity]?.CardId;
+            var targetCardId = impactedEntity?.CardId;
             damages[targetCardId] = new DamageInternal
             {
                 SourceControllerId = -1,
@@ -47,7 +49,7 @@ namespace HearthstoneReplays.Events.Parsers
                 TargetControllerId = -1,
                 TargetEntityId = tagChange.Entity,
                 TargetCardId = targetCardId,
-                Damage = tagChange.Value,
+                Damage = tagChange.Value - previousDamage,
                 Timestamp = tagChange.TimeStamp,
             };
             return new List<GameEventProvider> { GameEventProvider.Create(

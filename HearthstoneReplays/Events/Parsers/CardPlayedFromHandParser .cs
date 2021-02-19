@@ -57,6 +57,10 @@ namespace HearthstoneReplays.Events.Parsers
                     targetId = action.Target;
                     targetCardId = targetId > 0 ? GameState.CurrentEntities[targetId].CardId : null;
                 }
+                var creator = entity.GetTag(GameTag.CREATOR);
+                var creatorCardId = creator != -1 && GameState.CurrentEntities.ContainsKey(creator)
+                    ? GameState.CurrentEntities[creator].CardId
+                    : null;
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
 
                 System.Action preprocess = () => GameState.OnCardPlayed(tagChange.Entity);
@@ -76,6 +80,7 @@ namespace HearthstoneReplays.Events.Parsers
                             TargetCardId = targetCardId,
                             Attack = entity.GetTag(GameTag.ATK),
                             Health = entity.GetTag(GameTag.HEALTH),
+                            CreatorCardId = creatorCardId,
                         },
                         preprocess
                     ),
@@ -100,6 +105,11 @@ namespace HearthstoneReplays.Events.Parsers
                         var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
                         var targetId = action.Target;
                         string targetCardId = targetId > 0 ? GameState.CurrentEntities[targetId].CardId : null;
+                        var creator = showEntity.GetTag(GameTag.CREATOR);
+                        var creatorCardId = creator != -1 && GameState.CurrentEntities.ContainsKey(creator)
+                            ? GameState.CurrentEntities[creator].CardId
+                            : null;
+
                         System.Action preprocess = () => GameState.OnCardPlayed(showEntity.Entity);
                         // For now there can only be one card played per block
                         return new List<GameEventProvider> { GameEventProvider.Create(
@@ -116,6 +126,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 new {
                                     TargetEntityId = targetId,
                                     TargetCardId = targetCardId,
+                                    CreatorCardId = creatorCardId,
                                 },
                                 preprocess),
                             true,
