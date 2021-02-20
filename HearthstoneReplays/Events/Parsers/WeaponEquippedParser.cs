@@ -30,8 +30,8 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY
-                && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.WEAPON
-                && !ParserState.ReconnectionOngoing;
+                && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.WEAPON;
+                //&& !ParserState.ReconnectionOngoing;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)

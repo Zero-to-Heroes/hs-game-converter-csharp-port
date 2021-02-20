@@ -47,14 +47,14 @@ namespace HearthstoneReplays.Events.Parsers
             //}
             var createFromFullEntity = node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY
-                && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.MINION
-                && !ParserState.ReconnectionOngoing;
+                && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.MINION;
+            //&& !ParserState.ReconnectionOngoikng;
             var createFromShowEntity = node.Type == typeof(ShowEntity)
                 && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY
                 && (node.Object as ShowEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.MINION
                 && GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
-                && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) != (int)Zone.PLAY
-                && !ParserState.ReconnectionOngoing;
+                && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) != (int)Zone.PLAY;
+                //&& !ParserState.ReconnectionOngoing;
             return createFromFullEntity || createFromShowEntity;
         }
 

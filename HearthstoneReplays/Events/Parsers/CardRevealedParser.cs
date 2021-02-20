@@ -27,8 +27,8 @@ namespace HearthstoneReplays.Events.Parsers
             var isCorrectType = node.Type == typeof(FullEntity);
             return node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SETASIDE
-                && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.MINION
-                && !ParserState.ReconnectionOngoing;
+                && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.MINION;
+                //&& !ParserState.ReconnectionOngoing;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)

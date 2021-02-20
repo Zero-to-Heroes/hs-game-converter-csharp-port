@@ -557,6 +557,8 @@ namespace HearthstoneReplays.Events
                 new EntityUpdateParser(ParserState),
                 new ResourcesThisTurnParser(ParserState),
                 new ResourcesUsedThisTurnParser(ParserState),
+
+                new CreateCardInGraveyardParser(ParserState),
             };
         }
     }

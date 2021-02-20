@@ -26,7 +26,7 @@ namespace HearthstoneReplayTests
             NodeParser.DevMode = true;
             GameEventHandler.EventProvider = (evt) =>
             {
-                var shouldLog = true; // evt.Contains("BATTLEGROUNDS_TAVERN_UPGRADE");
+                var shouldLog = true; //  !evt.Contains("{");
                 if (shouldLog)
                 {
                     Console.WriteLine(evt + ",");
