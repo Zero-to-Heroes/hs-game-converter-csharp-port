@@ -98,6 +98,7 @@ namespace HearthstoneReplays.Enums
         STANDARD_HUNTER = 470,
         YEAR_OF_DRAGON = 498,
         STANDARD_MAGE = 545,
+        THE_BARRENS = 553,
         DARKMOON_FAIRE = 616,
     }
 
@@ -176,7 +177,8 @@ namespace HearthstoneReplays.Enums
         SCHOLOMANCE = 1443,
         BATTLEGROUNDS = 1453,
         DEMON_HUNTER_INITIATE = 1463,
-        DARKMOON_FAIRE = 1466
+        DARKMOON_FAIRE = 1466,
+        THE_BARRENS = 1525,
     }
 
     public enum CardTextBuilderType
@@ -910,6 +912,8 @@ namespace HearthstoneReplays.Enums
         MINI_SET = 1824,
         CANT_TRIGGER_DEATHRATTLE = 1831,
         CANT_MOVE_MINION = 1848,
+        DARKMOON_FAIRE_PRIZES_ACTIVE = 1895,
+        IGNORE_DECK_RULESET = 1896,
     }
 
     public enum GameType
