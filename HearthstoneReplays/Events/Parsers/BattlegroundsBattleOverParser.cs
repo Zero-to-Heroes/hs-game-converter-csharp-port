@@ -40,7 +40,7 @@ namespace HearthstoneReplays.Events.Parsers
                     || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                 && node.Type == typeof(Action)
                 && (node.Object as Action).Type == (int)BlockType.TRIGGER
-                && (node.Object as Action).EffectIndex == 6; 
+                && (node.Object as Action).EffectIndex == 7; 
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)

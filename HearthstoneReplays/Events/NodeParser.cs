@@ -244,7 +244,7 @@ namespace HearthstoneReplays.Events
         private List<string> ignoredLogLines = new List<string>()
         {
             "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=-1 Target=0 SubOption=-1 TriggerKeyword=0",
-            "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=5 Target=0 SubOption=-1 TriggerKeyword=0",
+            "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1 TriggerKeyword=0",
 
         };
         private async void ProcessGameEventQueue(Object source, ElapsedEventArgs e)
