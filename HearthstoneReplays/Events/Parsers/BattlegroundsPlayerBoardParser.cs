@@ -15,6 +15,7 @@ namespace HearthstoneReplays.Events.Parsers
         private static List<string> COMPETING_BATTLE_START_HERO_POWERS = new List<string>() {
             NonCollectible.Neutral.RebornRitesTavernBrawl,
             NonCollectible.Neutral.SwattingInsectsTavernBrawl,
+            NonCollectible.Neutral.EmbraceYourRageTavernBrawl,
         };
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
