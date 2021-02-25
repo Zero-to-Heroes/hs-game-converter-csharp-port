@@ -27,7 +27,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return false;
+            return ParserState.ReconnectionOngoing
+                && node.Type == typeof(GameEntity);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -96,7 +97,30 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
-            return null;
+            var gameEntity = node.Object as GameEntity;
+            var currentTurn = gameEntity.GetTag(GameTag.TURN);
+            GameState.CurrentTurn = currentTurn;
+
+            var result = new List<GameEventProvider>();
+            result.Add(GameEventProvider.Create(
+                gameEntity.TimeStamp,
+                "TURN_START",
+                () =>
+                {
+                    return new GameEvent
+                    {
+                        Type = "TURN_START",
+                        Value = new
+                        {
+                            Turn = currentTurn,
+                            LocalPlayer = ParserState.LocalPlayer,
+                            OpponentPlayer = ParserState.OpponentPlayer,
+                        }
+                    };
+                },
+                false,
+                node));
+            return result;
         }
     }
 }

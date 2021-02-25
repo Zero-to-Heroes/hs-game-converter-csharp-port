@@ -54,10 +54,6 @@ namespace HearthstoneReplays.Parser.Handlers
                         false,
                         false,
                         false) });
-                    //state.ReconnectionOngoing = true;
-                    //state.NumberOfCreates++;
-                    //state.UpdateCurrentNode(typeof(Game));
-                    //return;
                 }
                 this.metadata = new GameMetaData()
                 {
@@ -82,17 +78,6 @@ namespace HearthstoneReplays.Parser.Handlers
             {
                 return;
             }
-            // The app was launched in the middle of a game, we don't support this now but at least don't crash
-            //if (state.NumberOfCreates == 0)
-            //{
-            //    // Just selectively do some sampling to avoid logging everything, but we 
-            //    // still want to have a trace that this is what happened
-            //    if (data == "BLOCK_END")
-            //    {
-            //        Logger.Log("Trying to parse an ongoing game, this is not supported yet", "");
-            //    }
-            //    return;
-            //}
 
             if (data == "BLOCK_END")
             {
@@ -109,12 +94,7 @@ namespace HearthstoneReplays.Parser.Handlers
             var match = Regexes.ActionCreategameRegex.Match(data);
             if (match.Success)
             {
-                //if (state.ReconnectionOngoing)
-                //{
-                //    return;
-                //}
                 var id = match.Groups[1].Value;
-                //Debug.Assert(id == "1");
                 var gEntity = new GameEntity { Id = int.Parse(id), Tags = new List<Tag>() };
                 state.CurrentGame.AddData(gEntity);
                 var newNode = new Node(typeof(GameEntity), gEntity, indentLevel, state.Node, data);
@@ -185,7 +165,7 @@ namespace HearthstoneReplays.Parser.Handlers
                         return new GameEvent
                         {
                             Type = "MATCH_METADATA",
-                            Value = this.metadata,
+                            Value = this.metadata
                         };
                     },
                     false,

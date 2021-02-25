@@ -33,7 +33,11 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return false;
+            // Don't check for BG here, in case of reconnect
+            return ParserState.ReconnectionOngoing
+                    && node.Type == typeof(FullEntity)
+                    && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.HERO
+                    && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -85,7 +89,60 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
-            return null;
+            var fullEntity = node.Object as FullEntity;
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                fullEntity.TimeStamp,
+                "BATTLEGROUNDS_HERO_SELECTED",
+                () => BuildGameEvent(node),
+                true,
+                node)
+            };
+        }
+
+        private GameEvent BuildGameEvent(Node node)
+        {
+            var fullEntity = node.Object as FullEntity;
+            if (ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS
+                && ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+            {
+                return null;
+            }
+
+            if (fullEntity.GetTag(GameTag.CONTROLLER) != ParserState.LocalPlayer.PlayerId)
+            {
+                return null;
+            }
+
+            var nextOpponentPlayerId = fullEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
+            var heroes = GameState.CurrentEntities.Values
+                .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
+                .Where(entity => entity.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl
+                    && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
+                .ToList();
+            var hero = heroes == null || heroes.Count == 0 ? null : heroes[0];
+            // Happens in some circumstances, though it's not clear for me which ones. Maybe
+            // when the future opponent isn't here yet, or when players take too long to join?
+            if (hero == null)
+            {
+                GameState.NextBgsOpponentPlayerId = nextOpponentPlayerId;
+            }
+
+            return new GameEvent
+            {
+                Type = "BATTLEGROUNDS_HERO_SELECTED",
+                Value = new
+                {
+                    CardId = fullEntity.CardId,
+                    LocalPlayer = ParserState.LocalPlayer,
+                    OpponentPlayer = ParserState.OpponentPlayer,
+                    LeaderboardPlace = fullEntity.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE),
+                    Health = fullEntity.GetTag(GameTag.HEALTH),
+                    Damage = fullEntity.GetTag(GameTag.DAMAGE),
+                    TavernLevel = fullEntity.GetTag(GameTag.PLAYER_TECH_LEVEL),
+                    NextOpponentCardId = hero.CardId,
+                },
+            };
         }
     }
 }

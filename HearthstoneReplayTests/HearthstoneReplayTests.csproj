@@ -203,6 +203,7 @@
     <EmbeddedResource Include="TestData\lady_liadrin.txt" />
     <EmbeddedResource Include="TestData\eyesor.txt" />
     <EmbeddedResource Include="TestData\secret_passage_reveals_cthun.txt" />
+    <EmbeddedResource Include="TestData\bg_yshaarj.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
     <EmbeddedResource Include="TestData\beastly_beauty.txt" />

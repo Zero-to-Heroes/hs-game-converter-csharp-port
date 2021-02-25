@@ -41,35 +41,17 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var fullEntity = node.Object as FullEntity;
-            if (ParserState.OpponentPlayer?.PlayerId != fullEntity.GetTag(GameTag.CONTROLLER))
+            var cardId = fullEntity.CardId;
+            if (cardId == CardIds.NonCollectible.Neutral.BaconphheroTavernBrawl)
             {
-                //Logger.Log("Not returning an opponent_revealed", "");
                 return null;
             }
-            var cardId = fullEntity.CardId;
+
             var result = new List<GameEventProvider>();
             result.Add(GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "BATTLEGROUNDS_OPPONENT_REVEALED",
-                () =>
-                {
-                    if (ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS
-                        && ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
-                    {
-                        //Logger.Log("Not returning an opponent_revealed", "in event provider");
-                        return null;
-                    }
-                    //Logger.Log("Returning opponent revealed", "in event provider");
-                    return new GameEvent
-                    {
-                        Type = "BATTLEGROUNDS_OPPONENT_REVEALED",
-                        Value = new
-                        {
-                            CardId = cardId,
-                            LeaderboardPlace = fullEntity.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE),
-                        }
-                    };
-                },
+                () => BuildGameEvent(node),
                 false,
                 node)
             );
@@ -100,6 +82,32 @@ namespace HearthstoneReplays.Events.Parsers
                 GameState.NextBgsOpponentPlayerId = -1;
             }
             return result;
+        }
+
+        private GameEvent BuildGameEvent(Node node)
+        {
+            var fullEntity = node.Object as FullEntity;
+            var cardId = fullEntity.CardId;
+            if (ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS
+                && ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+            {
+                return null;
+            }
+
+            if (ParserState.OpponentPlayer?.PlayerId != fullEntity.GetTag(GameTag.CONTROLLER))
+            {
+                return null;
+            }
+
+            return new GameEvent
+            {
+                Type = "BATTLEGROUNDS_OPPONENT_REVEALED",
+                Value = new
+                {
+                    CardId = cardId,
+                    LeaderboardPlace = fullEntity.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE),
+                }
+            };
         }
     }
 }
