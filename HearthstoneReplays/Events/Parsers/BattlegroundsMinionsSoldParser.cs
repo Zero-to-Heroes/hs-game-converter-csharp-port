@@ -45,7 +45,8 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var action = node.Object as Action;
-            var zoneTagChange = action.Data
+            // Because Sellemental triggers another action, and the zone change is in that new action
+            var zoneTagChange = action.GetDataRecursive()
                 .Where(data => data is TagChange)
                 .Select(data => data as TagChange)
                 .Where(tag => tag.Name == (int)GameTag.ZONE && tag.Value == (int)Zone.SETASIDE)

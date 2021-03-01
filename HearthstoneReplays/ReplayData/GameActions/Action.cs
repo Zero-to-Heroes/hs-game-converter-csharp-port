@@ -46,5 +46,19 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
 		[XmlElement("MetaData", typeof(MetaData))]
 		[XmlElement("ChosenEntities", typeof(ChosenEntities))]
 		public List<GameData> Data { get; set; }
+
+		public List<GameData> GetDataRecursive()
+		{
+			var result = new List<GameData>();
+			foreach (var data in Data)
+            {
+				result.Add(data);
+				if (data.GetType() == typeof(Action))
+                {
+					result.AddRange((data as Action).GetDataRecursive());
+                }
+            }
+			return result;
+		}
 	}
 }
