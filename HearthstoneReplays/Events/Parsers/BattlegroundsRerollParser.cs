@@ -44,6 +44,13 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
+            var action = node.Object as Action;
+            var fullEntities = action.Data.Where(data => data is FullEntity).ToList();
+            if (fullEntities.Count() == 0)
+            {
+                return null;
+            }
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                     (node.Object as Action).TimeStamp,
                      "BATTLEGROUNDS_REROLL",
