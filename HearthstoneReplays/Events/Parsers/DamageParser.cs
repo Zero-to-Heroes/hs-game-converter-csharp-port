@@ -42,7 +42,8 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             var damages = new Dictionary<string, DamageInternal>();
             var targetCardId = impactedEntity?.CardId;
-            damages[targetCardId] = new DamageInternal
+            var targetEntityId = impactedEntity?.Entity;
+            damages[targetCardId + "-" + targetEntityId] = new DamageInternal
             {
                 SourceControllerId = -1,
                 SourceEntityId = -1,
@@ -96,19 +97,19 @@ namespace HearthstoneReplays.Events.Parsers
                     var sourceCardId = GameState.GetCardIdForEntity(damageSource.Id);
                     var sourceControllerId = damageSource.GetTag(GameTag.CONTROLLER);
                     Dictionary<string, DamageInternal> currentSourceDamages = null;
-                    if (totalDamages.ContainsKey(sourceCardId))
+                    if (totalDamages.ContainsKey(sourceCardId + "-" + sourceEntityId))
                     {
-                        currentSourceDamages = totalDamages[sourceCardId];
+                        currentSourceDamages = totalDamages[sourceCardId + "-" + sourceEntityId];
                     }
                     else
                     {
                         currentSourceDamages = new Dictionary<string, DamageInternal>();
-                        totalDamages[sourceCardId] = currentSourceDamages;
+                        totalDamages[sourceCardId + "-" + sourceEntityId] = currentSourceDamages;
                     }
                     DamageInternal currentTargetDamages = null;
-                    if (currentSourceDamages.ContainsKey(targetCardId))
+                    if (currentSourceDamages.ContainsKey(targetCardId + "-" + targetEntityId))
                     {
-                        currentTargetDamages = currentSourceDamages[targetCardId];
+                        currentTargetDamages = currentSourceDamages[targetCardId + "-" + targetEntityId];
                     }
                     else
                     {
@@ -122,7 +123,7 @@ namespace HearthstoneReplays.Events.Parsers
                             Damage = 0,
                             Timestamp = info.TimeStamp,
                         };
-                        currentSourceDamages[targetCardId] = currentTargetDamages;
+                        currentSourceDamages[targetCardId + "-" + targetEntityId] = currentTargetDamages;
                     }
                     currentTargetDamages.Damage = currentTargetDamages.Damage + damageTag.Data;
                 }
@@ -132,6 +133,7 @@ namespace HearthstoneReplays.Events.Parsers
             // Now send one event per source
             foreach (var damageSource in totalDamages.Keys)
             {
+                var sourceCardId = damageSource.Split('-')[0];
                 var targetDamages = totalDamages[damageSource];
                 var timestamp = totalDamages[damageSource].First().Value.Timestamp;
                 result.Add(GameEventProvider.Create(
@@ -143,7 +145,7 @@ namespace HearthstoneReplays.Events.Parsers
                         Type = "DAMAGE",
                         Value = new
                         {
-                            SourceCardId = damageSource,
+                            SourceCardId = sourceCardId,
                             SourceEntityId = totalDamages[damageSource].First().Value.SourceEntityId,
                             SourceControllerId = totalDamages[damageSource].First().Value.SourceControllerId,
                             Targets = totalDamages[damageSource],
@@ -200,6 +202,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         private class DamageInternal
         {
+            public string SourceCardId;
             public int SourceEntityId;
             public int SourceControllerId;
             public int TargetEntityId;

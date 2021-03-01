@@ -32,7 +32,7 @@ namespace HearthstoneReplayTests
                     Console.WriteLine(evt + ",");
                 }
             };
-            List<string> logFile = TestDataReader.GetInputFile("bg_yshaarj.txt");
+            List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile);
             Thread.Sleep(2000);
