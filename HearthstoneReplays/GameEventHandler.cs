@@ -9,9 +9,9 @@ namespace HearthstoneReplays
 {
 	public class GameEventHandler
 	{
-		public static Action<string> EventProvider;
+		public static Action<GameEvent> EventProvider;
 		public static void Handle(GameEvent gameEvent) {
-			EventProvider?.Invoke(JsonConvert.SerializeObject(gameEvent));
+			EventProvider?.Invoke(gameEvent);
 		}
 	}
 }

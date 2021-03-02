@@ -12,6 +12,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Linq;
+using Newtonsoft.Json.Serialization;
+using System.Reflection;
 
 #endregion
 
@@ -24,20 +26,31 @@ namespace HearthstoneReplayTests
         public void Test()
         {
             NodeParser.DevMode = true;
-            GameEventHandler.EventProvider = (evt) =>
+            var serializerSettings = new JsonSerializerSettings()
             {
-                var shouldLog = true; //  !evt.Contains("{");
+                ContractResolver = new IgnorePropertiesResolver(new[] { "GameState", "ReplayXml", "LocalPlayer", "OpponentPlayer" })
+            };
+            GameEventHandler.EventProvider = (GameEvent gameEvent) =>
+            {
+                dynamic Value = gameEvent.Value;
+                //var shouldLog = true;
+                var shouldLog = gameEvent.Type == "DAMAGE";
                 if (shouldLog)
                 {
-                    Console.WriteLine(evt + ",");
+                    //var serialized = JsonConvert.SerializeObject(gameEvent);
+                    var serialized = JsonConvert.SerializeObject(gameEvent, serializerSettings);
+                    if (serialized.Contains("\"SourceCardId\":\"BGS_126\""))
+                    {
+                        Console.WriteLine(serialized + ",");
+                    }
                 }
             };
             List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile);
             Thread.Sleep(2000);
-            //string xml = new ReplayConverter().xmlFromReplay(replay);
-            //Console.Write(xml);
+            string xml = new ReplayConverter().xmlFromReplay(replay);
+            Console.Write(xml);
         }
 
         [TestMethod]
@@ -190,9 +203,9 @@ namespace HearthstoneReplayTests
             {
                 var testedFileName = fileOutput.FileName as string;
                 var events = new Dictionary<string, int>();
-                GameEventHandler.EventProvider = (evt) =>
+                GameEventHandler.EventProvider = (GameEvent gameEvent) =>
                 {
-                    var evtName = JsonConvert.DeserializeObject<JObject>(evt).First.First.ToString();
+                    var evtName = gameEvent.Type;
                     var value = 0;
                     if (events.ContainsKey(evtName))
                     {
@@ -243,5 +256,26 @@ namespace HearthstoneReplayTests
         //	Assert.AreEqual((int)FormatType.FT_WILD, replay.Games[0].FormatType);
         //	Assert.AreEqual(2901, replay.Games[0].ScenarioID);
         //}
+    }
+
+    // https://stackoverflow.com/questions/10169648/how-to-exclude-property-from-json-serialization
+    //short helper class to ignore some properties from serialization
+    public class IgnorePropertiesResolver : DefaultContractResolver
+    {
+        private readonly HashSet<string> ignoreProps;
+        public IgnorePropertiesResolver(IEnumerable<string> propNamesToIgnore)
+        {
+            this.ignoreProps = new HashSet<string>(propNamesToIgnore);
+        }
+
+        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+        {
+            JsonProperty property = base.CreateProperty(member, memberSerialization);
+            if (this.ignoreProps.Contains(property.PropertyName))
+            {
+                property.ShouldSerialize = _ => false;
+            }
+            return property;
+        }
     }
 }
