@@ -35,26 +35,14 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            // This is not enough, as it prevents summoned minions from being detected if they are 
-            // created in the same action as the play, i.e. a reborn minion being destroyed by 
-            // Deathwing that would spawn something
-            //var isMinionPlayed = (node.Parent != null
-            //        && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action)
-            //        && (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.PLAY);
-            //if (isMinionPlayed)
-            //{
-            //    return false;
-            //}
             var createFromFullEntity = node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY
                 && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.MINION;
-            //&& !ParserState.ReconnectionOngoikng;
             var createFromShowEntity = node.Type == typeof(ShowEntity)
                 && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY
                 && (node.Object as ShowEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.MINION
                 && GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
                 && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) != (int)Zone.PLAY;
-                //&& !ParserState.ReconnectionOngoing;
             return createFromFullEntity || createFromShowEntity;
         }
 
@@ -70,6 +58,7 @@ namespace HearthstoneReplays.Events.Parsers
                 ? GameState.CurrentEntities[creatorEntityId].CardId
                 : null;
             var eventName = entity.GetTag(GameTag.ZONE) == (int)Zone.HAND ? "MINION_SUMMONED_FROM_HAND" : "MINION_SUMMONED";
+            var shouldShortCircuit = ShouldShortCircuit(node);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 eventName,
@@ -86,7 +75,11 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                 ),
                 true,
-                node) };
+                node,
+                false,
+                false,
+                shouldShortCircuit
+            )};
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
@@ -99,8 +92,8 @@ namespace HearthstoneReplays.Events.Parsers
             if (isPlayBlock)
             {
                 var parentAction = node.Parent.Object as Parser.ReplayData.GameActions.Action;
-                var createdEntityId = node.Type == typeof(FullEntity) 
-                    ? (node.Object as FullEntity).Entity 
+                var createdEntityId = node.Type == typeof(FullEntity)
+                    ? (node.Object as FullEntity).Entity
                     : (node.Object as ShowEntity).Entity;
                 if (createdEntityId == parentAction.Entity)
                 {
@@ -111,7 +104,8 @@ namespace HearthstoneReplays.Events.Parsers
             if (node.Type == typeof(FullEntity))
             {
                 return CreateFromFullEntity(node);
-            } else
+            }
+            else
             {
                 return CreateFromShowEntity(node);
             }
@@ -124,10 +118,13 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
             var creatorEntityId = fullEntity.GetTag(GameTag.CREATOR);
-            var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId) 
+            var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
                 ? GameState.CurrentEntities[creatorEntityId].CardId
                 : null;
-            return new List<GameEventProvider> { GameEventProvider.Create(
+            var shouldShortCircuit = ShouldShortCircuit(node);
+            return new List<GameEventProvider>
+            {
+                GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "MINION_SUMMONED",
                 GameEvent.CreateProvider(
@@ -138,12 +135,17 @@ namespace HearthstoneReplays.Events.Parsers
                     ParserState,
                     GameState,
                     gameState,
-                    new {
+                    new
+                    {
                         CreatorCardId = creatorEntityCardId,
                     }
                 ),
                 true,
-                node) };
+                node,
+                false,
+                false,
+                shouldShortCircuit
+            )};
         }
 
         public List<GameEventProvider> CreateFromShowEntity(Node node)
@@ -158,6 +160,7 @@ namespace HearthstoneReplays.Events.Parsers
                 : null;
             var previousZone = GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE);
             var eventName = previousZone == (int)Zone.HAND ? "MINION_SUMMONED_FROM_HAND" : "MINION_SUMMONED";
+            var shouldShortCircuit = ShouldShortCircuit(node);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 eventName,
@@ -174,7 +177,30 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                 ),
                 true,
-                node) };
+                node,
+                false,
+                false,
+                shouldShortCircuit
+            )};
+        }
+
+        // Only short-circuit after a reroll
+        private bool ShouldShortCircuit(Node node)
+        {
+            if (!ParserState.IsBattlegrounds())
+            {
+                return false;
+            }
+
+            if (node.Parent == null || node.Parent.Type != typeof(Action))
+            {
+                return false;
+            }
+
+            var action = node.Parent.Object as Action;
+            return action.Type == (int)BlockType.POWER
+                && GameState.CurrentEntities.ContainsKey(action.Entity)
+                && GameState.CurrentEntities[action.Entity].CardId == CardIds.NonCollectible.Neutral.RefreshTavernBrawl2;
         }
     }
 }
