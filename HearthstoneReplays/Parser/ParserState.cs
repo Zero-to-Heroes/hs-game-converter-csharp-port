@@ -235,10 +235,22 @@ namespace HearthstoneReplays.Parser
 
             //Console.WriteLine("Trying to assign local player");
             List<IEntityData> showEntities = CurrentGame.FilterGameData(typeof(ShowEntity)).Select(d => (IEntityData)d).ToList();
-            // Happens when facing Bob
+            // Happens when facing Bob, or when reconnecting
             if (showEntities.Count == 0)
             {
-                showEntities = CurrentGame.FilterGameData(typeof(FullEntity)).Select(d => (IEntityData)d).ToList();
+                Logger.Log("No show entity, fallback to fullentity in hand", "");
+                showEntities = CurrentGame
+                    .FilterGameData(typeof(FullEntity))
+                    .Where(d => d is FullEntity)
+                    .Select(d => d as FullEntity)
+                    .Where(d => d.GetZone() == (int)Zone.HAND)
+                    .Select(d => (IEntityData)d)
+                    .ToList();
+                if (showEntities.Count == 0)
+                {
+                    Logger.Log("No full entity in hand, fallback to fullentity", "");
+                    showEntities = CurrentGame.FilterGameData(typeof(FullEntity)).Select(d => (IEntityData)d).ToList();
+                }
             }
             foreach (IEntityData entity in showEntities)
             {
@@ -291,6 +303,11 @@ namespace HearthstoneReplays.Parser
                     }
                 }
             }
+            // Could not assign any player
+            if (_localPlayer == null && _opponentPlayer == null)
+            {
+                Logger.Log("ERROR TO LOG: Could not assign local player " + data, getPlayers()?.Select(player => player.Name));
+            }
         }
 
         public int GetTag(List<Tag> tags, GameTag tag)
@@ -305,6 +322,11 @@ namespace HearthstoneReplays.Parser
                 .Select(data => (BaseEntity)data).ToList()
                 .Where(e => e.Id == id)
                 .First();
+        }
+
+        public bool IsBattlegrounds()
+        {
+            return CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS || CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY;
         }
 
         //private void HandleNodeUpdateEvent(Node oldNode, Node newNode)

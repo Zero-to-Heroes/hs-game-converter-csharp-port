@@ -65,5 +65,25 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         {
             return GetTag(GameTag.CONTROLLER);
         }
+
+        internal int GetZone()
+        {
+            return GetTag(GameTag.ZONE);
+        }
+
+        internal int GetCardType()
+        {
+            return GetTag(GameTag.CARDTYPE);
+        }
+
+        internal bool IsHero()
+        {
+            return GetCardType() == (int)CardType.HERO;
+        }
+
+        internal bool IsInPlay()
+        {
+            return GetZone() == (int)Zone.PLAY;
+        }
     }
 }
