@@ -173,7 +173,7 @@ namespace HearthstoneReplays.Parser
 			var index = type.GetEnumNames().ToList().IndexOf(tag);
 			if(index > -1)
 				return (int)type.GetEnumValues().GetValue(index);
-			Logger.Log("Error: enuum not found", tag);
+			//Logger.Log("Error: enuum not found", tag);
 			//throw new Exception("Enum not found: " + tag);
 			return -1;
 		}
