@@ -40,9 +40,26 @@ namespace HearthstoneReplays.Events.Parsers
             var impactedEntity = GameState.CurrentEntities[tagChange.Entity];
             var previousDamage = impactedEntity.GetTag(GameTag.DAMAGE, 0);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
-            var damages = new Dictionary<string, DamageInternal>();
             var targetCardId = impactedEntity?.CardId;
             var targetEntityId = impactedEntity?.Entity;
+            var actualDamage = tagChange.Value - previousDamage;
+
+            // If there is a META block with the same info, this means the event will already be sent
+            // when parsing that block, with more detailed info (like the source of the damage), so 
+            // we ignore it
+            // Some thoughts:
+            // - there might be a bug here (where the damage is counted twice), both in the current implementation
+            // and the offline parser. Since for now they give the same results, I'll keep this consistency and will
+            // revisit that assumption later (maybe there is a fix to do on both parsers to ignore the tagchange
+            // if a damage is already done in a meta tag)
+            // - the events don't seem to send the damage info twice, so maybe there's no issue after all?
+            // - this doesn't work in BG, because the damage is done once during the combat, then applied again, to 
+            // another entityId, outside of the combat block. 
+            // So for BG I will simply ignore META damages done to entities that are in play, and if that entity 
+            // is a hero. All damage done in combat in BG should happen with META tags, so there should be no loss of 
+            // info doing that
+
+            var damages = new Dictionary<string, DamageInternal>();
             damages[targetCardId + "-" + targetEntityId] = new DamageInternal
             {
                 SourceControllerId = -1,
@@ -50,7 +67,7 @@ namespace HearthstoneReplays.Events.Parsers
                 TargetControllerId = -1,
                 TargetEntityId = tagChange.Entity,
                 TargetCardId = targetCardId,
-                Damage = tagChange.Value - previousDamage,
+                Damage = actualDamage,
                 Timestamp = tagChange.TimeStamp,
             };
             return new List<GameEventProvider> { GameEventProvider.Create(
@@ -86,9 +103,20 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 foreach (var info in damageTag.MetaInfo)
                 {
+                    var damageTarget = GameState.CurrentEntities[info.Entity];
+                    // See comment in the TAG_CHANGE parser above
+                    // The exception is for the local player, since there is no extraneous tag_change to 
+                    // correct the damage info
+                    if (ParserState.IsBattlegrounds() 
+                        && damageTarget.IsHero() 
+                        && damageTarget.IsInPlay()
+                        && damageTarget.GetController() != ParserState.LocalPlayer.PlayerId)
+                    {
+                        continue;
+                    }
+
                     // If source or target are player entities, they don't have any 
                     // attached cardId
-                    var damageTarget = GameState.CurrentEntities[info.Entity];
                     var targetEntityId = damageTarget.Id;
                     var targetCardId = GameState.GetCardIdForEntity(damageTarget.Id);
                     var targetControllerId = damageTarget.GetTag(GameTag.CONTROLLER);
