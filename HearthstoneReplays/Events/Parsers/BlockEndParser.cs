@@ -57,8 +57,9 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var element = node.Object as Parser.ReplayData.GameActions.Action;
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
+            var lastElement = element.Data.Count > 0 ? element.Data[element.Data.Count - 1] : element;
             return new List<GameEventProvider> { GameEventProvider.Create(
-                element.TimeStamp,
+                lastElement.TimeStamp,
                 "GAME_STATE_UPDATE",
                 GameEvent.CreateProvider(
                     "GAME_STATE_UPDATE",

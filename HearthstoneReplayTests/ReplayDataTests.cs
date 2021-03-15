@@ -33,24 +33,24 @@ namespace HearthstoneReplayTests
             GameEventHandler.EventProvider = (GameEvent gameEvent) =>
             {
                 dynamic Value = gameEvent.Value;
-                //var shouldLog = true;
-                var shouldLog = gameEvent.Type == "DAMAGE";
+                var shouldLog = true;
+                //var shouldLog = gameEvent.Type == "DAMAGE";
                 if (shouldLog)
                 {
-                    //var serialized = JsonConvert.SerializeObject(gameEvent);
-                    var serialized = JsonConvert.SerializeObject(gameEvent, serializerSettings);
-                    if (serialized.Contains("\"SourceCardId\":\"BGS_126\""))
-                    {
+                    var serialized = JsonConvert.SerializeObject(gameEvent);
+                    //var serialized = JsonConvert.SerializeObject(gameEvent, serializerSettings);
+                    //if (serialized.Contains("\"TargetCardId\":\"TB_BaconShop_HERO_53\""))
+                    //{
                         Console.WriteLine(serialized + ",");
-                    }
+                    //}
                 }
             };
             List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile);
             Thread.Sleep(2000);
-            string xml = new ReplayConverter().xmlFromReplay(replay);
-            Console.Write(xml);
+            //string xml = new ReplayConverter().xmlFromReplay(replay);
+            //Console.Write(xml);
         }
 
         [TestMethod]
