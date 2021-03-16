@@ -17,7 +17,10 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
         [XmlAttribute("defChange")]
         public string DefChange { get; set; }
 
-        public override bool Equals(object obj)
+		[XmlIgnore]
+		public string SubSpellInEffect { get; set; }
+
+		public override bool Equals(object obj)
 		{
 			var other = obj as TagChange;
 			if(other == null)

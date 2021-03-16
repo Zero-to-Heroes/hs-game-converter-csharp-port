@@ -48,6 +48,13 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
+            // Cards here are just created to show the info, then put aside. We don't want to 
+            // show them in the "Other" zone, so we just ignore them
+            if (tagChange.SubSpellInEffect == "DMFFX_SpawnToDeck_CthunTheShattered_CardFromScript_FX")
+            {
+                return null;
+            }
+
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);

@@ -399,7 +399,28 @@ namespace HearthstoneReplays.Parser.Handlers
             if (match.Success)
             {
                 var subSpellPrefab = match.Groups[1].Value;
+                var sourceEntityId = int.Parse(match.Groups[2].Value);
+                var sourceEntity = state.GameState.CurrentEntities.ContainsKey(sourceEntityId) ? state.GameState.CurrentEntities[sourceEntityId] : null;
                 this.currentSubSpell = subSpellPrefab;
+                state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
+                    timestamp,
+                    "SUB_SPELL_START",
+                    () => new GameEvent
+                    {
+                        Type = "SUB_SPELL_START",
+                        Value = new
+                        {
+                            PrefabId = subSpellPrefab,
+                            EntityId = sourceEntityId,
+                            CardId = sourceEntity?.CardId,
+                            LocalPlayer = state.LocalPlayer,
+                            OpponentPlayer = state.OpponentPlayer,
+                            ControllerId = sourceEntity.GetController(),
+                        }
+                    },
+                    false,
+                    new Node(null, null, 0, null, data)
+            )});
             }
 
 
@@ -553,7 +574,8 @@ namespace HearthstoneReplays.Parser.Handlers
                     Name = tag.Name,
                     Value = tag.Value,
                     TimeStamp = timestamp,
-                    DefChange = defChange
+                    DefChange = defChange,
+                    SubSpellInEffect = this.currentSubSpell,
                 };
                 state.UpdateCurrentNode(typeof(Game), typeof(Action));
                 state.CreateNewNode(new Node(typeof(TagChange), tagChange, indentLevel, state.Node, data));

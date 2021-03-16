@@ -61,12 +61,20 @@ namespace HearthstoneReplays.Events.Parsers
         private List<GameEventProvider> CreateFromShowEntity(Node node)
         {
             var showEntity = node.Object as ShowEntity;
+            // Cards here are just created to show the info, then put aside. We don't want to 
+            // show them in the "Other" zone, so we just ignore them
+            if (showEntity.SubSpellInEffect == "DMFFX_SpawnToDeck_CthunTheShattered_CardFromScript_FX")
+            {
+                return null;
+            }
+
             var currentCard = GameState.CurrentEntities[showEntity.Entity];
             // If the card is already present in the deck, do nothing
             if (currentCard.GetTag(GameTag.ZONE) == (int)Zone.DECK)
             {
                 return null;
             }
+
             var creatorCardId = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
             var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, showEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, showEntity.CardId);
@@ -92,6 +100,13 @@ namespace HearthstoneReplays.Events.Parsers
         private List<GameEventProvider> CreateFromFullEntity(Node node)
         {
             var fullEntity = node.Object as FullEntity;
+            // Cards here are just created to show the info, then put aside. We don't want to 
+            // show them in the "Other" zone, so we just ignore them
+            if (fullEntity.SubSpellInEffect == "DMFFX_SpawnToDeck_CthunTheShattered_CardFromScript_FX")
+            {
+                return null;
+            }
+
             var creatorCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
             var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, fullEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, fullEntity.CardId);

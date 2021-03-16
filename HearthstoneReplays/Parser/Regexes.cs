@@ -47,7 +47,7 @@ namespace HearthstoneReplays.Parser
 		public static readonly Regex ActionHideEntityRegex = new Regex(string.Format(@"HIDE_ENTITY - Entity={0} tag=(\w+) value=(\w+)", Entity));
 		public static readonly Regex ActionFullEntityUpdatingRegex = new Regex(string.Format(@"FULL_ENTITY - Updating {0} CardID=(\w+)?$", Entity));
 		public static readonly Regex ActionFullEntityCreatingRegex = new Regex(@"FULL_ENTITY - Creating ID=(\d+) CardID=(\w+)?$");
-		public static readonly Regex SubSpellStartRegex = new Regex(@"SUB_SPELL_START - SpellPrefabGUID=(.+):.*$");
+		public static readonly Regex SubSpellStartRegex = new Regex(@"SUB_SPELL_START - SpellPrefabGUID=(.+):.* Source=(\d+).*$");
 
 		public static readonly Regex ActionTagChangeRegex = new Regex(string.Format(@"TAG_CHANGE Entity={0} tag=(\w+) value=(\w+)( DEF CHANGE)?", Entity));
 		public static readonly Regex ActionTagRegex = new Regex(@"tag=(\w+) value=(\w+)");
