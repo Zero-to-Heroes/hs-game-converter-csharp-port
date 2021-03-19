@@ -415,7 +415,7 @@ namespace HearthstoneReplays.Parser.Handlers
                             CardId = sourceEntity?.CardId,
                             LocalPlayer = state.LocalPlayer,
                             OpponentPlayer = state.OpponentPlayer,
-                            ControllerId = sourceEntity.GetController(),
+                            ControllerId = sourceEntity?.GetController(),
                         }
                     },
                     false,
