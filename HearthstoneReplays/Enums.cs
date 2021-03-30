@@ -51,6 +51,8 @@ namespace HearthstoneReplays.Enums
         BGT_PVPDR = 55,
         BGT_RESERVED_18_22 = 56,
         BGT_RESERVED_18_23 = 57,
+        BGT_RANKED_CLASSIC = 58,
+        BGT_CASUAL_CLASSIC = 59,
     }
 
     public enum BnetRegion
@@ -99,6 +101,7 @@ namespace HearthstoneReplays.Enums
         YEAR_OF_DRAGON = 498,
         STANDARD_MAGE = 545,
         THE_BARRENS = 553,
+        WAILING_CAVERNS = 583,
         DARKMOON_FAIRE = 616,
     }
 
@@ -133,7 +136,7 @@ namespace HearthstoneReplays.Enums
     {
         INVALID = 0,
         TEST_TEMPORARY = 1,
-        CORE = 2,
+        BASIC = 2,
         EXPERT1 = 3,
         HOF = 4,
         REWARD = 4,
@@ -179,6 +182,10 @@ namespace HearthstoneReplays.Enums
         DEMON_HUNTER_INITIATE = 1463,
         DARKMOON_FAIRE = 1466,
         THE_BARRENS = 1525,
+        WAILING_CAVERNS = 1559,
+        LEGACY = 1635,
+        CORE = 1637,
+        VANILLA = 1646,
     }
 
     public enum CardTextBuilderType
@@ -305,6 +312,7 @@ namespace HearthstoneReplays.Enums
         FT_UNKNOWN = 0,
         FT_WILD = 1,
         FT_STANDARD = 2,
+        FT_CLASSIC = 3,
     }
 
     public enum GameTag
@@ -881,6 +889,8 @@ namespace HearthstoneReplays.Enums
         USE_LEADERBOARD_AS_SPAWN_ORIGIN = 1628,
         BACON_MUKLA_BANANA_SPAWN_COUNT = 1629,
         REPLACEMENT_ENTITY = 1632,
+        SPELL_SCHOOL = 1635,
+        FRENZY = 1637,
         COIN_MANA_GEM_FOR_CHOICE_CARDS = 1643,
         METAMORPHOSIS = 1644,
         HERO_POWER_ENTITY = 1646,
@@ -894,6 +904,7 @@ namespace HearthstoneReplays.Enums
         TRANSFORMED_FROM_CARD_VISUAL_TYPE = 1719,
         PLAYER_ID_LOOKUP = 1740,
         BACON_AVALANCHE = 1744,
+        SIGIL = 1749,
         PLAYED_CTHUN_EYE = 1764,
         PLAYED_CTHUN_BODY = 1765,
         PLAYED_CTHUN_MAW = 1766,
@@ -914,6 +925,24 @@ namespace HearthstoneReplays.Enums
         CANT_MOVE_MINION = 1848,
         DARKMOON_FAIRE_PRIZES_ACTIVE = 1895,
         IGNORE_DECK_RULESET = 1896,
+        CURRENT_SPELLPOWER_ARCANE = 1936,
+        CURRENT_SPELLPOWER_FIRE = 1937,
+        CURRENT_SPELLPOWER_FROST = 1938,
+        CURRENT_SPELLPOWER_NATURE = 1939,
+        CURRENT_SPELLPOWER_HOLY = 1940,
+        CURRENT_SPELLPOWER_SHADOW = 1941,
+        CURRENT_SPELLPOWER_FEL = 1942,
+        CURRENT_SPELLPOWER_PHYSICAL = 1943,
+        NON_KEYWORD_POISONOUS = 1944,
+        SPELLPOWER_ARCANE = 1945,
+        SPELLPOWER_FIRE = 1946,
+        SPELLPOWER_FROST = 1947,
+        SPELLPOWER_NATURE = 1948,
+        SPELLPOWER_HOLY = 1949,
+        SPELLPOWER_SHADOW = 1950,
+        SPELLPOWER_FEL = 1951,
+        SPELLPOWER_PHYSICAL = 1952,
+        ENRAGED_TOOLTIP = 1954,
     }
 
     public enum GameType
@@ -1228,6 +1257,7 @@ namespace HearthstoneReplays.Enums
         BLANK = 25,
         ALL = 26,
         EGG = 38,
+        QUILBOAR = 43,
     }
 
     public enum Rarity
@@ -1342,6 +1372,7 @@ namespace HearthstoneReplays.Enums
         RAVEN = 3,
         DRAGON = 4,
         PHOENIX = 5,
+        GRYPHON = 6,
     }
 
     public enum Zone
