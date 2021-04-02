@@ -67,7 +67,8 @@ namespace HearthstoneReplays.Events.Parsers
                 {
                     var showEntity = data as ShowEntity;
                     if (showEntity.GetTag(GameTag.ZONE) == (int)Zone.SECRET
-                        && showEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
+                        && showEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT
+                        && showEntity.GetTag(GameTag.SIGIL) != 1)
                     {
                         var cardId = showEntity.CardId;
                         var controllerId = showEntity.GetTag(GameTag.CONTROLLER);

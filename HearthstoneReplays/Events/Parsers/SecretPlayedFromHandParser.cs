@@ -39,7 +39,7 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
-            if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
+            if (entity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT && entity.GetTag(GameTag.SIGIL) != 1)
             {
                 var eventName = GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.QUEST) == 1
                         || GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.SIDEQUEST) == 1
@@ -79,7 +79,8 @@ namespace HearthstoneReplays.Events.Parsers
                 {
                     var showEntity = data as ShowEntity;
                     if (showEntity.GetTag(GameTag.ZONE) == (int)Zone.SECRET
-                        && showEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
+                        && showEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT
+                        && showEntity.GetTag(GameTag.SIGIL) != 1)
                     {
                         var cardId = showEntity.CardId;
                         var controllerId = showEntity.GetTag(GameTag.CONTROLLER);

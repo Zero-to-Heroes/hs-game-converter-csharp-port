@@ -42,7 +42,7 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
-            if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
+            if (entity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT && entity.GetTag(GameTag.SIGIL) != 1)
             {
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
                 var playerClass = entity.GetPlayerClass();
@@ -73,6 +73,11 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var showEntity = node.Object as ShowEntity;
+            if (showEntity.GetTag(GameTag.SIGIL) == 1)
+            {
+                return null;
+            }
+
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
