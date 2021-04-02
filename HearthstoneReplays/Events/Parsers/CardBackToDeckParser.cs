@@ -40,6 +40,13 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
+            if (cardId == null || cardId.Length == 0)
+            {
+                var creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity, node);
+                var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, entity, node);
+                cardId = Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, cardId);
+            }
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 zoneInt == (int)Zone.SETASIDE ? "CREATE_CARD_IN_DECK" : "CARD_BACK_TO_DECK",

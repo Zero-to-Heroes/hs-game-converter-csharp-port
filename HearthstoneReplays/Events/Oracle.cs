@@ -193,6 +193,7 @@ namespace HearthstoneReplays.Events
                     case Neutral.InfestedGoblin: return NonCollectible.Neutral.WrappedGolem_ScarabToken;
                     case Neutral.KingMukla: return NonCollectible.Neutral.BananasMissions;
                     case Neutral.LicensedAdventurer: return NonCollectible.Neutral.TheCoinBASIC;
+                    case Neutral.Mankrik: return NonCollectible.Neutral.Mankrik_OlgraMankriksWifeToken;
                     case NonCollectible.Neutral.MilitiaHornGILNEAS: return NonCollectible.Neutral.VeteransMilitiaHornGILNEAS;
                     case Neutral.MuklaTyrantOfTheVale: return NonCollectible.Neutral.BananasMissions;
                     case NonCollectible.Neutral.OldMilitiaHornGILNEAS: return NonCollectible.Neutral.MilitiaHornGILNEAS;
@@ -225,6 +226,7 @@ namespace HearthstoneReplays.Events
                     case Hunter.AdorableInfestation: return NonCollectible.Hunter.AdorableInfestation_MarsuulCubToken;
                     case Hunter.HalazziTheLynx: return NonCollectible.Hunter.Springpaw_LynxToken;
                     case Hunter.RaptorHatchling: return NonCollectible.Hunter.RaptorHatchling_RaptorPatriarchToken;
+                    case Hunter.SunscaleRaptor: return Collectible.Hunter.SunscaleRaptor;
                     case Hunter.Springpaw: return NonCollectible.Hunter.Springpaw_LynxToken;
                     case Hunter.TheMarshQueen: return NonCollectible.Hunter.TheMarshQueen_QueenCarnassaToken;
                     case Hunter.ZixorApexPredator: return NonCollectible.Hunter.ZixorApexPredator_ZixorPrimeToken;
@@ -298,6 +300,7 @@ namespace HearthstoneReplays.Events
                     case Neutral.ZolaTheGorgon:
                     case Druid.Recycle:
                     case Druid.Splintergraft:
+                    case Druid.MarkOfTheSpikeshell:
                     case Hunter.DireFrenzy:
                     case Mage.ManicSoulcaster:
                     case Priest.HolyWater:

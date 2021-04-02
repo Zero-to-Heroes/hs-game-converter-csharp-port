@@ -51,6 +51,7 @@ namespace HearthstoneReplays.Events.Parsers
             //CardIds.Collectible.Rogue.AnkaTheBuried, 
             CardIds.Collectible.Rogue.BlackjackStunner,
             CardIds.Collectible.Rogue.CheatDeath,
+            CardIds.Collectible.Rogue.EfficientOctoBot,
             CardIds.Collectible.Rogue.Shadowcaster,
             CardIds.Collectible.Rogue.Shadowstep,
             CardIds.Collectible.Rogue.SonyaShadowdancer,
@@ -91,6 +92,7 @@ namespace HearthstoneReplays.Events.Parsers
             //CardIds.Collectible.Neutral.DeathaxePunisher,
             //CardIds.Collectible.Neutral.DragonqueenAlexstrasza,  // redundant with creator
             CardIds.Collectible.Neutral.EmperorThaurissan, 
+            CardIds.Collectible.Neutral.FarWatchPost, 
             //CardIds.Collectible.Neutral.EbonDragonsmith, 
             //CardIds.Collectible.Neutral.Galvanizer, 
             CardIds.Collectible.Neutral.GrimestreetSmuggler,
@@ -122,6 +124,7 @@ namespace HearthstoneReplays.Events.Parsers
             { CardIds.Collectible.Priest.Shadowfiend, CardIds.NonCollectible.Priest.Shadowfiend_ShadowfiendedEnchantment},
             { CardIds.Collectible.Rogue.BlackjackStunner, CardIds.NonCollectible.Neutral.BlackjackStunner_StunnedEnchantment},
             { CardIds.Collectible.Rogue.CheatDeath, CardIds.NonCollectible.Neutral.CheatDeath_CloseCallEnchantment},
+            { CardIds.Collectible.Rogue.EfficientOctoBot, CardIds.NonCollectible.Neutral.EfficientOctobot_TrainingEnchantment},
             { CardIds.Collectible.Rogue.Shadowcaster, CardIds.NonCollectible.Neutral.Shadowcaster_FlickeringDarknessEnchantment},
             { CardIds.Collectible.Rogue.Shadowstep, CardIds.NonCollectible.Neutral.CheatDeath_CloseCallEnchantment},
             { CardIds.Collectible.Rogue.SonyaShadowdancer, CardIds.NonCollectible.Neutral.SonyaShadowdancer_SonyasShadowEnchantment},
@@ -145,6 +148,7 @@ namespace HearthstoneReplays.Events.Parsers
             { CardIds.Collectible.Warrior.StolenGoods, CardIds.NonCollectible.Neutral.StolenGoods_SmugglingEnchantment},
             { CardIds.Collectible.Neutral.DonHancho, CardIds.NonCollectible.Neutral.DonHanCho_SmugglingEnchantment },
             { CardIds.Collectible.Neutral.EmperorThaurissan, CardIds.NonCollectible.Neutral.EmperorThaurissan_ImperialFavorEnchantment },
+            { CardIds.Collectible.Neutral.FarWatchPost, CardIds.NonCollectible.Neutral.FarWatchPost_SpottedEnchantment },
             { CardIds.Collectible.Neutral.GrimestreetSmuggler, CardIds.NonCollectible.Neutral.GrimestreetSmuggler_SmugglingEnchantment},
         };
 
