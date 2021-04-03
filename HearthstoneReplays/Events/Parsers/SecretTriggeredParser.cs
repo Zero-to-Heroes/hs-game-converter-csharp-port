@@ -68,8 +68,35 @@ namespace HearthstoneReplays.Events.Parsers
                         ProposedDefenderControllerId = proposedDefender.GetTag(GameTag.CONTROLLER),
                     };
                 }
+                else if (parentAction != null && parentAction.Type == (int)BlockType.PLAY)
+                {
+                    additionalProps = new
+                    {
+                        InReactionTo = GameState.CurrentEntities[parentAction.Entity]?.CardId,
+                    };
+                }
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
-                return new List<GameEventProvider> { GameEventProvider.Create(
+                return new List<GameEventProvider> {
+                    GameEventProvider.Create(
+                        action.TimeStamp,
+                        "SECRET_WILL_TRIGGER",
+                        GameEvent.CreateProvider(
+                            "SECRET_WILL_TRIGGER",
+                            cardId,
+                            controllerId,
+                            entity.Id,
+                            ParserState,
+                            GameState,
+                            gameState,
+                            additionalProps),
+                       true,
+                       node,
+                       true,
+                       false,
+                       // We short-circuit so that the app knows that a secret will trigger, and can take action accordingly
+                       // (esp. if the secret is Counterspell or Oh My Yogg)
+                       true), 
+                    GameEventProvider.Create(
                         action.TimeStamp,
                         "SECRET_TRIGGERED",
                         GameEvent.CreateProvider(
@@ -82,7 +109,8 @@ namespace HearthstoneReplays.Events.Parsers
                             gameState,
                             additionalProps),
                        true,
-                       node) };
+                       node) 
+                };
             }
             return null;
         }

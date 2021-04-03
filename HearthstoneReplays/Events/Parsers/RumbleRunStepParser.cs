@@ -51,7 +51,7 @@ namespace HearthstoneReplays.Events.Parsers
                 (node.Object as Parser.ReplayData.GameActions.Action).TimeStamp,
                 "RUMBLE_RUN_STEP",
                 () => {
-                    if (ParserState.CurrentGame.ScenarioID != (int)Scenario.MONSTER_HUNT)
+                    if (ParserState.CurrentGame.ScenarioID != (int)Scenario.RUMBLE_RUN)
                     {
                         return null;
                     }
