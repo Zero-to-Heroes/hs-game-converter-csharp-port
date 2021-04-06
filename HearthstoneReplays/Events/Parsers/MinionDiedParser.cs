@@ -4,6 +4,7 @@ using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
+using System.Linq;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -20,43 +21,62 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.ZONE
-                && (node.Object as TagChange).Value == (int)Zone.GRAVEYARD
-                && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.PLAY
-                && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.CARDTYPE) == (int)CardType.MINION;
+            return false;
         }
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return false;
+            return node.Type == typeof(Action)
+                && (node.Object as Action).Type == (int)BlockType.DEATHS;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            var tagChange = node.Object as TagChange;
-            var entity = GameState.CurrentEntities[tagChange.Entity];
-            var cardId = entity.CardId;
-            var controllerId = entity.GetTag(GameTag.CONTROLLER);
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
-            return new List<GameEventProvider> { GameEventProvider.Create(
-                tagChange.TimeStamp,
-                "MINION_DIED",
-                GameEvent.CreateProvider(
-                    "MINION_DIED",
-                    cardId,
-                    controllerId,
-                    entity.Id,
-                    ParserState,
-                        GameState,
-                    gameState),
-                true,
-                node) };
+            return null;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
-            return null;
+            var action = node.Object as Action;
+            var deathTags = action.GetDataRecursive()
+                .Where(data => data is TagChange)
+                .Select(data => data as TagChange)
+                .Where(tag => tag.Name == (int)GameTag.ZONE && tag.Value == (int)Zone.GRAVEYARD)
+                // Checking the current zone doesn't work, because we work on a Close node. However, since 
+                // we are in the DEATHS block, we should be good
+                //.Where(tag => GameState.CurrentEntities[tag.Entity].GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                .Where(tag => GameState.CurrentEntities[tag.Entity].GetTag(GameTag.CARDTYPE) == (int)CardType.MINION);
+            var deadMinions = deathTags.Select(tag =>
+            {
+                var entity = GameState.CurrentEntities[tag.Entity];
+                var cardId = entity.CardId;
+                var controllerId = entity.GetTag(GameTag.CONTROLLER);
+                return new
+                {
+                    CardId = cardId,
+                    EntityId = entity.Id,
+                    ControllerId = controllerId,
+                    Timestamp = tag.TimeStamp,
+                };
+            });
+
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                action.TimeStamp,
+                "MINIONS_DIED",
+                GameEvent.CreateProvider(
+                    "MINIONS_DIED",
+                    null,
+                    -1,
+                    -1,
+                    ParserState,
+                    GameState,
+                    gameState,
+                    new {
+                        DeadMinions = deadMinions,
+                    }),
+                true,
+                node) };
         }
     }
 }
