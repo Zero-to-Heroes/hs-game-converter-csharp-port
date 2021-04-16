@@ -51,6 +51,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             var previousZone = entity.GetTag(GameTag.ZONE) == -1 ? 0 : entity.GetTag(GameTag.ZONE);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
+            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity, node);
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
@@ -64,6 +65,7 @@ namespace HearthstoneReplays.Events.Parsers
                         GameState,
                         gameState,
                         new {
+                            CreatorCardId = creatorCardId, // Used when there is no cardId, so we can show at least the card that created it
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
                         }),
                     true,
@@ -142,6 +144,8 @@ namespace HearthstoneReplays.Events.Parsers
                                 creatorCardId = "GAME_005";
                             }
                         }
+                        var buffingCardEntityCardId = Oracle.GetBuffingCardCardId(creatorEntityId, creatorCardId);
+                        var buffCardId = Oracle.GetBuffCardId(creatorEntityId, creatorCardId);
                         //var a = "t";
                         //Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
                         //Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, fullEntity.CardId);
@@ -159,6 +163,8 @@ namespace HearthstoneReplays.Events.Parsers
                                 AdditionalProps = new {
                                     CreatorCardId = creatorCardId,
                                     IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1,
+                                    BuffingEntityCardId = buffingCardEntityCardId,
+                                    BuffCardId = buffCardId,
                                 }
                             }
                         };
