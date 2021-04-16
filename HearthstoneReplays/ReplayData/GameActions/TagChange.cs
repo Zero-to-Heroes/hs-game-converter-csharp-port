@@ -18,7 +18,7 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
         public string DefChange { get; set; }
 
 		[XmlIgnore]
-		public string SubSpellInEffect { get; set; }
+		public SubSpell SubSpellInEffect { get; set; }
 
 		public override bool Equals(object obj)
 		{

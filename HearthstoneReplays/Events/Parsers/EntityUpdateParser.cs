@@ -40,7 +40,7 @@ namespace HearthstoneReplays.Events.Parsers
             var showEntity = node.Object as ShowEntity;
             // Cards here are just created to show the info, then put aside. We don't want to 
             // show them in the "Other" zone, so we just ignore them
-            if (showEntity.SubSpellInEffect == "DMFFX_SpawnToDeck_CthunTheShattered_CardFromScript_FX")
+            if (showEntity.SubSpellInEffect?.Prefab == "DMFFX_SpawnToDeck_CthunTheShattered_CardFromScript_FX")
             {
                 return null;
             }

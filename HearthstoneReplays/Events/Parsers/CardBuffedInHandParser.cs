@@ -7,6 +7,7 @@ using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using HearthstoneReplays.Parser.ReplayData.Meta;
+using Newtonsoft.Json;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -91,7 +92,7 @@ namespace HearthstoneReplays.Events.Parsers
             CardIds.Collectible.Neutral.DonHancho,  // not tested
             //CardIds.Collectible.Neutral.DeathaxePunisher,
             //CardIds.Collectible.Neutral.DragonqueenAlexstrasza,  // redundant with creator
-            CardIds.Collectible.Neutral.EmperorThaurissan, 
+            CardIds.Collectible.Neutral.EmperorThaurissan,
             CardIds.Collectible.Neutral.FarWatchPost, 
             //CardIds.Collectible.Neutral.EbonDragonsmith, 
             //CardIds.Collectible.Neutral.Galvanizer, 
@@ -152,6 +153,11 @@ namespace HearthstoneReplays.Events.Parsers
             { CardIds.Collectible.Neutral.GrimestreetSmuggler, CardIds.NonCollectible.Neutral.GrimestreetSmuggler_SmugglingEnchantment},
         };
 
+        private List<string> validSubSpellBuffers = new List<string>()
+        {
+            CardIds.Collectible.Rogue.EfficientOctoBot
+        };
+
         public CardBuffedInHandParser(ParserState ParserState)
         {
             this.ParserState = ParserState;
@@ -167,9 +173,11 @@ namespace HearthstoneReplays.Events.Parsers
         {
             // Use the meta node and not the action so that we can properly sequence events thanks to the 
             // node's index
-            return node.Type == typeof(MetaData)
-                 && (node.Object as MetaData).Meta == (int)MetaDataType.TARGET;
-
+            return (node.Type == typeof(MetaData) && (node.Object as MetaData).Meta == (int)MetaDataType.TARGET)
+                || (node.Type == typeof(SubSpell)
+                    && node.Object != null
+                    && (GameState.CurrentEntities.ContainsKey((node.Object as SubSpell).Source))
+                    && (validSubSpellBuffers.Contains(GameState.CurrentEntities[(node.Object as SubSpell).Source].CardId)));
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -179,11 +187,77 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
-            return CreateEventProviderForMeta(node);
+            if (node.Type == typeof(MetaData))
+            {
+                return CreateEventProviderForMeta(node);
+            }
+            else if (node.Type == typeof(SubSpell))
+            {
+                return CreateEventProviderForSubSpell(node);
+            }
+            return null;
+        }
+
+        private List<GameEventProvider> CreateEventProviderForSubSpell(Node node)
+        {
+            var subSpell = (node.Object as SubSpell);
+            //Logger.Log("Buff from sub spell", subSpell);
+            if (subSpell.Targets == null)
+            {
+                return null;
+            }
+
+            var subSpellEntity = GameState.CurrentEntities[subSpell.Source];
+            var bufferCardId = subSpellEntity.CardId;
+            //Logger.Log("subSpellEntity", subSpellEntity);
+            //Logger.Log("bufferCardId", bufferCardId);
+            // Because some cards have an animation that reveal the buffed cards, and others don't, 
+            // we have to whitelist the valid cards to avoid info leaks
+            if (!validBuffers.Contains(bufferCardId))
+            {
+                //Logger.Log("buffer not valid", bufferCardId);
+                return null;
+            }
+
+            var entitiesBuffedInHand = subSpell.Targets
+                .Select(target => GameState.CurrentEntities.ContainsKey(target) ? GameState.CurrentEntities[target] : null)
+                .Where(entity => entity != null)
+                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.HAND)
+                .ToList();
+            //Logger.Log("entitiesBuffedInHand", JsonConvert.SerializeObject(entitiesBuffedInHand));
+            //Logger.Log("entitiesBuffed", JsonConvert.SerializeObject(subSpell.Targets
+            //    .Select(target => GameState.CurrentEntities.ContainsKey(target) ? GameState.CurrentEntities[target] : null)
+            //    .Where(entity => entity != null)
+            //    .ToList()));
+            return entitiesBuffedInHand
+                .Select(entity =>
+                {
+                    return GameEventProvider.Create(
+                        subSpell.Timestamp,
+                        "CARD_BUFFED_IN_HAND",
+                        GameEvent.CreateProvider(
+                            "CARD_BUFFED_IN_HAND",
+                            entity.CardId,
+                            entity.GetTag(GameTag.CONTROLLER),
+                            entity.Entity,
+                            ParserState,
+                            GameState,
+                            null,
+                            new
+                            {
+                                BuffingEntityCardId = subSpellEntity.CardId,
+                                BuffCardId = buffs.ContainsKey(subSpellEntity.CardId) ? buffs[subSpellEntity.CardId] : null,
+                            }),
+                        true,
+                        node,
+                        // The PowerTaskList doesnt' have an entry for that
+                        true);
+                })
+                .ToList();
         }
 
         private List<GameEventProvider> CreateEventProviderForMeta(Node node)
-        {     
+        {
             var isPower = node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action)
                  && (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.POWER;
             var isTrigger = node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action)

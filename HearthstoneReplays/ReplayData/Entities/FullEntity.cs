@@ -36,7 +36,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public List<int> KnownEntityIds = new List<int>();
 
         [XmlIgnore]
-        public string SubSpellInEffect { get; set; }
+        public SubSpell SubSpellInEffect { get; set; }
 
         public bool ShouldSerializeCardId()
 		{

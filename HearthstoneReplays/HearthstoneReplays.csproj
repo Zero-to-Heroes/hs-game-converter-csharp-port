@@ -212,6 +212,7 @@
     <Compile Include="Parser\Handlers\SendChoicesHandler.cs" />
     <Compile Include="Parser\Handlers\SendOptionHandler.cs" />
     <Compile Include="Parser\Helper.cs" />
+    <Compile Include="Parser\SubSpell.cs" />
     <Compile Include="Parser\Node.cs" />
     <Compile Include="Parser\ParserState.cs" />
     <Compile Include="Parser\Regexes.cs" />

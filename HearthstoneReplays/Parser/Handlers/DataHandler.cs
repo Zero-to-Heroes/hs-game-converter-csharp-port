@@ -11,6 +11,7 @@ using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Parser.ReplayData.Meta;
 using HearthstoneReplays.Events;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
+using Newtonsoft.Json;
 
 #endregion
 
@@ -22,7 +23,7 @@ namespace HearthstoneReplays.Parser.Handlers
 
         private Helper helper = new Helper();
         private GameMetaData metadata;
-        private string currentSubSpell;
+        private SubSpell currentSubSpell;
 
         public void Handle(DateTime timestamp, string data, ParserState state, DateTime previousTimestamp)
         {
@@ -51,10 +52,10 @@ namespace HearthstoneReplays.Parser.Handlers
             isApplied = isApplied || HandleHideEntity(timestamp, data, state);
             isApplied = isApplied || HandleFullEntity(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleTagChange(timestamp, data, state, indentLevel);
-            isApplied = isApplied || HandleTag(data, state);
+            isApplied = isApplied || HandleTag(timestamp, data, state);
         }
 
-        private bool HandleTag(string data, ParserState state)
+        private bool HandleTag(DateTime timestamp, string data, ParserState state)
         {
             var match = Regexes.ActionTagRegex.Match(data);
             if (match.Success)
@@ -64,6 +65,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 {
                     return false;
                 }
+
                 // When in reconnect, we don't parse the GameEntity and 
                 // PlayerEntity nodes, so the tags think they are parsed while 
                 // under the Game root node
@@ -71,6 +73,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 {
                     return false;
                 }
+
                 var tagName = match.Groups[1].Value;
                 var value = match.Groups[2].Value;
                 Tag tag = null;
@@ -85,7 +88,29 @@ namespace HearthstoneReplays.Parser.Handlers
                 }
 
                 if (tag.Name == (int)GameTag.CURRENT_PLAYER)
+                {
                     state.FirstPlayerId = ((PlayerEntity)state.Node.Object).Id;
+                }
+                else if (tag.Name == (int)GameTag.WHIZBANG_DECK_ID)
+                {
+                    state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
+                        timestamp,
+                        "WHIZBANG_DECK_ID",
+                        () => new GameEvent
+                        {
+                            Type = "WHIZBANG_DECK_ID",
+                            Value = new
+                            {
+                                DeckId = tag.Value,
+                            }
+                        },
+                        false,
+                        new Node(null, null, 0, null, data),
+                        false,
+                        false,
+                        true
+                    )});
+                }
 
                 if (state.Node.Type == typeof(GameEntity))
                     ((GameEntity)state.Node.Object).Tags.Add(tag);
@@ -289,7 +314,11 @@ namespace HearthstoneReplays.Parser.Handlers
                 var subSpellPrefab = match.Groups[1].Value;
                 var sourceEntityId = int.Parse(match.Groups[2].Value);
                 var sourceEntity = state.GameState.CurrentEntities.ContainsKey(sourceEntityId) ? state.GameState.CurrentEntities[sourceEntityId] : null;
-                this.currentSubSpell = subSpellPrefab;
+                this.currentSubSpell = new SubSpell()
+                {
+                    Prefab = subSpellPrefab,
+                    Timestamp = timestamp,
+                };
                 state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
                     "SUB_SPELL_START",
@@ -312,8 +341,32 @@ namespace HearthstoneReplays.Parser.Handlers
                 return true;
             }
 
+            match = Regexes.SubSpellSourceRegex.Match(data);
+            if (match.Success && this.currentSubSpell != null)
+            {
+                var rawEntity = match.Groups[1].Value;
+                var entity = helper.ParseEntity(rawEntity, state);
+                this.currentSubSpell.Source = entity;
+                return true;
+            }
+
+            match = Regexes.SubSpellTargetsRegex.Match(data);
+            if (match.Success && this.currentSubSpell != null)
+            {
+                var rawEntity = match.Groups[1].Value;
+                var entity = helper.ParseEntity(rawEntity, state);
+                if (this.currentSubSpell.Targets == null)
+                {
+                    this.currentSubSpell.Targets = new List<int>();
+                }
+                this.currentSubSpell.Targets.Add(entity);
+                return true;
+            }
+
             if (data == "SUB_SPELL_END")
             {
+                //Logger.Log("Sub spell end", this.currentSubSpell);
+                state.NodeParser.CloseNode(new Node(typeof(SubSpell), this.currentSubSpell, 0, state.Node, data));
                 this.currentSubSpell = null;
                 return true;
             }

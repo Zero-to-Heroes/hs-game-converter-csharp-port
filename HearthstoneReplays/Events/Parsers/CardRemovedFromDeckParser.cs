@@ -50,7 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             // Cards here are just created to show the info, then put aside. We don't want to 
             // show them in the "Other" zone, so we just ignore them
-            if (tagChange.SubSpellInEffect == "DMFFX_SpawnToDeck_CthunTheShattered_CardFromScript_FX")
+            if (tagChange.SubSpellInEffect?.Prefab == "DMFFX_SpawnToDeck_CthunTheShattered_CardFromScript_FX")
             {
                 return null;
             }

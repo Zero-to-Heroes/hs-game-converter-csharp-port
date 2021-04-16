@@ -22,7 +22,7 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
 		public List<Tag> Tags { get; set; }
 
 		[XmlIgnore]
-		public string SubSpellInEffect { get; set; }
+		public SubSpell SubSpellInEffect { get; set; }
 
         public int GetTag(GameTag tag)
         {
