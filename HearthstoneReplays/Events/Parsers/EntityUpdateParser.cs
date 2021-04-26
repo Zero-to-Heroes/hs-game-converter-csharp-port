@@ -45,6 +45,13 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
+            // CArds transformed by Oh My Yogg are instead reemitted as new card played
+            if (showEntity.GetTag(GameTag.LAST_AFFECTED_BY) != -1 
+                && GameState.CurrentEntities[showEntity.GetTag(GameTag.LAST_AFFECTED_BY)].CardId == CardIds.Collectible.Paladin.OhMyYogg)
+            {
+                return null;
+            }
+
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);

@@ -37,7 +37,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return node.Type == typeof(Parser.ReplayData.GameActions.Action) 
+            return node.Type == typeof(Parser.ReplayData.GameActions.Action)
                 && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.PLAY;
         }
 
@@ -93,12 +93,23 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var action = node.Object as Parser.ReplayData.GameActions.Action;
-            foreach (var data in action.Data) {
+            foreach (var data in action.Data)
+            {
                 if (data.GetType() == typeof(ShowEntity))
                 {
                     var showEntity = data as ShowEntity;
-                    if (showEntity.GetTag(GameTag.ZONE) == (int)Zone.PLAY 
-                        && showEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
+                    if (showEntity.GetTag(GameTag.CARDTYPE) == (int)CardType.ENCHANTMENT)
+                    {
+                        continue;
+                    }
+
+                    // Not sure that this is the best way to handle it. The game itself transforms the card, but here 
+                    // I am considering a new event instead. 
+                    // However, it's not crystal clear on the logs' side either, since two PLAY blocks are emitted, instead 
+                    // of simply emitting a new entity update node.
+                    var isOhMyYogg = (showEntity.GetTag(GameTag.LAST_AFFECTED_BY) != -1
+                            && GameState.CurrentEntities[showEntity.GetTag(GameTag.LAST_AFFECTED_BY)].CardId == CardIds.Collectible.Paladin.OhMyYogg);
+                    if (showEntity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || isOhMyYogg)
                     {
                         var cardId = showEntity.CardId;
                         var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
@@ -127,6 +138,7 @@ namespace HearthstoneReplays.Events.Parsers
                                     TargetEntityId = targetId,
                                     TargetCardId = targetCardId,
                                     CreatorCardId = creatorCardId,
+                                    TransientCard = isOhMyYogg,
                                 },
                                 preprocess),
                             true,

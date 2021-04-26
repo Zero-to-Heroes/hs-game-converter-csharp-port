@@ -72,7 +72,8 @@ namespace HearthstoneReplays.Events.Parsers
                 {
                     additionalProps = new
                     {
-                        InReactionTo = GameState.CurrentEntities[parentAction.Entity]?.CardId,
+                        InReactionToCardId = GameState.CurrentEntities[parentAction.Entity]?.CardId,
+                        InReactionToEntityId = parentAction.Entity,
                     };
                 }
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
