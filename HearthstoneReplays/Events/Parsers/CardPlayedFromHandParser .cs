@@ -108,6 +108,7 @@ namespace HearthstoneReplays.Events.Parsers
                     // However, it's not crystal clear on the logs' side either, since two PLAY blocks are emitted, instead 
                     // of simply emitting a new entity update node.
                     var isOhMyYogg = (showEntity.GetTag(GameTag.LAST_AFFECTED_BY) != -1
+                            && GameState.CurrentEntities.ContainsKey(showEntity.GetTag(GameTag.LAST_AFFECTED_BY))
                             && GameState.CurrentEntities[showEntity.GetTag(GameTag.LAST_AFFECTED_BY)].CardId == CardIds.Collectible.Paladin.OhMyYogg);
                     if (showEntity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || isOhMyYogg)
                     {
