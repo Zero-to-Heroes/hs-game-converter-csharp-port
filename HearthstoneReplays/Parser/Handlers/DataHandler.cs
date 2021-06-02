@@ -91,26 +91,6 @@ namespace HearthstoneReplays.Parser.Handlers
                 {
                     state.FirstPlayerId = ((PlayerEntity)state.Node.Object).Id;
                 }
-                else if (tag.Name == (int)GameTag.WHIZBANG_DECK_ID)
-                {
-                    state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
-                        timestamp,
-                        "WHIZBANG_DECK_ID",
-                        () => new GameEvent
-                        {
-                            Type = "WHIZBANG_DECK_ID",
-                            Value = new
-                            {
-                                DeckId = tag.Value,
-                            }
-                        },
-                        false,
-                        new Node(null, null, 0, null, data),
-                        false,
-                        false,
-                        true
-                    )});
-                }
 
                 if (state.Node.Type == typeof(GameEntity))
                     ((GameEntity)state.Node.Object).Tags.Add(tag);
@@ -313,6 +293,14 @@ namespace HearthstoneReplays.Parser.Handlers
             {
                 var subSpellPrefab = match.Groups[1].Value;
                 var sourceEntityId = int.Parse(match.Groups[2].Value);
+                if (sourceEntityId == 0)
+                {
+                    if (state.Node.Type == typeof(Action))
+                    {
+                        var parentAction = state.Node.Object as Action;
+                        sourceEntityId = parentAction.Entity;
+                    }
+                }
                 var sourceEntity = state.GameState.CurrentEntities.ContainsKey(sourceEntityId) ? state.GameState.CurrentEntities[sourceEntityId] : null;
                 this.currentSubSpell = new SubSpell()
                 {
