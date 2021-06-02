@@ -172,6 +172,12 @@ namespace HearthstoneReplays.Events.Parsers
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
                     .ToList();
+                var secrets = GameState.CurrentEntities.Values
+                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
+                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
+                    .Select(entity => entity.Clone())
+                    .ToList();
                 var heroPower = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
@@ -188,6 +194,7 @@ namespace HearthstoneReplays.Events.Parsers
                     HeroPowerUsed = heroPowerUsed,
                     CardId = cardId,
                     Board = result,
+                    Secrets = secrets,
                 };
             }
             return null;
@@ -235,6 +242,8 @@ namespace HearthstoneReplays.Events.Parsers
             public string CardId { get; set; }
 
             public List<object> Board { get; set; }
+
+            public List<FullEntity> Secrets { get; set; }
         }
     }
 }
