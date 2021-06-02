@@ -47,6 +47,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             // CArds transformed by Oh My Yogg are instead reemitted as new card played
             if (showEntity.GetTag(GameTag.LAST_AFFECTED_BY) != -1 
+                && GameState.CurrentEntities.ContainsKey(showEntity.GetTag(GameTag.LAST_AFFECTED_BY))
                 && GameState.CurrentEntities[showEntity.GetTag(GameTag.LAST_AFFECTED_BY)].CardId == CardIds.Collectible.Paladin.OhMyYogg)
             {
                 return null;
