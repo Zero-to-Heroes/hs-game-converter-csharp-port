@@ -27,8 +27,8 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnNewNode(Node node)
         {
             return node.Type == typeof(Choice)
-                && ParserState.CurrentChosenEntites != null
-                && ParserState.CurrentChosenEntites.PlayerId == ParserState.LocalPlayer.Id;
+                && ParserState.CurrentChosenEntites != null;
+                //&& ParserState.CurrentChosenEntites.PlayerId == ParserState.LocalPlayer.Id;
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -48,18 +48,13 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return null;
             }
-            if (chosenEntity.GetTag(GameTag.CONTROLLER) != (int)ParserState.LocalPlayer.PlayerId)
-            {
-                return null;
-            }
             // Heroes proposed at the start are in hand, as opposed to heroes discovered by 
             // Lord Barov's hero power
             if (chosenEntity.GetTag(GameTag.ZONE) != (int)Zone.HAND)
             {
                 return null;
             }
-
-            //Logger.Log("Choice timestamp", choice.TimeStamp);
+            var controllerId = chosenEntity.GetTag(GameTag.CONTROLLER);
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 choice.TimeStamp,
@@ -67,6 +62,10 @@ namespace HearthstoneReplays.Events.Parsers
                 () => {
                     if (ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS
                         && ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+                    {
+                        return null;
+                    }
+                    if (controllerId != (int)ParserState.LocalPlayer.PlayerId)
                     {
                         return null;
                     }
