@@ -38,12 +38,21 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var impactedEntity = GameState.CurrentEntities[tagChange.Entity];
+            // We want the damage dealt to heroes by the player to be sent by the meta tags, because 
+            // that way we can build the stats
+            if (ParserState.IsBattlegrounds()
+                    && impactedEntity.IsHero()
+                    && impactedEntity.IsInPlay()
+                    && impactedEntity.GetTag(GameTag.DEFENDING) == 1)
+            {
+                return null;
+            }
+
             var previousDamage = impactedEntity.GetTag(GameTag.DAMAGE, 0);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             var targetCardId = impactedEntity?.CardId;
             var targetEntityId = impactedEntity?.Entity;
             var actualDamage = tagChange.Value - previousDamage;
-
             // If there is a META block with the same info, this means the event will already be sent
             // when parsing that block, with more detailed info (like the source of the damage), so 
             // we ignore it
@@ -58,6 +67,7 @@ namespace HearthstoneReplays.Events.Parsers
             // So for BG I will simply ignore META damages done to entities that are in play, and if that entity 
             // is a hero. All damage done in combat in BG should happen with META tags, so there should be no loss of 
             // info doing that
+            // One issue though: we lose the source of the damage, which means we can't compute the hero damage stats anymore
 
             var damages = new Dictionary<string, DamageInternal>();
             damages[targetCardId + "-" + targetEntityId] = new DamageInternal
@@ -110,7 +120,9 @@ namespace HearthstoneReplays.Events.Parsers
                     if (ParserState.IsBattlegrounds() 
                         && damageTarget.IsHero() 
                         && damageTarget.IsInPlay()
-                        && damageTarget.GetController() != ParserState.LocalPlayer.PlayerId)
+                        && damageTarget.GetController() != ParserState.LocalPlayer.PlayerId
+                        // When dealing damage to the enemy hero, we want to have the damage source
+                        && !IsDefendingDuringAction(action, info.Entity))
                     {
                         continue;
                     }
@@ -134,6 +146,7 @@ namespace HearthstoneReplays.Events.Parsers
                         currentSourceDamages = new Dictionary<string, DamageInternal>();
                         totalDamages[sourceCardId + "-" + sourceEntityId] = currentSourceDamages;
                     }
+
                     DamageInternal currentTargetDamages = null;
                     if (currentSourceDamages.ContainsKey(targetCardId + "-" + targetEntityId))
                     {
@@ -162,8 +175,10 @@ namespace HearthstoneReplays.Events.Parsers
             foreach (var damageSource in totalDamages.Keys)
             {
                 var sourceCardId = damageSource.Split('-')[0];
-                var targetDamages = totalDamages[damageSource];
+                var targets = totalDamages[damageSource];
                 var timestamp = totalDamages[damageSource].First().Value.Timestamp;
+                var sourceEntityId = totalDamages[damageSource].First().Value.SourceEntityId;
+                var sourceControllerId = totalDamages[damageSource].First().Value.SourceControllerId;
                 result.Add(GameEventProvider.Create(
                     timestamp,
                     "DAMAGE",
@@ -174,9 +189,9 @@ namespace HearthstoneReplays.Events.Parsers
                         Value = new
                         {
                             SourceCardId = sourceCardId,
-                            SourceEntityId = totalDamages[damageSource].First().Value.SourceEntityId,
-                            SourceControllerId = totalDamages[damageSource].First().Value.SourceControllerId,
-                            Targets = totalDamages[damageSource],
+                            SourceEntityId = sourceEntityId,
+                            SourceControllerId = sourceControllerId,
+                            Targets = targets,
                             LocalPlayer = ParserState.LocalPlayer,
                             OpponentPlayer = ParserState.OpponentPlayer,
                             GameState = gameState,
@@ -187,6 +202,16 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             return result;
+        }
+
+        private bool IsDefendingDuringAction(Parser.ReplayData.GameActions.Action action, int entity)
+        {
+            return action.Data
+                .Where(data => data is TagChange)
+                .Select(data => data as TagChange)
+                .Where(tag => tag.Name == (int)GameTag.DEFENDING && tag.Value == 1)
+                .Where(tag => tag.Entity == entity)
+                .Count() > 0;
         }
 
         private bool HasDamageTag(Parser.ReplayData.GameActions.Action action)
