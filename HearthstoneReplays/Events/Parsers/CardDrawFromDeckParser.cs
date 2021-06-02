@@ -47,7 +47,7 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
-            var gameState= GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
+            var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             // If we compute this when triggering the event, we will get a "gift" icon because the 
             // card is already in hand
             var wasInDeck = entity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
@@ -61,13 +61,14 @@ namespace HearthstoneReplays.Events.Parsers
                     var creatorCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, entity, node, false);
                     // Always return this info, and the client has a list of public card creators they are allowed to show
                     var lastInfluencedByCardId = Oracle.FindCardCreatorCardId(GameState, entity, node);
+                    var predictedCardId = Oracle.PredictCardId(GameState, creatorCardId, -1, node, cardId);
                     GameState.OnCardDrawn(entity.Entity);
                     return new GameEvent
                     {
                         Type =  "CARD_DRAW_FROM_DECK",
                         Value = new
                         {
-                            CardId = cardId,
+                            CardId = predictedCardId,
                             ControllerId = controllerId,
                             LocalPlayer = ParserState.LocalPlayer,
                             OpponentPlayer = ParserState.OpponentPlayer,

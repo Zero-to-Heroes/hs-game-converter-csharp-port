@@ -419,15 +419,16 @@ namespace HearthstoneReplays.Events
                 }
             }
 
-            // Tamsin Roana
             if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
             {
                 var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+
                 if (action.Type == (int)BlockType.TRIGGER)
                 {
                     var actionEntity = GameState.CurrentEntities.ContainsKey(action.Entity)
                             ? GameState.CurrentEntities[action.Entity]
                             : null;
+                    // Tamsin Roana
                     if (actionEntity != null && actionEntity.CardId == Warlock.TamsinRoame)
                     {
                         // Now get the parent PLAY action
@@ -444,19 +445,18 @@ namespace HearthstoneReplays.Events
                             }
                         }
                     }
-                }
-            }
 
-            // Plagiarize
-            if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
-            {
-                var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
-                if (action.Type == (int)BlockType.TRIGGER && action.TriggerKeyword == (int)GameTag.SECRET)
-                {
-                    var actionEntity = GameState.CurrentEntities.ContainsKey(action.Entity)
-                            ? GameState.CurrentEntities[action.Entity]
+                    // Keymaster Alabaster
+                    if (actionEntity != null && GameState.LastCardDrawnEntityId > 0 && actionEntity.CardId == Neutral.KeymasterAlabaster)
+                    {
+                        var lastDrawnEntity = GameState.CurrentEntities.ContainsKey(GameState.LastCardDrawnEntityId)
+                            ? GameState.CurrentEntities[GameState.LastCardDrawnEntityId]
                             : null;
-                    if (actionEntity != null && actionEntity.KnownEntityIds.Count > 0 && actionEntity.CardId == Rogue.Plagiarize)
+                        return lastDrawnEntity?.CardId;
+                    }
+
+                    // Plagiarize
+                    if (action.TriggerKeyword == (int)GameTag.SECRET && actionEntity != null && actionEntity.KnownEntityIds.Count > 0 && actionEntity.CardId == Rogue.Plagiarize)
                     {
                         var plagiarizeController = actionEntity.GetTag(GameTag.CONTROLLER);
                         var entitiesPlayedByActivePlayer = actionEntity.KnownEntityIds
@@ -471,19 +471,9 @@ namespace HearthstoneReplays.Events
                         actionEntity.KnownEntityIds.Remove(entitiesPlayedByActivePlayer[0].Entity);
                         return nextCardToCreatePlagia;
                     }
-                }
-            }
 
-            // Diligent Notetaker
-            if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
-            {
-                var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
-                if (action.Type == (int)BlockType.TRIGGER && action.TriggerKeyword == (int)GameTag.SPELLBURST)
-                {
-                    var actionEntity = GameState.CurrentEntities.ContainsKey(action.Entity)
-                            ? GameState.CurrentEntities[action.Entity]
-                            : null;
-                    if (actionEntity != null && GameState.LastCardPlayedEntityId > 0 && actionEntity.CardId == Shaman.DiligentNotetaker)
+                    // Diligent Notetaker
+                    if (action.TriggerKeyword == (int)GameTag.SPELLBURST && actionEntity != null && GameState.LastCardPlayedEntityId > 0 && actionEntity.CardId == Shaman.DiligentNotetaker)
                     {
                         var lastPlayedEntity = GameState.CurrentEntities.ContainsKey(GameState.LastCardPlayedEntityId)
                             ? GameState.CurrentEntities[GameState.LastCardPlayedEntityId]
@@ -491,40 +481,12 @@ namespace HearthstoneReplays.Events
                         return lastPlayedEntity?.CardId;
                     }
                 }
-            }
 
-            // Libram of Wisdom
-            if (node.Type == typeof(FullEntity) && (node.Object as FullEntity).SubSpellInEffect?.Prefab == "Librams_SpawnToHand_Book")
-            {
-                return Paladin.LibramOfWisdom;
-            }
-
-            // Keymaster Alabaster
-            if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
-            {
-                var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
-                if (action.Type == (int)BlockType.TRIGGER)
-                {
-                    var actionEntity = GameState.CurrentEntities.ContainsKey(action.Entity)
-                            ? GameState.CurrentEntities[action.Entity]
-                            : null;
-                    if (actionEntity != null && GameState.LastCardDrawnEntityId > 0 && actionEntity.CardId == Neutral.KeymasterAlabaster)
-                    {
-                        var lastDrawnEntity = GameState.CurrentEntities.ContainsKey(GameState.LastCardDrawnEntityId)
-                            ? GameState.CurrentEntities[GameState.LastCardDrawnEntityId]
-                            : null;
-                        return lastDrawnEntity?.CardId;
-                    }
-                }
-            }
-
-            // Second card for Archivist Elysiana
-            if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
-            {
-                var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
                 if (action.Type == (int)BlockType.POWER)
                 {
                     var actionEntity = GameState.CurrentEntities[action.Entity];
+
+                    // Second card for Archivist Elysiana
                     if (actionEntity.CardId == Neutral.ArchivistElysiana)
                     {
                         // Now let's find the ID of the card that was created right before
@@ -539,7 +501,27 @@ namespace HearthstoneReplays.Events
                             return GameState.CurrentEntities[lastEntityId]?.CardId;
                         }
                     }
+
+                    // Southsea Scoundrel
+                    if (actionEntity.CardId == Neutral.SouthseaScoundrel)
+                    {
+                        // If we are the ones who draw it, it's all good, and if it's teh opponent, 
+                        // then we know it's the same one
+                        var cardDrawn = action.Data
+                            .Where(data => data is TagChange)
+                            .Select(data => data as TagChange)
+                            .Where(tag => tag.Name == (int)GameTag.ZONE && tag.Value == (int)Zone.HAND)
+                            .Where(tag => GameState.CurrentEntities.ContainsKey(tag.Entity) && GameState.CurrentEntities[tag.Entity].CardId?.Count() > 0)
+                            .FirstOrDefault();
+                        return cardDrawn != null ? GameState.CurrentEntities[cardDrawn.Entity].CardId : null;
+                    }
                 }
+            }
+
+            // Libram of Wisdom
+            if (node.Type == typeof(FullEntity) && (node.Object as FullEntity).SubSpellInEffect?.Prefab == "Librams_SpawnToHand_Book")
+            {
+                return Paladin.LibramOfWisdom;
             }
 
             return null;
