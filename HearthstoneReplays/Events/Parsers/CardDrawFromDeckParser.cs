@@ -68,7 +68,7 @@ namespace HearthstoneReplays.Events.Parsers
                         Type =  "CARD_DRAW_FROM_DECK",
                         Value = new
                         {
-                            CardId = predictedCardId,
+                            CardId = cardId != null && cardId.Length > 0 ? cardId : predictedCardId,
                             ControllerId = controllerId,
                             LocalPlayer = ParserState.LocalPlayer,
                             OpponentPlayer = ParserState.OpponentPlayer,
