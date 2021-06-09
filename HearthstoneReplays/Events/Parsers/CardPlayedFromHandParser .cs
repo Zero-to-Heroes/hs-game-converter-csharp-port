@@ -37,8 +37,10 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return node.Type == typeof(Parser.ReplayData.GameActions.Action)
-                && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.PLAY;
+            return node.Type == typeof(ShowEntity)
+                && node.Parent != null
+                && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action)
+                && (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.PLAY;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -90,62 +92,59 @@ namespace HearthstoneReplays.Events.Parsers
             return null;
         }
 
+        // I couldn't find any reason as to why the node is an Action, and not the ShowEntity directly
+        // TODO: use ShowEntity instead of Action. This is more focused, and should fix the issue with
+        // the delay when playing Jandice
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
-            var action = node.Object as Parser.ReplayData.GameActions.Action;
-            foreach (var data in action.Data)
+            var showEntity = node.Object as ShowEntity;
+            if (showEntity.GetTag(GameTag.CARDTYPE) == (int)CardType.ENCHANTMENT)
             {
-                if (data.GetType() == typeof(ShowEntity))
-                {
-                    var showEntity = data as ShowEntity;
-                    if (showEntity.GetTag(GameTag.CARDTYPE) == (int)CardType.ENCHANTMENT)
-                    {
-                        continue;
-                    }
+                return null;
+            }
 
-                    // Not sure that this is the best way to handle it. The game itself transforms the card, but here 
-                    // I am considering a new event instead. 
-                    // However, it's not crystal clear on the logs' side either, since two PLAY blocks are emitted, instead 
-                    // of simply emitting a new entity update node.
-                    var isOhMyYogg = (showEntity.GetTag(GameTag.LAST_AFFECTED_BY) != -1
-                            && GameState.CurrentEntities.ContainsKey(showEntity.GetTag(GameTag.LAST_AFFECTED_BY))
-                            && GameState.CurrentEntities[showEntity.GetTag(GameTag.LAST_AFFECTED_BY)].CardId == CardIds.Collectible.Paladin.OhMyYogg);
-                    if (showEntity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || isOhMyYogg)
-                    {
-                        var cardId = showEntity.CardId;
-                        var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
-                        var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
-                        var targetId = action.Target;
-                        string targetCardId = targetId > 0 ? GameState.CurrentEntities[targetId].CardId : null;
-                        var creator = showEntity.GetTag(GameTag.CREATOR);
-                        var creatorCardId = creator != -1 && GameState.CurrentEntities.ContainsKey(creator)
-                            ? GameState.CurrentEntities[creator].CardId
-                            : null;
+            // Not sure that this is the best way to handle it. The game itself transforms the card, but here 
+            // I am considering a new event instead. 
+            // However, it's not crystal clear on the logs' side either, since two PLAY blocks are emitted, instead 
+            // of simply emitting a new entity update node.
+            var isOhMyYogg = (showEntity.GetTag(GameTag.LAST_AFFECTED_BY) != -1
+                    && GameState.CurrentEntities.ContainsKey(showEntity.GetTag(GameTag.LAST_AFFECTED_BY))
+                    && GameState.CurrentEntities[showEntity.GetTag(GameTag.LAST_AFFECTED_BY)].CardId == CardIds.Collectible.Paladin.OhMyYogg);
+            if (showEntity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || isOhMyYogg)
+            {
+                var parentAction = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                var cardId = showEntity.CardId;
+                var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
+                var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
+                var targetId = parentAction.Target;
+                string targetCardId = targetId > 0 ? GameState.CurrentEntities[targetId].CardId : null;
+                var creator = showEntity.GetTag(GameTag.CREATOR);
+                var creatorCardId = creator != -1 && GameState.CurrentEntities.ContainsKey(creator)
+                    ? GameState.CurrentEntities[creator].CardId
+                    : null;
 
-                        System.Action preprocess = () => GameState.OnCardPlayed(showEntity.Entity);
-                        // For now there can only be one card played per block
-                        return new List<GameEventProvider> { GameEventProvider.Create(
-                            action.TimeStamp,
-                            "CARD_PLAYED",
-                            GameEvent.CreateProvider(
-                                "CARD_PLAYED",
-                                cardId,
-                                controllerId,
-                                showEntity.Entity,
-                                ParserState,
-                                GameState,
-                                gameState,
-                                new {
-                                    TargetEntityId = targetId,
-                                    TargetCardId = targetCardId,
-                                    CreatorCardId = creatorCardId,
-                                    TransientCard = isOhMyYogg,
-                                },
-                                preprocess),
-                            true,
-                            node) };
-                    }
-                }
+                System.Action preprocess = () => GameState.OnCardPlayed(showEntity.Entity);
+                // For now there can only be one card played per block
+                return new List<GameEventProvider> { GameEventProvider.Create(
+                    showEntity.TimeStamp,
+                    "CARD_PLAYED",
+                    GameEvent.CreateProvider(
+                        "CARD_PLAYED",
+                        cardId,
+                        controllerId,
+                        showEntity.Entity,
+                        ParserState,
+                        GameState,
+                        gameState,
+                        new {
+                            TargetEntityId = targetId,
+                            TargetCardId = targetCardId,
+                            CreatorCardId = creatorCardId,
+                            TransientCard = isOhMyYogg,
+                        },
+                        preprocess),
+                    true,
+                    node) };
             }
             return null;
         }
