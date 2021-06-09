@@ -42,7 +42,7 @@ namespace HearthstoneReplayTests
                     //if (serialized.Contains("\"TargetCardId\":\"TB_BaconShop_HERO_53\""))
                     //{
                     Console.WriteLine(serialized + ",");
-                    //}c
+                    //}
                 }
             };
             List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
