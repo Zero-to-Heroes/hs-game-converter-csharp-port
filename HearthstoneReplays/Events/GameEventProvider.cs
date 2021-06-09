@@ -16,7 +16,7 @@ namespace HearthstoneReplays.Events
         public bool NeedMetaData { get; set; }
         public bool AnimationReady { get; set; }
         public bool ShortCircuit { get; set; }
-        public string EventName{ get; set; }
+        public string EventName { get; set; }
         public string CreationLogLine { get; set; }
         public int Index { get; set; }
         public GameEvent GameEvent { get; private set; }
@@ -34,7 +34,7 @@ namespace HearthstoneReplays.Events
             DateTime originalTimestamp,
             string eventName, // Used to give a "type" to the provider
             Func<GameEvent> eventProvider,
-            bool needMetaData, 
+            bool needMetaData,
             Node node,
             bool animationReady = false,
             bool debug = false,
@@ -86,7 +86,8 @@ namespace HearthstoneReplays.Events
             {
                 return false;
             }
-            if (debug)
+            var useDebug = debug;
+            if (useDebug)
             {
                 Logger.Log("\nReceiving anomation log " + data, debug);
             }
@@ -95,7 +96,7 @@ namespace HearthstoneReplays.Events
             // And now's the time to compute the event itself
             if (AnimationReady && GameEvent == null)
             {
-                if (debug)
+                if (useDebug)
                 {
                     Logger.Log("IsEventReady, supplying game event", "");
                 }
@@ -113,14 +114,15 @@ namespace HearthstoneReplays.Events
             }
 
             data = data.Trim();
-            if (debug)
+            var useDebug = debug;
+            if (useDebug)
             {
                 Logger.Log("IsEventReady, data", data + " // " + CreationLogLine);
             }
 
             if (data == CreationLogLine)
             {
-                if (debug)
+                if (useDebug)
                 {
                     Logger.Log("IsEventReady, AnimationReady", "animation ready");
                 }
@@ -133,9 +135,14 @@ namespace HearthstoneReplays.Events
             // the zone position into account
             var dataWithoutZones = Regex.Replace(data, @"zonePos=\d", "");
             var creationLogWithoutZones = Regex.Replace(CreationLogLine, @"zonePos=\d", "");
+            if (useDebug)
+            {
+                Logger.Log("dataWithoutZones", dataWithoutZones);
+                Logger.Log("creationLogWithoutZones", creationLogWithoutZones);
+            }
             if (dataWithoutZones == creationLogWithoutZones)
             {
-                if (debug)
+                if (useDebug)
                 {
                     Logger.Log("IsEventReady, AnimationReady without zones", "animation ready");
                 }
@@ -145,30 +152,48 @@ namespace HearthstoneReplays.Events
 
             // And sometimes the full entity is logged in PTL, while only the entity is logged in GS
             var ptlMatchForFullEntity = Regexes.EntityRegex.Match(data);
+            //if (debug)
+            //{
+            //    Logger.Log("ptlMatchForFullEntity", ptlMatchForFullEntity);
+            //}
             if (ptlMatchForFullEntity.Success)
             {
                 var ptlId = ptlMatchForFullEntity.Groups[1];
-                var dataWithOnlyEntityId = Regex.Replace(data, Regexes.EntityRegex.ToString(), "ID=" + ptlId);
+                var dataWithOnlyEntityId = Regex.Replace(data, Regexes.EntityRegex.ToString(), "" + ptlId);
+                if (useDebug)
+                {
+                    Logger.Log("ptlId", ptlId);
+                    Logger.Log("dataWithOnlyEntityId", dataWithOnlyEntityId);
+                }
                 if (dataWithOnlyEntityId == CreationLogLine)
                 {
-                    if (debug)
+                    if (useDebug)
                     {
                         Logger.Log("IsEventReady, AnimationReady with only entity id", "animation ready");
                     }
                     AnimationReady = true;
                     return;
-                } 
+                }
                 // Patches the Pirate for instance doesn't log the cardId in the GS, but does in PTL
                 else
                 {
                     var gsMatchForFullEntity = Regexes.EntityRegex.Match(CreationLogLine);
+                    //if (debug)
+                    //{
+                    //    Logger.Log("gsMatchForFullEntity", gsMatchForFullEntity);
+                    //}
                     if (gsMatchForFullEntity.Success)
                     {
                         var gsId = gsMatchForFullEntity.Groups[1];
                         var gsDataWithOnlyEntityId = Regex.Replace(CreationLogLine, Regexes.EntityRegex.ToString(), "" + gsId);
+                        if (useDebug)
+                        {
+                            Logger.Log("gsId", gsId);
+                            Logger.Log("gsDataWithOnlyEntityId", gsDataWithOnlyEntityId);
+                        }
                         if (dataWithOnlyEntityId == gsDataWithOnlyEntityId)
                         {
-                            if (debug)
+                            if (useDebug)
                             {
                                 Logger.Log("IsEventReady, AnimationReady with only entity id gsDataWithOnlyEntityId " + dataWithOnlyEntityId + " // " + gsDataWithOnlyEntityId,
                                     CreationLogLine + " // " + data);
@@ -184,18 +209,33 @@ namespace HearthstoneReplays.Events
             // So here we compared the most basic form of both logs
             var matchShowInGameState = Regexes.ActionShowEntityRegex.Match(CreationLogLine);
             var matchShowInPowerTaskList = Regexes.ActionShowEntityRegex.Match(data);
+            //if (debug)
+            //{
+            //    Logger.Log("matchShowInGameState", matchShowInGameState);
+            //    Logger.Log("matchShowInPowerTaskList", matchShowInPowerTaskList);
+            //}
             if (matchShowInGameState.Success && matchShowInPowerTaskList.Success)
             {
                 var gsRawEntity = matchShowInGameState.Groups[1].Value;
                 var gsEntity = helper.ParseEntity(gsRawEntity, state);
+                if (useDebug)
+                {
+                    Logger.Log("gsRawEntity", gsRawEntity);
+                    Logger.Log("gsEntity", gsEntity);
+                }
 
                 var ptlRawEntity = matchShowInGameState.Groups[1].Value;
                 var ptlEntity = helper.ParseEntity(ptlRawEntity, state);
+                if (useDebug)
+                {
+                    Logger.Log("ptlRawEntity", ptlRawEntity);
+                    Logger.Log("ptlEntity", ptlEntity);
+                }
 
                 //Logger.Log("comparing " + ptlRawEntity, gsRawEntity);
                 if (gsEntity == ptlEntity)
                 {
-                    if (debug)
+                    if (useDebug)
                     {
                         Logger.Log("IsEventReady, AnimationReady with entity check", "animation ready");
                     }
@@ -207,17 +247,32 @@ namespace HearthstoneReplays.Events
             // Special case for PowerTaskList Updating an entity that was only created in GameState
             var matchCreationInGameState = Regexes.ActionFullEntityCreatingRegex.Match(CreationLogLine);
             var matchUpdateInPowerTaskList = Regexes.ActionFullEntityUpdatingRegex.Match(data);
+            //if (debug)
+            //{
+            //    Logger.Log("matchCreationInGameState", matchCreationInGameState);
+            //    Logger.Log("matchUpdateInPowerTaskList", matchUpdateInPowerTaskList);
+            //}
             if (matchCreationInGameState.Success && matchUpdateInPowerTaskList.Success)
             {
                 var gsRawEntity = matchCreationInGameState.Groups[1].Value;
                 var gsEntity = helper.ParseEntity(gsRawEntity, state);
+                if (useDebug)
+                {
+                    Logger.Log("gsRawEntity", gsRawEntity);
+                    Logger.Log("gsEntity", gsEntity);
+                }
 
                 var ptlRawEntity = matchUpdateInPowerTaskList.Groups[1].Value;
                 var ptlEntity = helper.ParseEntity(ptlRawEntity, state);
+                if (useDebug)
+                {
+                    Logger.Log("ptlRawEntity", ptlRawEntity);
+                    Logger.Log("ptlEntity", ptlEntity);
+                }
 
                 if (gsEntity == ptlEntity)
                 {
-                    if (debug)
+                    if (useDebug)
                     {
                         Logger.Log("IsEventReady, AnimationReady with second entity check", "animation ready");
                     }
