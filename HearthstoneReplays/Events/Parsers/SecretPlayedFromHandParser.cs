@@ -41,10 +41,25 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             if (entity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT && entity.GetTag(GameTag.SIGIL) != 1)
             {
-                var eventName = GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.QUEST) == 1
-                        || GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.SIDEQUEST) == 1
-                    ? "QUEST_PLAYED"
-                    : "SECRET_PLAYED";
+                var eventName = "SECRET_PLAYED";
+                if (GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.QUEST) == 1
+                        || GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.SIDEQUEST) == 1)
+                {
+                    eventName = "QUEST_PLAYED";
+                }
+                // Sparkjoy cheat casts a secret from your hand, but it's different from actually playing a secret
+                // (Counterspell does not trigger for instance)
+                // It's important to separate the two cases so that the secret helper doesn't gray out incorrect things
+                else if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+                {
+                    var parentAction = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                    if ((parentAction.Type == (int)BlockType.TRIGGER || parentAction.Type == (int)BlockType.POWER)
+                        && GameState.CurrentEntities.ContainsKey(parentAction.Entity)
+                        && GameState.CurrentEntities[parentAction.Entity].CardId == CardIds.Collectible.Rogue.SparkjoyCheat)
+                    {
+                        eventName = "SECRET_PUT_IN_PLAY";
+                    }
+                }
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
                 var playerClass = entity.GetPlayerClass();
                 System.Action preprocess = () => GameState.OnCardPlayed(tagChange.Entity);
