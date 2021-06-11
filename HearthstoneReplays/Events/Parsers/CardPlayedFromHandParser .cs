@@ -29,6 +29,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return false;
             }
+
             return node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.PLAY
@@ -65,7 +66,7 @@ namespace HearthstoneReplays.Events.Parsers
                     : null;
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
 
-                System.Action preprocess = () => GameState.OnCardPlayed(tagChange.Entity);
+                System.Action preprocess = () => GameState.OnCardPlayed(tagChange.Entity, targetId);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "CARD_PLAYED",
@@ -123,7 +124,7 @@ namespace HearthstoneReplays.Events.Parsers
                     ? GameState.CurrentEntities[creator].CardId
                     : null;
 
-                System.Action preprocess = () => GameState.OnCardPlayed(showEntity.Entity);
+                System.Action preprocess = () => GameState.OnCardPlayed(showEntity.Entity, targetId);
                 // For now there can only be one card played per block
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,

@@ -515,6 +515,41 @@ namespace HearthstoneReplays.Events
                             .FirstOrDefault();
                         return cardDrawn != null ? GameState.CurrentEntities[cardDrawn.Entity].CardId : null;
                     }
+
+                    // Vanessa VanCleed
+                    if (actionEntity.CardId == Rogue.VanessaVancleefCore)
+                    {
+                        var vanessaControllerId = GameState.CurrentEntities[actionEntity.Entity].GetController();
+                        var playerIds = GameState.CardsPlayedByPlayerEntityId.Keys;
+                        foreach (var playerId in playerIds)
+                        {
+                            if (playerId != vanessaControllerId)
+                            {
+                                var cardsPlayedByOpponent = GameState.CardsPlayedByPlayerEntityId[playerId];
+                                if (cardsPlayedByOpponent == null || cardsPlayedByOpponent.Count == 0)
+                                {
+                                    return null;
+                                }
+                                var lastCardPlayedByOpponentEntityId = cardsPlayedByOpponent.Last();
+                                var lastCardPlayedByOpponent = GameState.CurrentEntities[lastCardPlayedByOpponentEntityId];
+                                return lastCardPlayedByOpponent?.CardId;
+                            }
+                        }
+                    }
+
+                    // Lady Liadrin
+                    // The spells are created in random order, so we can't flag them
+                    //if (actionEntity.CardId == Paladin.LadyLiadrin)
+                    //{
+                    //    if ((actionEntity.KnownEntityIds?.Count ?? 0) == 0)
+                    //    {
+                    //        return null;
+                    //    }
+                    //    var nextEntityId = actionEntity.KnownEntityIds[0];
+                    //    actionEntity.KnownEntityIds.RemoveAt(0);
+                    //    var nextEntity = GameState.CurrentEntities[nextEntityId];
+                    //    return nextEntity.CardId;
+                    //}
                 }
             }
 

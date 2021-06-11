@@ -28,6 +28,9 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         //public bool SimulationTriggered;
         public int LastCardPlayedEntityId;
         public int LastCardDrawnEntityId;
+        // Most recent card is last
+        public Dictionary<int, List<int>> CardsPlayedByPlayerEntityId = new Dictionary<int, List<int>>();
+        public Dictionary<int, List<int>> SpellsPlayedByPlayerOnFriendlyEntityIds = new Dictionary<int, List<int>>();
         public string BgsCurrentBattleOpponent;
 
         public Dictionary<int, List<FullEntity>> EntityIdsOnBoardWhenPlayingPotionOfIllusion = null;
@@ -46,6 +49,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             NextBgsOpponentPlayerId = -1;
             BattleResultSent = false;
             LastCardPlayedEntityId = -1;
+            CardsPlayedByPlayerEntityId = new Dictionary<int, List<int>>();
+            SpellsPlayedByPlayerOnFriendlyEntityIds = new Dictionary<int, List<int>>();
             LastCardDrawnEntityId = -1;
             BgsCurrentBattleOpponent = null;
             EntityIdsOnBoardWhenPlayingPotionOfIllusion = null;
@@ -324,11 +329,22 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             return activePlayerEntity.PlayerId;
         }
 
-        public void OnCardPlayed(int entityId)
+        public void OnCardPlayed(int entityId, int? targetEntityId = null)
         {
             LastCardPlayedEntityId = entityId;
             if (CurrentEntities.ContainsKey(entityId))
             {
+                // Add it to each owner
+                var playedEntity = CurrentEntities[entityId];
+                var currentCardsPlayed = !CardsPlayedByPlayerEntityId.ContainsKey(playedEntity.GetController()) ? null : CardsPlayedByPlayerEntityId[playedEntity.GetController()];
+                if (currentCardsPlayed == null)
+                {
+                    currentCardsPlayed = new List<int>();
+                    CardsPlayedByPlayerEntityId[playedEntity.GetController()] = currentCardsPlayed;
+                }
+                currentCardsPlayed.Add(entityId);
+
+                // Plagiarize
                 var plagiarizes = CurrentEntities.Values
                     //.Where(e => e.CardId == CardIds.Collectible.Rogue.Plagiarize) // We don't know it's plagiarize, so add it to all secrets
                     .Where(e => e.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
@@ -338,7 +354,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                     plagiarizes.ForEach(plagia => plagia.KnownEntityIds.Add(entityId));
                 }
 
-                var playedEntity = CurrentEntities[entityId];
+                // Potion of Illusion
                 if (playedEntity.CardId == CardIds.Collectible.Neutral.PotionOfIllusion)
                 {
                     this.EntityIdsOnBoardWhenPlayingPotionOfIllusion = CurrentEntities.Values
@@ -347,10 +363,40 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                         .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                         .GroupBy(entity => entity.GetTag(GameTag.CONTROLLER))
                         .ToDictionary(g => g.Key, g => g.ToList());
-                } else
+                }
+                else
                 {
                     this.EntityIdsOnBoardWhenPlayingPotionOfIllusion = null;
                 }
+
+                // Lady Liadrin
+                // The spells are created in random order, so we can't flag them
+                //if (playedEntity.GetCardType() == (int)CardType.SPELL)
+                //{
+                //    if (targetEntityId != null && CurrentEntities.ContainsKey((int)targetEntityId))
+                //    {
+                //        var targetEntity = CurrentEntities[(int)targetEntityId];
+                //        var playedControllerId = playedEntity.GetController();
+                //        var targetControllerId = targetEntity.GetController();
+                //        if (playedControllerId == targetControllerId)
+                //        {
+                //            var spellsPlayedOnMinions = !SpellsPlayedByPlayerOnFriendlyEntityIds.ContainsKey(playedControllerId) 
+                //                ? null 
+                //                : SpellsPlayedByPlayerOnFriendlyEntityIds[playedControllerId];
+                //            if (spellsPlayedOnMinions == null)
+                //            {
+                //                spellsPlayedOnMinions = new List<int>();
+                //                SpellsPlayedByPlayerOnFriendlyEntityIds[playedControllerId] = spellsPlayedOnMinions;
+                //            }
+                //            spellsPlayedOnMinions.Add(entityId);
+                //        }
+                //    }
+                //}
+                //if (playedEntity.CardId == CardIds.Collectible.Paladin.LadyLiadrin)
+                //{
+                //    playedEntity.KnownEntityIds = SpellsPlayedByPlayerOnFriendlyEntityIds[playedEntity.GetController()];
+                //}
+
             }
         }
 
