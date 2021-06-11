@@ -22,7 +22,8 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnNewNode(Node node)
         {
             return node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.CONTROLLER;
+                && (node.Object as TagChange).Name == (int)GameTag.CONTROLLER
+                && !MindrenderIlluciaParser.IsProcessingMindrenderIlluciaEffect(node, GameState);
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -30,7 +31,8 @@ namespace HearthstoneReplays.Events.Parsers
             return node.Type == typeof(Parser.ReplayData.GameActions.ShowEntity)
                 && GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
                 && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.CONTROLLER) 
-                        != (node.Object as ShowEntity).GetTag(GameTag.CONTROLLER);
+                        != (node.Object as ShowEntity).GetTag(GameTag.CONTROLLER)
+                && !MindrenderIlluciaParser.IsProcessingMindrenderIlluciaEffect(node, GameState);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)

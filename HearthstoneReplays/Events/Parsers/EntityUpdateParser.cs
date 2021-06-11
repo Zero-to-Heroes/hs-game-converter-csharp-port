@@ -27,6 +27,9 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnCloseNode(Node node)
         {
             return node.Type == typeof(ShowEntity);
+                // We need this so that cards that were unknown in the opponent's hand can be assigned
+                // their info
+                //&& !MindrenderIlluciaParser.IsProcessingMindrenderIlluciaEffect(node, GameState);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -68,7 +71,18 @@ namespace HearthstoneReplays.Events.Parsers
                     GameState,
                     gameState),
                 true,
-                node) };
+                node,
+                // For some reason, the event is not sent because of missing animlation log
+                // (I still don't understand why)
+                false,
+                false,
+                false,
+                // See comments in NodeParser
+                new
+                {
+                    Mindrender = true,
+                }
+            )};
         }
     }
 }

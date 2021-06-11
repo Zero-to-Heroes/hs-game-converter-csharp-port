@@ -25,6 +25,8 @@ namespace HearthstoneReplays.Events
 
         public bool debug { get; set; }
 
+        public object Props { get; set; }
+
         public GameEventProvider()
         {
 
@@ -38,13 +40,14 @@ namespace HearthstoneReplays.Events
             Node node,
             bool animationReady = false,
             bool debug = false,
-            bool shortCircuit = false)
+            bool shortCircuit = false,
+            object props = null)
         {
             if (animationReady)
             {
                 Logger.Log("Creating event with animation ready", node.CreationLogLine);
             }
-            return Create(originalTimestamp, eventName, eventProvider, (a) => false, needMetaData, node, animationReady, debug, shortCircuit);
+            return Create(originalTimestamp, eventName, eventProvider, (a) => false, needMetaData, node, animationReady, debug, shortCircuit, props);
         }
 
         public static GameEventProvider Create(
@@ -56,7 +59,8 @@ namespace HearthstoneReplays.Events
             Node node,
             bool animationReady = false,
             bool debug = false,
-            bool shortCircuit = false)
+            bool shortCircuit = false,
+            object props = null)
         {
             string creationLogLine = node.CreationLogLine;
             int index = node.Index;
@@ -71,6 +75,7 @@ namespace HearthstoneReplays.Events
                 CreationLogLine = creationLogLine?.Trim(),
                 ShortCircuit = shortCircuit,
                 debug = debug,
+                Props = props,
             };
             result.AnimationReady = animationReady;
             if (debug)
@@ -86,7 +91,7 @@ namespace HearthstoneReplays.Events
             {
                 return false;
             }
-            var useDebug = debug;
+            var useDebug = debug && false;
             if (useDebug)
             {
                 Logger.Log("\nReceiving anomation log " + data, debug);
@@ -114,7 +119,7 @@ namespace HearthstoneReplays.Events
             }
 
             data = data.Trim();
-            var useDebug = debug;
+            var useDebug = debug && false;
             if (useDebug)
             {
                 Logger.Log("IsEventReady, data", data + " // " + CreationLogLine);

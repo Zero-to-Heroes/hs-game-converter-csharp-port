@@ -303,11 +303,11 @@ namespace HearthstoneReplays.Events
                                 .Where(p => !(p.CreationLogLine.Contains("GameEntity") && p.CreationLogLine.Contains("MAIN_READY")))
                                 .Where(p => !p.CreationLogLine.Contains("BLOCK_START BlockType=TRIGGER") 
                                     && ignoredLogLines.All(line => !p.CreationLogLine.Contains(line)))
-                                .Where(p => p.EventName != "ENTITY_UPDATE")
-                                .Where(p => 
-                                    !(ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS 
-                                        || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
-                                    || p.EventName != "CARD_REMOVED_FROM_DECK")
+                                // ENTITTY_UPDATE events are needed for mindrender illucia
+                                // But I have no idea why they were removed in the first place
+                                // So here I'm using a crutch to make it work just for this specific case
+                                .Where(p => p.EventName != "ENTITY_UPDATE" || ((dynamic)p.Props)?.Mindrender)
+                                .Where(p => !ParserState.IsBattlegrounds() || p.EventName != "CARD_REMOVED_FROM_DECK")
                                 .Any(p => p.AnimationReady))
                         // Safeguard - Don't wait too long for the animation in case we never receive it
                         // With the arrival of Battlegrounds we can't do this anymore, as it spoils the game very fast
@@ -356,7 +356,7 @@ namespace HearthstoneReplays.Events
                     //if (!provider.AnimationReady || provider.debug)
                     //{
                     //    var next = eventQueue.Find(p => p.AnimationReady);
-                    //    Logger.Log("[csharp] Will process next event " + provider.Timestamp + " " + provider.CreationLogLine, 
+                    //    Logger.Log("[csharp] Will process next event " + provider.Timestamp + " " + provider.CreationLogLine,
                     //        provider.Index + " // " + provider.AnimationReady);
                     //    Logger.Log("[csharp] Next animation ready " + next?.Timestamp + " " + next?.CreationLogLine,
                     //        next?.Index + " // " + next?.GameEvent?.Type + " // " + next?.EventName);
@@ -560,6 +560,7 @@ namespace HearthstoneReplays.Events
                 new WhizbangDeckParser(ParserState),
 
                 new CreateCardInGraveyardParser(ParserState),
+                new MindrenderIlluciaParser(ParserState),
             };
         }
     }

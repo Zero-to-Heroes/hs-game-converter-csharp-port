@@ -48,7 +48,7 @@ namespace HearthstoneReplayTests
             List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile);
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
             //string xml = new ReplayConverter().xmlFromReplay(replay);
             //Console.Write(xml);
         }
