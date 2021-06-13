@@ -558,6 +558,7 @@ namespace HearthstoneReplays.Events
                 new ResourcesThisTurnParser(ParserState),
                 new ResourcesUsedThisTurnParser(ParserState),
                 new WhizbangDeckParser(ParserState),
+                new CopiedFromEntityIdParser(ParserState),
 
                 new CreateCardInGraveyardParser(ParserState),
                 new MindrenderIlluciaParser(ParserState),
