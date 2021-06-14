@@ -34,6 +34,7 @@ namespace HearthstoneReplays.Events.Parsers
             CardIds.Collectible.Hunter.ShakyZipgunner,
             CardIds.Collectible.Hunter.SmugglersCrate,
             CardIds.Collectible.Hunter.TroggBeastrager,
+            CardIds.Collectible.Mage.AegwynnTheGuardianCore,
             //CardIds.Collectible.Mage.ManaBind, // Redundant with creator
             //CardIds.Collectible.Mage.NagaSandWitch,
             //CardIds.Collectible.Mage.UnstablePortal, // Redundant with creator
@@ -116,6 +117,7 @@ namespace HearthstoneReplays.Events.Parsers
             { CardIds.Collectible.Hunter.ShakyZipgunner, CardIds.NonCollectible.Neutral.ShakyZipgunner_SmugglingEnchantment},
             { CardIds.Collectible.Hunter.SmugglersCrate, CardIds.NonCollectible.Neutral.SmugglersCrate_SmugglingEnchantment},
             { CardIds.Collectible.Hunter.TroggBeastrager, CardIds.NonCollectible.Hunter.TroggBeastrager_SmugglingEnchantment},
+            { CardIds.Collectible.Mage.AegwynnTheGuardianCore, CardIds.NonCollectible.Mage.AegwynntheGuardian_GuardiansLegacyCoreEnchantment},
             { CardIds.Collectible.Paladin.CallToAdventure, CardIds.NonCollectible.Neutral.CalltoAdventure_HeroicEnchantment },
             { CardIds.Collectible.Paladin.GrimscaleChum, CardIds.NonCollectible.Neutral.GrimscaleChum_SmugglingEnchantment},
             { CardIds.Collectible.Paladin.GrimestreetEnforcer, CardIds.NonCollectible.Neutral.GrimestreetEnforcer_SmugglingEnchantment},
@@ -157,7 +159,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         private List<string> validSubSpellBuffers = new List<string>()
         {
-            CardIds.Collectible.Rogue.EfficientOctoBot
+            CardIds.Collectible.Mage.AegwynnTheGuardianCore,
+            CardIds.Collectible.Rogue.EfficientOctoBot,
         };
 
         public CardBuffedInHandParser(ParserState ParserState)
@@ -176,10 +179,7 @@ namespace HearthstoneReplays.Events.Parsers
             // Use the meta node and not the action so that we can properly sequence events thanks to the 
             // node's index
             return (node.Type == typeof(MetaData) && (node.Object as MetaData).Meta == (int)MetaDataType.TARGET)
-                || (node.Type == typeof(SubSpell)
-                    && node.Object != null
-                    && (GameState.CurrentEntities.ContainsKey((node.Object as SubSpell).Source))
-                    && (validSubSpellBuffers.Contains(GameState.CurrentEntities[(node.Object as SubSpell).Source].CardId)));
+                || (node.Type == typeof(SubSpell) && node.Object != null);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -209,13 +209,12 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
-            var subSpellEntity = GameState.CurrentEntities[subSpell.Source];
-            var bufferCardId = subSpellEntity.CardId;
+            var bufferCardId = BuildSource(subSpell); 
             //Logger.Log("subSpellEntity", subSpellEntity);
             //Logger.Log("bufferCardId", bufferCardId);
             // Because some cards have an animation that reveal the buffed cards, and others don't, 
             // we have to whitelist the valid cards to avoid info leaks
-            if (!validBuffers.Contains(bufferCardId))
+            if (!validBuffers.Contains(bufferCardId) || !validSubSpellBuffers.Contains(bufferCardId))
             {
                 //Logger.Log("buffer not valid", bufferCardId);
                 return null;
@@ -247,8 +246,8 @@ namespace HearthstoneReplays.Events.Parsers
                             null,
                             new
                             {
-                                BuffingEntityCardId = subSpellEntity.CardId,
-                                BuffCardId = buffs.ContainsKey(subSpellEntity.CardId) ? buffs[subSpellEntity.CardId] : null,
+                                BuffingEntityCardId = bufferCardId,
+                                BuffCardId = buffs.ContainsKey(bufferCardId) ? buffs[bufferCardId] : null,
                             }),
                         true,
                         node,
@@ -256,6 +255,22 @@ namespace HearthstoneReplays.Events.Parsers
                         true);
                 })
                 .ToList();
+        }
+
+        private string BuildSource(SubSpell subSpell)
+        {
+            switch (subSpell.Prefab)
+            {
+                case "CS3FX_AegwynnTheGuardian_DrawAndHold_CardBuff_Super":
+                    return CardIds.Collectible.Mage.AegwynnTheGuardianCore;
+                default:
+                    if (!GameState.CurrentEntities.ContainsKey(subSpell.Source))
+                    {
+                        return null;
+                    }
+                    var subSpellEntity = GameState.CurrentEntities[subSpell.Source];
+                    return subSpellEntity.CardId;
+            }
         }
 
         private List<GameEventProvider> CreateEventProviderForMeta(Node node)
