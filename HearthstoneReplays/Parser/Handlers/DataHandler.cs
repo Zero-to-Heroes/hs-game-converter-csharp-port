@@ -38,6 +38,7 @@ namespace HearthstoneReplays.Parser.Handlers
             }
 
             bool isApplied = false;
+            isApplied = isApplied || HandleSpectator(timestamp, data, state);
             isApplied = isApplied || HandleBlockEnd(data, state);
             isApplied = isApplied || HandleCreateGame(data, state, indentLevel);
             isApplied = isApplied || HandlePlayerName(timestamp, data, state);
@@ -696,6 +697,42 @@ namespace HearthstoneReplays.Parser.Handlers
                 // Logger.Log("Current node after update // " + state.Node.Type + " // " + (state.Node.Type == typeof(Action)), state.Node.CreationLogLine);
                 state.Node = state.Node.Parent ?? state.Node;
                 // Logger.Log("Current node is now", state.Node.CreationLogLine);
+                return true;
+            }
+            return false;
+        }
+
+        private static bool HandleSpectator(DateTime timestamp, string data, ParserState state)
+        {
+            if (data.Contains("End Spectator Mode"))
+            {
+                if (state?.LocalPlayer == null)
+                {
+                    return false;
+                }
+
+                var replayCopy = state.Replay;
+                var xmlReplay = new ReplayConverter().xmlFromReplay(replayCopy);
+                var gameStateReport = state.GameState.BuildGameStateReport();
+                state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
+                    timestamp,
+                    "GAME_END",
+                    () => new GameEvent
+                    {
+                        Type = "GAME_END",
+                        Value = new
+                        {
+                            LocalPlayer = state.LocalPlayer,
+                            OpponentPlayer = state.OpponentPlayer,
+                            GameStateReport = gameStateReport,
+                            Game = state.CurrentGame,
+                            ReplayXml = xmlReplay
+                        }
+                    },
+                    false,
+                    new Node(null, null, 0, null, data),
+                    true
+                )});
                 return true;
             }
             return false;

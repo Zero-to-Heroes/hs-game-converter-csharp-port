@@ -102,19 +102,29 @@ namespace HearthstoneReplays.Parser
             {
                 match = Regexes.PowerlogLineRegex.Match(line);
                 if (match.Success)
+                {
                     logTypeRegex = Regexes.PowerlogLineRegex;
+                }
                 else
                 {
                     match = Regexes.OutputlogLineRegex.Match(line);
                     if (match.Success)
+                    {
                         logTypeRegex = Regexes.OutputlogLineRegex;
+                    }
                 }
             }
             else
                 match = logTypeRegex.Match(line);
 
             if (!match.Success)
+            {
+                if (line.Contains("End Spectator Mode"))
+                {
+                    AddData(null, "Spectator", line);
+                }
                 return;
+            }
 
             //State.FullLog += line + "\n";
             //Logger.Log("Processing new line", line);
@@ -134,6 +144,7 @@ namespace HearthstoneReplays.Parser
             {
                 case "GameState.DebugPrintPower":
                 case "GameState.DebugPrintGame":
+                case "Spectator":
                     dataHandler.Handle(normalizedTimestamp, data, State, previousTimestamp);
                     previousTimestamp = normalizedTimestamp;
                     break;
