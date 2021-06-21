@@ -40,6 +40,7 @@ namespace HearthstoneReplays.Parser
         public bool Ended { get; set; }
         public int NumberOfCreates { get; set; }
         public bool ReconnectionOngoing { get; set; }
+        public bool Spectating { get; set; }
         //public string FullLog { get; set; } = "";
 
         private Node _node;

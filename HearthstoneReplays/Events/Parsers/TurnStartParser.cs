@@ -27,7 +27,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return ParserState.ReconnectionOngoing
+            return (ParserState.ReconnectionOngoing || (ParserState.Spectating && ParserState.IsBattlegrounds()))
                 && node.Type == typeof(GameEntity);
         }
 

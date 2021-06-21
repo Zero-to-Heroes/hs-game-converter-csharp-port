@@ -704,6 +704,10 @@ namespace HearthstoneReplays.Parser.Handlers
 
         private static bool HandleSpectator(DateTime timestamp, string data, ParserState state)
         {
+            if (data.Contains("Begin Spectating"))
+            {
+                state.Spectating = true;
+            }
             if (data.Contains("End Spectator Mode"))
             {
                 if (state?.LocalPlayer == null)
@@ -714,6 +718,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 var replayCopy = state.Replay;
                 var xmlReplay = new ReplayConverter().xmlFromReplay(replayCopy);
                 var gameStateReport = state.GameState.BuildGameStateReport();
+                state.Spectating = false;
                 state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
                     "GAME_END",
@@ -727,8 +732,8 @@ namespace HearthstoneReplays.Parser.Handlers
                             GameStateReport = gameStateReport,
                             Game = state.CurrentGame,
                             ReplayXml = xmlReplay
-                        }
-                    },
+    }
+},
                     false,
                     new Node(null, null, 0, null, data),
                     true
@@ -744,7 +749,7 @@ namespace HearthstoneReplays.Parser.Handlers
             {
                 state.NodeParser.ClearQueue();
                 //Logger.Log("Handling create game", "");
-                var isReconnecting = !state.Ended && state.NumberOfCreates >= 1;
+                var isReconnecting = !state.Ended && state.NumberOfCreates >= 1 && !state.Spectating;
                 if (isReconnecting)
                 {
                     Logger.Log("Probable reconnect detected " + timestamp + " // " + previousTimestamp, "" + (timestamp - previousTimestamp));
