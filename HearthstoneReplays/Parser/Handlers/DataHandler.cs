@@ -30,15 +30,15 @@ namespace HearthstoneReplays.Parser.Handlers
             var trimmed = data.Trim();
             var indentLevel = data.Length - trimmed.Length;
             data = trimmed;
-
             HandleNewGame(timestamp, data, state, previousTimestamp);
+            bool isApplied = false;
+            isApplied = isApplied || HandleSpectator(timestamp, data, state);
+
             if (state.Ended)
             {
                 return;
             }
 
-            bool isApplied = false;
-            isApplied = isApplied || HandleSpectator(timestamp, data, state);
             isApplied = isApplied || HandleBlockEnd(data, state);
             isApplied = isApplied || HandleCreateGame(data, state, indentLevel);
             isApplied = isApplied || HandlePlayerName(timestamp, data, state);
@@ -610,7 +610,10 @@ namespace HearthstoneReplays.Parser.Handlers
                         return new GameEvent
                         {
                             Type = "MATCH_METADATA",
-                            Value = this.metadata
+                            Value = new {
+                                MetaData = this.metadata,
+                                Spectating = state.Spectating,
+                            }
                         };
                     },
                     false,
@@ -706,7 +709,25 @@ namespace HearthstoneReplays.Parser.Handlers
         {
             if (data.Contains("Begin Spectating"))
             {
+                state.Reset();
                 state.Spectating = true;
+                state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
+                    timestamp,
+                    "SPECTATING",
+                    () => new GameEvent
+                    {
+                        Type = "SPECTATING",
+                        Value = new
+                        {
+                            LocalPlayer = state.LocalPlayer,
+                            OpponentPlayer = state.OpponentPlayer,
+                            Spectating = true,
+                        }
+                    },
+                    false,
+                    new Node(null, null, 0, null, data),
+                    true
+                )});
             }
             if (data.Contains("End Spectator Mode"))
             {
@@ -721,23 +742,22 @@ namespace HearthstoneReplays.Parser.Handlers
                 state.Spectating = false;
                 state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
-                    "GAME_END",
+                    "SPECTATING",
                     () => new GameEvent
                     {
-                        Type = "GAME_END",
+                        Type = "SPECTATING",
                         Value = new
                         {
                             LocalPlayer = state.LocalPlayer,
                             OpponentPlayer = state.OpponentPlayer,
-                            GameStateReport = gameStateReport,
-                            Game = state.CurrentGame,
-                            ReplayXml = xmlReplay
+                            Spectating = false,
     }
 },
                     false,
                     new Node(null, null, 0, null, data),
                     true
                 )});
+                state.EndCurrentGame();
                 return true;
             }
             return false;

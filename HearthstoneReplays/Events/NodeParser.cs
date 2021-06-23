@@ -266,7 +266,7 @@ namespace HearthstoneReplays.Events
                     lock (listLock)
                     {
                         //Logger.Log("Acquierd list lock in processgameevent", "");
-                        if (eventQueue.Count == 0)
+                        if (eventQueue.Count == 0 || ParserState == null)
                         {
                             //Logger.Log("Queue empty", "");
                             return;
@@ -476,7 +476,7 @@ namespace HearthstoneReplays.Events
         {
             return new List<ActionParser>()
             {
-                new NewGameParser(),
+                new NewGameParser(ParserState),
                 new WinnerParser(ParserState),
                 new GameEndParser(ParserState),
                 new TurnStartParser(ParserState),

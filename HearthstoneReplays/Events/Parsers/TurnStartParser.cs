@@ -27,8 +27,9 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return (ParserState.ReconnectionOngoing || (ParserState.Spectating && ParserState.IsBattlegrounds()))
-                && node.Type == typeof(GameEntity);
+            var isGameNode = node.Type == typeof(GameEntity);
+            return (ParserState.ReconnectionOngoing || ParserState.Spectating)
+                && isGameNode;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -118,7 +119,9 @@ namespace HearthstoneReplays.Events.Parsers
                         }
                     };
                 },
-                false,
+                // So that we don't send the "turn start" event before the metadata (which triggers the creation of the 
+                // game client-side) is processed
+                ParserState.Spectating,
                 node));
             return result;
         }

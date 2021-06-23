@@ -28,15 +28,13 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            //var appliesToShowEntity = node.Type == typeof(ShowEntity)
-            //    && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.HAND
-            //    && (!GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
-            //        || (GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) != (int)Zone.DECK
-            //            && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) != (int)Zone.HAND));
-            var appliesToFullEntity = node.Type == typeof(FullEntity)
+            // For some reason, when spectating a game a lot of cards (from previous games I've watched / played?) are created
+            // in the graveyard at the start of the game;
+            var isValidElement = !ParserState.Spectating || ParserState.LocalPlayer?.Name != null;
+            var appliesToFullEntity = isValidElement 
+                && node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD
                 && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT;
-            //return appliesToShowEntity || appliesToFullEntity;
             return appliesToFullEntity;
         }
 

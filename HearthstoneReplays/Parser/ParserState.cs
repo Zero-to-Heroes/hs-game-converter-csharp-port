@@ -87,6 +87,7 @@ namespace HearthstoneReplays.Parser
                     }
                     if (_node != null && _node.Type == typeof(GameEntity))
                     {
+                        NodeParser.CloseNode(_node);
                         GameState.GameEntity(_node.Object as GameEntity);
                     }
                     if (_node != null && _node.Type == typeof(MetaData))
@@ -255,7 +256,6 @@ namespace HearthstoneReplays.Parser
             }
             foreach (IEntityData entity in showEntities)
             {
-                //Console.WriteLine("Considering entity: " + entity);
                 if (entity.CardId != null && entity.CardId.Length > 0
                     && GetTag(entity.Tags, GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT
                     // We do this because some cards are revealed when drawn (like Aranasi Bloodmother) and mess up with
