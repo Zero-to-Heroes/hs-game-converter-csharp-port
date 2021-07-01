@@ -74,10 +74,13 @@ namespace HearthstoneReplays.Events.Parsers
             var opponent = ParserState.OpponentPlayer;
             var player = ParserState.LocalPlayer;
 
-            var playerBoard = CreateProviderFromAction(node, player, false, player);
-            var opponentBoard = CreateProviderFromAction(node, opponent, true, player);
+            var playerBoard = CreateProviderFromAction(player, false, player);
+            var opponentBoard = CreateProviderFromAction(opponent, true, player);
 
-            return new List<GameEventProvider> { GameEventProvider.Create(
+            GameState.BgsHasSentNextOpponent = false;
+
+            var result = new List<GameEventProvider>();
+            result.Add(GameEventProvider.Create(
                    action.TimeStamp,
                    "BATTLEGROUNDS_PLAYER_BOARD",
                    () => (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
@@ -97,7 +100,8 @@ namespace HearthstoneReplays.Events.Parsers
                    false,
                    false,
                    true // Don't wait until the animation is ready, so we send the board state right away
-               ) };
+               ) );
+            return result;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
@@ -105,9 +109,9 @@ namespace HearthstoneReplays.Events.Parsers
             return null;
         }
 
-        private PlayerBoard CreateProviderFromAction(Node node, Player player, bool isOpponent, Player mainPlayer)
+        private PlayerBoard CreateProviderFromAction(Player player, bool isOpponent, Player mainPlayer)
         {
-            var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+            //var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
             var heroes = GameState.CurrentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
@@ -121,7 +125,8 @@ namespace HearthstoneReplays.Events.Parsers
                 .ToList();
             var hero = potentialHeroes
                 //.Where(entity => entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
-                .FirstOrDefault();
+                .FirstOrDefault()
+                ?.Clone();
             //Logger.Log("Trying to handle board", "" + ParserState.CurrentGame.GameType + " // " + hero?.CardId);
             //Logger.Log("Hero " + hero.CardId, hero.Entity);
             var cardId = hero?.CardId;
@@ -129,6 +134,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 GameState.BgsCurrentBattleOpponent = cardId;
             }
+
             if (cardId == NonCollectible.Neutral.KelthuzadTavernBrawl2)
             {
                 // Finding the one that is flagged as the player's NEXT_OPPONENT
@@ -159,7 +165,8 @@ namespace HearthstoneReplays.Events.Parsers
                 var opponentPlayerId = activePlayer.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
                 hero = GameState.CurrentEntities.Values
                     .Where(data => data.GetTag(GameTag.PLAYER_ID) == opponentPlayerId)
-                    .FirstOrDefault();
+                    .FirstOrDefault()
+                    ?.Clone();
                 cardId = hero?.CardId;
             }
             if (cardId != null)
@@ -211,20 +218,12 @@ namespace HearthstoneReplays.Events.Parsers
                     CardId = entity.CardId
                 })
                 .ToList();
-            //var test = currentEntities.Values
-            //    .Where(entity => entity.GetTag(GameTag.ATTACHED) > 0)
-            //    .Select(entity => entity.CardId)
-            //    .ToList();
-            //if (test.Count > 0)
-            //{
-            //    Logger.Log("Eeenchantments", test);
-            //}
             dynamic result = new
             {
                 CardId = fullEntity.CardId,
                 Entity = fullEntity.Entity,
                 Id = fullEntity.Id,
-                Tags = fullEntity.Tags,
+                Tags = fullEntity.GetTagsCopy(),
                 TimeStamp = fullEntity.TimeStamp,
                 Enchantments = enchantments,
             };

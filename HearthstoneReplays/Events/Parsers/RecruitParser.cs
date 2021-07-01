@@ -45,10 +45,6 @@ namespace HearthstoneReplays.Events.Parsers
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
-                if (node.Type == typeof(TagChange) && (node.Object as TagChange).Entity == 5)
-                {
-                    Console.WriteLine("hop2 "  + node.CreationLogLine);
-                }
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "RECRUIT_CARD",

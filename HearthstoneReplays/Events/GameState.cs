@@ -32,6 +32,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public Dictionary<int, List<int>> CardsPlayedByPlayerEntityId = new Dictionary<int, List<int>>();
         public Dictionary<int, List<int>> SpellsPlayedByPlayerOnFriendlyEntityIds = new Dictionary<int, List<int>>();
         public string BgsCurrentBattleOpponent;
+        public bool BgsHasSentNextOpponent;
 
         public Dictionary<int, List<FullEntity>> EntityIdsOnBoardWhenPlayingPotionOfIllusion = null;
 
@@ -53,6 +54,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             SpellsPlayedByPlayerOnFriendlyEntityIds = new Dictionary<int, List<int>>();
             LastCardDrawnEntityId = -1;
             BgsCurrentBattleOpponent = null;
+            BgsHasSentNextOpponent = false;
             EntityIdsOnBoardWhenPlayingPotionOfIllusion = null;
             gameEntityId = -1;
             controllerEntity = new Dictionary<int, int>();

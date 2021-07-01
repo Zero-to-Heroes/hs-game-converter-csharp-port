@@ -44,6 +44,37 @@ namespace HearthstoneReplays.Events.Parsers
             GameState.ClearPlagiarize();
             // FIXME?: maybe this should not be inside the event provider, but rather apply on the GameState
             GameState.OnNewTurn();
+            if ((ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+                       || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY))
+            {
+                if (tagChange.Value % 2 != 0)
+                {
+                    // When at the top2 stage, the event isn't sent anymore, so we send a default event
+                    // when the turn starts (from what I've seen, the event is always sent before the turn
+                    // starts)
+                    // Do it first so that it happens before the TURN_START event
+                    if (!GameState.BgsHasSentNextOpponent)
+                    {
+                        result.Add(GameEventProvider.Create(
+                            tagChange.TimeStamp,
+                            "BATTLEGROUNDS_NEXT_OPPONENT",
+                            () => new GameEvent
+                            {
+                                Type = "BATTLEGROUNDS_NEXT_OPPONENT",
+                                Value = new
+                                {
+                                    IsSameOpponent = true,
+                                }
+                            },
+                            true,
+                            node,
+                            false,
+                            false)
+                        );
+                        GameState.BgsHasSentNextOpponent = true;
+                    }
+                }
+            }
             result.Add(GameEventProvider.Create(
                    tagChange.TimeStamp,
                    "TURN_START",

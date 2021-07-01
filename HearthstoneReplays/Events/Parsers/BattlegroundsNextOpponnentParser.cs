@@ -63,6 +63,7 @@ namespace HearthstoneReplays.Events.Parsers
             //Logger.Log("Next opponent player id", hero?.CardId);
             if (hero?.CardId != null && hero.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl)
             {
+                GameState.BgsHasSentNextOpponent = true;
                 return new List<GameEventProvider> {  
                     GameEventProvider.Create(
                         tagChange.TimeStamp,
@@ -91,6 +92,7 @@ namespace HearthstoneReplays.Events.Parsers
             GameState.NextBgsOpponentPlayerId = (node.Object as PlayerEntity).Tags
                 .Find(tag => tag.Name == (int)GameTag.NEXT_OPPONENT_PLAYER_ID)
                 .Value;
+            GameState.BgsHasSentNextOpponent = true;
             return null;
         }
     }
