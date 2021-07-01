@@ -416,6 +416,31 @@ namespace HearthstoneReplays.Events
                             }
                         }
                         return null;
+
+                    case Neutral.YseraTheDreamerCore:
+                        if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+                        {
+                            var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                            var existingEntity = GameState.CurrentEntities[act.Entity];
+                            var dreamCardsLeft = existingEntity.CardIdsToCreate;
+                            if (dreamCardsLeft.Count == 0)
+                            {
+                                dreamCardsLeft = new List<string>()
+                                {
+                                    NonCollectible.DreamCards.NightmareExpert1,
+                                    NonCollectible.DreamCards.Dream,
+                                    NonCollectible.DreamCards.LaughingSister,
+                                    NonCollectible.DreamCards.YseraAwakens,
+                                    NonCollectible.DreamCards.EmeraldDrake,
+                                };
+                                existingEntity.CardIdsToCreate = dreamCardsLeft;
+                            }
+                            var cardId = dreamCardsLeft[0];
+                            dreamCardsLeft.RemoveAt(0);
+                            return cardId;
+                        }
+                        return null;
+
                 }
             }
 
