@@ -50,7 +50,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				var rawEntity = match.Groups[2].Value;
 				var entity = helper.ParseEntity(rawEntity, state);
 				var choice = new Choice {Entity = entity, Index = index, TimeStamp = timestamp};
-				state.CurrentChosenEntites.Choices.Add(choice);
+				state.CurrentChosenEntites?.Choices?.Add(choice);
 
 				state.CreateNewNode(new Node(typeof(Choice), choice, 0, null, data)); // It's not really a new node, but just a hack
 				return;

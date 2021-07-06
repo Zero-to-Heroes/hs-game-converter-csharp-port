@@ -56,8 +56,9 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetTag(GameTag.CONTROLLER) == mainPlayer.PlayerId)
-                    .Where(entity => entity.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl)
-                    .Where(entity => entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
+                    .Where(entity => entity.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl
+                        && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2
+                        && entity.CardId != NonCollectible.Neutral.BaconphheroTavernBrawl)
                     .OrderBy(entity => entity.Id)
                     .LastOrDefault();
                 var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
@@ -66,7 +67,8 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
                     .Where(entity => entity.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl
-                        && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
+                        && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2
+                        && entity.CardId != NonCollectible.Neutral.BaconphheroTavernBrawl)
                     .ToList();
                 var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
 
@@ -131,7 +133,10 @@ namespace HearthstoneReplays.Events.Parsers
                     var player = GameState.CurrentEntities[ParserState.LocalPlayer.Id];
                     opponentPlayerId = player.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
                     opponentHero = GameState.CurrentEntities.Values
-                        .Where(data => data.GetTag(GameTag.PLAYER_ID) == opponentPlayerId)
+                        .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == opponentPlayerId)
+                        .Where(entity => entity.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl
+                            && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2
+                            && entity.CardId != NonCollectible.Neutral.BaconphheroTavernBrawl)
                         .FirstOrDefault();
                     cardId = opponentHero?.CardId;
                 }
@@ -183,8 +188,9 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetTag(GameTag.CONTROLLER) == mainPlayer.PlayerId)
-                    .Where(entity => entity.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl)
-                    .Where(entity => entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
+                    .Where(entity => entity.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl
+                        && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2
+                        && entity.CardId != NonCollectible.Neutral.BaconphheroTavernBrawl)
                     .OrderBy(entity => entity.Id)
                     .LastOrDefault();
                 var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
@@ -193,7 +199,8 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
                     .Where(entity => entity.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl
-                        && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
+                        && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2
+                        && entity.CardId != NonCollectible.Neutral.BaconphheroTavernBrawl)
                     .ToList();
                 var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
 

@@ -244,7 +244,9 @@ namespace HearthstoneReplays.Events
         private List<string> ignoredLogLines = new List<string>()
         {
             "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=-1 Target=0 SubOption=-1 TriggerKeyword=0",
+            "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=-1 Target=0 SubOption=-1 TriggerKeyword=TAG_NOT_SET",
             "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1 TriggerKeyword=0",
+            "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1 TriggerKeyword=TAG_NOT_SET",
 
         };
         private async void ProcessGameEventQueue(Object source, ElapsedEventArgs e)
@@ -253,10 +255,13 @@ namespace HearthstoneReplays.Events
             // other event that should be processed first
             // Warning: this means the whole event parsing works in real-time, and is not suited for 
             // post-processing of games
-            //if (eventQueue.Any(p => p.CreationLogLine.Contains("TAG_CHANGE Entity=[entityName=Voidwalker id=3651 zone=PLAY zonePos=3 cardId=CS2_065 player=13] tag=ZONE value=REMOVEDFROMGAME")))
-            //{
-            //    Logger.Log("Provider to process", eventQueue[0].CreationLogLine);
-            //}
+            // TODO: this is starting to become a big hack. It might be better to rethink the whole event 
+            // processing, and rely only the on the PowerTaskList instead of the GameState, so that I 
+            // can get rid of the timing shennanigans
+            // What the GameState processing is good for:
+            // - Know ahead of time what will happen (eg MINION_WILL_DIE)
+            // - Start the BG simulation earlier  (this one might be big for me)
+            // - There are some stuff that are only present in the GS logs (metadata, player names)
             while (IsEventToProcess())
             {
                 //Logger.Log("There is an event to process", eventQueue.Count == 0 ? "nothing" : eventQueue[0].CreationLogLine);
@@ -285,29 +290,32 @@ namespace HearthstoneReplays.Events
                             Logger.Log("Setting DevMode", DevMode);
                             continue;
                         }
-                        //Logger.Log("[csharp] Events to process", eventQueue.Count);
                         // TODO: this spoils events in BGS, how to do it?
                         // We don't use the other form, as in BGS some lines are very similar and could trigger some false
                         // animation ready calls (more specifically, things related to the GameEntity, like MAIN_STEP)
-                        //if (!eventQueue.All(p => !p.CreationLogLine.Contains("GameEntity")) 
-                        //    && !eventQueue.Where(p => !p.CreationLogLine.Contains("GameEntity")).Any(p => p.AnimationReady))
                         // So that things don't break while in DevMode
                         if (waitingForMetaData && !eventQueue.First().ShortCircuit)
                         {
                             return;
                         }
                         // Heck for Battlegrounds
-                        if (!DevMode 
+                        if (!DevMode
                             && !eventQueue.First().ShortCircuit
                             && !eventQueue
                                 .Where(p => !(p.CreationLogLine.Contains("GameEntity") && p.CreationLogLine.Contains("MAIN_READY")))
-                                .Where(p => !p.CreationLogLine.Contains("BLOCK_START BlockType=TRIGGER") 
+                                .Where(p => !p.CreationLogLine.Contains("BLOCK_START BlockType=TRIGGER")
                                     && ignoredLogLines.All(line => !p.CreationLogLine.Contains(line)))
                                 // ENTITTY_UPDATE events are needed for mindrender illucia
                                 // But I have no idea why they were removed in the first place
                                 // So here I'm using a crutch to make it work just for this specific case
+                                // I think they were excluded for BG
                                 .Where(p => p.EventName != "ENTITY_UPDATE" || ((dynamic)p.Props)?.Mindrender)
                                 .Where(p => !ParserState.IsBattlegrounds() || p.EventName != "CARD_REMOVED_FROM_DECK")
+                                // In some cases, the TURN_START event is processed before the combat ends. I don't know why this
+                                // is the case though, so this exclusion is just to try and not have it be processed too soon.
+                                // This is NOT a good fix, but I don't understand the underlying cause, so...
+                                // I've noticed this happen mostly against Greybough (or at least, more consistently)
+                                .Where(p => !p.CreationLogLine.Contains("CardID=TB_BaconShop_3ofKindChecke"))
                                 .Any(p => p.AnimationReady))
                         // Safeguard - Don't wait too long for the animation in case we never receive it
                         // With the arrival of Battlegrounds we can't do this anymore, as it spoils the game very fast
@@ -316,26 +324,48 @@ namespace HearthstoneReplays.Events
                             //Logger.Log("No animation ready", eventQueue[0].CreationLogLine);
                             return;
                         }
-                        provider = eventQueue[0];
-                        eventQueue.RemoveAt(0);
-                        if (provider.debug)
+
+                        List<GameEventProvider> animationReady = new List<GameEventProvider>();
+                        if (ParserState.IsBattlegrounds())
                         {
-                            Logger.Log("Will process event", provider.EventName);
-                            Logger.Log("creationLogLine", provider.CreationLogLine);
-                            Logger.Log("animatiuonReady", provider.AnimationReady);
-                            Logger.Log("ShortCircuit", provider.ShortCircuit);
-                            Logger.Log("First event queue ShortCircuit", eventQueue.First().ShortCircuit);
-                            var animationReady = eventQueue
+                            animationReady = eventQueue
                                 .Where(p => !(p.CreationLogLine.Contains("GameEntity") && p.CreationLogLine.Contains("MAIN_READY")))
                                 .Where(p => !p.CreationLogLine.Contains("BLOCK_START BlockType=TRIGGER")
                                     && ignoredLogLines.All(line => !p.CreationLogLine.Contains(line)))
-                                .Where(p => p.EventName != "ENTITY_UPDATE")
+                                .Where(p => p.EventName != "ENTITY_UPDATE" || ((dynamic)p.Props)?.Mindrender)
+                                .Where(p => !ParserState.IsBattlegrounds() || p.EventName != "CARD_REMOVED_FROM_DECK")
+                                .Where(p => p.AnimationReady)
                                 .ToList();
-                            Logger.Log("First event queue animationReady", animationReady.Any(p => p.AnimationReady));
-                            Logger.Log("First event queue animationReady event", animationReady.Any(p => p.AnimationReady) 
-                                ? animationReady.First().CreationLogLine : null );
-
                         }
+                        provider = eventQueue[0];
+                        eventQueue.RemoveAt(0);
+
+
+                        if (ParserState.IsBattlegrounds() && !provider.AnimationReady && provider.SupplyGameEvent()?.Type != null && provider.SupplyGameEvent()?.Type != "DAMAGE")
+                        {
+                            //Logger.Log("First event queue animationReady", animationReady.Any(p => p.AnimationReady));
+                            Logger.Log("First event queue animationReady event " + animationReady.FirstOrDefault()?.Timestamp + " // " + animationReady.FirstOrDefault()?.CreationLogLine,
+                                "Current event provider " + provider.SupplyGameEvent()?.Type + " // " + provider.Timestamp + " // " + provider.CreationLogLine);
+                        }
+
+                        //if (provider.debug)
+                        //{
+                        //    Logger.Log("Will process event", provider.EventName);
+                        //    Logger.Log("creationLogLine", provider.CreationLogLine);
+                        //    Logger.Log("animatiuonReady", provider.AnimationReady);
+                        //    Logger.Log("ShortCircuit", provider.ShortCircuit);
+                        //    Logger.Log("First event queue ShortCircuit", eventQueue.First().ShortCircuit);
+                        //    var animationReady = eventQueue
+                        //        .Where(p => !(p.CreationLogLine.Contains("GameEntity") && p.CreationLogLine.Contains("MAIN_READY")))
+                        //        .Where(p => !p.CreationLogLine.Contains("BLOCK_START BlockType=TRIGGER")
+                        //            && ignoredLogLines.All(line => !p.CreationLogLine.Contains(line)))
+                        //        .Where(p => p.EventName != "ENTITY_UPDATE")
+                        //        .ToList();
+                        //    Logger.Log("First event queue animationReady", animationReady.Any(p => p.AnimationReady));
+                        //    Logger.Log("First event queue animationReady event", animationReady.Any(p => p.AnimationReady) 
+                        //        ? animationReady.First().CreationLogLine : null );
+
+                        //}
                     }
                     //if (provider.CreationLogLine.Contains("TAG_CHANGE Entity=[entityName=Voidwalker id=3651 zone=PLAY zonePos=3 cardId=CS2_065 player=13] tag=ZONE value=REMOVEDFROMGAME"))
                     //{
@@ -361,7 +391,7 @@ namespace HearthstoneReplays.Events
                     //    Logger.Log("[csharp] Next animation ready " + next?.Timestamp + " " + next?.CreationLogLine,
                     //        next?.Index + " // " + next?.GameEvent?.Type + " // " + next?.EventName);
                     //}
-                    lock (listLock) 
+                    lock (listLock)
                     {
                         //Logger.Log("Acquierd list lock in processgameevent 2", "");
                         ProcessGameEvent(provider);
@@ -559,6 +589,7 @@ namespace HearthstoneReplays.Events
                 new ResourcesUsedThisTurnParser(ParserState),
                 new WhizbangDeckParser(ParserState),
                 new CopiedFromEntityIdParser(ParserState),
+                new BattlegroundsTavernPrizesParser(ParserState),
 
                 new CreateCardInGraveyardParser(ParserState),
                 new MindrenderIlluciaParser(ParserState),

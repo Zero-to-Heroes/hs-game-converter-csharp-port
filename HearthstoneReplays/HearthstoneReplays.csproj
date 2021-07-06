@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="Enums.cs" />
     <Compile Include="Events\GameMetaData.cs" />
+    <Compile Include="Events\Parsers\BattlegroundsTavernPrizesParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsFreezeParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsMinionsSoldParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsMinionsBoughtParser.cs" />

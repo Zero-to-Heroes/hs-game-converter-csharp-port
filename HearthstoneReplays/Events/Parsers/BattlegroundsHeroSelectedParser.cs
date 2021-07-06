@@ -54,6 +54,12 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return null;
             }
+
+            if (chosenEntity.CardId == NonCollectible.Neutral.BaconphheroTavernBrawl)
+            {
+                return null;
+            }
+
             var controllerId = chosenEntity.GetTag(GameTag.CONTROLLER);
 
             return new List<GameEventProvider> { GameEventProvider.Create(
@@ -108,6 +114,12 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             if (fullEntity.GetTag(GameTag.CONTROLLER) != ParserState.LocalPlayer.PlayerId)
+            {
+                return null;
+            }
+
+
+            if (fullEntity.CardId == NonCollectible.Neutral.BaconphheroTavernBrawl)
             {
                 return null;
             }
