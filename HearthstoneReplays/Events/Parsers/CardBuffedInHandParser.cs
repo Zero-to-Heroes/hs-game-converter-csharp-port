@@ -157,6 +157,11 @@ namespace HearthstoneReplays.Events.Parsers
             { CardIds.Collectible.Neutral.GrimestreetSmuggler, CardIds.NonCollectible.Neutral.GrimestreetSmuggler_SmugglingEnchantment},
         };
 
+        private List<string> validHoldWhenDrawnBuffers = new List<string>()
+        {
+            CardIds.Collectible.Demonhunter.SkullOfGuldan,
+        };
+
         private List<string> validSubSpellBuffers = new List<string>()
         {
             CardIds.Collectible.Mage.AegwynnTheGuardianCore,
@@ -178,7 +183,12 @@ namespace HearthstoneReplays.Events.Parsers
         {
             // Use the meta node and not the action so that we can properly sequence events thanks to the 
             // node's index
-            return (node.Type == typeof(MetaData) && (node.Object as MetaData).Meta == (int)MetaDataType.TARGET)
+            var isCorrectMeta = node.Type == typeof(MetaData) 
+                && ((node.Object as MetaData).Meta == (int)MetaDataType.TARGET
+                    // Skull of Gul'dan doesn't have the TARGET info anymore, but the HOLD_DRAWN_CARD effect is only
+                    // present when the card is buffed, so maybe we can use that
+                    || (node.Object as MetaData).Meta == (int)MetaDataType.HOLD_DRAWN_CARD);
+            return isCorrectMeta
                 || (node.Type == typeof(SubSpell) && node.Object != null);
         }
 
@@ -302,6 +312,12 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var meta = node.Object as MetaData;
+            var metaType = (node.Object as MetaData).Meta;
+            if (metaType == (int)MetaDataType.HOLD_DRAWN_CARD && !validHoldWhenDrawnBuffers.Contains(bufferCardId))
+            {
+                return null;
+            }
+
             var entitiesBuffedInHand = meta.MetaInfo
                 .Select(info => GameState.CurrentEntities.ContainsKey(info.Entity) ? GameState.CurrentEntities[info.Entity] : null)
                 .Where(entity => entity != null)
