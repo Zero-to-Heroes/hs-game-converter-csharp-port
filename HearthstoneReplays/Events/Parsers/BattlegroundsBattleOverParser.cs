@@ -40,6 +40,7 @@ namespace HearthstoneReplays.Events.Parsers
                     || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                 && node.Type == typeof(Action)
                 && (node.Object as Action).Type == (int)BlockType.TRIGGER
+                // Also modify this in trigger-sync KDA
                 && (node.Object as Action).EffectIndex == 7; 
         }
 
