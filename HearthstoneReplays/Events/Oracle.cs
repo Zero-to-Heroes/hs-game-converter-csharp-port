@@ -187,6 +187,7 @@ namespace HearthstoneReplays.Events
                     case Neutral.FeralGibberer: return Neutral.FeralGibberer;
                     case Neutral.FireFly: return NonCollectible.Neutral.FireFly_FlameElementalToken;
                     case Neutral.FishyFlyer: return NonCollectible.Neutral.FishyFlyer_SpectralFlyerToken;
+                    case NonCollectible.Neutral.ForgingQueldelar: return NonCollectible.Neutral.QueldelarTavernBrawl;
                     case Neutral.HakkarTheSoulflayer: return NonCollectible.Neutral.HakkartheSoulflayer_CorruptedBloodToken;
                     case Neutral.HoardingDragon: return NonCollectible.Neutral.TheCoinCore;
                     case Neutral.IgneousElemental: return NonCollectible.Neutral.FireFly_FlameElementalToken;
