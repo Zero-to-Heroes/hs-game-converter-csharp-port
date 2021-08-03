@@ -9,6 +9,7 @@ using static HearthstoneReplays.Events.CardIds;
 using static HearthstoneReplays.Events.CardIds.Collectible;
 using HearthstoneReplays.Parser.ReplayData.Meta;
 using System.Linq;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Events
 {
@@ -194,6 +195,7 @@ namespace HearthstoneReplays.Events
                     case Neutral.InfestedGoblin: return NonCollectible.Neutral.WrappedGolem_ScarabToken;
                     case Neutral.KingMukla: return NonCollectible.Neutral.BananasMissions;
                     case Neutral.LicensedAdventurer: return NonCollectible.Neutral.TheCoinCore;
+                    case Neutral.MailboxDancer: return NonCollectible.Neutral.TheCoinCore;
                     case Neutral.Mankrik: return NonCollectible.Neutral.Mankrik_OlgraMankriksWifeToken;
                     case NonCollectible.Neutral.MilitiaHornGILNEAS: return NonCollectible.Neutral.VeteransMilitiaHornGILNEAS;
                     case Neutral.MuklaTyrantOfTheVale: return NonCollectible.Neutral.BananasMissions;
@@ -511,6 +513,34 @@ namespace HearthstoneReplays.Events
                 if (action.Type == (int)BlockType.POWER)
                 {
                     var actionEntity = GameState.CurrentEntities[action.Entity];
+                    if (actionEntity.CardId == Hunter.DevouringSwarm)
+                    {
+                        if (actionEntity.CardIdsToCreate.Count == 0)
+                        {
+                            var controller = actionEntity.GetController();
+                            var deathBlock = action.Data
+                                .Where(data => data is Action)
+                                .Select(data => data as Action)
+                                .Where(a => a.Type == (int)BlockType.DEATHS)
+                                .FirstOrDefault();
+                            if (deathBlock != null)
+                            {
+                                var deadEntities = deathBlock.Data
+                                    .Where(data => data is TagChange)
+                                    .Select(data => data as TagChange)
+                                    .Where(tag => tag.Name == (int)GameTag.ZONE && tag.Value == (int)Zone.GRAVEYARD)
+                                    .Select(tag => GameState.CurrentEntities[tag.Entity])
+                                    .Where(entity => entity.GetController() == controller);
+                                actionEntity.CardIdsToCreate = deadEntities.Select(entity => entity.CardId).ToList();
+                            }
+                        }
+                        if (actionEntity.CardIdsToCreate.Count > 0)
+                        {
+                            var cardId = actionEntity.CardIdsToCreate[0];
+                            actionEntity.CardIdsToCreate.RemoveAt(0);
+                            return cardId;
+                        }
+                    }
 
                     // Second card for Archivist Elysiana
                     if (actionEntity.CardId == Neutral.ArchivistElysiana)
