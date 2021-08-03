@@ -17,7 +17,7 @@ namespace HearthstoneReplays.Parser
         private readonly List<string> innkeeperNames = new List<string>() { "The Innkeeper", "Aubergiste", "Gastwirt",
             "El tabernero", "Locandiere", "酒場のオヤジ", "여관주인",  "Karczmarz", "O Estalajadeiro", "Хозяин таверны",
             "เจ้าของโรงแรม", "旅店老板", "旅店老闆" };
-        private readonly List<string> bobTavernNames = new List<string>() { "Bob's Tavern", "Bobs Gasthaus", "Taberna de Bob",
+        private readonly List<string> bobTavernNames = new List<string>() { "Bartender Bob", "Bob's Tavern", "Bobs Gasthaus", "Taberna de Bob",
             "Taverne de Bob", "Locanda di Bob", "ボブの酒場", "밥의 선술집", "Karczma Boba", "Taverna do Bob", "Таверна Боба",
             "โรงเตี๊ยมของบ็อบ", "鲍勃的酒馆", "鮑伯的旅店"};
 
@@ -64,7 +64,13 @@ namespace HearthstoneReplays.Parser
             if (secondPlayer.Name == data) return secondPlayer.Id;
             if (string.IsNullOrEmpty(firstPlayer.Name))
 		    {
-		        firstPlayer.Name = data;
+				if (firstPlayer.AccountHi == "0" && firstPlayer.AccountLo == "0" && state.IsBattlegrounds())
+                {
+					firstPlayer.Name = "Bartender Bob";
+				} else
+                {
+					firstPlayer.Name = data;
+                }
                 firstPlayer.InitialName = data;
                 return firstPlayer.Id;
             }

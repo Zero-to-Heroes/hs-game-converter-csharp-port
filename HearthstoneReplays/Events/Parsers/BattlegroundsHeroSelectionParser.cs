@@ -40,7 +40,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(data => data.GetTag(GameTag.CONTROLLER) == playerId)
                 .Where(data => data.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(data => data.GetTag(GameTag.ZONE) == (int)Zone.HAND)
-                .Where(data => data.GetTag(GameTag.BACON_HERO_CAN_BE_DRAFTED) == 1)
+                .Where(data => data.GetTag(GameTag.BACON_HERO_CAN_BE_DRAFTED) == 1 || data.GetTag(GameTag.BACON_SKIN) == 1)
                 .ToList();
             fullEntities.Sort((a, b) => a.GetTag(GameTag.ZONE_POSITION) - b.GetTag(GameTag.ZONE_POSITION));
             Logger.Log("will consider hero selection event", "" + fullEntities.Count);

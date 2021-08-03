@@ -22,7 +22,8 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnNewNode(Node node)
         {
             return node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.TURN;
+                && (node.Object as TagChange).Name == (int)GameTag.TURN
+                && GameState.GetGameEntity()?.Entity == (node.Object as TagChange).Entity;
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -44,8 +45,7 @@ namespace HearthstoneReplays.Events.Parsers
             GameState.ClearPlagiarize();
             // FIXME?: maybe this should not be inside the event provider, but rather apply on the GameState
             GameState.OnNewTurn();
-            if ((ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                       || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY))
+            if (ParserState.IsBattlegrounds())
             {
                 if (tagChange.Value % 2 != 0)
                 {
@@ -55,6 +55,7 @@ namespace HearthstoneReplays.Events.Parsers
                     // Do it first so that it happens before the TURN_START event
                     if (!GameState.BgsHasSentNextOpponent)
                     {
+                        Logger.Log("Has not sent next opponent", "");
                         result.Add(GameEventProvider.Create(
                             tagChange.TimeStamp,
                             "BATTLEGROUNDS_NEXT_OPPONENT",

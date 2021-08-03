@@ -43,7 +43,9 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 var eventName = "SECRET_PLAYED";
                 if (GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.QUEST) == 1
-                        || GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.SIDEQUEST) == 1)
+                        || GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.SIDEQUEST) == 1
+                        || GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.QUESTLINE_PART) == 1
+                        || GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.QUESTLINE) == 1)
                 {
                     eventName = "QUEST_PLAYED";
                 }
@@ -101,7 +103,10 @@ namespace HearthstoneReplays.Events.Parsers
                         var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
                         var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
                         var playerClass = showEntity.GetPlayerClass();
-                        var eventName = showEntity.GetTag(GameTag.QUEST) == 1 || showEntity.GetTag(GameTag.SIDEQUEST) == 1
+                        var eventName = showEntity.GetTag(GameTag.QUEST) == 1 
+                            || showEntity.GetTag(GameTag.SIDEQUEST) == 1
+                            || showEntity.GetTag(GameTag.QUESTLINE) == 1
+                            || showEntity.GetTag(GameTag.QUESTLINE_PART) == 1
                             ? "QUEST_PLAYED"
                             : "SECRET_PLAYED";
                         System.Action preprocess = () => GameState.OnCardPlayed(showEntity.Entity);

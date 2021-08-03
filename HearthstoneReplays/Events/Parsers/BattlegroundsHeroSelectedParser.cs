@@ -128,7 +128,7 @@ namespace HearthstoneReplays.Events.Parsers
             var heroes = GameState.CurrentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
-                .Where(entity => entity.CardId != NonCollectible.Neutral.BobsTavernTavernBrawl
+                .Where(entity => entity.CardId != NonCollectible.Neutral.BartenderBobTavernBrawl
                     && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
                 .ToList();
             var hero = heroes == null || heroes.Count == 0 ? null : heroes[0];
