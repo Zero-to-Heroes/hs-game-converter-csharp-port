@@ -238,6 +238,7 @@ namespace HearthstoneReplays.Events
                     case Shaman.UniteTheMurlocs: return NonCollectible.Shaman.UnitetheMurlocs_MegafinToken;
                     case Shaman.WhiteEyes: return NonCollectible.Shaman.WhiteEyes_TheStormGuardianToken;
                     case NonCollectible.Shaman.CommandtheElements_TameTheFlamesToken: return NonCollectible.Shaman.CommandtheElements_StormcallerBrukanToken;
+                    case NonCollectible.Warlock.TheDemonSeed_CompleteTheRitualToken: return NonCollectible.Warlock.TheDemonSeed_BlightbornTamsinToken;
                     case Warlock.CurseOfRafaam: return NonCollectible.Warlock.CurseofRafaam_CursedToken;
                     case Warlock.HighPriestessJeklik: return Warlock.HighPriestessJeklik;
                     case Warlock.Impbalming: return NonCollectible.Warlock.Impbalming_WorthlessImpToken;
@@ -256,9 +257,10 @@ namespace HearthstoneReplays.Events
                     case Warrior.DirehornHatchling: return NonCollectible.Warrior.DirehornHatchling_DirehornMatriarchToken;
                     case Warrior.ExploreUngoro: return NonCollectible.Warrior.ExploreUnGoro_ChooseYourPathToken;
                     case Warrior.FirePlumesHeart: return NonCollectible.Warrior.FirePlumesHeart_SulfurasToken;
-                    case Warrior.IronJuggernaut: return NonCollectible.Warrior.IronJuggernaut_BurrowingMineToken;
-                    case Warrior.Wrenchcalibur: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
                     case Warrior.KargathBladefist: return NonCollectible.Warrior.KargathBladefist_KargathPrimeToken;
+                    case Warrior.IronJuggernaut: return NonCollectible.Warrior.IronJuggernaut_BurrowingMineToken;
+                    case NonCollectible.Warrior.RaidtheDocks_SecureTheSuppliesToken: return NonCollectible.Warrior.RaidtheDocks_CapnRokaraToken;
+                    case Warrior.Wrenchcalibur: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
 
                     case Neutral.AncientShade: return NonCollectible.Neutral.AncientShade_AncientCurseToken;
                     case NonCollectible.Neutral.AngryMobGILNEAS: return NonCollectible.Neutral.CrazedMobGILNEAS;
