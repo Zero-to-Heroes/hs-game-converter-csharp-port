@@ -195,12 +195,15 @@ namespace HearthstoneReplays.Events
                     case Mage.ConfectionCyclone: return NonCollectible.Mage.ConfectionCyclone_SugarElementalToken;
                     case Mage.ConjureManaBiscuit: return NonCollectible.Mage.ConjureManaBiscuit_ManaBiscuitToken;
                     case Mage.DeckOfWonders: return NonCollectible.Mage.DeckofWonders_ScrollOfWonderToken;
+                    case Mage.FirstFlame: return NonCollectible.Mage.FirstFlame_SecondFlameToken;
                     case Mage.FlameGeyser: return NonCollectible.Neutral.FireFly_FlameElementalToken;
                     case Mage.ForgottenTorch: return NonCollectible.Mage.ForgottenTorch_RoaringTorchToken;
                     case Mage.GhastlyConjurer: return Mage.MirrorImageLegacy;
+                    case Mage.Ignite: return Mage.Ignite;
                     case Mage.OpenTheWaygate: return NonCollectible.Mage.OpentheWaygate_TimeWarpToken;
                     case Mage.Pyros: return NonCollectible.Mage.Pyros_PyrosToken1;
                     case NonCollectible.Mage.Pyros_PyrosToken1: return NonCollectible.Mage.Pyros_PyrosToken2;
+                    case NonCollectible.Mage.SorcerersGambit_ReachThePortalRoomToken: return NonCollectible.Mage.SorcerersGambit_ArcanistDawngraspToken;
                     case Mage.Rhonin: return Mage.ArcaneMissilesLegacy;
                     case Mage.SteamSurger: return Mage.FlameGeyser;
                     case Mage.VioletSpellwing: return Mage.ArcaneMissilesLegacy;
