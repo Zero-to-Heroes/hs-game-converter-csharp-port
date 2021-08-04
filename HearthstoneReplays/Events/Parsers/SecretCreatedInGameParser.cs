@@ -41,10 +41,9 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
-                var eventName = GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.QUEST) == 1
-                        || GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.SIDEQUEST) == 1
-                    ? "QUEST_CREATED_IN_GAME"
-                    : "SECRET_CREATED_IN_GAME";
+                var eventName = GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.SECRET) == 1
+                    ? "SECRET_CREATED_IN_GAME"
+                    : "QUEST_CREATED_IN_GAME";
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
                 var playerClass = entity.GetPlayerClass();
                 var creatorEntityId = entity.GetTag(GameTag.CREATOR);
@@ -83,9 +82,9 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
                 ? GameState.CurrentEntities[creatorEntityId].CardId
                 : null;
-            var eventName = fullEntity.GetTag(GameTag.QUEST) == 1 || fullEntity.GetTag(GameTag.SIDEQUEST) == 1
-                ? "QUEST_CREATED_IN_GAME"
-                : "SECRET_CREATED_IN_GAME";
+            var eventName = fullEntity.GetTag(GameTag.SECRET) == 1
+                ? "SECRET_CREATED_IN_GAME"
+                : "QUEST_CREATED_IN_GAME";
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 eventName,

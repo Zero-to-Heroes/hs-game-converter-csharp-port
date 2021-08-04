@@ -46,12 +46,9 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
                 var playerClass = entity.GetPlayerClass();
-                var eventName = GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.QUEST) == 1 
-                        || GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.SIDEQUEST) == 1
-                        || GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.QUESTLINE) == 1
-                        || GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.QUESTLINE_PART) == 1
-                    ? "QUEST_PLAYED_FROM_DECK"
-                    : "SECRET_PLAYED_FROM_DECK";
+                var eventName = GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.SECRET) == 1 
+                    ? "SECRET_PLAYED_FROM_DECK"
+                    : "QUEST_PLAYED_FROM_DECK";
                 return new List<GameEventProvider> { GameEventProvider.Create(
                         tagChange.TimeStamp,
                         eventName,
@@ -84,12 +81,9 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
             var playerClass = showEntity.GetPlayerClass();
-            var eventName = showEntity.GetTag(GameTag.QUEST) == 1 
-                || showEntity.GetTag(GameTag.SIDEQUEST) == 1
-                || showEntity.GetTag(GameTag.QUESTLINE) == 1
-                || showEntity.GetTag(GameTag.QUESTLINE_PART) == 1
-                ? "QUEST_PLAYED_FROM_DECK"
-                : "SECRET_PLAYED_FROM_DECK";
+            var eventName = showEntity.GetTag(GameTag.SECRET) == 1 
+                ? "SECRET_PLAYED_FROM_DECK"
+                : "QUEST_PLAYED_FROM_DECK";
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 eventName,
