@@ -30,10 +30,16 @@ namespace HearthstoneReplays.Events.Parsers
                 return false;
             }
 
-            return node.Type == typeof(TagChange)
+            var sigilPlayed = node.Type == typeof(TagChange)
+                && (node.Object as TagChange).Name == (int)GameTag.ZONE
+                && (node.Object as TagChange).Value == (int)Zone.SECRET 
+                && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.SIGIL) == 1
+                && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.HAND;
+            var cardPlayed = node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.PLAY
                 && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.HAND;
+            return sigilPlayed || cardPlayed;
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -111,7 +117,8 @@ namespace HearthstoneReplays.Events.Parsers
             var isOhMyYogg = (showEntity.GetTag(GameTag.LAST_AFFECTED_BY) != -1
                     && GameState.CurrentEntities.ContainsKey(showEntity.GetTag(GameTag.LAST_AFFECTED_BY))
                     && GameState.CurrentEntities[showEntity.GetTag(GameTag.LAST_AFFECTED_BY)].CardId == CardIds.Collectible.Paladin.OhMyYogg);
-            if (showEntity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || isOhMyYogg)
+            var isSigil = showEntity.GetTag(GameTag.ZONE) == (int)Zone.SECRET && showEntity.GetTag(GameTag.SIGIL) == 1;
+            if (showEntity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || isSigil || isOhMyYogg)
             {
                 var parentAction = node.Parent.Object as Parser.ReplayData.GameActions.Action;
                 var cardId = showEntity.CardId;
