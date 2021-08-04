@@ -276,6 +276,7 @@ namespace HearthstoneReplays.Events
                     case Shaman.LadyVashj: return NonCollectible.Shaman.LadyVashj_VashjPrimeToken;
                     case Shaman.UniteTheMurlocs: return NonCollectible.Shaman.UnitetheMurlocs_MegafinToken;
                     case Shaman.WhiteEyes: return NonCollectible.Shaman.WhiteEyes_TheStormGuardianToken;
+                    case NonCollectible.Shaman.CommandtheElements_TameTheFlamesToken: return NonCollectible.Shaman.CommandtheElements_StormcallerBrukanToken;
                     case Warlock.CurseOfRafaam: return NonCollectible.Warlock.CurseofRafaam_CursedToken;
                     case Warlock.HighPriestessJeklik: return Warlock.HighPriestessJeklik;
                     case Warlock.Impbalming: return NonCollectible.Warlock.Impbalming_WorthlessImpToken;
