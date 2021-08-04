@@ -213,11 +213,12 @@ namespace HearthstoneReplays.Events
                     case NonCollectible.Neutral.TheDarkness: return NonCollectible.Neutral.TheDarkness_DarknessCandleToken;
                     case Neutral.WeaselTunneler: return Neutral.WeaselTunneler;
                     case NonCollectible.Neutral.EliseStarseeker_MapToTheGoldenMonkeyToken: return NonCollectible.Neutral.EliseStarseeker_GoldenMonkeyToken;
-                    case Demonhunter.UrzulHorror: return NonCollectible.Demonhunter.UrzulHorror_LostSoulToken;
+                    case NonCollectible.Demonhunter.FinalShowdown_CloseThePortalToken: return NonCollectible.Demonhunter.FinalShowdown_DemonslayerKurtrusToken;
+                    case NonCollectible.Demonhunter.InfernalStrike1: return NonCollectible.Demonhunter.TwinSlice_SecondSliceToken;
                     case Demonhunter.Marrowslicer: return NonCollectible.Warlock.SchoolSpirits_SoulFragmentToken;
                     case Demonhunter.ThrowGlaive: return Collectible.Demonhunter.ThrowGlaive; // TO CHECK
                     case Demonhunter.TwinSlice: return NonCollectible.Demonhunter.TwinSlice_SecondSliceToken;
-                    case NonCollectible.Demonhunter.InfernalStrike1: return NonCollectible.Demonhunter.TwinSlice_SecondSliceToken;
+                    case Demonhunter.UrzulHorror: return NonCollectible.Demonhunter.UrzulHorror_LostSoulToken;
                     case Druid.ArchsporeMsshifn: return NonCollectible.Druid.ArchsporeMsshifn_MsshifnPrimeToken;
                     case Druid.AstralTiger: return Druid.AstralTiger;
                     case Druid.JadeIdol: return Druid.JadeIdol;

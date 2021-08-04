@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HearthstoneReplays.Parser.ReplayData.Meta;
 using Newtonsoft.Json;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -19,6 +20,8 @@ namespace HearthstoneReplays.Events.Parsers
         // When adding an entity to this list, also add the corresponding buff in the map below
         private List<string> validBuffers = new List<string>()
         {
+            CardIds.Collectible.Demonhunter.FinalShowdown,
+            CardIds.NonCollectible.Demonhunter.FinalShowdown_GainMomentumToken,
             CardIds.Collectible.Demonhunter.SkullOfGuldan,
             //CardIds.Collectible.Druid.DreampetalFlorist,
             //CardIds.Collectible.Druid.ImprisonedSatyr, 
@@ -109,6 +112,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         private Dictionary<string, string> buffs = new Dictionary<string, string>()
         {
+            { CardIds.Collectible.Demonhunter.FinalShowdown, CardIds.NonCollectible.Neutral.FinalShowdown_FastMovesEnchantmentToken },
+            { CardIds.NonCollectible.Demonhunter.FinalShowdown_GainMomentumToken, CardIds.NonCollectible.Neutral.FinalShowdown_FastMovesEnchantmentToken },
             { CardIds.Collectible.Demonhunter.SkullOfGuldan, CardIds.NonCollectible.Neutral.SkullofGuldan_EmbracePowerEnchantment },
             { CardIds.Collectible.Druid.PredatoryInstincts, CardIds.NonCollectible.Neutral.PredatoryInstincts_PredatoryInstinctsEnchantment },
             { CardIds.Collectible.Hunter.FreezingTrap, CardIds.NonCollectible.Hunter.FreezingTrap_TrappedEnchantment},
@@ -168,6 +173,11 @@ namespace HearthstoneReplays.Events.Parsers
             CardIds.Collectible.Rogue.EfficientOctoBot,
         };
 
+        private List<string> validTriggerBuffers = new List<string>()
+        {
+            CardIds.NonCollectible.Neutral.FinalShowdown_LudicrousSpeedToken,
+        };
+
         public CardBuffedInHandParser(ParserState ParserState)
         {
             this.ParserState = ParserState;
@@ -183,13 +193,17 @@ namespace HearthstoneReplays.Events.Parsers
         {
             // Use the meta node and not the action so that we can properly sequence events thanks to the 
             // node's index
-            var isCorrectMeta = node.Type == typeof(MetaData) 
+            var isCorrectMeta = node.Type == typeof(MetaData)
                 && ((node.Object as MetaData).Meta == (int)MetaDataType.TARGET
                     // Skull of Gul'dan doesn't have the TARGET info anymore, but the HOLD_DRAWN_CARD effect is only
                     // present when the card is buffed, so maybe we can use that
                     || (node.Object as MetaData).Meta == (int)MetaDataType.HOLD_DRAWN_CARD);
             return isCorrectMeta
-                || (node.Type == typeof(SubSpell) && node.Object != null);
+                || (node.Type == typeof(SubSpell) && node.Object != null)
+                || (node.Type == typeof(Action) 
+                    && (node.Object as Action).Type == (int)BlockType.TRIGGER)
+                    && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
+                    && validTriggerBuffers.Contains(GameState.CurrentEntities[(node.Object as Action).Entity].CardId);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -207,6 +221,10 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return CreateEventProviderForSubSpell(node);
             }
+            else if (node.Type == typeof(Action))
+            {
+                return CreateEventProviderForAction(node);
+            }
             return null;
         }
 
@@ -219,7 +237,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
-            var bufferCardId = BuildSource(subSpell); 
+            var bufferCardId = BuildSource(subSpell, node);
             //Logger.Log("subSpellEntity", subSpellEntity);
             //Logger.Log("bufferCardId", bufferCardId);
             // Because some cards have an animation that reveal the buffed cards, and others don't, 
@@ -267,20 +285,60 @@ namespace HearthstoneReplays.Events.Parsers
                 .ToList();
         }
 
-        private string BuildSource(SubSpell subSpell)
+        private List<GameEventProvider> CreateEventProviderForAction(Node node)
+        {
+            var action = node.Object as Action;
+            var bufferCardId = GameState.CurrentEntities[action.Entity].CardId;
+
+            var parentAction = node.Parent.Object as Action;
+
+            var entitiesBuffedInHand = parentAction.Data
+                .Where(data => data is TagChange)
+                .Select(data => data as TagChange)
+                .Where(data => data.Name == (int)GameTag.ZONE && data.Value == (int)Zone.HAND)
+                .Select(data => GameState.CurrentEntities[data.Entity])
+                .ToList();
+            return entitiesBuffedInHand
+                .Select(entity =>
+                {
+                    return GameEventProvider.Create(
+                        action.TimeStamp,
+                        "CARD_BUFFED_IN_HAND",
+                        GameEvent.CreateProvider(
+                            "CARD_BUFFED_IN_HAND",
+                            entity.CardId,
+                            entity.GetTag(GameTag.CONTROLLER),
+                            entity.Entity,
+                            ParserState,
+                            GameState,
+                            null,
+                            new
+                            {
+                                BuffingEntityCardId = bufferCardId,
+                                BuffCardId = buffs.ContainsKey(bufferCardId) ? buffs[bufferCardId] : null,
+                            }),
+                        true,
+                        node,
+                        // The PowerTaskList doesnt' have an entry for that
+                        true);
+                })
+                .ToList();
+        }
+
+        private string BuildSource(SubSpell subSpell, Node node)
         {
             switch (subSpell.Prefab)
             {
                 case "CS3FX_AegwynnTheGuardian_DrawAndHold_CardBuff_Super":
                     return CardIds.Collectible.Mage.AegwynnTheGuardianCore;
-                default:
-                    if (!GameState.CurrentEntities.ContainsKey(subSpell.Source))
-                    {
-                        return null;
-                    }
-                    var subSpellEntity = GameState.CurrentEntities[subSpell.Source];
-                    return subSpellEntity.CardId;
             }
+
+            if (!GameState.CurrentEntities.ContainsKey(subSpell.Source))
+            {
+                return null;
+            }
+            var subSpellEntity = GameState.CurrentEntities[subSpell.Source];
+            return subSpellEntity.CardId;
         }
 
         private List<GameEventProvider> CreateEventProviderForMeta(Node node)
