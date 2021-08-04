@@ -258,6 +258,8 @@ namespace HearthstoneReplays.Events
                     case Priest.ExcavatedEvil: return Priest.ExcavatedEvil;
                     case Priest.ExtraArms: return NonCollectible.Priest.ExtraArms_MoreArmsToken;
                     case Priest.ReliquaryOfSouls: return NonCollectible.Priest.ReliquaryofSouls_ReliquaryPrimeToken;
+                    case NonCollectible.Priest.SeekGuidance_IlluminateTheVoidToken: return NonCollectible.Priest.SeekGuidance_XyrellaTheSanctifiedToken;
+                    case NonCollectible.Priest.SeekGuidance_XyrellaTheSanctifiedToken: return NonCollectible.Priest.SeekGuidance_PurifiedShardToken;
                     case Rogue.Akama: return NonCollectible.Rogue.Akama_AkamaPrimeToken;
                     case Rogue.BeneathTheGrounds: return NonCollectible.Rogue.BeneaththeGrounds_NerubianAmbushToken;
                     case Rogue.BloodsailFlybooter: return NonCollectible.Rogue.BloodsailFlybooter_SkyPirateToken;
