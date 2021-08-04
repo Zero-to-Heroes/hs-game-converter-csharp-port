@@ -169,50 +169,6 @@ namespace HearthstoneReplays.Events
             {
                 switch (creatorCardId)
                 {
-                    case Neutral.AncientShade: return NonCollectible.Neutral.AncientShade_AncientCurseToken;
-                    case NonCollectible.Neutral.AngryMobGILNEAS: return NonCollectible.Neutral.CrazedMobGILNEAS;
-                    case Neutral.BadLuckAlbatross: return NonCollectible.Neutral.BadLuckAlbatross_AlbatrossToken;
-                    case Neutral.BananaBuffoon: return NonCollectible.Neutral.BananaBuffoon_BananasToken;
-                    case Neutral.BananaVendor: return NonCollectible.Neutral.BananaVendor_BananasToken;
-                    case Neutral.BootyBayBookie: return NonCollectible.Neutral.TheCoinCore;
-                    case Neutral.BurglyBully: return NonCollectible.Neutral.TheCoinCore;
-                    case NonCollectible.Neutral.CoinPouchGILNEAS: return NonCollectible.Neutral.SackOfCoinsGILNEAS;
-                    case NonCollectible.Neutral.SackOfCoinsGILNEAS: return NonCollectible.Neutral.HeftySackOfCoinsGILNEAS;
-                    case NonCollectible.Neutral.CoinPouchTavernBrawl: return NonCollectible.Neutral.SackOfCoinsTavernBrawl;
-                    case NonCollectible.Neutral.SackOfCoinsTavernBrawl: return NonCollectible.Neutral.HeftySackOfCoinsTavernBrawl;
-                    case NonCollectible.Neutral.CreepyCurioGILNEAS: return NonCollectible.Neutral.HauntedCurioGILNEAS;
-                    case NonCollectible.Neutral.HauntedCurioGILNEAS: return NonCollectible.Neutral.CursedCurioGILNEAS;
-                    case Neutral.Doomcaller: return Neutral.Cthun;
-                    case Neutral.EliseTheTrailblazer: return NonCollectible.Neutral.ElisetheTrailblazer_UngoroPackToken;
-                    case Neutral.EliseStarseeker: return NonCollectible.Neutral.EliseStarseeker_MapToTheGoldenMonkeyToken;
-                    case Neutral.FeralGibberer: return Neutral.FeralGibberer;
-                    case Neutral.FireFly: return NonCollectible.Neutral.FireFly_FlameElementalToken;
-                    case Neutral.FishyFlyer: return NonCollectible.Neutral.FishyFlyer_SpectralFlyerToken;
-                    case NonCollectible.Neutral.ForgingQueldelar: return NonCollectible.Neutral.QueldelarTavernBrawl;
-                    case Neutral.HakkarTheSoulflayer: return NonCollectible.Neutral.HakkartheSoulflayer_CorruptedBloodToken;
-                    case Neutral.HoardingDragon: return NonCollectible.Neutral.TheCoinCore;
-                    case Neutral.IgneousElemental: return NonCollectible.Neutral.FireFly_FlameElementalToken;
-                    case Neutral.InfestedGoblin: return NonCollectible.Neutral.WrappedGolem_ScarabToken;
-                    case Neutral.KingMukla: return NonCollectible.Neutral.BananasMissions;
-                    case Neutral.LicensedAdventurer: return NonCollectible.Neutral.TheCoinCore;
-                    case Neutral.MailboxDancer: return NonCollectible.Neutral.TheCoinCore;
-                    case Neutral.Mankrik: return NonCollectible.Neutral.Mankrik_OlgraMankriksWifeToken;
-                    case NonCollectible.Neutral.MilitiaHornGILNEAS: return NonCollectible.Neutral.VeteransMilitiaHornGILNEAS;
-                    case Neutral.MuklaTyrantOfTheVale: return NonCollectible.Neutral.BananasMissions;
-                    case NonCollectible.Neutral.OldMilitiaHornGILNEAS: return NonCollectible.Neutral.MilitiaHornGILNEAS;
-                    case Neutral.PortalKeeper: return NonCollectible.Neutral.PortalKeeper_FelhoundPortalToken;
-                    case Neutral.PortalOverfiend: return NonCollectible.Neutral.PortalKeeper_FelhoundPortalToken;
-                    case Neutral.SeaforiumBomber: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
-                    case Neutral.SmugSenior: return NonCollectible.Neutral.SmugSenior_SpectralSeniorToken;
-                    case Neutral.SneakyDelinquent: return NonCollectible.Neutral.SneakyDelinquent_SpectralDelinquentToken;
-                    case Neutral.SoldierOfFortune: return NonCollectible.Neutral.TheCoinCore;
-                    case Neutral.SparkDrill: return NonCollectible.Neutral.SparkDrill_SparkToken;
-                    case Neutral.SparkEngine: return NonCollectible.Neutral.SparkDrill_SparkToken;
-                    case NonCollectible.Neutral.SurlyMobGILNEAS: return NonCollectible.Neutral.AngryMobGILNEAS;
-                    case NonCollectible.Neutral.TheCandle: return NonCollectible.Neutral.TheCandle;
-                    case NonCollectible.Neutral.TheDarkness: return NonCollectible.Neutral.TheDarkness_DarknessCandleToken;
-                    case Neutral.WeaselTunneler: return Neutral.WeaselTunneler;
-                    case NonCollectible.Neutral.EliseStarseeker_MapToTheGoldenMonkeyToken: return NonCollectible.Neutral.EliseStarseeker_GoldenMonkeyToken;
                     case NonCollectible.Demonhunter.FinalShowdown_CloseThePortalToken: return NonCollectible.Demonhunter.FinalShowdown_DemonslayerKurtrusToken;
                     case NonCollectible.Demonhunter.InfernalStrike1: return NonCollectible.Demonhunter.TwinSlice_SecondSliceToken;
                     case Demonhunter.Marrowslicer: return NonCollectible.Warlock.SchoolSpirits_SoulFragmentToken;
@@ -267,6 +223,7 @@ namespace HearthstoneReplays.Events
                     case Rogue.BoneBaron: return NonCollectible.Neutral.GrimNecromancer_SkeletonToken;
                     case Rogue.DeadlyFork: return NonCollectible.Rogue.DeadlyFork_SharpFork;
                     case Rogue.FaldoreiStrider: return NonCollectible.Rogue.FaldoreiStrider_SpiderAmbushEnchantment;
+                    case Rogue.LoanShark: return NonCollectible.Neutral.TheCoinCore;
                     case Rogue.RazorpetalLasher: return NonCollectible.Rogue.RazorpetalVolley_RazorpetalToken;
                     case Rogue.RazorpetalVolley: return NonCollectible.Rogue.RazorpetalVolley_RazorpetalToken;
                     case Rogue.ShadowOfDeath: return NonCollectible.Rogue.ShadowofDeath_ShadowToken;
@@ -299,6 +256,51 @@ namespace HearthstoneReplays.Events
                     case Warrior.IronJuggernaut: return NonCollectible.Warrior.IronJuggernaut_BurrowingMineToken;
                     case Warrior.Wrenchcalibur: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
                     case Warrior.KargathBladefist: return NonCollectible.Warrior.KargathBladefist_KargathPrimeToken;
+
+                    case Neutral.AncientShade: return NonCollectible.Neutral.AncientShade_AncientCurseToken;
+                    case NonCollectible.Neutral.AngryMobGILNEAS: return NonCollectible.Neutral.CrazedMobGILNEAS;
+                    case Neutral.BadLuckAlbatross: return NonCollectible.Neutral.BadLuckAlbatross_AlbatrossToken;
+                    case Neutral.BananaBuffoon: return NonCollectible.Neutral.BananaBuffoon_BananasToken;
+                    case Neutral.BananaVendor: return NonCollectible.Neutral.BananaVendor_BananasToken;
+                    case Neutral.BootyBayBookie: return NonCollectible.Neutral.TheCoinCore;
+                    case Neutral.BurglyBully: return NonCollectible.Neutral.TheCoinCore;
+                    case NonCollectible.Neutral.CoinPouchGILNEAS: return NonCollectible.Neutral.SackOfCoinsGILNEAS;
+                    case NonCollectible.Neutral.SackOfCoinsGILNEAS: return NonCollectible.Neutral.HeftySackOfCoinsGILNEAS;
+                    case NonCollectible.Neutral.CoinPouchTavernBrawl: return NonCollectible.Neutral.SackOfCoinsTavernBrawl;
+                    case NonCollectible.Neutral.SackOfCoinsTavernBrawl: return NonCollectible.Neutral.HeftySackOfCoinsTavernBrawl;
+                    case NonCollectible.Neutral.CreepyCurioGILNEAS: return NonCollectible.Neutral.HauntedCurioGILNEAS;
+                    case NonCollectible.Neutral.HauntedCurioGILNEAS: return NonCollectible.Neutral.CursedCurioGILNEAS;
+                    case Neutral.Doomcaller: return Neutral.Cthun;
+                    case Neutral.EliseTheTrailblazer: return NonCollectible.Neutral.ElisetheTrailblazer_UngoroPackToken;
+                    case Neutral.EliseStarseeker: return NonCollectible.Neutral.EliseStarseeker_MapToTheGoldenMonkeyToken;
+                    case Neutral.FeralGibberer: return Neutral.FeralGibberer;
+                    case Neutral.FireFly: return NonCollectible.Neutral.FireFly_FlameElementalToken;
+                    case Neutral.FishyFlyer: return NonCollectible.Neutral.FishyFlyer_SpectralFlyerToken;
+                    case NonCollectible.Neutral.ForgingQueldelar: return NonCollectible.Neutral.QueldelarTavernBrawl;
+                    case Neutral.HakkarTheSoulflayer: return NonCollectible.Neutral.HakkartheSoulflayer_CorruptedBloodToken;
+                    case Neutral.HoardingDragon: return NonCollectible.Neutral.TheCoinCore;
+                    case Neutral.IgneousElemental: return NonCollectible.Neutral.FireFly_FlameElementalToken;
+                    case Neutral.InfestedGoblin: return NonCollectible.Neutral.WrappedGolem_ScarabToken;
+                    case Neutral.KingMukla: return NonCollectible.Neutral.BananasMissions;
+                    case Neutral.LicensedAdventurer: return NonCollectible.Neutral.TheCoinCore;
+                    case Neutral.MailboxDancer: return NonCollectible.Neutral.TheCoinCore;
+                    case Neutral.Mankrik: return NonCollectible.Neutral.Mankrik_OlgraMankriksWifeToken;
+                    case NonCollectible.Neutral.MilitiaHornGILNEAS: return NonCollectible.Neutral.VeteransMilitiaHornGILNEAS;
+                    case Neutral.MuklaTyrantOfTheVale: return NonCollectible.Neutral.BananasMissions;
+                    case NonCollectible.Neutral.OldMilitiaHornGILNEAS: return NonCollectible.Neutral.MilitiaHornGILNEAS;
+                    case Neutral.PortalKeeper: return NonCollectible.Neutral.PortalKeeper_FelhoundPortalToken;
+                    case Neutral.PortalOverfiend: return NonCollectible.Neutral.PortalKeeper_FelhoundPortalToken;
+                    case Neutral.SeaforiumBomber: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
+                    case Neutral.SmugSenior: return NonCollectible.Neutral.SmugSenior_SpectralSeniorToken;
+                    case Neutral.SneakyDelinquent: return NonCollectible.Neutral.SneakyDelinquent_SpectralDelinquentToken;
+                    case Neutral.SoldierOfFortune: return NonCollectible.Neutral.TheCoinCore;
+                    case Neutral.SparkDrill: return NonCollectible.Neutral.SparkDrill_SparkToken;
+                    case Neutral.SparkEngine: return NonCollectible.Neutral.SparkDrill_SparkToken;
+                    case NonCollectible.Neutral.SurlyMobGILNEAS: return NonCollectible.Neutral.AngryMobGILNEAS;
+                    case NonCollectible.Neutral.TheCandle: return NonCollectible.Neutral.TheCandle;
+                    case NonCollectible.Neutral.TheDarkness: return NonCollectible.Neutral.TheDarkness_DarknessCandleToken;
+                    case Neutral.WeaselTunneler: return Neutral.WeaselTunneler;
+                    case NonCollectible.Neutral.EliseStarseeker_MapToTheGoldenMonkeyToken: return NonCollectible.Neutral.EliseStarseeker_GoldenMonkeyToken;
 
                     case Neutral.BalefulBanker:
                     case Neutral.DollmasterDorian:
@@ -444,6 +446,30 @@ namespace HearthstoneReplays.Events
                             }
                             var cardId = dreamCardsLeft[0];
                             dreamCardsLeft.RemoveAt(0);
+                            return cardId;
+                        }
+                        return null;
+
+                    case NonCollectible.Rogue.FindtheImposter_SpymasterScabbsToken:
+                        if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+                        {
+                            var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                            var existingEntity = GameState.CurrentEntities[act.Entity];
+                            var gizmosLeft = existingEntity.CardIdsToCreate;
+                            if (gizmosLeft.Count == 0)
+                            {
+                                gizmosLeft = new List<string>()
+                                {
+                                    NonCollectible.Rogue.FindtheImposter_SpyOMaticToken,
+                                    NonCollectible.Rogue.FindtheImposter_FizzflashDistractorToken,
+                                    NonCollectible.Rogue.FindtheImposter_HiddenGyrobladeToken,
+                                    NonCollectible.Rogue.FindtheImposter_UndercoverMoleToken,
+                                    NonCollectible.Rogue.FindtheImposter_NoggenFogGeneratorToken,
+                                };
+                                existingEntity.CardIdsToCreate = gizmosLeft;
+                            }
+                            var cardId = gizmosLeft[0];
+                            gizmosLeft.RemoveAt(0);
                             return cardId;
                         }
                         return null;
