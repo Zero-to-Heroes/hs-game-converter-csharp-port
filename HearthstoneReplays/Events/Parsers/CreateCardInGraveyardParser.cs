@@ -99,9 +99,10 @@ namespace HearthstoneReplays.Events.Parsers
                     () => {
                         // We do it here because of Diligent Notetaker - we have to know the last
                         // card played before assigning anything
-                        var creatorCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
-                        var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, fullEntity, node);
-                        var cardId = Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, fullEntity.CardId);
+                        var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
+                        var creatorCardId = creator?.Item1;
+                        //var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, fullEntity, node);
+                        var cardId = Oracle.PredictCardId(GameState, creatorCardId, creator?.Item2 ?? -1, node, fullEntity.CardId);
                         if (cardId == null && GameState.CurrentTurn == 1 && fullEntity.GetTag(GameTag.ZONE_POSITION) == 5)
                         {
                             var controller = GameState.GetController(fullEntity.GetTag(GameTag.CONTROLLER));

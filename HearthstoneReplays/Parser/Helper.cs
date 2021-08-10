@@ -119,8 +119,21 @@ namespace HearthstoneReplays.Parser
             {
                 return firstPlayer.Id;
             }
-            //Logger.Log("Error: could not get id from player name: " + data
-            //    + " // " + firstPlayer.Name + " // " + secondPlayer.Name, "returning second player as a default");
+
+            // In BG, it happens (under what circumstances?) that the current opponent's name is shown instead of 
+            // the generic Bartender Bob name.
+            // Eg BLOCK_START BlockType=TRIGGER Entity=dobroeytro EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=-1 Target=0 SubOption=-1 TriggerKeyword=TAG_NOT_SET
+            // Sometimes, this is even the first time we even see this name
+            // In this case, we default to the Bartender Bob entity
+            if (state.IsBattlegrounds())
+            {
+                Logger.Log("Could not find player for " + data, "Defaulting to Bartender Bob instead of crashing");
+                var bob = firstPlayer.AccountHi == "0" ? firstPlayer : secondPlayer.AccountHi == "0" ? secondPlayer : null;
+                if (bob != null)
+                {
+                    return bob.Id;
+                }
+            }
             throw new Exception("Could not get id from player name: " + data
                 + " // " + firstPlayer.Name + " // " + firstPlayer.InitialName + " // " + secondPlayer.Name + " // " + secondPlayer.InitialName);
         }

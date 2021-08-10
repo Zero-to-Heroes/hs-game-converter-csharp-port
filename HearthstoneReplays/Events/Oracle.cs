@@ -34,7 +34,7 @@ namespace HearthstoneReplays.Events
             return creatorCardId;
         }
 
-        public static string FindCardCreatorCardId(GameState GameState, FullEntity entity, Node node, bool getLastInfluencedBy = true)
+        public static Tuple<string, int> FindCardCreator(GameState GameState, FullEntity entity, Node node, bool getLastInfluencedBy = true)
         {
             // If the card is already present in the deck, and was not created explicitely, there is no creator
             if (!getLastInfluencedBy
@@ -54,7 +54,7 @@ namespace HearthstoneReplays.Events
             return creatorCardId;
         }
 
-        public static string FindCardCreatorCardId(GameState GameState, ShowEntity entity, Node node)
+        public static Tuple<string, int> FindCardCreatorCardId(GameState GameState, ShowEntity entity, Node node)
         {
             var creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.CREATOR), node);
             if (creatorCardId == null)
@@ -64,32 +64,37 @@ namespace HearthstoneReplays.Events
             return creatorCardId;
         }
 
-        public static int FindCardCreatorEntityId(GameState GameState, FullEntity entity, Node node, bool getLastInfluencedBy = true)
-        {
-            // If the card is already present in the deck, and was not created explicitely, there is no creator
-            if (!getLastInfluencedBy
-                && entity.GetTag(GameTag.CREATOR) == -1
-                && entity.GetTag(GameTag.DISPLAYED_CREATOR) == -1
-                && entity.GetTag(GameTag.CREATOR_DBID) == -1
-                && entity.GetTag(GameTag.ZONE) == (int)Zone.DECK)
-            {
-                return -1;
-            }
+        //public static int FindCardCreatorEntityId(GameState GameState, FullEntity entity, Node node, bool getLastInfluencedBy = true)
+        //{
+        //    // If the card is already present in the deck, and was not created explicitely, there is no creator
+        //    if (!getLastInfluencedBy
+        //        && entity.GetTag(GameTag.CREATOR) == -1
+        //        && entity.GetTag(GameTag.DISPLAYED_CREATOR) == -1
+        //        && entity.GetTag(GameTag.CREATOR_DBID) == -1
+        //        && entity.GetTag(GameTag.ZONE) == (int)Zone.DECK)
+        //    {
+        //        return -1;
+        //    }
 
-            return entity.GetTag(GameTag.CREATOR) != -1 ? entity.GetTag(GameTag.CREATOR) : entity.GetTag(GameTag.DISPLAYED_CREATOR);
-        }
+        //    var creatorFromTags = entity.GetTag(GameTag.CREATOR) != -1 ? entity.GetTag(GameTag.CREATOR) : entity.GetTag(GameTag.DISPLAYED_CREATOR);
+        //    if (creatorFromTags == -1)
+        //    {
 
-        public static int FindCardCreatorEntityId(GameState GameState, ShowEntity entity, Node node)
-        {
-            return entity.GetTag(GameTag.CREATOR) != -1 ? entity.GetTag(GameTag.CREATOR) : entity.GetTag(GameTag.DISPLAYED_CREATOR);
-        }
+        //    }
+        //    return creatorFromTags;
+        //}
 
-        public static string FindCardCreatorCardId(GameState GameState, int creatorTag, Node node)
+        //public static int FindCardCreatorEntityId(GameState GameState, ShowEntity entity, Node node)
+        //{
+        //    return entity.GetTag(GameTag.CREATOR) != -1 ? entity.GetTag(GameTag.CREATOR) : entity.GetTag(GameTag.DISPLAYED_CREATOR);
+        //}
+
+        public static Tuple<string, int> FindCardCreatorCardId(GameState GameState, int creatorTag, Node node)
         {
             if (creatorTag != -1 && GameState.CurrentEntities.ContainsKey(creatorTag))
             {
                 var creator = GameState.CurrentEntities[creatorTag];
-                return creator.CardId;
+                return new Tuple<string, int>(creator?.CardId, creator?.Entity ?? -1);
             }
             if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
             {
@@ -99,7 +104,7 @@ namespace HearthstoneReplays.Events
                     var creator = GameState.CurrentEntities[act.Entity];
                     // Spoecial case for Draem Portals, since for some reasons a Dream Portal the nests the next 
                     // action (which can lead to nested dream portal blocks)
-                    if (creator.CardId == CardIds.NonCollectible.Druid.YseraUnleashed_DreamPortalToken)
+                    if (creator?.CardId == CardIds.NonCollectible.Druid.YseraUnleashed_DreamPortalToken)
                     {
                         if (node.Object.GetType() == typeof(ShowEntity))
                         {
@@ -111,7 +116,7 @@ namespace HearthstoneReplays.Events
                         }
                     }
 
-                    return creator.CardId;
+                    return new Tuple<string, int>(creator?.CardId, creator?.Entity ?? -1);
                 }
             }
             return null;
@@ -122,7 +127,7 @@ namespace HearthstoneReplays.Events
             if (creatorTag != -1 && gameState.CurrentEntities.ContainsKey(creatorTag))
             {
                 var creator = gameState.CurrentEntities[creatorTag];
-                return creator.CardId;
+                return creator?.CardId;
             }
             return null;
         }
@@ -132,20 +137,10 @@ namespace HearthstoneReplays.Events
             if (creatorTag != -1 && GameState.CurrentEntities.ContainsKey(creatorTag))
             {
                 var creator = GameState.CurrentEntities[creatorTag];
-                return creator.CardId;
+                return creator?.CardId;
             }
             return null;
         }
-
-        //public static string FindBuffFromCardId(string buffingEntityCardId)
-        //{
-        //    switch (buffingEntityCardId)
-        //    {
-        //        case Paladin.GrimestreetEnforcer: return NonCollectible.Neutral.GrimestreetEnforcer_SmugglingEnchantment;
-        //        case Paladin.GrimestreetOutfitter: return NonCollectible.Neutral.GrimestreetOutfitter_SmugglingEnchantment;
-        //    }
-        //    return null;
-        //}
 
         public static string PredictCardId(GameState GameState, string creatorCardId, int creatorEntityId, Node node, string inputCardId = null)
         {

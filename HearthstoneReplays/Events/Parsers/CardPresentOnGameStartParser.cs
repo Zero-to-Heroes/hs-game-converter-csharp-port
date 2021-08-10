@@ -48,7 +48,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             var startingHealth = fullEntity.GetTag(GameTag.HEALTH);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
-            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
+            var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CARD_ON_BOARD_AT_GAME_START",
@@ -62,7 +62,7 @@ namespace HearthstoneReplays.Events.Parsers
                     gameState,
                     new {
                         Health = startingHealth,
-                        CreatorCardId = creatorCardId,
+                        CreatorCardId = creator?.Item1,
                     }),
                 true,
                 node) };

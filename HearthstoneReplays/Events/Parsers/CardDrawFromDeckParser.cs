@@ -58,10 +58,10 @@ namespace HearthstoneReplays.Events.Parsers
                     var entityId = tagChange.Entity;
                     // We do it here because of Keymaster Alabaster - we need to know the last card
                     // that has been drawn
-                    var creatorCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, entity, node, false);
+                    var creator = wasInDeck ? null : Oracle.FindCardCreator(GameState, entity, node, false);
                     // Always return this info, and the client has a list of public card creators they are allowed to show
-                    var lastInfluencedByCardId = Oracle.FindCardCreatorCardId(GameState, entity, node);
-                    var predictedCardId = Oracle.PredictCardId(GameState, creatorCardId, -1, node, cardId);
+                    var lastInfluencedByCardId = Oracle.FindCardCreator(GameState, entity, node)?.Item1;
+                    var predictedCardId = Oracle.PredictCardId(GameState, creator?.Item1, -1, node, cardId);
                     GameState.OnCardDrawn(entity.Entity);
                     return new GameEvent
                     {
@@ -76,7 +76,7 @@ namespace HearthstoneReplays.Events.Parsers
                             GameState = gameState,
                             AdditionalProps = new {
                                 IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
-                                CreatorCardId = creatorCardId,
+                                CreatorCardId = creator?.Item1,
                                 LastInfluencedByCardId = lastInfluencedByCardId,
                             }
                         }
@@ -150,8 +150,8 @@ namespace HearthstoneReplays.Events.Parsers
                 () => {
                     // We do it here because of Keymaster Alabaster - we need to know the last card
                     // that has been drawn
-                    var creatorCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, fullEntity, node, false);
-                    var lastInfluencedByCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
+                    var creator = wasInDeck ? null : Oracle.FindCardCreator(GameState, fullEntity, node, false);
+                    var lastInfluencedByCardId = Oracle.FindCardCreator(GameState, fullEntity, node)?.Item1;
                     GameState.OnCardDrawn(fullEntity.Entity);
                     return new GameEvent
                     {
@@ -166,7 +166,7 @@ namespace HearthstoneReplays.Events.Parsers
                             GameState = gameState,
                             AdditionalProps = new {
                                 IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1 || fullEntity.GetTag(GameTag.PREMIUM) == 1,
-                                CreatorCardId = creatorCardId,
+                                CreatorCardId = creator?.Item1,
                                 LastInfluencedByCardId = lastInfluencedByCardId,
                             }
                         }

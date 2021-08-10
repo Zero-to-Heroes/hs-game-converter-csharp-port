@@ -49,9 +49,8 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
-            var previousZone = entity.GetTag(GameTag.ZONE) == -1 ? 0 : entity.GetTag(GameTag.ZONE);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
-            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity, node);
+            var creator = Oracle.FindCardCreator(GameState, entity, node);
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
@@ -65,7 +64,7 @@ namespace HearthstoneReplays.Events.Parsers
                         GameState,
                         gameState,
                         new {
-                            CreatorCardId = creatorCardId, // Used when there is no cardId, so we can show at least the card that created it
+                            CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
                         }),
                     true,
@@ -89,11 +88,10 @@ namespace HearthstoneReplays.Events.Parsers
         {
             ShowEntity showEntity = node.Object as ShowEntity;
             //Logger.Log("Will add creator " + showEntity.GetTag(GameTag.CREATOR) + " //" + showEntity.GetTag(GameTag.DISPLAYED_CREATOR), "");
-            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
-            var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, showEntity, node);
-            var cardId = Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, showEntity.CardId);
+            var creator = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
+            //var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, showEntity, node);
+            var cardId = Oracle.PredictCardId(GameState, creator.Item1, creator.Item2, node, showEntity.CardId);
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
-            var previousZone = GameState.CurrentEntities[showEntity.Entity].GetTag(GameTag.ZONE);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
             var entity = GameState.CurrentEntities[showEntity.Entity];
             // Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, showEntity.CardId);
@@ -109,7 +107,7 @@ namespace HearthstoneReplays.Events.Parsers
                         GameState,
                         gameState,
                         new {
-                            CreatorCardId = creatorCardId, // Used when there is no cardId, so we can show at least the card that created it
+                            CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1
                         }),
                     true,
@@ -132,9 +130,10 @@ namespace HearthstoneReplays.Events.Parsers
                     () => {
                         // We do it here because of Diligent Notetaker - we have to know the last
                         // card played before assigning anything
-                        var creatorCardId = Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
-                        var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, fullEntity, node);
-                        var cardId = Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, fullEntity.CardId);
+                        var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
+                        var creatorCardId = creator?.Item1;
+                        //var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, fullEntity, node);
+                        var cardId = Oracle.PredictCardId(GameState, creatorCardId, creator?.Item2 ?? -1, node, fullEntity.CardId);
                         if (cardId == null && GameState.CurrentTurn == 1 && fullEntity.GetTag(GameTag.ZONE_POSITION) == 5)
                         {
                             var controller = GameState.GetController(fullEntity.GetTag(GameTag.CONTROLLER));
@@ -144,8 +143,8 @@ namespace HearthstoneReplays.Events.Parsers
                                 creatorCardId = "GAME_005";
                             }
                         }
-                        var buffingCardEntityCardId = Oracle.GetBuffingCardCardId(creatorEntityId, creatorCardId);
-                        var buffCardId = Oracle.GetBuffCardId(creatorEntityId, creatorCardId);
+                        var buffingCardEntityCardId = Oracle.GetBuffingCardCardId(creator?.Item2 ?? -1, creatorCardId);
+                        var buffCardId = Oracle.GetBuffCardId(creator?.Item2 ?? -1, creatorCardId);
                         //var a = "t";
                         //Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
                         //Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, fullEntity.CardId);

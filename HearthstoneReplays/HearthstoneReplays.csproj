@@ -116,6 +116,7 @@
     <Compile Include="Events\Parsers\BattlegroundsRerollParser.cs" />
     <Compile Include="Events\Parsers\CopiedFromEntityIdParser.cs" />
     <Compile Include="Events\Parsers\CardUpdatedInDeckParser.cs" />
+    <Compile Include="Events\Parsers\LinkedEntityParser.cs" />
     <Compile Include="Events\Parsers\MindrenderIlluciaParser.cs" />
     <Compile Include="Events\Parsers\EntityUpdateParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsHeroKilledParser.cs" />
