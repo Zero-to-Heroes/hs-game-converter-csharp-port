@@ -342,12 +342,12 @@ namespace HearthstoneReplays.Events
                         eventQueue.RemoveAt(0);
 
 
-                        if (ParserState.IsBattlegrounds() && !provider.AnimationReady && provider.SupplyGameEvent()?.Type != null && provider.SupplyGameEvent()?.Type != "DAMAGE" && !DevMode)
-                        {
-                            //Logger.Log("First event queue animationReady", animationReady.Any(p => p.AnimationReady));
-                            Logger.Log("First event queue animationReady event " + animationReady.FirstOrDefault()?.Timestamp + " // " + animationReady.FirstOrDefault()?.CreationLogLine,
-                                "Current event provider " + provider.SupplyGameEvent()?.Type + " // " + provider.Timestamp + " // " + provider.CreationLogLine);
-                        }
+                        //if (ParserState.IsBattlegrounds() && !provider.AnimationReady && provider.SupplyGameEvent()?.Type != null && provider.SupplyGameEvent()?.Type != "DAMAGE" && !DevMode)
+                        //{
+                        //    //Logger.Log("First event queue animationReady", animationReady.Any(p => p.AnimationReady));
+                        //    Logger.Log("First event queue animationReady event " + animationReady.FirstOrDefault()?.Timestamp + " // " + animationReady.FirstOrDefault()?.CreationLogLine,
+                        //        "Current event provider " + provider.SupplyGameEvent()?.Type + " // " + provider.Timestamp + " // " + provider.CreationLogLine);
+                        //}
 
                         //if (provider.debug)
                         //{
@@ -591,6 +591,7 @@ namespace HearthstoneReplays.Events
                 new WhizbangDeckParser(ParserState),
                 new CopiedFromEntityIdParser(ParserState),
                 new BattlegroundsTavernPrizesParser(ParserState),
+                new LinkedEntityParser(ParserState),
 
                 new CreateCardInGraveyardParser(ParserState),
                 new MindrenderIlluciaParser(ParserState),
