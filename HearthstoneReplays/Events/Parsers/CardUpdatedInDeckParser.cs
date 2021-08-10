@@ -5,6 +5,9 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using HearthstoneReplays.Parser.ReplayData.Meta;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
+using System.Linq;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -26,10 +29,14 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            return node.Type == typeof(ShowEntity)
+            var appliesOnShow = node.Type == typeof(ShowEntity)
                 && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.DECK
                 && GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
                 && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) == (int)Zone.DECK;
+            var appliesForAction = node.Type == typeof(Action)
+                && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
+                && GameState.CurrentEntities[(node.Object as Action).Entity].CardId == CardIds.NonCollectible.Rogue.FindtheImposter_SpyOMaticToken;
+            return appliesOnShow || appliesForAction;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -39,6 +46,54 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
+            if (node.Type == typeof(ShowEntity))
+            {
+                return CreateFromShowEntity(node);
+            }
+            else if (node.Type == typeof(Action))
+            {
+                return CreateFromAction(node);
+            }
+            return null;
+        }
+
+        private List<GameEventProvider> CreateFromAction(Node node)
+        {
+            var action = node.Object as Action;
+            var changedEntities = action.Data
+                .Where(data => data.GetType() == typeof(MetaData))
+                .Select(data => data as MetaData)
+                .Where(meta => meta.Meta == (int)MetaDataType.HISTORY_TARGET)
+                .SelectMany(meta => meta.MetaInfo)
+                .ToList();
+
+            return changedEntities
+                .Select(info =>
+                {
+                    var entityId = info.Entity;
+                    var entity = GameState.CurrentEntities[entityId];
+                    return GameEventProvider.Create(
+                        info.TimeStamp,
+                        "CARD_CHANGED_IN_DECK",
+                        GameEvent.CreateProvider(
+                            "CARD_CHANGED_IN_DECK",
+                            entity.CardId,
+                            entity.GetController(),
+                            entity.Id,
+                            ParserState,
+                            GameState,
+                            null,
+                            new
+                            {
+                                LastInfluencedByCardId = GameState.CurrentEntities[(node.Object as Action).Entity].CardId,
+                            }),
+                        true,
+                        node);
+                })
+                .ToList();
+        }
+
+        private List<GameEventProvider> CreateFromShowEntity(Node node) { 
             var showEntity = node.Object as ShowEntity;
             // Cards here are just created to show the info, then put aside. We don't want to 
             // show them in the "Other" zone, so we just ignore them

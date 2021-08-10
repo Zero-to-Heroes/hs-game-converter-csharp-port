@@ -26,9 +26,11 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var isCorrectType = node.Type == typeof(FullEntity);
             return node.Type == typeof(FullEntity)
-                && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SETASIDE
-                && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.MINION;
-                //&& !ParserState.ReconnectionOngoing;
+                && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SETASIDE;
+                // I don't remember why the card type was restricted to minions
+                // But it makes sense to have it for all card types. In the case of Spy-o-matic, the
+                // spells that are discovered otherwise don't appear in the deck
+                //&& (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.MINION;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
