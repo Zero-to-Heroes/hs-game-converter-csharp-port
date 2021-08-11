@@ -175,6 +175,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         private List<string> validTriggerBuffers = new List<string>()
         {
+            CardIds.Collectible.Neutral.FarWatchPost,
             CardIds.NonCollectible.Neutral.FinalShowdown_LudicrousSpeedToken,
             CardIds.NonCollectible.Neutral.SI7Skulker_SpyStuffEnchantment,
         };
