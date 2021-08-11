@@ -46,6 +46,16 @@ namespace HearthstoneReplays.Events.Parsers
                 cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node, cardId);
             }
 
+            // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 
+            // have a special rule
+            var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
+            var isOpponentMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == (int)Step.BEGIN_MULLIGAN
+                && entity.GetController() == ParserState.OpponentPlayer.PlayerId;
+            if ((isOpponentMulligan || isBeforeMulligan) && cardId == CardIds.Collectible.Neutral.EncumberedPackMule)
+            {
+                cardId = "";
+            }
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 zoneInt == (int)Zone.SETASIDE ? "CREATE_CARD_IN_DECK" : "CARD_BACK_TO_DECK",

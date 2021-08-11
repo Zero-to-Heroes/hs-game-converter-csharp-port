@@ -51,6 +51,14 @@ namespace HearthstoneReplays.Events.Parsers
             // If we compute this when triggering the event, we will get a "gift" icon because the 
             // card is already in hand
             var wasInDeck = entity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
+            // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 
+            // have a special rule
+            var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
+            if (isBeforeMulligan && cardId == CardIds.Collectible.Neutral.EncumberedPackMule)
+            {
+                return null;
+            }
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -63,12 +71,13 @@ namespace HearthstoneReplays.Events.Parsers
                     var lastInfluencedByCardId = Oracle.FindCardCreator(GameState, entity, node)?.Item1;
                     var predictedCardId = Oracle.PredictCardId(GameState, creator?.Item1, -1, node, cardId);
                     GameState.OnCardDrawn(entity.Entity);
+                    var finalCardId = cardId != null && cardId.Length > 0 ? cardId : predictedCardId;
                     return new GameEvent
                     {
                         Type =  "CARD_DRAW_FROM_DECK",
                         Value = new
                         {
-                            CardId = cardId != null && cardId.Length > 0 ? cardId : predictedCardId,
+                            CardId = finalCardId,
                             ControllerId = controllerId,
                             LocalPlayer = ParserState.LocalPlayer,
                             OpponentPlayer = ParserState.OpponentPlayer,
@@ -106,6 +115,14 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[showEntity.Entity];
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
             var wasInDeck = entity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
+            // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 
+            // have a special rule
+            var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
+            if (isBeforeMulligan && cardId == CardIds.Collectible.Neutral.EncumberedPackMule)
+            {
+                return null;
+            }
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -144,6 +161,14 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
             var wasInDeck = fullEntity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
+            // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 
+            // have a special rule
+            var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
+            if (isBeforeMulligan && cardId == CardIds.Collectible.Neutral.EncumberedPackMule)
+            {
+                cardId = "";
+            }
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",

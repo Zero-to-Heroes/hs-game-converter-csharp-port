@@ -103,6 +103,14 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var cardId = showEntity.CardId;
+            // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 
+            // have a special rule
+            var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
+            if (isBeforeMulligan && cardId == CardIds.Collectible.Neutral.EncumberedPackMule)
+            {
+                return null;
+            }
+
             var entity = GameState.CurrentEntities[showEntity.Entity];
             var controllerId = entity.GetTag(GameTag.CONTROLLER);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
