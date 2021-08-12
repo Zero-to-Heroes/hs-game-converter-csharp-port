@@ -214,6 +214,11 @@ namespace HearthstoneReplays.Events.Parsers
                 }
                 var result = board.Select(entity => AddEchantments(GameState.CurrentEntities, entity)).ToList();
 
+                if (result.Count > 7)
+                {
+                    Logger.Log("Too many entities on board", "");
+                }
+
                 return new PlayerBoard()
                 {
                     Hero = hero,

@@ -36,6 +36,12 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
+            // That can happen when starting to spectate a BG game partway through
+            if (!GameState.CurrentEntities.ContainsKey(tagChange.Value))
+            {
+                return null;
+            }
+
             var linkedEntity = GameState.CurrentEntities[tagChange.Value];
             // In the case of Spy-o-matic, the active player discovers a card, and so the new entities are 
             // attached to the active player. We in fact want to have the controllerId be the controller 
