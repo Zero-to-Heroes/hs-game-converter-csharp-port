@@ -1,12 +1,10 @@
 ﻿using HearthstoneReplays.Parser;
-using HearthstoneReplays.Parser.ReplayData;
-using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System.Linq;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using static HearthstoneReplays.Events.CardIds;
-using System;
+using HearthstoneReplays.Parser.ReplayData.GameActions;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -32,15 +30,17 @@ namespace HearthstoneReplays.Events.Parsers
                     || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                 && GameState.GetGameEntity().GetTag(GameTag.TURN) % 2 == 0
                 && GameState.BgsCurrentBattleOpponent == null
-                && node.Type == typeof(Parser.ReplayData.GameActions.Action)
-                && ((node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.ATTACK
-                    || (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.DEATHS
+                && node.Type == typeof(Action)
+                && ((node.Object as Action).Type == (int)BlockType.ATTACK
+                    || (node.Object as Action).Type == (int)BlockType.DEATHS
                     // Basically trigger as soon as we can, and just leave some room for the Lich King's hero power
                     // Here we assume that hero powers are triggered first, before Start of Combat events
                     // The issue is if two hero powers (including the Lich King) compete, which is the case when Al'Akir triggers first for instance
-                    || ((node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER
+                    || ((node.Object as Action).Type == (int)BlockType.TRIGGER
                         && !COMPETING_BATTLE_START_HERO_POWERS.Contains(
-                            GameState.CurrentEntities[(node.Object as Parser.ReplayData.GameActions.Action).Entity].CardId))
+                            GameState.CurrentEntities[(node.Object as Action).Entity].CardId))
+                        && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
+                        && GameState.CurrentEntities[(node.Object as Action).Entity].CardId == CardIds.NonCollectible.Neutral.Baconshop8playerenchantTavernBrawl
                     );
         }
 
@@ -64,11 +64,14 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return null;
             }
+
             var entity = GameState.CurrentEntities[parentAction.Entity];
             if (entity.CardId != "TB_BaconShop_8P_PlayerE")
             {
                 return null;
             }
+
+
 
             //var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
             var opponent = ParserState.OpponentPlayer;
@@ -254,6 +257,7 @@ namespace HearthstoneReplays.Events.Parsers
             };
             return result;
         }
+
 
         internal class PlayerBoard
         {

@@ -127,7 +127,7 @@ namespace HearthstoneReplays.Parser
             // In this case, we default to the Bartender Bob entity
             if (state.IsBattlegrounds())
             {
-                Logger.Log("Could not find player for " + data, "Defaulting to Bartender Bob instead of crashing");
+                //Logger.Log("Could not find player for " + data, "Defaulting to Bartender Bob instead of crashing");
                 var bob = firstPlayer.AccountHi == "0" ? firstPlayer : secondPlayer.AccountHi == "0" ? secondPlayer : null;
                 if (bob != null)
                 {
