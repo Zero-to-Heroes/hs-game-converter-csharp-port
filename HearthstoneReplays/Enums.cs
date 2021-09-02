@@ -960,7 +960,10 @@ namespace HearthstoneReplays.Enums
         BACON_SKIN_PARENT_ID = 2039,
         IS_USING_TRADE_OPTION = 2045,
         BACON_BOB_SKIN = 2049,
+        BACON_COMBAT_DAMAGE_CAP = 2089,
         REFRESH = 2104,
+        AVENGE = 2129,
+        BACON_STARSTOBOUNCEOFF = 2155,
     }
 
     public enum GameType
