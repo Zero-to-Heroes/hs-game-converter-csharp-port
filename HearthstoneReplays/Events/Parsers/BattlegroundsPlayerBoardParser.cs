@@ -26,22 +26,28 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                    || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
                 && GameState.GetGameEntity().GetTag(GameTag.TURN) % 2 == 0
                 && GameState.BgsCurrentBattleOpponent == null
                 && node.Type == typeof(Action)
                 && ((node.Object as Action).Type == (int)BlockType.ATTACK
-                    || (node.Object as Action).Type == (int)BlockType.DEATHS
-                    // Basically trigger as soon as we can, and just leave some room for the Lich King's hero power
-                    // Here we assume that hero powers are triggered first, before Start of Combat events
-                    // The issue is if two hero powers (including the Lich King) compete, which is the case when Al'Akir triggers first for instance
-                    || ((node.Object as Action).Type == (int)BlockType.TRIGGER
-                        && !COMPETING_BATTLE_START_HERO_POWERS.Contains(
-                            GameState.CurrentEntities[(node.Object as Action).Entity].CardId))
-                        && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
-                        && GameState.CurrentEntities[(node.Object as Action).Entity].CardId == CardIds.NonCollectible.Neutral.Baconshop8playerenchantTavernBrawl
-                    );
+                        || (node.Object as Action).Type == (int)BlockType.DEATHS
+                        // Basically trigger as soon as we can, and just leave some room for the Lich King's hero power
+                        // Here we assume that hero powers are triggered first, before Start of Combat events
+                        // The issue is if two hero powers (including the Lich King) compete, which is the case when Al'Akir triggers first for instance
+                        || ((node.Object as Action).Type == (int)BlockType.TRIGGER
+                                && !COMPETING_BATTLE_START_HERO_POWERS.Contains(GameState.CurrentEntities[(node.Object as Action).Entity].CardId)
+                                && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
+                                && (
+                                    // This was introduced to wait until the damage is done to each hero before sending the board state. However,
+                                    // forcing the entity to be the root entity means that sometimes we send the info way too late.
+                                    GameState.CurrentEntities[(node.Object as Action).Entity].CardId == CardIds.NonCollectible.Neutral.Baconshop8playerenchantTavernBrawl
+                                    // This condition has been introduced to solve an issue when the Wingmen hero power triggers. In that case, the parent action of attacks
+                                    // is not a TB_BaconShop_8P_PlayerE, but the hero power action itself.
+                                    || GameState.CurrentEntities[(node.Object as Action).Entity].GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER
+                                   )
+                            )
+                   );
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -77,8 +83,8 @@ namespace HearthstoneReplays.Events.Parsers
             var opponent = ParserState.OpponentPlayer;
             var player = ParserState.LocalPlayer;
 
-            var playerBoard = CreateProviderFromAction(player, false, player, node);
             var opponentBoard = CreateProviderFromAction(opponent, true, player, node);
+            var playerBoard = CreateProviderFromAction(player, false, player, node);
 
             GameState.BgsHasSentNextOpponent = false;
 
