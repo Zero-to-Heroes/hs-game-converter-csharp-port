@@ -258,18 +258,27 @@ namespace HearthstoneReplays.Events
                     case Warrior.Wrenchcalibur: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
 
                     case Neutral.AncientShade: return NonCollectible.Neutral.AncientShade_AncientCurseToken;
-                    case NonCollectible.Neutral.AngryMobGILNEAS: return NonCollectible.Neutral.CrazedMobGILNEAS;
                     case Neutral.BadLuckAlbatross: return NonCollectible.Neutral.BadLuckAlbatross_AlbatrossToken;
                     case Neutral.BananaBuffoon: return NonCollectible.Neutral.BananaBuffoon_BananasToken;
                     case Neutral.BananaVendor: return NonCollectible.Neutral.BananaVendor_BananasToken;
                     case Neutral.BootyBayBookie: return NonCollectible.Neutral.TheCoinCore;
                     case Neutral.BurglyBully: return NonCollectible.Neutral.TheCoinCore;
+                    case NonCollectible.Neutral.SurlyMobGILNEAS: return NonCollectible.Neutral.AngryMobGILNEAS;
+                    case NonCollectible.Neutral.AngryMobGILNEAS: return NonCollectible.Neutral.CrazedMobGILNEAS;
+                    case NonCollectible.Neutral.SurlyMobTavernBrawl: return NonCollectible.Neutral.AngryMobTavernBrawl;
+                    case NonCollectible.Neutral.AngryMobTavernBrawl: return NonCollectible.Neutral.CrazedMobTavernBrawl;
                     case NonCollectible.Neutral.CoinPouchGILNEAS: return NonCollectible.Neutral.SackOfCoinsGILNEAS;
                     case NonCollectible.Neutral.SackOfCoinsGILNEAS: return NonCollectible.Neutral.HeftySackOfCoinsGILNEAS;
                     case NonCollectible.Neutral.CoinPouchTavernBrawl: return NonCollectible.Neutral.SackOfCoinsTavernBrawl;
                     case NonCollectible.Neutral.SackOfCoinsTavernBrawl: return NonCollectible.Neutral.HeftySackOfCoinsTavernBrawl;
                     case NonCollectible.Neutral.CreepyCurioGILNEAS: return NonCollectible.Neutral.HauntedCurioGILNEAS;
                     case NonCollectible.Neutral.HauntedCurioGILNEAS: return NonCollectible.Neutral.CursedCurioGILNEAS;
+                    case NonCollectible.Neutral.CreepyCurioTavernBrawl: return NonCollectible.Neutral.HauntedCurioTavernBrawl;
+                    case NonCollectible.Neutral.HauntedCurioTavernBrawl: return NonCollectible.Neutral.CursedCurioTavernBrawl;
+                    case NonCollectible.Neutral.MilitiaHornGILNEAS: return NonCollectible.Neutral.VeteransMilitiaHornGILNEAS;
+                    case NonCollectible.Neutral.OldMilitiaHornGILNEAS: return NonCollectible.Neutral.MilitiaHornGILNEAS;
+                    case NonCollectible.Neutral.MilitiaHornTavernBrawl: return NonCollectible.Neutral.VeteransMilitiaHornTavernBrawl;
+                    case NonCollectible.Neutral.OldMilitiaHornTavernBrawl: return NonCollectible.Neutral.MilitiaHornTavernBrawl;
                     case Neutral.Doomcaller: return Neutral.Cthun;
                     case Neutral.EliseTheTrailblazer: return NonCollectible.Neutral.ElisetheTrailblazer_UngoroPackToken;
                     case Neutral.EliseStarseeker: return NonCollectible.Neutral.EliseStarseeker_MapToTheGoldenMonkeyToken;
@@ -285,9 +294,7 @@ namespace HearthstoneReplays.Events
                     case Neutral.LicensedAdventurer: return NonCollectible.Neutral.TheCoinCore;
                     case Neutral.MailboxDancer: return NonCollectible.Neutral.TheCoinCore;
                     case Neutral.Mankrik: return NonCollectible.Neutral.Mankrik_OlgraMankriksWifeToken;
-                    case NonCollectible.Neutral.MilitiaHornGILNEAS: return NonCollectible.Neutral.VeteransMilitiaHornGILNEAS;
                     case Neutral.MuklaTyrantOfTheVale: return NonCollectible.Neutral.BananasMissions;
-                    case NonCollectible.Neutral.OldMilitiaHornGILNEAS: return NonCollectible.Neutral.MilitiaHornGILNEAS;
                     case Neutral.PortalKeeper: return NonCollectible.Neutral.PortalKeeper_FelhoundPortalToken;
                     case Neutral.PortalOverfiend: return NonCollectible.Neutral.PortalKeeper_FelhoundPortalToken;
                     case Neutral.SeaforiumBomber: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
@@ -296,7 +303,6 @@ namespace HearthstoneReplays.Events
                     case Neutral.SoldierOfFortune: return NonCollectible.Neutral.TheCoinCore;
                     case Neutral.SparkDrill: return NonCollectible.Neutral.SparkDrill_SparkToken;
                     case Neutral.SparkEngine: return NonCollectible.Neutral.SparkDrill_SparkToken;
-                    case NonCollectible.Neutral.SurlyMobGILNEAS: return NonCollectible.Neutral.AngryMobGILNEAS;
                     case NonCollectible.Neutral.TheCandle: return NonCollectible.Neutral.TheCandle;
                     case NonCollectible.Neutral.TheDarkness: return NonCollectible.Neutral.TheDarkness_DarknessCandleToken;
                     case Neutral.WeaselTunneler: return Neutral.WeaselTunneler;
