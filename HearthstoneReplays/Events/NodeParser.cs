@@ -29,8 +29,7 @@ namespace HearthstoneReplays.Events
         public NodeParser()
         {
             eventQueue = new List<GameEventProvider>();
-            // Check the queue every 100 ms
-            timer = new Timer(100);
+            timer = new Timer(200);
             timer.Elapsed += ProcessGameEventQueue;
             timer.AutoReset = true;
             timer.Enabled = true;
@@ -81,7 +80,7 @@ namespace HearthstoneReplays.Events
                         List<GameEventProvider> providers = parser.CreateGameEventProviderFromNew(node);
                         if (providers != null)
                         {
-                            EnqueueGameEvent(providers.Where(provider => provider != null).ToList());
+                            EnqueueGameEvent(providers);
                         }
                     }
                 }
@@ -107,7 +106,7 @@ namespace HearthstoneReplays.Events
                     List<GameEventProvider> providers = parser.CreateGameEventProviderFromClose(node);
                     if (providers != null && providers.Count > 0)
                     {
-                        EnqueueGameEvent(providers.Where(provider => provider != null).ToList());
+                        EnqueueGameEvent(providers);
                     }
                 }
             }
@@ -117,6 +116,7 @@ namespace HearthstoneReplays.Events
 
         public void EnqueueGameEvent(List<GameEventProvider> providers)
         {
+            providers = providers.Where(provider => provider != null).ToList();
             //Logger.Log("[csharp] Enqueueing game event", providers != null ? providers[0].CreationLogLine : null);
             lock (listLock)
             {

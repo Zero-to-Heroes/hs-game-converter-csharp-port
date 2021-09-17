@@ -36,7 +36,6 @@ namespace HearthstoneReplays.Events.Parsers
             if (tagChange.Value == (int)PlayState.WON)
             {
                 var winner = (PlayerEntity)ParserState.GetEntity(tagChange.Entity);
-                var gameStateReport = GameState.BuildGameStateReport();
                 //Logger.Log("Creating event provider for WinnerParser", node.CreationLogLine);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                        tagChange.TimeStamp,
@@ -51,7 +50,6 @@ namespace HearthstoneReplays.Events.Parsers
                                     Winner = winner,
                                     LocalPlayer = ParserState.LocalPlayer,
                                     OpponentPlayer = ParserState.OpponentPlayer,
-                                    GameStateReport = gameStateReport,
                                 }
                             };
                        },

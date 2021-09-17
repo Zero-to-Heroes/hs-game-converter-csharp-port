@@ -147,6 +147,9 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             {
                 newTags.Add(new Tag { Name = oldTag.Name, Value = oldTag.Value });
             }
+            // We need to do a copy because this otherwise we could mutate the entity from the log parser
+            // Why is this a problem again? Is there a disconnect between the time the entity is
+            // modified in the logs parser and when it's modified here?
             var fullEntity = new FullEntity { CardId = entity.CardId, Id = entity.Id, Tags = newTags, TimeStamp = entity.TimeStamp };
             CurrentEntities.Add(entity.Id, fullEntity);
         }
