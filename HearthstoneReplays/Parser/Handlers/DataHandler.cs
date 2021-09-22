@@ -34,7 +34,10 @@ namespace HearthstoneReplays.Parser.Handlers
             bool isApplied = false;
             isApplied = isApplied || HandleSpectator(timestamp, data, state);
 
-            if (state.Ended)
+            // When catching up with some log lines, sometimes we get some leftover from a previous game.
+            // Only checking the state does not account for these, and parsing fails because there is no
+            // game to parse, and Reset() has not been called to initialize everything
+            if (state.Ended || state.CurrentGame == null)
             {
                 return;
             }

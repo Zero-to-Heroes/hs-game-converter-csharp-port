@@ -37,8 +37,8 @@ namespace HearthstoneReplayTests
                 //var shouldLog = gameEvent.Type == "DAMAGE";
                 if (shouldLog)
                 {
-                    //var serialized = JsonConvert.SerializeObject(gameEvent);
-                    var serialized = JsonConvert.SerializeObject(gameEvent, serializerSettings);
+                    var serialized = JsonConvert.SerializeObject(gameEvent);
+                    //var serialized = JsonConvert.SerializeObject(gameEvent, serializerSettings);
                     //if (serialized.Contains("\"TargetCardId\":\"TB_BaconShop_HERO_53\""))
                     //{
                     Console.WriteLine(serialized + ",");

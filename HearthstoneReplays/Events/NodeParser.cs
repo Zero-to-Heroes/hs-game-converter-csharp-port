@@ -29,7 +29,7 @@ namespace HearthstoneReplays.Events
         public NodeParser()
         {
             eventQueue = new List<GameEventProvider>();
-            timer = new Timer(200);
+            timer = new Timer(100);
             timer.Elapsed += ProcessGameEventQueue;
             timer.AutoReset = true;
             timer.Enabled = true;
@@ -175,45 +175,21 @@ namespace HearthstoneReplays.Events
         {
             lock (listLock)
             {
-                //Logger.Log("Acquierd list lock in receiveanimationlog", "");
-                //if (data.Contains("BOT_535"))
-                //{
-                //    Logger.Log("[csharp] ready for animation processing ", data);
-                //    eventQueue.ForEach(provider => Logger.Log("\t[csharp] In queue", provider.CreationLogLine));
-                //}
                 if (eventQueue.Count > 0)
                 {
                     var readyProviders = new List<string>();
                     foreach (GameEventProvider provider in eventQueue)
                     {
-                        //var debug = data.Contains("BOT_535") && provider.CreationLogLine.Contains("BOT_535");
-                        //provider.debug = debug;
-                        //if (debug)
-                        //{
-                        //    Logger.Log("[csharp] Will debuggg provider", provider.CreationLogLine);
-                        //}
                         // Some events are recurring and have the same activation line (mostly those linked 
                         // to the game entity), so we do this to not mark several animations as ready
                         // from the same power log
                         if (readyProviders.Contains(provider.EventName))
                         {
-                            //if (debug)
-                            //{
-                            //    Logger.Log("[csharp] animation already ready ", readyProviders);
-                            //}
                             continue;
                         }
                         var animationNowReady = provider.ReceiveAnimationLog(data, ParserState);
-                        //if (debug)
-                        //{
-                        //    Logger.Log("[csharp] animationNowReady", animationNowReady);
-                        //}
                         if (animationNowReady)
                         {
-                            //if (data.Contains("BOT_535"))
-                            //{
-                            //    Logger.Log("[csharp] animation ready " + provider.EventName, data);
-                            //}
                             readyProviders.Add(provider.EventName);
                         }
                     }

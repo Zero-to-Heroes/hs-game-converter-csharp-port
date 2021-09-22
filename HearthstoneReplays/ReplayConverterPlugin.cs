@@ -54,8 +54,8 @@ namespace HearthstoneReplays
 		public void initRealtimeLogConversion(Action<object> callback)
 		{
 			Logger.Log = onGlobalEvent;
-			GameEventHandler.EventProvider = (GameEvent gameEvent) => onGameEvent(JsonConvert.SerializeObject(gameEvent));
-			parser = new ReplayParser();
+            GameEventHandler.EventProvider = (GameEvent gameEvent) => onGameEvent(JsonConvert.SerializeObject(gameEvent));
+            parser = new ReplayParser();
             parser.Init();
             callback?.Invoke(null);
         }

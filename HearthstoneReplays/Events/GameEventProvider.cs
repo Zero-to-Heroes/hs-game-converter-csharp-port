@@ -43,10 +43,6 @@ namespace HearthstoneReplays.Events
             bool shortCircuit = false,
             object props = null)
         {
-            if (animationReady)
-            {
-                Logger.Log("Creating event with animation ready", node.CreationLogLine);
-            }
             return Create(originalTimestamp, eventName, eventProvider, (a) => false, needMetaData, node, animationReady, debug, shortCircuit, props);
         }
 
