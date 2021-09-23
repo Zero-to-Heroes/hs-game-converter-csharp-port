@@ -79,6 +79,7 @@ namespace HearthstoneReplays.Events.Parsers
                         },
                         true,
                         node));
+                GameState.BgsHasSentNextOpponent = true;
                 GameState.NextBgsOpponentPlayerId = -1;
             }
             return result;
