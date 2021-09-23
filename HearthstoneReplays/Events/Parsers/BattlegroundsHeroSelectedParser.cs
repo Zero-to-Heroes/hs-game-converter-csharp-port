@@ -34,8 +34,11 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnCloseNode(Node node)
         {
             // Don't check for BG here, in case of reconnect
-            return (ParserState.ReconnectionOngoing || ParserState.Spectating)
-                    && node.Type == typeof(FullEntity)
+            // In some cases (starting the app late? Reconnect?) we don't realize it's a reconnect
+            // However, in BG we should never have a FullEntity, whose controller is the player, 
+            // unless it's a HERO_SELECTED event
+            return //(ParserState.ReconnectionOngoing || ParserState.Spectating) &&
+                    node.Type == typeof(FullEntity)
                     && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.HERO
                     && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY;
         }

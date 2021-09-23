@@ -56,7 +56,7 @@ namespace HearthstoneReplays.Events
         public async void StopDevMode()
         {
             Logger.Log("Will enqueue stop dev mode", "");
-            await Task.Delay(5000);
+            //await Task.Delay(5000);
             lock (listLock)
             {
                 Logger.Log("Enqueuing stop dev mode", eventQueue.Count);
@@ -224,6 +224,7 @@ namespace HearthstoneReplays.Events
             "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1 TriggerKeyword=0",
             "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1 TriggerKeyword=TAG_NOT_SET",
             "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=4 Target=0 SubOption=-1 TriggerKeyword=TAG_NOT_SET",
+            "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=5 Target=0 SubOption=-1 TriggerKeyword=TAG_NOT_SET",
 
         };
         private async void ProcessGameEventQueue(Object source, ElapsedEventArgs e)
@@ -241,16 +242,13 @@ namespace HearthstoneReplays.Events
             // - There are some stuff that are only present in the GS logs (metadata, player names)
             while (IsEventToProcess())
             {
-                //Logger.Log("There is an event to process", eventQueue.Count == 0 ? "nothing" : eventQueue[0].CreationLogLine);
                 try
                 {
                     GameEventProvider provider;
                     lock (listLock)
                     {
-                        //Logger.Log("Acquierd list lock in processgameevent", "");
                         if (eventQueue.Count == 0 || ParserState == null)
                         {
-                            //Logger.Log("Queue empty", "");
                             return;
                         }
                         if (eventQueue.First() is StartDevModeProvider)
@@ -265,6 +263,7 @@ namespace HearthstoneReplays.Events
                             NodeParser.DevMode = false;
                             eventQueue.RemoveAt(0);
                             Logger.Log("Setting DevMode", DevMode);
+                            GameEventHandler.Handle(null, NodeParser.DevMode);
                             continue;
                         }
                         // TODO: this spoils events in BGS, how to do it?
@@ -298,79 +297,24 @@ namespace HearthstoneReplays.Events
                         // With the arrival of Battlegrounds we can't do this anymore, as it spoils the game very fast
                         //&& DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).TotalMilliseconds < 5000)
                         {
-                            //Logger.Log("No animation ready", eventQueue[0].CreationLogLine);
                             return;
                         }
 
-                        List<GameEventProvider> animationReady = new List<GameEventProvider>();
-                        if (ParserState.IsBattlegrounds())
-                        {
-                            animationReady = eventQueue
-                                .Where(p => !(p.CreationLogLine.Contains("GameEntity") && p.CreationLogLine.Contains("MAIN_READY")))
-                                .Where(p => !p.CreationLogLine.Contains("BLOCK_START BlockType=TRIGGER")
-                                    && ignoredLogLines.All(line => !p.CreationLogLine.Contains(line)))
-                                .Where(p => p.EventName != "ENTITY_UPDATE" || ((dynamic)p.Props)?.Mindrender)
-                                .Where(p => !ParserState.IsBattlegrounds() || p.EventName != "CARD_REMOVED_FROM_DECK")
-                                .Where(p => p.AnimationReady)
-                                .ToList();
-                        }
                         provider = eventQueue[0];
                         eventQueue.RemoveAt(0);
-
-
-                        //if (ParserState.IsBattlegrounds() && !provider.AnimationReady && provider.SupplyGameEvent()?.Type != null && provider.SupplyGameEvent()?.Type != "DAMAGE" && !DevMode)
-                        //{
-                        //    //Logger.Log("First event queue animationReady", animationReady.Any(p => p.AnimationReady));
-                        //    Logger.Log("First event queue animationReady event " + animationReady.FirstOrDefault()?.Timestamp + " // " + animationReady.FirstOrDefault()?.CreationLogLine,
-                        //        "Current event provider " + provider.SupplyGameEvent()?.Type + " // " + provider.Timestamp + " // " + provider.CreationLogLine);
-                        //}
-
-                        //if (provider.debug)
-                        //{
-                        //    Logger.Log("Will process event", provider.EventName);
-                        //    Logger.Log("creationLogLine", provider.CreationLogLine);
-                        //    Logger.Log("animatiuonReady", provider.AnimationReady);
-                        //    Logger.Log("ShortCircuit", provider.ShortCircuit);
-                        //    Logger.Log("First event queue ShortCircuit", eventQueue.First().ShortCircuit);
-                        //    var animationReady = eventQueue
-                        //        .Where(p => !(p.CreationLogLine.Contains("GameEntity") && p.CreationLogLine.Contains("MAIN_READY")))
-                        //        .Where(p => !p.CreationLogLine.Contains("BLOCK_START BlockType=TRIGGER")
-                        //            && ignoredLogLines.All(line => !p.CreationLogLine.Contains(line)))
-                        //        .Where(p => p.EventName != "ENTITY_UPDATE")
-                        //        .ToList();
-                        //    Logger.Log("First event queue animationReady", animationReady.Any(p => p.AnimationReady));
-                        //    Logger.Log("First event queue animationReady event", animationReady.Any(p => p.AnimationReady) 
-                        //        ? animationReady.First().CreationLogLine : null );
-
-                        //}
                     }
-                    //if (provider.CreationLogLine.Contains("TAG_CHANGE Entity=[entityName=Voidwalker id=3651 zone=PLAY zonePos=3 cardId=CS2_065 player=13] tag=ZONE value=REMOVEDFROMGAME"))
-                    //{
-                    //    Logger.Log("Provider to process 1.1", provider.NeedMetaData + " // " + ParserState.CurrentGame.FormatType 
-                    //        + " // " + ParserState.CurrentGame.GameType + " // " + ParserState.LocalPlayer);
-                    //}
                     if (provider.NeedMetaData)
                     {
                         waitingForMetaData = true;
                         // Wait until we have all the necessary data
                         while (ParserState.CurrentGame.FormatType == -1 || ParserState.CurrentGame.GameType == -1 || ParserState.LocalPlayer == null)
                         {
-                            //Logger.Log("[csharp] waiting for metadata", "");
                             await Task.Delay(100);
                         }
                         waitingForMetaData = false;
                     }
-                    //if (!provider.AnimationReady || provider.debug)
-                    //{
-                    //    var next = eventQueue.Find(p => p.AnimationReady);
-                    //    Logger.Log("[csharp] Will process next event " + provider.Timestamp + " " + provider.CreationLogLine,
-                    //        provider.Index + " // " + provider.AnimationReady);
-                    //    Logger.Log("[csharp] Next animation ready " + next?.Timestamp + " " + next?.CreationLogLine,
-                    //        next?.Index + " // " + next?.GameEvent?.Type + " // " + next?.EventName);
-                    //}
                     lock (listLock)
                     {
-                        //Logger.Log("Acquierd list lock in processgameevent 2", "");
                         ProcessGameEvent(provider);
                     }
                 }
@@ -390,51 +334,22 @@ namespace HearthstoneReplays.Events
                 Logger.Log("Setting DevMode", DevMode);
                 return;
             }
-            if (provider is StopDevModeProvider)
+            else if (provider is StopDevModeProvider)
             {
                 NodeParser.DevMode = false;
                 Logger.Log("Setting DevMode", DevMode);
                 return;
             }
-            if (provider.SupplyGameEvent == null && provider.GameEvent == null)
+            else if (provider.SupplyGameEvent == null && provider.GameEvent == null)
             {
                 return;
             }
             var gameEvent = provider.GameEvent != null ? provider.GameEvent : provider.SupplyGameEvent();
-            //if (provider.CreationLogLine.Contains("3651")) // == "TAG_CHANGE Entity=[entityName=Voidwalker id=3651 zone=PLAY zonePos=3 cardId=CS2_065 player=13] tag=ZONE value=REMOVEDFROMGAMETAG_CHANGE Entity=[entityName=Voidwalker id=3651 zone=PLAY zonePos=3 cardId=CS2_065 player=13] tag=ZONE value=REMOVEDFROMGAME")
-            //{
-            //    Logger.Log("Handling debug provider", provider.CreationLogLine);
-            //}
-            if (provider.debug)
-            {
-                Logger.Log("[csharp] should provide event? " + (gameEvent != null), provider.CreationLogLine + " // " + provider.AnimationReady);
-                Logger.Log(
-                    "[csharp] animation ready stuff",
-                    string.Join("\\n", eventQueue.Where(p => p.AnimationReady).Select(p => p.CreationLogLine)));
-            }
             // This can happen because there are some conditions that are only resolved when we 
             // have the full meta data, like dungeon run step
             if (gameEvent != null)
             {
-                if (provider.debug)
-                {
-                    Logger.Log("[csharp] Handling event", gameEvent.Type);
-                }
-                GameEventHandler.Handle(gameEvent);
-                //if (gameEvent.Type == "GAME_END")
-                //{   
-                //    while (eventQueue.Count > 0)
-                //    {
-                //        provider = eventQueue[0];
-                //        eventQueue.RemoveAt(0);
-                //        ProcessGameEvent(provider);
-                //    }
-                //}
-                //Logger.Log(DateTime.Now, "Handled event " + provider.Timestamp + " " + provider.CreationLogLine);
-            }
-            else
-            {
-                //Logger.Log("[csharp] Game event is null, so doing nothing", provider.CreationLogLine);
+                GameEventHandler.Handle(gameEvent, NodeParser.DevMode);
             }
         }
 
@@ -446,7 +361,6 @@ namespace HearthstoneReplays.Events
 
                 lock (listLock)
                 {
-                    //Logger.Log("Acquierd list lock in iseventtoprocess", "");
                     // We leave some time so that events parsed later can be processed sooner (typiecally the case 
                     // for end-of-block events vs start-of-block events, like tag changes)
                     isEvent = eventQueue.Count > 0
@@ -455,20 +369,7 @@ namespace HearthstoneReplays.Events
                             || eventQueue.First() is StartDevModeProvider
                             || eventQueue.First().ShortCircuit
                             || DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds > 500);
-                    //if (eventQueue.Count > 0)
-                    //{
-                    //    //    Logger.Log("Is event to process? " + isEvent, DateTime.Now + " // "
-                    //    //        + eventQueue.First().Timestamp
-                    //    //        + " // " + DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds);
-                    //    Logger.Log("Is event to process? " + isEvent, eventQueue[0].CreationLogLine);
-                    //}
                 }
-                //if (eventQueue.Count > 0 && !isEvent)
-                //{
-                //    Logger.Log("[csharp] too soon to process events", eventQueue.First().CreationLogLine);
-                //    Logger.Log(DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds, "");
-                //    Logger.Log(DateTime.Now, eventQueue.First().Timestamp);
-                //}
                 return isEvent;
             }
             catch (Exception ex)

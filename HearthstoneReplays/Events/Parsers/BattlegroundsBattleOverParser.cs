@@ -50,7 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             string opponentCardId = GameState.BgsCurrentBattleOpponent;
             var mainPlayer = ParserState.LocalPlayer;
-            if (opponentCardId == NonCollectible.Neutral.KelthuzadTavernBrawl2)
+            if (opponentCardId == null || opponentCardId == NonCollectible.Neutral.KelthuzadTavernBrawl2)
             {
                 // Finding the one that is flagged as the player's NEXT_OPPONENT
                 var playerEntity = GameState.CurrentEntities.Values

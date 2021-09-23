@@ -30,25 +30,30 @@ namespace HearthstoneReplayTests
             {
                 ContractResolver = new IgnorePropertiesResolver(new[] { "GameState", "ReplayXml", "LocalPlayer", "OpponentPlayer" })
             };
-            GameEventHandler.EventProvider = (GameEvent gameEvent) =>
+            GameEventHandler.EventProviderAll = (IList<GameEvent> gameEvents) =>
             {
-                dynamic Value = gameEvent.Value;
-                var shouldLog = true;
-                //var shouldLog = gameEvent.Type == "DAMAGE";
-                if (shouldLog)
+                foreach (GameEvent gameEvent in gameEvents)
                 {
-                    var serialized = JsonConvert.SerializeObject(gameEvent);
-                    //var serialized = JsonConvert.SerializeObject(gameEvent, serializerSettings);
-                    //if (serialized.Contains("\"TargetCardId\":\"TB_BaconShop_HERO_53\""))
-                    //{
-                    Console.WriteLine(serialized + ",");
-                    //}
+                    dynamic Value = gameEvent.Value;
+                    var shouldLog = true;
+                    //var shouldLog = gameEvent.Type == "DAMAGE";
+                    if (shouldLog)
+                    {
+                        //var serialized = JsonConvert.SerializeObject(gameEvent);
+                        var serialized = JsonConvert.SerializeObject(gameEvent, serializerSettings);
+                        //if (serialized.Contains("\"TargetCardId\":\"TB_BaconShop_HERO_53\""))
+                        //{
+                        Console.WriteLine(serialized + ",");
+                        //}
+                    }
                 }
             };
             List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
+            logFile.Insert(0, "START_CATCHING_UP");
+            logFile.Add("END_CATCHING_UP");
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile);
-            Thread.Sleep(2000);
+            Thread.Sleep(3000);
             //string xml = new ReplayConverter().xmlFromReplay(replay);
             //Console.Write(xml);
         }

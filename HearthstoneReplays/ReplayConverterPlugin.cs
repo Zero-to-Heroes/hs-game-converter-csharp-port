@@ -55,6 +55,8 @@ namespace HearthstoneReplays
 		{
 			Logger.Log = onGlobalEvent;
             GameEventHandler.EventProvider = (GameEvent gameEvent) => onGameEvent(JsonConvert.SerializeObject(gameEvent));
+			// The goal here is to make sure the order is kept while in Dev mode, where events are very rapidly firing
+            GameEventHandler.EventProviderAll = (IList<GameEvent> gameEvents) => onGameEvent(JsonConvert.SerializeObject(gameEvents));
             parser = new ReplayParser();
             parser.Init();
             callback?.Invoke(null);
