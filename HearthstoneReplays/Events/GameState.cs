@@ -28,8 +28,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         //public bool SimulationTriggered;
         public int LastCardPlayedEntityId;
         public int LastCardDrawnEntityId;
-        // Most recent card is last
-        public Dictionary<int, List<int>> CardsPlayedByPlayerEntityId = new Dictionary<int, List<int>>();
+        // Most recent card is last, and grouped by turn
+        public Dictionary<int, Dictionary<int, List<int>>> CardsPlayedByPlayerEntityId = new Dictionary<int, Dictionary<int, List<int>>>();
         public Dictionary<int, List<int>> SpellsPlayedByPlayerOnFriendlyEntityIds = new Dictionary<int, List<int>>();
         public string BgsCurrentBattleOpponent;
         public bool BgsHasSentNextOpponent;
@@ -50,7 +50,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             NextBgsOpponentPlayerId = -1;
             BattleResultSent = false;
             LastCardPlayedEntityId = -1;
-            CardsPlayedByPlayerEntityId = new Dictionary<int, List<int>>();
+            // Stored by turn as well
+            CardsPlayedByPlayerEntityId = new Dictionary<int, Dictionary<int, List<int>>>();
             SpellsPlayedByPlayerOnFriendlyEntityIds = new Dictionary<int, List<int>>();
             LastCardDrawnEntityId = -1;
             BgsCurrentBattleOpponent = null;
@@ -346,13 +347,20 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             {
                 // Add it to each owner
                 var playedEntity = CurrentEntities[entityId];
-                var currentCardsPlayed = !CardsPlayedByPlayerEntityId.ContainsKey(playedEntity.GetController()) ? null : CardsPlayedByPlayerEntityId[playedEntity.GetController()];
-                if (currentCardsPlayed == null)
+                var cardsForPlayer = !CardsPlayedByPlayerEntityId.ContainsKey(playedEntity.GetController()) ? null : CardsPlayedByPlayerEntityId[playedEntity.GetController()];
+                if (cardsForPlayer == null)
                 {
-                    currentCardsPlayed = new List<int>();
-                    CardsPlayedByPlayerEntityId[playedEntity.GetController()] = currentCardsPlayed;
+                    cardsForPlayer = new Dictionary<int, List<int>>();
+                    CardsPlayedByPlayerEntityId[playedEntity.GetController()] = cardsForPlayer;
                 }
-                currentCardsPlayed.Add(entityId);
+                var currentTurn = GetGameEntity().GetTag(GameTag.TURN);
+                var cardsForTurn = !cardsForPlayer.ContainsKey(currentTurn) ? null : cardsForPlayer[currentTurn];
+                if (cardsForTurn == null)
+                {
+                    cardsForTurn = new List<int>();
+                    cardsForPlayer[currentTurn] = cardsForTurn;
+                }
+                cardsForTurn.Add(entityId);
 
                 // Plagiarize
                 var plagiarizes = CurrentEntities.Values

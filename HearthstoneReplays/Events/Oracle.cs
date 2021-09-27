@@ -480,7 +480,6 @@ namespace HearthstoneReplays.Events
                             return cardId;
                         }
                         return null;
-
                 }
             }
 
@@ -618,7 +617,12 @@ namespace HearthstoneReplays.Events
                         {
                             if (playerId != vanessaControllerId)
                             {
-                                var cardsPlayedByOpponent = GameState.CardsPlayedByPlayerEntityId[playerId];
+                                var cardsPlayedByOpponentByTurn = GameState.CardsPlayedByPlayerEntityId[playerId];
+                                if (cardsPlayedByOpponentByTurn == null || cardsPlayedByOpponentByTurn.Count == 0)
+                                {
+                                    return null;
+                                }
+                                var cardsPlayedByOpponent = cardsPlayedByOpponentByTurn.SelectMany(entry => entry.Value).ToList();
                                 if (cardsPlayedByOpponent == null || cardsPlayedByOpponent.Count == 0)
                                 {
                                     return null;
@@ -630,19 +634,45 @@ namespace HearthstoneReplays.Events
                         }
                     }
 
+                    // Ace in the Hole
+                    if (actionEntity.CardId == NonCollectible.Rogue.AceInTheHole)
+                    {
+                        var actionControllerId = actionEntity.GetController();
+                        if (actionEntity.KnownEntityIds.Count == 0)
+                        {
+                            var cardsPlayedByPlayerByTurn = GameState.CardsPlayedByPlayerEntityId[actionControllerId];
+                            if (cardsPlayedByPlayerByTurn == null || cardsPlayedByPlayerByTurn.Count == 0)
+                            {
+                                return null;
+                            }
+
+                            var lastTurn = GameState.GetGameEntity().GetTag(GameTag.TURN) - 2;
+                            if (!cardsPlayedByPlayerByTurn.ContainsKey(lastTurn))
+                            {
+                                return null;
+                            }
+
+                            var cardsPlayedLastTurn = cardsPlayedByPlayerByTurn[lastTurn];
+                            if (cardsPlayedLastTurn.Count == 0)
+                            {
+                                return null;
+                            }
+
+                            actionEntity.KnownEntityIds = cardsPlayedLastTurn.Select(entityId => entityId).ToList();
+                        }
+
+                        if (actionEntity.KnownEntityIds.Count > 0)
+                        {
+                            var entities = actionEntity.KnownEntityIds.Select(entityId => GameState.CurrentEntities[entityId]).ToList();
+                            var nextCard = entities[0].CardId;
+                            actionEntity.KnownEntityIds.Remove(entities[0].Entity);
+                            return nextCard;
+                        }
+
+                    }
+
                     // Lady Liadrin
                     // The spells are created in random order, so we can't flag them
-                    //if (actionEntity.CardId == Paladin.LadyLiadrin)
-                    //{
-                    //    if ((actionEntity.KnownEntityIds?.Count ?? 0) == 0)
-                    //    {
-                    //        return null;
-                    //    }
-                    //    var nextEntityId = actionEntity.KnownEntityIds[0];
-                    //    actionEntity.KnownEntityIds.RemoveAt(0);
-                    //    var nextEntity = GameState.CurrentEntities[nextEntityId];
-                    //    return nextEntity.CardId;
-                    //}
                 }
             }
 
