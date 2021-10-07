@@ -14,7 +14,15 @@ namespace HearthstoneReplays.Events.Parsers
             NonCollectible.Neutral.RebornRitesTavernBrawl,
             NonCollectible.Neutral.SwattingInsectsTavernBrawl,
             NonCollectible.Neutral.EmbraceYourRageTavernBrawl,
+        }; 
+
+        static List<string> START_OF_COMBAT_MINION_EFFECT = new List<string>() {
+            NonCollectible.Neutral.RedWhelp,
+            NonCollectible.Neutral.RedWhelpTavernBrawl,
+            NonCollectible.Neutral.PrizedPromoDrake,
+            NonCollectible.Neutral.PrizedPromoDrake_PrizedPromoDrake,
         };
+
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
 
@@ -36,6 +44,9 @@ namespace HearthstoneReplays.Events.Parsers
                         // Here we assume that hero powers are triggered first, before Start of Combat events
                         // The issue is if two hero powers (including the Lich King) compete, which is the case when Al'Akir triggers first for instance
                         || ((node.Object as Action).Type == (int)BlockType.TRIGGER
+                                // Here we don't want to send the boards when the hero power is triggered, because we want the 
+                                // board state to include the effect of the hero power, since the simulator can't guess
+                                // what its outcome is (Embrace Your Rage) or what minion it targets (Reborn Rites)
                                 && !COMPETING_BATTLE_START_HERO_POWERS.Contains(GameState.CurrentEntities[(node.Object as Action).Entity].CardId)
                                 && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
                                 && (
@@ -45,6 +56,9 @@ namespace HearthstoneReplays.Events.Parsers
                                     // This condition has been introduced to solve an issue when the Wingmen hero power triggers. In that case, the parent action of attacks
                                     // is not a TB_BaconShop_8P_PlayerE, but the hero power action itself.
                                     || GameState.CurrentEntities[(node.Object as Action).Entity].GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER
+                                    // Here we want the boards to be send before the minions start of combat effects happen, because
+                                    // we want the simulator to include their random effects inside the simulation
+                                    || START_OF_COMBAT_MINION_EFFECT.Contains(GameState.CurrentEntities[(node.Object as Action).Entity].CardId)
                                    )
                             )
                    );
@@ -63,8 +77,8 @@ namespace HearthstoneReplays.Events.Parsers
         // What about DIVINE_SHIELDs being removed by red whelp / Nef though?
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            //return null;
-            //var action = node.Object as Parser.ReplayData.GameActions.Action;
+            // We rely on nested actions to avoid send the event too often. However, this is an issue when 
+            // dealing with start of combat triggers like RedWhelp or Prized Promo-Drake
             var parentAction = (node.Parent.Object as Parser.ReplayData.GameActions.Action);
             if (parentAction == null)
             {
