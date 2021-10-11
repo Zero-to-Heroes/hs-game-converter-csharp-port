@@ -100,7 +100,7 @@ namespace HearthstoneReplays
                 var hero = gameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
+                    .Where(entity => entity.GetEffectiveController() == playerId)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
                     .FirstOrDefault();
@@ -123,7 +123,7 @@ namespace HearthstoneReplays
                 var weapon = gameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.WEAPON)
-                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
+                    .Where(entity => entity.GetEffectiveController() == playerId)
                     .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
                     .FirstOrDefault();
                 return weapon != null ? weapon : new
@@ -143,11 +143,11 @@ namespace HearthstoneReplays
             try
             {
                 var entityToConsiderTC = tagChange?.Name == (int)GameTag.ZONE && tagChange?.Value == (int)zone ? tagChange.Entity : -1;
-                entityToConsiderTC = entityToConsiderTC != -1 && gameState.CurrentEntities[entityToConsiderTC]?.GetTag(GameTag.CONTROLLER) == playerId
+                entityToConsiderTC = entityToConsiderTC != -1 && gameState.CurrentEntities[entityToConsiderTC]?.GetEffectiveController() == playerId
                     ? entityToConsiderTC
                     : -1;
                 var entityToConsiderSE = showEntity?.GetTag(GameTag.ZONE) == (int)zone ? showEntity.Entity : -1;
-                entityToConsiderSE = entityToConsiderSE != -1 && gameState.CurrentEntities[entityToConsiderSE]?.GetTag(GameTag.CONTROLLER) == playerId
+                entityToConsiderSE = entityToConsiderSE != -1 && gameState.CurrentEntities[entityToConsiderSE]?.GetEffectiveController() == playerId
                     ? entityToConsiderSE
                     : -1;
                 var entityToExcludeTC = tagChange?.Name == (int)GameTag.ZONE && tagChange?.Value != (int)zone ? tagChange.Entity : -1;
@@ -156,7 +156,7 @@ namespace HearthstoneReplays
                     .Where(entity => entityToExcludeSE != entity.Entity
                         && entityToExcludeTC != entity.Entity
                         && (entity.GetTag(GameTag.ZONE) == (int)zone || entity.Entity == entityToConsiderTC || entity.Entity == entityToConsiderSE))
-                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId || entity.Entity == entityToConsiderTC || entity.Entity == entityToConsiderSE)
+                    .Where(entity => entity.GetEffectiveController() == playerId || entity.Entity == entityToConsiderTC || entity.Entity == entityToConsiderSE)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION) == -1 ? 99 : entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
                     .ToList();
@@ -175,7 +175,7 @@ namespace HearthstoneReplays
                 return gameState.CurrentEntities.Values
                     .Where(entity => (entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY && !RemovedFromPlay(entity, tagChange, showEntity))
                         || PutInPlay(entity, tagChange, showEntity))
-                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == playerId)
+                    .Where(entity => entity.GetEffectiveController() == playerId)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))

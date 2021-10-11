@@ -44,7 +44,7 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var fullEntity = node.Object as FullEntity;
-            var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
+            var controllerId = fullEntity.GetEffectiveController();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "INITIAL_CARD_IN_DECK",

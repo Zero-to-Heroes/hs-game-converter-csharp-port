@@ -24,16 +24,26 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
 		[XmlIgnore]
 		public SubSpell SubSpellInEffect { get; set; }
 
-        public int GetTag(GameTag tag)
+        public int GetTag(GameTag tag, int defaultValue = -1)
         {
             var match = Tags.FirstOrDefault(t => t.Name == (int)tag);
-            return match == null ? -1 : match.Value;
+            return match == null ? defaultValue : match.Value;
         }
 
 		public string GetPlayerClass()
 		{
 			var playerClass = GetTag(GameTag.CLASS);
 			return ((CardClass)playerClass).ToString();
+		}
+
+		public int GetEffectiveController()
+		{
+			var lettuceControllerId = GetTag(GameTag.LETTUCE_CONTROLLER);
+			if (lettuceControllerId != -1)
+			{
+				return lettuceControllerId;
+			}
+			return GetTag(GameTag.CONTROLLER);
 		}
 
 		public bool IsInPlay()

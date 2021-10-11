@@ -41,6 +41,16 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             return match == null ? defaultValue : match.Value;
         }
 
+        public int GetEffectiveController()
+        {
+            var lettuceControllerId = GetTag(GameTag.LETTUCE_CONTROLLER);
+            if (lettuceControllerId != -1)
+            {
+                return lettuceControllerId;
+            }
+            return GetTag(GameTag.CONTROLLER);
+        }
+
         public List<Tag> GetTagsCopy(TagChange tagChange = null)
         {            
             var tagsCopy = this.Tags

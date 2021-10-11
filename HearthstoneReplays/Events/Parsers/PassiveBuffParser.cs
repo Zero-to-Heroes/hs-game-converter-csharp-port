@@ -39,7 +39,7 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
-            var controllerId = ParserState.GetTag(entity.Tags, GameTag.CONTROLLER);
+            var controllerId = entity.GetEffectiveController();
             if (ParserState.GetTag(entity.Tags, GameTag.DUNGEON_PASSIVE_BUFF) == 1 
                 && ParserState.GetTag(entity.Tags, GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
@@ -65,7 +65,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var showEntity = node.Object as ShowEntity;
             var cardId = showEntity.CardId;
-            var controllerId = ParserState.GetTag(showEntity.Tags, GameTag.CONTROLLER);
+            var controllerId = showEntity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,

@@ -37,7 +37,7 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var playerId = ParserState.LocalPlayer.PlayerId;
             var fullEntities = GameState.CurrentEntities.Values
-                .Where(data => data.GetTag(GameTag.CONTROLLER) == playerId)
+                .Where(data => data.GetEffectiveController() == playerId)
                 .Where(data => data.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(data => data.GetTag(GameTag.ZONE) == (int)Zone.HAND)
                 .Where(data => data.GetTag(GameTag.BACON_HERO_CAN_BE_DRAFTED) == 1 || data.GetTag(GameTag.BACON_SKIN) == 1)

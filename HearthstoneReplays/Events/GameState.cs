@@ -216,7 +216,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             return CurrentEntities.Values
                 .Where((e) => e.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where((e) => e.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                .Where((e) => e.GetTag(GameTag.CONTROLLER) == entity.GetTag(GameTag.CONTROLLER))
+                .Where((e) => e.GetEffectiveController() == entity.GetEffectiveController())
                 .First()
                 .CardId;
         }
@@ -224,24 +224,32 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public FullEntity GetPlayerHeroEntity(int entityId)
         {
             var entity = CurrentEntities[entityId];
+            // No cardID is assigned to the player in Mercenaries, since there is no hero
+            if (ParserState.IsMercenaries() && entity != null)
+            {
+                return entity;
+            }
+
             if (entity.CardId != null)
             {
                 return entity;
             }
             var heroesForController = CurrentEntities.Values
                 .Where((e) => e.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                .Where((e) => e.GetTag(GameTag.CONTROLLER) == entity.GetTag(GameTag.CONTROLLER))
+                .Where((e) => e.GetEffectiveController() == entity.GetEffectiveController())
                 .Where((e) => e.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 // If there are several, we take the most recent one
-                .OrderByDescending((e) => e.TimeStamp);
+                .OrderByDescending((e) => e.TimeStamp)
+                .ToList();
             // Happens if the remaining hero is dead for instance
             if (heroesForController.Count() == 0)
             {
                 heroesForController = CurrentEntities.Values
                 .Where((e) => e.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                .Where((e) => e.GetTag(GameTag.CONTROLLER) == entity.GetTag(GameTag.CONTROLLER))
+                .Where((e) => e.GetEffectiveController() == entity.GetEffectiveController())
                 // If there are several, we take the oldest one (as the most recent can be a hero card in hand)
-                .OrderBy((e) => e.TimeStamp);
+                .OrderBy((e) => e.TimeStamp)
+                .ToList();
             }
             return heroesForController.First();
         }
@@ -318,7 +326,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 if (playerId == 0)
                 {
                     var entity = CurrentEntities.Values.Where(x => x.Id == entityId).FirstOrDefault();
-                    var entityControllerId = entity.Tags.Find(x => x.Name == (int)GameTag.CONTROLLER).Value;
+                    var entityControllerId = entity.GetEffectiveController();
                     //Console.WriteLine("Controller ID = " + entityControllerId);
                     playerId = ParserState.getPlayers().Find(x => x.PlayerId == entityControllerId).Id;
                 }
@@ -379,7 +387,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                         .Where(entity => (entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY))
                         .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
                         .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
-                        .GroupBy(entity => entity.GetTag(GameTag.CONTROLLER))
+                        .GroupBy(entity => entity.GetEffectiveController())
                         .ToDictionary(g => g.Key, g => g.ToList());
                 }
                 else

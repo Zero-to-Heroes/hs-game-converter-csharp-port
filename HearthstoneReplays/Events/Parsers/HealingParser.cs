@@ -53,11 +53,11 @@ namespace HearthstoneReplays.Events.Parsers
                     var healingTarget = GameState.CurrentEntities[info.Entity];
                     var targetEntityId = healingTarget.Id;
                     var targetCardId = GameState.GetCardIdForEntity(healingTarget.Id);
-                    var targetControllerId = healingTarget.GetTag(GameTag.CONTROLLER);
+                    var targetControllerId = healingTarget.GetEffectiveController();
                     var healingSource = GetHealingSource(healingTarget, action, healingTag);
                     var sourceEntityId = healingSource.Id;
                     var sourceCardId = GameState.GetCardIdForEntity(healingSource.Id);
-                    var sourceControllerId = healingSource.GetTag(GameTag.CONTROLLER);
+                    var sourceControllerId = healingSource.GetEffectiveController();
                     Dictionary<string, HealingInternal> currentSourceHealings = null;
                     if (totalHealings.ContainsKey(sourceCardId))
                     {

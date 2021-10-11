@@ -39,7 +39,7 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
-            var controllerId = entity.GetTag(GameTag.CONTROLLER);
+            var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
@@ -65,7 +65,7 @@ namespace HearthstoneReplays.Events.Parsers
                 Logger.Log("Could not find entity while looking for discard", showEntity.Entity);
             }
             var cardId = entity?.CardId != null && entity.CardId.Length > 0 ? entity.CardId : showEntity.CardId;
-            var controllerId = entity != null ? entity.GetTag(GameTag.CONTROLLER) : -1;
+            var controllerId = entity != null ? entity.GetEffectiveController() : -1;
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,

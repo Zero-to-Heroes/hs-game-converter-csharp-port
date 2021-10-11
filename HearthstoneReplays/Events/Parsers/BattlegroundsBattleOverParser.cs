@@ -56,7 +56,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var playerEntity = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == mainPlayer.PlayerId)
+                    .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
                     .Where(entity => entity.CardId != NonCollectible.Neutral.BartenderBobTavernBrawl
                         && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2
                         && entity.CardId != NonCollectible.Neutral.BaconphheroTavernBrawl)
@@ -105,7 +105,7 @@ namespace HearthstoneReplays.Events.Parsers
             var isAttackNode = action.Data
                 .Where(data => data.GetType() == typeof(TagChange))
                 .Select(data => data as TagChange)
-                .Where(tag => (tag.Name == (int)GameTag.BACON_HIGHLIGHT_ATTACKING_MINION_DURING_COMBAT && tag.Value == 0))
+                .Where(tag => (tag.Name == (int)GameTag.HIGHLIGHT_ATTACKING_MINION_DURING_COMBAT && tag.Value == 0))
                 .Count() > 0;
             if (!isAttackNode)
             {
@@ -123,7 +123,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 var opponentPlayerId = ParserState.OpponentPlayer.PlayerId;
                 var opponentHero = GameState.CurrentEntities.Values
-                    .Where(data => data.GetTag(GameTag.CONTROLLER) == opponentPlayerId)
+                    .Where(data => data.GetEffectiveController() == opponentPlayerId)
                     .Where(data => data.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(data => data.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .FirstOrDefault();
@@ -159,7 +159,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var winner = GameState.CurrentEntities[attackAction.Entity];
-            var result = winner.GetTag(GameTag.CONTROLLER) == ParserState.LocalPlayer.PlayerId ? "won" : "lost";
+            var result = winner.GetEffectiveController() == ParserState.LocalPlayer.PlayerId ? "won" : "lost";
             var damageTag = attackAction.Data
                 .Where(data => data.GetType() == typeof(TagChange))
                 .Select(data => data as TagChange)
@@ -177,7 +177,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(tag => tag.Name == (int)GameTag.DEFENDING && tag.Value == 1)
                 .FirstOrDefault()
                 .Entity;
-            var opponentEntityId = GameState.CurrentEntities[attackerEntityId].GetTag(GameTag.CONTROLLER) == ParserState.LocalPlayer.PlayerId
+            var opponentEntityId = GameState.CurrentEntities[attackerEntityId].GetEffectiveController() == ParserState.LocalPlayer.PlayerId
                 ? defenderEntityId
                 : attackerEntityId;
             var opponentCardId = GameState.CurrentEntities[opponentEntityId].CardId;
@@ -188,7 +188,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var playerEntity = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == mainPlayer.PlayerId)
+                    .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
                     .Where(entity => entity.CardId != NonCollectible.Neutral.BartenderBobTavernBrawl
                         && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2
                         && entity.CardId != NonCollectible.Neutral.BaconphheroTavernBrawl)

@@ -38,7 +38,7 @@ namespace HearthstoneReplays.Events.Parsers
             var zoneInt = entity.GetTag(GameTag.ZONE) == -1 ? 0 : entity.GetTag(GameTag.ZONE);
             var initialZone = ((Zone)zoneInt).ToString();
             var cardId = entity.CardId;
-            var controllerId = entity.GetTag(GameTag.CONTROLLER);
+            var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             if (cardId == null || cardId.Length == 0)
             {

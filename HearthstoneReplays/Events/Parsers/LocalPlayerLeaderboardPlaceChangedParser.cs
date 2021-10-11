@@ -38,7 +38,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return null;
             }
-            if (entity.GetTag(GameTag.CONTROLLER) == ParserState.LocalPlayer.PlayerId)
+            if (entity.GetEffectiveController() == ParserState.LocalPlayer.PlayerId)
             {
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,

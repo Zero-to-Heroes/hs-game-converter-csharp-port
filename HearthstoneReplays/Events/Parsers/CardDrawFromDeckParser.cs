@@ -46,7 +46,7 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
-            var controllerId = entity.GetTag(GameTag.CONTROLLER);
+            var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             // If we compute this when triggering the event, we will get a "gift" icon because the 
             // card is already in hand
@@ -111,7 +111,7 @@ namespace HearthstoneReplays.Events.Parsers
         private List<GameEventProvider> CreateEventFromShowEntity(ShowEntity showEntity, Node node)
         {
             var cardId = showEntity.CardId;
-            var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
+            var controllerId = showEntity.GetEffectiveController();
             var entity = GameState.CurrentEntities[showEntity.Entity];
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
             var wasInDeck = entity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
@@ -158,7 +158,7 @@ namespace HearthstoneReplays.Events.Parsers
         private List<GameEventProvider> CreateEventFromFullEntity(FullEntity fullEntity, Node node)
         {
             var cardId = fullEntity.CardId;
-            var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
+            var controllerId = fullEntity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
             var wasInDeck = fullEntity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
             // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 

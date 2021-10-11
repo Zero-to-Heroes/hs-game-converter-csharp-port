@@ -88,20 +88,25 @@ namespace HearthstoneReplays.Parser
             if (secondPlayer.Name.IndexOf(data) != -1) return secondPlayer.Id;
             if (data != null && data.IndexOf(secondPlayer.Name) != -1) return secondPlayer.Id;
 
-            if (firstPlayer.Name == "UNKNOWN HUMAN PLAYER" 
+			// Because there are 3 players in mercenaries, and we hardcode the player names for now
+			// so this case should never happen in that mode
+			// If we leave it like that, it will assign the player name to the first Innkeeper. This is 
+			// somewhat ok, because the first innkeeper seems to be the player themselves, but then it 
+			// creates wrong assignments to player IDs
+            if ((firstPlayer.Name == "UNKNOWN HUMAN PLAYER" 
                 || innkeeperNames.Select(x => x.ToLower()).Contains(firstPlayer.Name.ToLower())
                 || innkeeperNames.Select(x => x.ToLower()).Contains(firstPlayer.InitialName.ToLower())
                 || bobTavernNames.Select(x => x.ToLower()).Contains(firstPlayer.Name.ToLower())
-                || bobTavernNames.Select(x => x.ToLower()).Contains(firstPlayer.InitialName.ToLower()))
+                || bobTavernNames.Select(x => x.ToLower()).Contains(firstPlayer.InitialName.ToLower())))
 			{
 				firstPlayer.Name = data;
 				return firstPlayer.Id;
 			}
-			if(secondPlayer.Name == "UNKNOWN HUMAN PLAYER" 
+			if((secondPlayer.Name == "UNKNOWN HUMAN PLAYER" 
                 || innkeeperNames.Select(x => x.ToLower()).Contains(secondPlayer.Name.ToLower())
                 || innkeeperNames.Select(x => x.ToLower()).Contains(secondPlayer.InitialName.ToLower())
                 || bobTavernNames.Select(x => x.ToLower()).Contains(secondPlayer.Name.ToLower())
-                || bobTavernNames.Select(x => x.ToLower()).Contains(secondPlayer.InitialName.ToLower()))
+                || bobTavernNames.Select(x => x.ToLower()).Contains(secondPlayer.InitialName.ToLower())))
 			{
 				secondPlayer.Name = data;
 				return secondPlayer.Id;

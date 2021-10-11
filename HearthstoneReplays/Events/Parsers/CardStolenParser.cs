@@ -30,8 +30,8 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return node.Type == typeof(Parser.ReplayData.GameActions.ShowEntity)
                 && GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
-                && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.CONTROLLER) 
-                        != (node.Object as ShowEntity).GetTag(GameTag.CONTROLLER)
+                && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetEffectiveController()
+                        != (node.Object as ShowEntity).GetEffectiveController()
                 && !MindrenderIlluciaParser.IsProcessingMindrenderIlluciaEffect(node, GameState);
         }
 
@@ -40,7 +40,13 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
-            var controllerId = entity.GetTag(GameTag.CONTROLLER);
+            var controllerId = entity.GetEffectiveController();
+            var lettuceControllerId = entity.GetTag(GameTag.LETTUCE_CONTROLLER);
+            if (tagChange.Value == lettuceControllerId)
+            {
+                return null;
+            }
+
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
@@ -68,7 +74,13 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var showEntity = node.Object as Parser.ReplayData.GameActions.ShowEntity;
             var cardId = showEntity.CardId;
-            var controllerId = GameState.CurrentEntities[showEntity.Entity].GetTag(GameTag.CONTROLLER);
+            var controllerId = GameState.CurrentEntities[showEntity.Entity].GetEffectiveController();
+            var lettuceControllerId = showEntity.GetTag(GameTag.LETTUCE_CONTROLLER);
+            if (showEntity.GetEffectiveController() == lettuceControllerId)
+            {
+                return null;
+            }
+
             if (GameState.CurrentEntities[showEntity.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
@@ -84,7 +96,7 @@ namespace HearthstoneReplays.Events.Parsers
                         GameState,
                         gameState,
                         new {
-                            newControllerId = showEntity.GetTag(GameTag.CONTROLLER)
+                            newControllerId = showEntity.GetEffectiveController()
                         }),
                     true,
                     node) };

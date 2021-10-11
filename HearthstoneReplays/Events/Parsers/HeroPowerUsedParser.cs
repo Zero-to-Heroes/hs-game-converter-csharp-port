@@ -46,7 +46,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
             var cardId = entity.CardId;
-            var controllerId = entity.GetTag(GameTag.CONTROLLER);
+            var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     action.TimeStamp,

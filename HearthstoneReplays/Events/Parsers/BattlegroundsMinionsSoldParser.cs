@@ -58,7 +58,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             var soldMinion = GameState.CurrentEntities[zoneTagChange.Entity];
             var cardId = soldMinion.CardId;
-            var controller = soldMinion.GetTag(GameTag.CONTROLLER);
+            var controller = soldMinion.GetEffectiveController();
             return new List<GameEventProvider> { GameEventProvider.Create(
                     (node.Object as Action).TimeStamp,
                      "BATTLEGROUNDS_MINION_SOLD",

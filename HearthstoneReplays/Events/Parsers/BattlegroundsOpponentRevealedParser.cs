@@ -95,7 +95,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
-            if (ParserState.OpponentPlayer?.PlayerId != fullEntity.GetTag(GameTag.CONTROLLER))
+            if (ParserState.OpponentPlayer?.PlayerId != fullEntity.GetEffectiveController())
             {
                 return null;
             }

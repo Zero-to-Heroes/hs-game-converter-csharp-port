@@ -67,7 +67,7 @@ namespace HearthstoneReplays.Events.Parsers
 
                          }
                          return entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO
-                             && entity.GetTag(GameTag.CONTROLLER) == ParserState.OpponentPlayer.PlayerId;
+                             && entity.GetEffectiveController() == ParserState.OpponentPlayer.PlayerId;
                      })
                     .ToList();
             return fullEntities.Select(fullEntity =>
@@ -75,7 +75,7 @@ namespace HearthstoneReplays.Events.Parsers
                     var deckId = DECK_ID_SCENARIOS.Contains(ParserState?.CurrentGame?.ScenarioID ?? -1)
                         ? "" + fullEntity.GetTag(GameTag.HERO_DECK_ID)
                         : fullEntity.CardId;
-                    var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
+                    var controllerId = fullEntity.GetEffectiveController();
                     return GameEventProvider.Create(
                         timestamp,
                         "DECKLIST_UPDATE",
@@ -117,7 +117,7 @@ namespace HearthstoneReplays.Events.Parsers
 
                         }
                         return entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO
-                            && entity.GetTag(GameTag.CONTROLLER) == ParserState.OpponentPlayer.PlayerId;
+                            && entity.GetEffectiveController() == ParserState.OpponentPlayer.PlayerId;
                     })
                     .ToList()
                     .Count > 0);

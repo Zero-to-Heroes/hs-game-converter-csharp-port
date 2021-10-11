@@ -40,7 +40,7 @@ namespace HearthstoneReplays.Events.Parsers
             // already been drawn by then
             var stateCopy = ParserState.GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.DECK)
-                    .Select(entity => entity.GetTag(GameTag.CONTROLLER))
+                    .Select(entity => entity.GetEffectiveController())
                     .ToList();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,

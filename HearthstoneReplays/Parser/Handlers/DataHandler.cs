@@ -576,6 +576,7 @@ namespace HearthstoneReplays.Parser.Handlers
             if (match.Success)
             {
                 this.metadata.BuildNumber = int.Parse(match.Groups[1].Value);
+                state.CurrentGame.BuildNumber = metadata.BuildNumber;
                 return true;
             }
 
@@ -585,6 +586,9 @@ namespace HearthstoneReplays.Parser.Handlers
                 var rawGameType = match.Groups[1].Value;
                 var gameType = helper.ParseEnum<GameType>(rawGameType);
                 this.metadata.GameType = gameType;
+                // We need to assign it right now, otherwise we can't use the meta data while 
+                // doing the logic for player assignments, which is needed for mercenaries
+                state.CurrentGame.GameType = metadata.GameType;
                 return true;
             }
 
@@ -594,6 +598,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 var rawFormatType = match.Groups[1].Value;
                 var formatType = helper.ParseEnum<FormatType>(rawFormatType);
                 this.metadata.FormatType = formatType;
+                state.CurrentGame.FormatType = metadata.FormatType;
                 return true;
             }
 
@@ -601,6 +606,7 @@ namespace HearthstoneReplays.Parser.Handlers
             if (match.Success)
             {
                 this.metadata.ScenarioID = int.Parse(match.Groups[1].Value);
+                state.CurrentGame.ScenarioID = metadata.ScenarioID;
                 state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
                     "MATCH_METADATA",

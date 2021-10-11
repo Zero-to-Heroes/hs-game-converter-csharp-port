@@ -45,7 +45,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return null;
             }
-            var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
+            var controllerId = fullEntity.GetEffectiveController();
             var startingHealth = fullEntity.GetTag(GameTag.HEALTH);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
             var creator = Oracle.FindCardCreator(GameState, fullEntity, node);

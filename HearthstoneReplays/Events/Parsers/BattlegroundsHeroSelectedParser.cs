@@ -63,7 +63,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
-            var controllerId = chosenEntity.GetTag(GameTag.CONTROLLER);
+            var controllerId = chosenEntity.GetEffectiveController();
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 choice.TimeStamp,
@@ -116,7 +116,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
-            if (fullEntity.GetTag(GameTag.CONTROLLER) != ParserState.LocalPlayer.PlayerId)
+            if (fullEntity.GetEffectiveController() != ParserState.LocalPlayer.PlayerId)
             {
                 return null;
             }

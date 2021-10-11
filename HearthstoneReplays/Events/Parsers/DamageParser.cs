@@ -131,11 +131,11 @@ namespace HearthstoneReplays.Events.Parsers
                     // attached cardId
                     var targetEntityId = damageTarget.Id;
                     var targetCardId = GameState.GetCardIdForEntity(damageTarget.Id);
-                    var targetControllerId = damageTarget.GetTag(GameTag.CONTROLLER);
+                    var targetControllerId = damageTarget.GetEffectiveController();
                     var damageSource = GetDamageSource(damageTarget, action, damageTag);
                     var sourceEntityId = damageSource.Id;
                     var sourceCardId = GameState.GetCardIdForEntity(damageSource.Id);
-                    var sourceControllerId = damageSource.GetTag(GameTag.CONTROLLER);
+                    var sourceControllerId = damageSource.GetEffectiveController();
                     Dictionary<string, DamageInternal> currentSourceDamages = null;
                     if (totalDamages.ContainsKey(sourceCardId + "-" + sourceEntityId))
                     {

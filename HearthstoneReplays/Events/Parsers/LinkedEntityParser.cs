@@ -49,7 +49,7 @@ namespace HearthstoneReplays.Events.Parsers
             // However, the card copy (CARD_REVEALED) is usually attached to the same player as the one 
             // from the LINKED_ENTITY, so we have to keep the same controller.
             // We'll add the LinkedEntityControllerId attribute instead to make the link
-            var controllerId = entity.GetTag(GameTag.CONTROLLER);
+            var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
@@ -64,7 +64,7 @@ namespace HearthstoneReplays.Events.Parsers
                     gameState, 
                     new {
                         LinkedEntityId = tagChange.Value,
-                        LinkedEntityControllerId = linkedEntity.GetTag(GameTag.CONTROLLER),
+                        LinkedEntityControllerId = linkedEntity.GetEffectiveController(),
                         LinkedEntityZone = linkedEntity.GetZone(),
                     }),
                 true,

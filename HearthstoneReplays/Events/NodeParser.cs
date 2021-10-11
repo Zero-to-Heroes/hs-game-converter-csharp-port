@@ -66,8 +66,8 @@ namespace HearthstoneReplays.Events
 
         public void NewNode(Node node)
         {
-            try
-            {
+            //try
+            //{
                 if (node == null)
                 {
                     return;
@@ -84,12 +84,12 @@ namespace HearthstoneReplays.Events
                         }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Logger.Log("Coulnt not apply parsers to new node, ignoring node and moving on " + e.Message, e.StackTrace);
-                throw e;
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    Logger.Log("Coulnt not apply parsers to new node, ignoring node and moving on " + e.Message, e.StackTrace);
+            //    throw e;
+            //}
         }
 
         public void CloseNode(Node node)

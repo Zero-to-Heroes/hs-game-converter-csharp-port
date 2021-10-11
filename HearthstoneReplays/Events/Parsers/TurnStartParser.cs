@@ -21,9 +21,19 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return node.Type == typeof(TagChange)
+            var isNormalTurnChange = !ParserState.IsMercenaries() 
+                && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.TURN
                 && GameState.GetGameEntity()?.Entity == (node.Object as TagChange).Entity;
+            // While the TURN tag is present in mercenaries, it is incremented on the Innkeeper entity,
+            // and the logs don't let us easily disambiguate between the AI Innkeeper and the player's
+            // Innkeeper, so we rely on the turn structure tags instead
+            var isMercenariesTurnChange = ParserState.IsMercenaries() 
+                && node.Type == typeof(TagChange)
+                && (node.Object as TagChange).Name == (int)GameTag.STEP
+                && (node.Object as TagChange).Value == (int)Step.MAIN_PRE_ACTION
+                && GameState.GetGameEntity()?.Entity == (node.Object as TagChange).Entity;
+            return isNormalTurnChange || isMercenariesTurnChange;
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -36,7 +46,8 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
-            GameState.CurrentTurn = (int)tagChange.Value;
+            var newTurnValue = tagChange.Name == (int)GameTag.TURN ? (int)tagChange.Value : GameState.CurrentTurn + 1;
+            GameState.CurrentTurn = newTurnValue;
             //GameState.StartTurn();
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             var result = new List<GameEventProvider>();

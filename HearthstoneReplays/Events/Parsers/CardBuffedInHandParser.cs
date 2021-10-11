@@ -269,7 +269,7 @@ namespace HearthstoneReplays.Events.Parsers
                         GameEvent.CreateProvider(
                             "CARD_BUFFED_IN_HAND",
                             entity.CardId,
-                            entity.GetTag(GameTag.CONTROLLER),
+                            entity.GetEffectiveController(),
                             entity.Entity,
                             ParserState,
                             GameState,
@@ -309,7 +309,7 @@ namespace HearthstoneReplays.Events.Parsers
                         GameEvent.CreateProvider(
                             "CARD_BUFFED_IN_HAND",
                             entity.CardId,
-                            entity.GetTag(GameTag.CONTROLLER),
+                            entity.GetEffectiveController(),
                             entity.Entity,
                             ParserState,
                             GameState,
@@ -392,7 +392,7 @@ namespace HearthstoneReplays.Events.Parsers
                         GameEvent.CreateProvider(
                             "CARD_BUFFED_IN_HAND",
                             entity.CardId,
-                            entity.GetTag(GameTag.CONTROLLER),
+                            entity.GetEffectiveController(),
                             entity.Entity,
                             ParserState,
                             GameState,

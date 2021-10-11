@@ -28,15 +28,15 @@ namespace HearthstoneReplayTests
             NodeParser.DevMode = true;
             var serializerSettings = new JsonSerializerSettings()
             {
-                ContractResolver = new IgnorePropertiesResolver(new[] { "GameState", "ReplayXml", "LocalPlayer", "OpponentPlayer" })
+                ContractResolver = new IgnorePropertiesResolver(new[] { "GameState", "ReplayXml", "LocalPlayer", "OpponentPlayer", "GameStateReport", "Game" })
             };
             GameEventHandler.EventProviderAll = (IList<GameEvent> gameEvents) =>
             {
                 foreach (GameEvent gameEvent in gameEvents)
                 {
                     dynamic Value = gameEvent.Value;
-                    var shouldLog = true;
-                    //var shouldLog = gameEvent.Type == "DAMAGE";
+                    //var shouldLog = true;
+                    var shouldLog = gameEvent.Type != "GAME_STATE_UPDATE";
                     if (shouldLog)
                     {
                         //var serialized = JsonConvert.SerializeObject(gameEvent);

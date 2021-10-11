@@ -142,7 +142,7 @@ namespace HearthstoneReplays.Events.Parsers
             var potentialHeroes = GameState.CurrentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
+                .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                 // Here we accept to face the ghost
                 .Where(entity => entity.CardId != NonCollectible.Neutral.BartenderBobTavernBrawl
                     && entity.CardId != NonCollectible.Neutral.BaconphheroTavernBrawl
@@ -166,7 +166,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var playerEntity = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == mainPlayer.PlayerId)
+                    .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
                     .Where(entity => entity.CardId != NonCollectible.Neutral.BartenderBobTavernBrawl
                         && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2
                         && entity.CardId != NonCollectible.Neutral.BaconphheroTavernBrawl)
@@ -200,20 +200,20 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 // We don't use the game state builder here because we really need the full entities
                 var board = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
+                    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
                     .ToList();
                 var secrets = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
+                    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
                     .ToList();
                 var heroPower = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetTag(GameTag.CONTROLLER) == player.PlayerId)
+                    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER)
                     .Select(entity => entity.Clone())

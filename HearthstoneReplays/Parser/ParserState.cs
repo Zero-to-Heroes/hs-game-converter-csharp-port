@@ -213,7 +213,56 @@ namespace HearthstoneReplays.Parser
 
         public void TryAssignLocalPlayer(DateTime timestamp, string data)
         {
+
+            // In mercenaries, there are no HERO_ENTITY tags, because there are, well
+            // no heroes.
+            if (IsMercenaries())
+            {
+                // We assume that our heroes are always the first ones revealed
+                var localPlayerPlayerId = CurrentGame
+                    .FilterGameData(typeof(FullEntity))
+                    .Where(d => d is FullEntity)
+                    .Select(d => d as FullEntity)
+                    .Where(d => d.GetTag(GameTag.LETTUCE_MERCENARY) == 1 && d.CardId?.Length > 0)
+                    .FirstOrDefault()
+                    ?.GetEffectiveController();
+                var opponentPlayerPlayerId = CurrentGame
+                    .FilterGameData(typeof(FullEntity))
+                    .Where(d => d is FullEntity)
+                    .Select(d => d as FullEntity)
+                    // On PvE we know the CardId
+                    .Where(d => d.GetTag(GameTag.LETTUCE_MERCENARY) == 1 && (d.CardId?.Length == 0 || d.GetZone() == (int)Zone.PLAY))
+                    .FirstOrDefault()
+                    ?.GetEffectiveController();
+
+                // Mercenaries has 3 players. From what I've seen:
+                // - The first player is the main player, but a "dummy" account? Maybe used to store mercs in some circumstances?
+                // - The second player is the AI
+                // - The third player is the "real" player account
+                foreach (PlayerEntity player in getPlayers())
+                {
+                    if (player.PlayerId == opponentPlayerPlayerId && data.Contains("PlayerID=" + opponentPlayerPlayerId)
+                        // For PvE
+                        || player.AccountHi == "0" && player.PlayerId == 2 && data.Contains("PlayerID=2"))
+                    {
+                        var newPlayer = Player.from(player);
+                        SetOpponentPlayer(newPlayer, timestamp, data);
+                        return;
+                    }
+                    else if (player.PlayerId == localPlayerPlayerId && data.Contains("PlayerID=" + localPlayerPlayerId))
+                    {
+                        var newPlayer = Player.from(player);
+                        FirstPlayerId = player.Id;
+                        SetLocalPlayer(newPlayer, timestamp, data);
+                        return;
+                    }
+
+                }
+                return;
+            }
+
             // Only assign the local player once
+            // For mercenaries this is a bit different, since we have 4 player ID assignments
             if (LocalPlayer != null && OpponentPlayer != null)
             {
                 return;
@@ -265,11 +314,11 @@ namespace HearthstoneReplays.Parser
                 {
                     int entityId = entity.Entity;
                     BaseEntity fullEntity = GetEntity(entityId);
-                    int controllerId = GetTag(fullEntity.Tags, GameTag.CONTROLLER);
+                    int controllerId = fullEntity.GetEffectiveController();
                     //Console.WriteLine("Passed first step: " + entityId + ", " + fullEntity + ", " + controllerId);
                     foreach (PlayerEntity player in getPlayers())
                     {
-                        if (GetTag(player.Tags, GameTag.CONTROLLER) == controllerId)
+                        if (player.GetEffectiveController() == controllerId)
                         {
                             var newPlayer = Player.from(player);
                             var playerEntityId = player.Tags.Where(t => t.Name == (int)GameTag.HERO_ENTITY).First().Value;
@@ -328,6 +377,17 @@ namespace HearthstoneReplays.Parser
         public bool IsBattlegrounds()
         {
             return CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS || CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY;
+        }
+
+        public bool IsMercenaries()
+        {
+            return new List<int>() {
+                (int)GameType.GT_MERCENARIES_AI_VS_AI,
+                (int)GameType.GT_MERCENARIES_FRIENDLY,
+                (int)GameType.GT_MERCENARIES_PVE,
+                (int)GameType.GT_MERCENARIES_PVE_COOP,
+                (int)GameType.GT_MERCENARIES_PVP
+            }.Contains(CurrentGame.GameType);
         }
 
         //private void HandleNodeUpdateEvent(Node oldNode, Node newNode)

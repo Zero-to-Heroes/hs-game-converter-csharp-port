@@ -65,8 +65,10 @@ namespace HearthstoneReplays.Events.Parsers
                 cardId = "";
             }
 
-            var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
+            var controllerId = showEntity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
+            var mercXp = showEntity.GetTag(GameTag.LETTUCE_MERCENARY_EXPERIENCE);
+            var mercEquipmentId = showEntity.GetTag(GameTag.LETTUCE_EQUIPMENT_ID);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "ENTITY_UPDATE",
@@ -77,7 +79,11 @@ namespace HearthstoneReplays.Events.Parsers
                     showEntity.Entity,
                     ParserState,
                     GameState,
-                    gameState),
+                    gameState,
+                    new {
+                        MercenariesExperience = mercXp,
+                        MercenariesEquipmentId = mercEquipmentId,
+                    }),
                 true,
                 node,
                 // For some reason, the event is not sent because of missing animlation log

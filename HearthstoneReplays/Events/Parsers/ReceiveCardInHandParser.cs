@@ -48,7 +48,7 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
-            var controllerId = entity.GetTag(GameTag.CONTROLLER);
+            var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             var creator = Oracle.FindCardCreator(GameState, entity, node);
 
@@ -91,7 +91,7 @@ namespace HearthstoneReplays.Events.Parsers
             var creator = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
             //var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, showEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creator.Item1, creator.Item2, node, showEntity.CardId);
-            var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
+            var controllerId = showEntity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
             var entity = GameState.CurrentEntities[showEntity.Entity];
             // Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, showEntity.CardId);
@@ -117,7 +117,7 @@ namespace HearthstoneReplays.Events.Parsers
         private List<GameEventProvider> CreateEventFromFullEntity(Node node)
         {
             FullEntity fullEntity = node.Object as FullEntity;
-            var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
+            var controllerId = fullEntity.GetEffectiveController();
             var previousZone = 0;
             if (GameState.CurrentEntities.ContainsKey(fullEntity.Id))
             {
@@ -136,7 +136,7 @@ namespace HearthstoneReplays.Events.Parsers
                         var cardId = Oracle.PredictCardId(GameState, creatorCardId, creator?.Item2 ?? -1, node, fullEntity.CardId);
                         if (cardId == null && GameState.CurrentTurn == 1 && fullEntity.GetTag(GameTag.ZONE_POSITION) == 5)
                         {
-                            var controller = GameState.GetController(fullEntity.GetTag(GameTag.CONTROLLER));
+                            var controller = GameState.GetController(fullEntity.GetEffectiveController());
                             if (controller.GetTag(GameTag.CURRENT_PLAYER) != 1)
                             {
                                 cardId = "GAME_005";

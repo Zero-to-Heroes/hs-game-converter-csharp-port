@@ -36,7 +36,7 @@ namespace HearthstoneReplays.Events.Parsers
             var action = node.Object as Parser.ReplayData.GameActions.Action;
             var entity = GameState.CurrentEntities[action.Entity];
             var cardId = entity.CardId;
-            var controllerId = entity.GetTag(GameTag.CONTROLLER);
+            var controllerId = entity.GetEffectiveController();
             if (GameState.CurrentEntities[action.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
@@ -71,7 +71,7 @@ namespace HearthstoneReplays.Events.Parsers
                         && showEntity.GetTag(GameTag.SIGIL) != 1)
                     {
                         var cardId = showEntity.CardId;
-                        var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
+                        var controllerId = showEntity.GetEffectiveController();
                         var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
                         // For now there can only be one card played per block
                         return new List<GameEventProvider> { GameEventProvider.Create(

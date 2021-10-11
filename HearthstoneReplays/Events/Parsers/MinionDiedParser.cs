@@ -50,7 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 var entity = GameState.CurrentEntities[tag.Entity];
                 var cardId = entity.CardId;
-                var controllerId = entity.GetTag(GameTag.CONTROLLER);
+                var controllerId = entity.GetEffectiveController();
                 return new
                 {
                     CardId = cardId,

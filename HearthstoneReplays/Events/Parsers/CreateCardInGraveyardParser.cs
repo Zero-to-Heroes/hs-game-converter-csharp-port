@@ -91,7 +91,7 @@ namespace HearthstoneReplays.Events.Parsers
         private List<GameEventProvider> CreateEventFromFullEntity(Node node)
         {
             FullEntity fullEntity = node.Object as FullEntity;
-            var controllerId = fullEntity.GetTag(GameTag.CONTROLLER);
+            var controllerId = fullEntity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     fullEntity.TimeStamp,
@@ -105,7 +105,7 @@ namespace HearthstoneReplays.Events.Parsers
                         var cardId = Oracle.PredictCardId(GameState, creatorCardId, creator?.Item2 ?? -1, node, fullEntity.CardId);
                         if (cardId == null && GameState.CurrentTurn == 1 && fullEntity.GetTag(GameTag.ZONE_POSITION) == 5)
                         {
-                            var controller = GameState.GetController(fullEntity.GetTag(GameTag.CONTROLLER));
+                            var controller = GameState.GetController(fullEntity.GetEffectiveController());
                             if (controller.GetTag(GameTag.CURRENT_PLAYER) != 1)
                             {
                                 cardId = "GAME_005";

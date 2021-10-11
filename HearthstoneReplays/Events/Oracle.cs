@@ -522,10 +522,10 @@ namespace HearthstoneReplays.Events
                     // Plagiarize
                     if (action.TriggerKeyword == (int)GameTag.SECRET && actionEntity != null && actionEntity.KnownEntityIds.Count > 0 && actionEntity.CardId == Rogue.Plagiarize)
                     {
-                        var plagiarizeController = actionEntity.GetTag(GameTag.CONTROLLER);
+                        var plagiarizeController = actionEntity.GetEffectiveController();
                         var entitiesPlayedByActivePlayer = actionEntity.KnownEntityIds
                             .Select(entityId => GameState.CurrentEntities[entityId])
-                            .Where(card => card.GetTag(GameTag.CONTROLLER) != -1 && card.GetTag(GameTag.CONTROLLER) != plagiarizeController)
+                            .Where(card => card.GetEffectiveController() != -1 && card.GetEffectiveController() != plagiarizeController)
                             .ToList();
                         if (entitiesPlayedByActivePlayer.Count == 0)
                         {
