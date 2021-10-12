@@ -69,11 +69,20 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
             var mercXp = showEntity.GetTag(GameTag.LETTUCE_MERCENARY_EXPERIENCE);
             var mercEquipmentId = showEntity.GetTag(GameTag.LETTUCE_EQUIPMENT_ID);
+            var abilityOwner = showEntity.GetTag(GameTag.LETTUCE_ABILITY_OWNER);
+            var abilityCooldownConfig = showEntity.GetTag(GameTag.LETTUCE_COOLDOWN_CONFIG);
+            var abilityCurrentCooldown = showEntity.GetTag(GameTag.LETTUCE_CURRENT_COOLDOWN);
+            var abilitySpeed = showEntity.GetTag(GameTag.COST);
+            var eventName = showEntity.GetTag(GameTag.ZONE) == (int)Zone.LETTUCE_ABILITY
+                ? showEntity.GetTag(GameTag.LETTUCE_IS_EQUPIMENT) == 1
+                    ? "MERCENARIES_EQUIPMENT_UPDATE"
+                    : "MERCENARIES_ABILITY_UPDATE"
+                : "ENTITY_UPDATE";
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
-                "ENTITY_UPDATE",
+                eventName,
                 GameEvent.CreateProvider(
-                    "ENTITY_UPDATE",
+                    eventName,
                     cardId,
                     controllerId,
                     showEntity.Entity,
@@ -83,6 +92,10 @@ namespace HearthstoneReplays.Events.Parsers
                     new {
                         MercenariesExperience = mercXp,
                         MercenariesEquipmentId = mercEquipmentId,
+                        AbilityOwnerEntityId = abilityOwner,
+                        AbilityCooldownConfig = abilityCooldownConfig == -1 ? (int?)null : abilityCooldownConfig,
+                        AbilityCurrentCooldown = abilityCurrentCooldown == -1 ? (int?)null : abilityCurrentCooldown,
+                        AbilitySpeed = abilitySpeed == -1 ? (int?)null : abilitySpeed,
                     }),
                 true,
                 node,

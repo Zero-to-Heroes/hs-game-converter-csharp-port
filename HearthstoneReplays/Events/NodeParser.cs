@@ -472,6 +472,10 @@ namespace HearthstoneReplays.Events
 
                 new CreateCardInGraveyardParser(ParserState),
                 new MindrenderIlluciaParser(ParserState),
+
+                new MercenariesHeroRevealed(ParserState),
+                new MercenariesAbilityRevealedParser(ParserState),
+                new MercenariesAbilityActivatedParser(ParserState),
             };
         }
     }
