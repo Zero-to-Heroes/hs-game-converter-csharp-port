@@ -235,6 +235,10 @@ namespace HearthstoneReplays.Parser
                     .FirstOrDefault()
                     ?.GetEffectiveController();
 
+                if (getPlayers().Count == 3 && CurrentGame.ScenarioID == (int)ScenarioId.LETTUCE_PVP)
+                {
+                    CurrentGame.ScenarioID = (int)ScenarioId.LETTUCE_PVP_VS_AI;
+                }
                 // Mercenaries has 3 players. From what I've seen:
                 // - The first player is the main player, but a "dummy" account? Maybe used to store mercs in some circumstances?
                 // - The second player is the AI

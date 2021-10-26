@@ -26,7 +26,11 @@ namespace HearthstoneReplays.Events.Parsers
         {
             FullEntity fullEntity;
             return node.Type == typeof(FullEntity)
-                && (fullEntity = node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SETASIDE
+                && (
+                    (fullEntity = node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SETASIDE
+                    || fullEntity.GetTag(GameTag.ZONE) == (int)Zone.PLAY
+                    // Mercs that died in previous rounds start the fight in the graveyard, and we still want to show them in PvE at least
+                    || fullEntity.GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD)
                 && fullEntity.GetTag(GameTag.LETTUCE_MERCENARY) == 1;
                 // I don't remember why the card type was restricted to minions
                 // But it makes sense to have it for all card types. In the case of Spy-o-matic, the
@@ -49,8 +53,11 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId) 
                 ? GameState.CurrentEntities[creatorEntityId].CardId
                 : null;
+            var isDead = fullEntity.GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD;
             var mercXp = fullEntity.GetTag(GameTag.LETTUCE_MERCENARY_EXPERIENCE);
             var mercEquipmentId = fullEntity.GetTag(GameTag.LETTUCE_EQUIPMENT_ID);
+            var zone = fullEntity.GetZone();
+            var zonePosition = fullEntity.GetZonePosition();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "MERCENARIES_HERO_REVEALED",
@@ -66,6 +73,9 @@ namespace HearthstoneReplays.Events.Parsers
                         CreatorCardId = creatorEntityCardId,
                         MercenariesExperience = mercXp,
                         MercenariesEquipmentId = mercEquipmentId,
+                        IsDead = isDead,
+                        ZonePosition = zonePosition,
+                        Zone = zone,
                     }
                 ),
                 true,

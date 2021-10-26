@@ -58,7 +58,7 @@ namespace HearthstoneReplays.Events.Parsers
             GameState.OnNewTurn();
             if (ParserState.IsBattlegrounds())
             {
-                if (tagChange.Value % 2 != 0)
+                if (newTurnValue % 2 != 0)
                 {
                     // When at the top2 stage, the event isn't sent anymore, so we send a default event
                     // when the turn starts (from what I've seen, the event is always sent before the turn
@@ -97,7 +97,7 @@ namespace HearthstoneReplays.Events.Parsers
                            Type = "TURN_START",
                            Value = new
                            {
-                               Turn = (int)tagChange.Value,
+                               Turn = newTurnValue,
                                GameState = gameState,
                                LocalPlayer = ParserState.LocalPlayer,
                                OpponentPlayer = ParserState.OpponentPlayer,
@@ -110,7 +110,7 @@ namespace HearthstoneReplays.Events.Parsers
             if ((ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
                         || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY))
             {
-                if (tagChange.Value % 2 == 0)
+                if (newTurnValue % 2 == 0)
                 {
                     GameState.BattleResultSent = false;
                     result.Add(GameEventProvider.Create(

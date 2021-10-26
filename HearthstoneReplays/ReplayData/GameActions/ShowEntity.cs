@@ -9,20 +9,20 @@ using System.Linq;
 
 namespace HearthstoneReplays.Parser.ReplayData.GameActions
 {
-	public class ShowEntity : GameData, IEntityData 
+    public class ShowEntity : GameData, IEntityData
 
-	{
-		[XmlAttribute("cardID")]
-		public string CardId { get; set; }
+    {
+        [XmlAttribute("cardID")]
+        public string CardId { get; set; }
 
-		[XmlAttribute("entity")]
-		public int Entity { get; set; }
+        [XmlAttribute("entity")]
+        public int Entity { get; set; }
 
-		[XmlElement("Tag", typeof(Tag))]
-		public List<Tag> Tags { get; set; }
+        [XmlElement("Tag", typeof(Tag))]
+        public List<Tag> Tags { get; set; }
 
-		[XmlIgnore]
-		public SubSpell SubSpellInEffect { get; set; }
+        [XmlIgnore]
+        public SubSpell SubSpellInEffect { get; set; }
 
         public int GetTag(GameTag tag, int defaultValue = -1)
         {
@@ -30,25 +30,40 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
             return match == null ? defaultValue : match.Value;
         }
 
-		public string GetPlayerClass()
-		{
-			var playerClass = GetTag(GameTag.CLASS);
-			return ((CardClass)playerClass).ToString();
-		}
+        public string GetPlayerClass()
+        {
+            var playerClass = GetTag(GameTag.CLASS);
+            return ((CardClass)playerClass).ToString();
+        }
 
-		public int GetEffectiveController()
-		{
-			var lettuceControllerId = GetTag(GameTag.LETTUCE_CONTROLLER);
-			if (lettuceControllerId != -1)
-			{
-				return lettuceControllerId;
-			}
-			return GetTag(GameTag.CONTROLLER);
-		}
+        internal int GetCardType()
+        {
+            return GetTag(GameTag.CARDTYPE);
+        }
 
-		public bool IsInPlay()
-		{
-			return GetTag(GameTag.ZONE) == (int)Zone.PLAY;
-		}
+        internal int GetZone()
+        {
+            return GetTag(GameTag.ZONE);
+        }
+
+        internal int GetZonePosition()
+        {
+            return GetTag(GameTag.ZONE_POSITION);
+        }
+
+        public int GetEffectiveController()
+        {
+            var lettuceControllerId = GetTag(GameTag.LETTUCE_CONTROLLER);
+            if (lettuceControllerId != -1)
+            {
+                return lettuceControllerId;
+            }
+            return GetTag(GameTag.CONTROLLER);
+        }
+
+        public bool IsInPlay()
+        {
+            return GetTag(GameTag.ZONE) == (int)Zone.PLAY;
+        }
     }
 }

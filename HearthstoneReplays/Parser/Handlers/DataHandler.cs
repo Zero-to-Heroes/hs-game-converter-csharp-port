@@ -668,7 +668,11 @@ namespace HearthstoneReplays.Parser.Handlers
                         .Where(player => player.PlayerId == playerId)
                         .First();
                     matchingPlayer.Name = playerName;
-                    matchingPlayer.InitialName = playerName;
+                    matchingPlayer.InitialName = Helper.innkeeperNames.Contains(playerName)
+                        ? Helper.innkeeperNames[0]
+                        : Helper.bobTavernNames.Contains(playerName)
+                        ? Helper.bobTavernNames[0] 
+                        : playerName;
                     state.TryAssignLocalPlayer(timestamp, data);
                     Logger.Log("Tried to assign player name", data);
                 }
@@ -855,7 +859,11 @@ namespace HearthstoneReplays.Parser.Handlers
                     var currentPlayer =
                         (PlayerEntity)state.CurrentGame.Data.Single(x => (x is PlayerEntity) && ((PlayerEntity)x).Id == state.CurrentPlayerId);
                     currentPlayer.Name = rawEntity;
-                    currentPlayer.InitialName = rawEntity;
+                    currentPlayer.InitialName = Helper.innkeeperNames.Contains(rawEntity)
+                        ? Helper.innkeeperNames[0]
+                        : Helper.bobTavernNames.Contains(rawEntity)
+                        ? Helper.bobTavernNames[0]
+                        : rawEntity;
                 }
             }
             else if (tag.Value == 1)
@@ -869,7 +877,11 @@ namespace HearthstoneReplays.Parser.Handlers
                     var currentPlayer =
                         (PlayerEntity)state.CurrentGame.Data.Single(x => (x is PlayerEntity) && ((PlayerEntity)x).Id != state.CurrentPlayerId);
                     currentPlayer.Name = rawEntity;
-                    currentPlayer.InitialName = rawEntity;
+                    currentPlayer.InitialName = Helper.innkeeperNames.Contains(rawEntity)
+                        ? Helper.innkeeperNames[0]
+                        : Helper.bobTavernNames.Contains(rawEntity)
+                        ? Helper.bobTavernNames[0]
+                        : rawEntity;
                 }
                 state.CurrentPlayerId = helper.ParseEntity(rawEntity, state);
             }

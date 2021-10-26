@@ -44,6 +44,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetEffectiveController();
             var cardId = entity.CardId;
             var abilityOwnerEntityId = entity.GetTag(GameTag.LETTUCE_ABILITY_OWNER);
+            var isTreasure = entity.GetTag(GameTag.LETTUCE_IS_TREASURE_CARD) == 1;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 action.TimeStamp,
                 "MERCENARIES_ABILITY_ACTIVATED",
@@ -57,7 +58,8 @@ namespace HearthstoneReplays.Events.Parsers
                     null,
                     new
                     {
-                        AbilityOwnerEntityId = abilityOwnerEntityId
+                        AbilityOwnerEntityId = abilityOwnerEntityId,
+                        IsTreasure = isTreasure,
                     }
                 ),
                 true,

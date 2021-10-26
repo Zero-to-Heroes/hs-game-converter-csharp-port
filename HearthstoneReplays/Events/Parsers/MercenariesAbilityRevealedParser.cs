@@ -24,9 +24,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node)
         {
-            var isCorrectType = node.Type == typeof(FullEntity);
-            return node.Type == typeof(FullEntity)
-                && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.LETTUCE_ABILITY;
+            return (node.Type == typeof(FullEntity) && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.LETTUCE_ABILITY)
+            || (node.Type == typeof(ShowEntity) && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.LETTUCE_ABILITY);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -35,6 +34,19 @@ namespace HearthstoneReplays.Events.Parsers
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
+        {
+            if (node.Type == typeof(FullEntity))
+            {
+                return CreateFromFullEntity(node);
+            }
+            else if (node.Type == typeof(ShowEntity))
+            {
+                return CreateFromShowEntity(node);
+            }
+            return null;
+        }
+
+        private List<GameEventProvider> CreateFromFullEntity(Node node)
         {
             var fullEntity = node.Object as FullEntity;
             if (fullEntity.GetCardType() != (int)CardType.LETTUCE_ABILITY)
@@ -46,6 +58,7 @@ namespace HearthstoneReplays.Events.Parsers
             var abilityCooldownConfig = fullEntity.GetTag(GameTag.LETTUCE_COOLDOWN_CONFIG);
             var abilityCurrentCooldown = fullEntity.GetTag(GameTag.LETTUCE_CURRENT_COOLDOWN);
             var abilitySpeed = fullEntity.GetTag(GameTag.COST);
+            var isTreasure = fullEntity.GetTag(GameTag.LETTUCE_IS_TREASURE_CARD) == 1;
             var controllerId = fullEntity.GetEffectiveController();
             var cardId = fullEntity.CardId;
             var eventName = fullEntity.GetTag(GameTag.LETTUCE_IS_EQUPIMENT) == 1 ? "MERCENARIES_EQUIPMENT_REVEALED" : "MERCENARIES_ABILITY_REVEALED";
@@ -65,6 +78,47 @@ namespace HearthstoneReplays.Events.Parsers
                         AbilityCooldownConfig = abilityCooldownConfig == -1 ? (int?)null : abilityCooldownConfig,
                         AbilityCurrentCooldown = abilityCurrentCooldown == -1 ? (int?)null : abilityCurrentCooldown,
                         AbilitySpeed = abilitySpeed == -1 ? (int?)null : abilitySpeed,
+                        IsTreasure = isTreasure,
+                    }
+                ),
+                true,
+                node) };
+        }
+
+
+        private List<GameEventProvider> CreateFromShowEntity(Node node)
+        {
+            var showEntity = node.Object as ShowEntity;
+            if (showEntity.GetCardType() != (int)CardType.LETTUCE_ABILITY)
+            {
+                return null;
+            }
+
+            var abilityOwner = showEntity.GetTag(GameTag.LETTUCE_ABILITY_OWNER);
+            var abilityCooldownConfig = showEntity.GetTag(GameTag.LETTUCE_COOLDOWN_CONFIG);
+            var abilityCurrentCooldown = showEntity.GetTag(GameTag.LETTUCE_CURRENT_COOLDOWN);
+            var abilitySpeed = showEntity.GetTag(GameTag.COST);
+            var isTreasure = showEntity.GetTag(GameTag.LETTUCE_IS_TREASURE_CARD) == 1;
+            var controllerId = showEntity.GetEffectiveController();
+            var cardId = showEntity.CardId;
+            var eventName = showEntity.GetTag(GameTag.LETTUCE_IS_EQUPIMENT) == 1 ? "MERCENARIES_EQUIPMENT_REVEALED" : "MERCENARIES_ABILITY_REVEALED";
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                showEntity.TimeStamp,
+                eventName,
+                GameEvent.CreateProvider(
+                    eventName,
+                    cardId,
+                    controllerId,
+                    showEntity.Entity,
+                    ParserState,
+                    GameState,
+                    null,
+                    new {
+                        AbilityOwnerEntityId = abilityOwner,
+                        AbilityCooldownConfig = abilityCooldownConfig == -1 ? (int?)null : abilityCooldownConfig,
+                        AbilityCurrentCooldown = abilityCurrentCooldown == -1 ? (int?)null : abilityCurrentCooldown,
+                        AbilitySpeed = abilitySpeed == -1 ? (int?)null : abilitySpeed,
+                        IsTreasure = isTreasure,
                     }
                 ),
                 true,

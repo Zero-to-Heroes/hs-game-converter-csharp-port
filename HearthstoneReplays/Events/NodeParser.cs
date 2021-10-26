@@ -385,6 +385,17 @@ namespace HearthstoneReplays.Events
             return new List<ActionParser>()
             {
                 new NewGameParser(ParserState),
+
+                // Ordering is important, as we want to have "ability revealed" before 
+                // "ability updated" (done by the EntityUpdateParser)
+                // Also, MINION_SUMMONED need to happen before any Equipment / Ability revealed
+                new MinionSummonedParser(ParserState),
+
+                new MercenariesHeroRevealed(ParserState),
+                new MercenariesAbilityRevealedParser(ParserState),
+                new MercenariesAbilityActivatedParser(ParserState),
+                new MercenariesAbilityCooldownUpdatedParser(ParserState),
+
                 new WinnerParser(ParserState),
                 new GameEndParser(ParserState),
                 new TurnStartParser(ParserState),
@@ -416,7 +427,6 @@ namespace HearthstoneReplays.Events
                 new MinionBackOnBoardParser(ParserState),
                 new CardRevealedParser(ParserState),
                 new InitialCardInDeckParser(ParserState),
-                new MinionSummonedParser(ParserState),
                 new FatigueParser(ParserState),
                 new DamageParser(ParserState),
                 new HealingParser(ParserState),
@@ -469,13 +479,12 @@ namespace HearthstoneReplays.Events
                 new CopiedFromEntityIdParser(ParserState),
                 new BattlegroundsTavernPrizesParser(ParserState),
                 new LinkedEntityParser(ParserState),
+                new ZoneChangeParser(ParserState),
+                new ZonePositionChangedParser(ParserState),
+
 
                 new CreateCardInGraveyardParser(ParserState),
                 new MindrenderIlluciaParser(ParserState),
-
-                new MercenariesHeroRevealed(ParserState),
-                new MercenariesAbilityRevealedParser(ParserState),
-                new MercenariesAbilityActivatedParser(ParserState),
             };
         }
     }

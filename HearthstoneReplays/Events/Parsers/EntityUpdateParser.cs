@@ -78,6 +78,8 @@ namespace HearthstoneReplays.Events.Parsers
                     ? "MERCENARIES_EQUIPMENT_UPDATE"
                     : "MERCENARIES_ABILITY_UPDATE"
                 : "ENTITY_UPDATE";
+            var zone = showEntity.GetZone();
+            var zonePosition = showEntity.GetZonePosition();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 eventName,
@@ -96,6 +98,8 @@ namespace HearthstoneReplays.Events.Parsers
                         AbilityCooldownConfig = abilityCooldownConfig == -1 ? (int?)null : abilityCooldownConfig,
                         AbilityCurrentCooldown = abilityCurrentCooldown == -1 ? (int?)null : abilityCurrentCooldown,
                         AbilitySpeed = abilitySpeed == -1 ? (int?)null : abilitySpeed,
+                        ZonePosition = zonePosition,
+                        Zone = zone,
                     }),
                 true,
                 node,

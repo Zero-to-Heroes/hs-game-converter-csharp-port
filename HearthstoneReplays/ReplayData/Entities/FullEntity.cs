@@ -74,6 +74,15 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             return GetTag(GameTag.ZONE);
         }
 
+        internal int GetZonePosition()
+        {
+            if (GetTag(GameTag.FAKE_ZONE_POSITION) != -1)
+            {
+                return GetTag(GameTag.FAKE_ZONE_POSITION);
+            }
+            return GetTag(GameTag.ZONE_POSITION);
+        }
+
         internal int GetCardType()
         {
             return GetTag(GameTag.CARDTYPE);

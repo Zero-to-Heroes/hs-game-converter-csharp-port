@@ -14,10 +14,10 @@ namespace HearthstoneReplays.Parser
 {
 	public class Helper
     {
-        private readonly List<string> innkeeperNames = new List<string>() { "The Innkeeper", "Aubergiste", "Gastwirt",
+        public static readonly List<string> innkeeperNames = new List<string>() { "The Innkeeper", "Aubergiste", "Gastwirt",
             "El tabernero", "Locandiere", "酒場のオヤジ", "여관주인",  "Karczmarz", "O Estalajadeiro", "Хозяин таверны",
             "เจ้าของโรงแรม", "旅店老板", "旅店老闆" };
-        private readonly List<string> bobTavernNames = new List<string>() { "Bartender Bob", "Bob's Tavern", "Bobs Gasthaus", "Taberna de Bob",
+        public static readonly List<string> bobTavernNames = new List<string>() { "Bartender Bob", "Bob's Tavern", "Bobs Gasthaus", "Taberna de Bob",
             "Taverne de Bob", "Locanda di Bob", "ボブの酒場", "밥의 선술집", "Karczma Boba", "Taverna do Bob", "Таверна Боба",
             "โรงเตี๊ยมของบ็อบ", "鲍勃的酒馆", "鮑伯的旅店"};
 
@@ -71,7 +71,7 @@ namespace HearthstoneReplays.Parser
                 {
 					firstPlayer.Name = data;
                 }
-                firstPlayer.InitialName = data;
+                firstPlayer.InitialName = innkeeperNames.Contains(data) ? innkeeperNames[0] : bobTavernNames.Contains(data) ? bobTavernNames[0] : data;
                 return firstPlayer.Id;
             }
             // Sometimes we register the player name with the full battletag, 
@@ -81,8 +81,8 @@ namespace HearthstoneReplays.Parser
             if (string.IsNullOrEmpty(secondPlayer.Name))
 		    {
 		        secondPlayer.Name = data;
-                secondPlayer.InitialName = data;
-                return secondPlayer.Id;
+                secondPlayer.InitialName = innkeeperNames.Contains(data) ? innkeeperNames[0] : bobTavernNames.Contains(data) ? bobTavernNames[0] : data;
+				return secondPlayer.Id;
             }
             // And the opposite
             if (secondPlayer.Name.IndexOf(data) != -1) return secondPlayer.Id;

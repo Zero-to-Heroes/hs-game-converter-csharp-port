@@ -80,6 +80,7 @@ namespace HearthstoneReplays
                     Hand = GameEvent.BuildZone(gameState, parserState.Options, Zone.HAND, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
                     Board = GameEvent.BuildBoard(gameState, parserState.Options, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
                     Deck = GameEvent.BuildZone(gameState, parserState.Options, Zone.DECK, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
+                    LettuceAbilities = GameEvent.BuildZone(gameState, parserState.Options, Zone.LETTUCE_ABILITY, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
                 },
                 Opponent = new
                 {
@@ -88,6 +89,7 @@ namespace HearthstoneReplays
                     Hand = GameEvent.BuildZone(gameState, parserState.Options, Zone.HAND, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
                     Board = GameEvent.BuildBoard(gameState, parserState.Options, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
                     Deck = GameEvent.BuildZone(gameState, parserState.Options, Zone.DECK, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    LettuceAbilities = GameEvent.BuildZone(gameState, parserState.Options, Zone.LETTUCE_ABILITY, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
                 }
             };
             return result;
@@ -178,7 +180,7 @@ namespace HearthstoneReplays
                     .Where(entity => entity.GetEffectiveController() == playerId)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
-                    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
+                    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity, gameState.CurrentEntities.Values.ToList()))
                     .ToList();
             }
             catch (Exception e)
@@ -221,7 +223,7 @@ namespace HearthstoneReplays
             return valueTC || valueSE;
         }
 
-        private static object BuildSmallEntity(BaseEntity entity, Options options, TagChange tagChange, ShowEntity showEntity)
+        private static object BuildSmallEntity(BaseEntity entity, Options options, TagChange tagChange, ShowEntity showEntity, List<FullEntity> fullEntities = null)
         {
             string cardId = null;
             if (entity.GetType() == typeof(FullEntity))
@@ -243,7 +245,17 @@ namespace HearthstoneReplays
                 //        .Where(option => option.Error == (int)PlayReq.NONE)
                 //        .Any(option => option.Entity == entity.Id) 
                 //    : false,
-                tags = newTags
+                tags = newTags,
+                enchantments = fullEntities
+                    ?.Where(e => e.GetTag(GameTag.ATTACHED) == entity.Id)
+                    ?.Where(e => e.GetZone() == (int)Zone.PLAY)
+                    .Select(e => new
+                    {
+                        entityId = e.Entity,
+                        cardId = e.CardId,
+                        tags = e.GetTagsCopy(),
+                    })
+
             };
         }
 

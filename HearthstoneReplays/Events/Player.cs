@@ -25,7 +25,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
 		public string CardID { get; set; }
 
-        public bool? IsMainPlayer { get; set; }
+        public bool IsMainPlayer { get; set; }
 
 		public override string ToString()
 		{

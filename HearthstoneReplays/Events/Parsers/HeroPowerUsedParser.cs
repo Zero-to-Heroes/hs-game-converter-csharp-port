@@ -40,11 +40,17 @@ namespace HearthstoneReplays.Events.Parsers
         {
 
             var action = node.Object as Parser.ReplayData.GameActions.Action;
+            if (!GameState.CurrentEntities.ContainsKey(action.Entity))
+            {
+                return null;
+            }
+
             var entity = GameState.CurrentEntities[action.Entity];
             if (GameState.CurrentEntities[action.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.HERO_POWER)
             {
                 return null;
             }
+
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
