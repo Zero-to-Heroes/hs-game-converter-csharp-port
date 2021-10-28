@@ -614,7 +614,7 @@ namespace HearthstoneReplays.Parser.Handlers
                         state.CurrentGame.BuildNumber = metadata.BuildNumber;
                         state.CurrentGame.GameType = metadata.GameType;
                         state.CurrentGame.FormatType = metadata.FormatType;
-                        state.CurrentGame.ScenarioID = metadata.ScenarioID;
+                        //state.CurrentGame.ScenarioID = metadata.ScenarioID;
                         state.GameState.MetaData = metadata;
                         return new GameEvent
                         {
