@@ -114,6 +114,7 @@
     <Compile Include="Events\Parsers\BattlegroundsMinionsSoldParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsMinionsBoughtParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsRerollParser.cs" />
+    <Compile Include="Events\Parsers\CostChangedParser.cs" />
     <Compile Include="Events\Parsers\MercenariesHeroRevealed.cs" />
     <Compile Include="Events\Parsers\MercenariesAbilityActivatedParser.cs" />
     <Compile Include="Events\Parsers\MercenariesAbilityRevealedParser.cs" />

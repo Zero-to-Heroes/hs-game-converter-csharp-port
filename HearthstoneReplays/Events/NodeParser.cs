@@ -481,6 +481,7 @@ namespace HearthstoneReplays.Events
                 new LinkedEntityParser(ParserState),
                 new ZoneChangeParser(ParserState),
                 new ZonePositionChangedParser(ParserState),
+                new CostChangedParser(ParserState),
 
 
                 new CreateCardInGraveyardParser(ParserState),

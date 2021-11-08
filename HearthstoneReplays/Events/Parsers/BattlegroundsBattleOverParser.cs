@@ -41,7 +41,8 @@ namespace HearthstoneReplays.Events.Parsers
                 && node.Type == typeof(Action)
                 && (node.Object as Action).Type == (int)BlockType.TRIGGER
                 // Also modify this in trigger-sync KDA
-                && (node.Object as Action).EffectIndex == 7; 
+                // To know the value, look at the ATTACK node in which a hero deals damage to another
+                && (node.Object as Action).EffectIndex == 14; 
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
