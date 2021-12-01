@@ -5,6 +5,7 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -111,24 +112,36 @@ namespace HearthstoneReplays.Events.Parsers
                 if (newTurnValue % 2 == 0)
                 {
                     GameState.BattleResultSent = false;
+                    var heroes = BuildHeroes(GameState);
                     result.Add(GameEventProvider.Create(
                         tagChange.TimeStamp,
                         "BATTLEGROUNDS_COMBAT_START",
                         () => new GameEvent
                         {
-                            Type = "BATTLEGROUNDS_COMBAT_START"
+                            Type = "BATTLEGROUNDS_COMBAT_START",
+                            Value = new
+                            {
+                                Turn = newTurnValue,
+                                Heroes = heroes,
+                            }
                         },
                         false,
                         node));
                 }
                 else
                 {
+                    var heroes = BuildHeroes(GameState);
                     result.Add(GameEventProvider.Create(
                         tagChange.TimeStamp,
                         "BATTLEGROUNDS_RECRUIT_PHASE",
                         () => new GameEvent
                         {
-                            Type = "BATTLEGROUNDS_RECRUIT_PHASE"
+                            Type = "BATTLEGROUNDS_RECRUIT_PHASE",
+                            Value = new
+                            {
+                                Turn = newTurnValue,
+                                Heroes = heroes,
+                            }
                         },
                         false,
                         node));
@@ -166,5 +179,31 @@ namespace HearthstoneReplays.Events.Parsers
                 node));
             return result;
         }
+
+        private List<Hero> BuildHeroes(GameState gameState)
+        {
+            return gameState.CurrentEntities.Values
+                .Where(entity => entity.IsHero())
+                .Where(entity => entity.GetZone() != (int)Zone.REMOVEDFROMGAME)
+                .Select(entity => new Hero()
+                {
+                    CardId = entity.CardId,
+                    EntityId = entity.Id,
+                    Health = entity.GetTag(GameTag.HEALTH, 0) - entity.GetTag(GameTag.DAMAGE, 0),
+                    Armor = entity.GetTag(GameTag.ARMOR, 0),
+                    debugTags = entity.Tags,
+                })
+                .ToList();
+
+        }
+    }
+
+    internal class Hero
+    {
+        public string CardId;
+        public int EntityId;
+        public int Health;
+        public int Armor;
+        public object debugTags;
     }
 }
