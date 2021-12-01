@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -40,19 +41,33 @@ namespace HearthstoneReplays.Events.Parsers
             var impactedEntity = GameState.CurrentEntities[tagChange.Entity];
             // We want the damage dealt to heroes by the player to be sent by the meta tags, because 
             // that way we can build the stats
+            // They changed the timing for this. Now, it triggers before the attack completes, so we can't rely 
+            // on the hero being in play or defending anymore
+            var gameEntity = GameState.GetGameEntity();
+            var playerHero = GameState.CurrentEntities.Values
+                .Where(entity => entity.IsHero())
+                .Where(entity => entity.GetTag(GameTag.CONTROLLER) == ParserState.LocalPlayer.PlayerId)
+                .FirstOrDefault();
+            var opponentCardId = GameState.CurrentEntities.Values
+                .Where(entity => entity.IsHero())
+                .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == playerHero.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID))
+                .FirstOrDefault();
+            var targetCardId = impactedEntity?.CardId;
+
             if (ParserState.IsBattlegrounds()
                     && impactedEntity.IsHero()
-                    && impactedEntity.IsInPlay()
-                    && impactedEntity.GetTag(GameTag.DEFENDING) == 1)
+                    // It seems to be that, if we are in a battle, the "next opponent" damage is the one we will do in battle
+                    && gameEntity.GetTag(GameTag.BOARD_VISUAL_STATE) == 2
+                    && opponentCardId?.CardId == targetCardId)
+                    //&& impactedEntity.IsInPlay()
+                    //&& impactedEntity.GetTag(GameTag.DEFENDING) == 1)
             {
                 return null;
             }
-
             var previousDamage = impactedEntity.GetTag(GameTag.DAMAGE, 0);
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
-            var targetCardId = impactedEntity?.CardId;
             var targetEntityId = impactedEntity?.Entity;
-            var actualDamage = tagChange.Value - previousDamage;
+            var actualDamage = Math.Max(0, tagChange.Value - previousDamage - impactedEntity.GetTag(GameTag.ARMOR, 0));
             // If there is a META block with the same info, this means the event will already be sent
             // when parsing that block, with more detailed info (like the source of the damage), so 
             // we ignore it
@@ -68,7 +83,6 @@ namespace HearthstoneReplays.Events.Parsers
             // is a hero. All damage done in combat in BG should happen with META tags, so there should be no loss of 
             // info doing that
             // One issue though: we lose the source of the damage, which means we can't compute the hero damage stats anymore
-
             var damages = new Dictionary<string, DamageInternal>();
             damages[targetCardId + "-" + targetEntityId] = new DamageInternal
             {
@@ -166,6 +180,7 @@ namespace HearthstoneReplays.Events.Parsers
                         };
                         currentSourceDamages[targetCardId + "-" + targetEntityId] = currentTargetDamages;
                     }
+                    // FIXME: this doesn't work when armor is involved?
                     currentTargetDamages.Damage = currentTargetDamages.Damage + damageTag.Data;
                 }
             }
@@ -263,6 +278,11 @@ namespace HearthstoneReplays.Events.Parsers
             public string TargetCardId;
             public int Damage;
             public DateTime Timestamp;
+
+            public override string ToString()
+            {
+                return JsonConvert.SerializeObject(this);
+            }
         }
     }
 }

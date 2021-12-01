@@ -230,9 +230,9 @@ namespace HearthstoneReplays.Events
             // processing, and rely only the on the PowerTaskList instead of the GameState, so that I 
             // can get rid of the timing shennanigans
             // What the GameState processing is good for:
-            // - Know ahead of time what will happen (eg MINION_WILL_DIE)
+            // - Know ahead of time what will happen (eg MINION_WILL_DIE). Maybe this can be worked around by waiting for a short while in some cases
             // - Start the BG simulation earlier  (this one might be big for me)
-            // - There are some stuff that are only present in the GS logs (metadata, player names)
+            // - There are some stuff that are only present in the GS logs (metadata, player names) (this can be solved by running on the GS first, once)
             while (IsEventToProcess())
             {
                 processing = true;

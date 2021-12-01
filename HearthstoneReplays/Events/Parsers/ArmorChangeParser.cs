@@ -34,27 +34,25 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
-            var initialArmor = entity.GetTag(GameTag.ARMOR);
+            var initialArmor = entity.GetTag(GameTag.ARMOR, 0);
             var newArmor = tagChange.Value;
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                  "ARMOR_CHANGED",
-                () => new GameEvent
-                {
-                    Type = "ARMOR_CHANGED",
-                    Value = new
-                    {
-                        CardId = cardId,
-                        ControllerId = controllerId,
-                        LocalPlayer = ParserState.LocalPlayer,
-                        OpponentPlayer = ParserState.OpponentPlayer,
+                GameEvent.CreateProvider(
+                    "ARMOR_CHANGED",
+                    cardId,
+                    controllerId,
+                    entity.Id,
+                    ParserState,
+                    GameState,
+                    null,
+                    new {
                         ArmorChange = newArmor - initialArmor,
                         TotalArmor = newArmor,
-                        EntityId = entity.Id, // Might be useful if we want to uniquely identify the minion
-                    }
-                },
+                    }),
                 true,
                 node) };
         }

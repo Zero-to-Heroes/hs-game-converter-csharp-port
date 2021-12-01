@@ -107,6 +107,7 @@ namespace HearthstoneReplays.Events.Parsers
                 {
                     CardId = cardId,
                     LeaderboardPlace = fullEntity.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE),
+                    Health = fullEntity.GetTag(GameTag.HEALTH),
                 }
             };
         }

@@ -87,6 +87,8 @@ namespace HearthstoneReplays.Events.Parsers
                             CardId = chosenEntity.CardId,
                             LocalPlayer = ParserState.LocalPlayer,
                             OpponentPlayer = ParserState.OpponentPlayer,
+                            Health = chosenEntity.GetTag(GameTag.HEALTH),
+                            Armor = chosenEntity.GetTag(GameTag.ARMOR, 0),
                         }
                     };
                 },
@@ -152,6 +154,7 @@ namespace HearthstoneReplays.Events.Parsers
                     OpponentPlayer = ParserState.OpponentPlayer,
                     LeaderboardPlace = fullEntity.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE),
                     Health = fullEntity.GetTag(GameTag.HEALTH),
+                    Armor = fullEntity.GetTag(GameTag.ARMOR, 0),
                     Damage = fullEntity.GetTag(GameTag.DAMAGE),
                     TavernLevel = fullEntity.GetTag(GameTag.PLAYER_TECH_LEVEL),
                     NextOpponentCardId = hero.CardId,
