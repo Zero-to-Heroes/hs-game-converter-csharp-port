@@ -54,13 +54,17 @@ namespace HearthstoneReplays.Events.Parsers
                     var parentAction = node.Parent.Object as Parser.ReplayData.GameActions.Action;
                     if ((parentAction.Type == (int)BlockType.TRIGGER || parentAction.Type == (int)BlockType.POWER)
                         && GameState.CurrentEntities.ContainsKey(parentAction.Entity)
-                        && GameState.CurrentEntities[parentAction.Entity].CardId == CardIds.Collectible.Rogue.SparkjoyCheat)
+                        && GameState.CurrentEntities[parentAction.Entity].CardId == CardIds.SparkjoyCheat)
                     {
                         eventName = "SECRET_PUT_IN_PLAY";
                     }
                 }
                 var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
                 var playerClass = entity.GetPlayerClass();
+                var creatorEntityId = entity.GetTag(GameTag.CREATOR);
+                var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
+                    ? GameState.CurrentEntities[creatorEntityId].CardId
+                    : null;
                 System.Action preprocess = () => GameState.OnCardPlayed(tagChange.Entity);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                         tagChange.TimeStamp,
@@ -75,6 +79,7 @@ namespace HearthstoneReplays.Events.Parsers
                             gameState,
                             new {
                                 PlayerClass = playerClass,
+                                CreatorCardId = creatorEntityCardId,
                             },
                             preprocess),
                        true,

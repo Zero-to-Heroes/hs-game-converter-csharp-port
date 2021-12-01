@@ -21,7 +21,9 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node)
         {
-            return node.Type == typeof(TagChange)
+            // This is for now only useful to get the speed update in Mercenaries, so we try to restrict the number of events
+            return ParserState.IsMercenaries()
+                && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.COST;
         }
 

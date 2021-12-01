@@ -87,7 +87,7 @@ namespace HearthstoneReplays.Events
             {
                 return false;
             }
-            var useDebug = debug && false;
+            var useDebug = debug;
             if (useDebug)
             {
                 Logger.Log("\nReceiving anomation log " + data, debug);

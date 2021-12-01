@@ -51,7 +51,7 @@ namespace HearthstoneReplays.Events.Parsers
             // CArds transformed by Oh My Yogg are instead reemitted as new card played
             if (showEntity.GetTag(GameTag.LAST_AFFECTED_BY) != -1 
                 && GameState.CurrentEntities.ContainsKey(showEntity.GetTag(GameTag.LAST_AFFECTED_BY))
-                && GameState.CurrentEntities[showEntity.GetTag(GameTag.LAST_AFFECTED_BY)].CardId == CardIds.Collectible.Paladin.OhMyYogg)
+                && GameState.CurrentEntities[showEntity.GetTag(GameTag.LAST_AFFECTED_BY)].CardId == CardIds.OhMyYogg)
             {
                 return null;
             }
@@ -60,7 +60,7 @@ namespace HearthstoneReplays.Events.Parsers
             // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 
             // have a special rule
             var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
-            if (isBeforeMulligan && cardId == CardIds.Collectible.Neutral.EncumberedPackMule)
+            if (isBeforeMulligan && cardId == CardIds.EncumberedPackMule)
             {
                 cardId = "";
             }

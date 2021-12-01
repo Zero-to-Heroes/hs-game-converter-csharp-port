@@ -25,20 +25,24 @@ namespace HearthstoneReplays.Events.Parsers
             var isTriggerPhase = (node.Parent == null
                        || node.Parent.Type != typeof(Parser.ReplayData.GameActions.Action)
                        || (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER);
-            if (isTriggerPhase)
-            {
-                return false;
-            }
+            //if (isTriggerPhase)
+            //{
+            //    return false;
+            //}
 
-            var sigilPlayed = node.Type == typeof(TagChange)
+            var sigilPlayed = !isTriggerPhase && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.SECRET 
                 && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.SIGIL) == 1
                 && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.HAND;
+            TagChange tagChange;
+            FullEntity tagChangeEntity;
             var cardPlayed = node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.ZONE
-                && (node.Object as TagChange).Value == (int)Zone.PLAY
-                && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.HAND;
+                && (tagChange = node.Object as TagChange).Name == (int)GameTag.ZONE
+                && tagChange.Value == (int)Zone.PLAY
+                && (tagChangeEntity = GameState.CurrentEntities[(node.Object as TagChange).Entity]).GetTag(GameTag.ZONE) == (int)Zone.HAND
+                // The only case we actually consider the trigger phases is if we're handling a Cast When Drawn spell
+                && (!isTriggerPhase || tagChangeEntity.GetTag(GameTag.CASTSWHENDRAWN) == 1);
             return sigilPlayed || cardPlayed;
         }
 
@@ -116,7 +120,7 @@ namespace HearthstoneReplays.Events.Parsers
             // of simply emitting a new entity update node.
             var isOhMyYogg = (showEntity.GetTag(GameTag.LAST_AFFECTED_BY) != -1
                     && GameState.CurrentEntities.ContainsKey(showEntity.GetTag(GameTag.LAST_AFFECTED_BY))
-                    && GameState.CurrentEntities[showEntity.GetTag(GameTag.LAST_AFFECTED_BY)].CardId == CardIds.Collectible.Paladin.OhMyYogg);
+                    && GameState.CurrentEntities[showEntity.GetTag(GameTag.LAST_AFFECTED_BY)].CardId == CardIds.OhMyYogg);
             var isSigil = showEntity.GetTag(GameTag.ZONE) == (int)Zone.SECRET && showEntity.GetTag(GameTag.SIGIL) == 1;
             if (showEntity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || isSigil || isOhMyYogg)
             {

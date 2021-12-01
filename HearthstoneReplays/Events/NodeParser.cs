@@ -37,11 +37,8 @@ namespace HearthstoneReplays.Events
 
         public void Reset(ParserState ParserState)
         {
-            //ClearQueue();
-            // Logger.Log("before reset", eventQueue.Count);
             this.ParserState = ParserState;
             parsers = BuildActionParsers(ParserState);
-            // Logger.Log("after reset", eventQueue.Count);
         }
 
         public void StartDevMode()
@@ -66,30 +63,21 @@ namespace HearthstoneReplays.Events
 
         public void NewNode(Node node)
         {
-            //try
-            //{
-                if (node == null)
+            if (node == null)
+            {
+                return;
+            }
+            foreach (ActionParser parser in parsers)
+            {
+                if (parser.AppliesOnNewNode(node))
                 {
-                    return;
-                }
-                //Logger.Log("Receiving new node", node.CreationLogLine);
-                foreach (ActionParser parser in parsers)
-                {
-                    if (parser.AppliesOnNewNode(node))
+                    List<GameEventProvider> providers = parser.CreateGameEventProviderFromNew(node);
+                    if (providers != null)
                     {
-                        List<GameEventProvider> providers = parser.CreateGameEventProviderFromNew(node);
-                        if (providers != null)
-                        {
-                            EnqueueGameEvent(providers);
-                        }
+                        EnqueueGameEvent(providers);
                     }
                 }
-            //}
-            //catch (Exception e)
-            //{
-            //    Logger.Log("Coulnt not apply parsers to new node, ignoring node and moving on " + e.Message, e.StackTrace);
-            //    throw e;
-            //}
+            }
         }
 
         public void CloseNode(Node node)
@@ -98,7 +86,6 @@ namespace HearthstoneReplays.Events
             {
                 return;
             }
-            //Logger.Log("Receiving close node", node.CreationLogLine);
             foreach (ActionParser parser in parsers)
             {
                 if (!node.Closed && parser.AppliesOnCloseNode(node))
@@ -227,8 +214,14 @@ namespace HearthstoneReplays.Events
             "EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=5 Target=0 SubOption=-1 TriggerKeyword=TAG_NOT_SET",
 
         };
+
+        private bool processing;
         private async void ProcessGameEventQueue(Object source, ElapsedEventArgs e)
         {
+            if (processing)
+            {
+                return;
+            }
             // If both the first events has just been added, wait a bit, so that we're sure there's no 
             // other event that should be processed first
             // Warning: this means the whole event parsing works in real-time, and is not suited for 
@@ -242,6 +235,7 @@ namespace HearthstoneReplays.Events
             // - There are some stuff that are only present in the GS logs (metadata, player names)
             while (IsEventToProcess())
             {
+                processing = true;
                 try
                 {
                     GameEventProvider provider;
@@ -249,6 +243,8 @@ namespace HearthstoneReplays.Events
                     {
                         if (eventQueue.Count == 0 || ParserState == null)
                         {
+                            //Logger.Log("No event", "");
+                            processing = false;
                             return;
                         }
                         if (eventQueue.First() is StartDevModeProvider)
@@ -256,6 +252,7 @@ namespace HearthstoneReplays.Events
                             NodeParser.DevMode = true;
                             eventQueue.RemoveAt(0);
                             Logger.Log("Setting DevMode", DevMode);
+                            processing = false;
                             continue;
                         }
                         if (eventQueue.First() is StopDevModeProvider)
@@ -264,6 +261,7 @@ namespace HearthstoneReplays.Events
                             eventQueue.RemoveAt(0);
                             Logger.Log("Setting DevMode", DevMode);
                             GameEventHandler.Handle(null, NodeParser.DevMode);
+                            processing = false;
                             continue;
                         }
                         // TODO: this spoils events in BGS, how to do it?
@@ -272,6 +270,8 @@ namespace HearthstoneReplays.Events
                         // So that things don't break while in DevMode
                         if (waitingForMetaData && !eventQueue.First().ShortCircuit)
                         {
+                            //Logger.Log("Waiting for metadata", "");
+                            processing = false;
                             return;
                         }
                         // Heck for Battlegrounds
@@ -297,6 +297,8 @@ namespace HearthstoneReplays.Events
                         // With the arrival of Battlegrounds we can't do this anymore, as it spoils the game very fast
                         //&& DateTimeOffset.UtcNow.Subtract(eventQueue.First().Timestamp).TotalMilliseconds < 5000)
                         {
+                            //Logger.Log("No event suitable event: " + eventQueue.First().EventName, "" + eventQueue.Count);
+                            processing = false;
                             return;
                         }
 
@@ -309,6 +311,7 @@ namespace HearthstoneReplays.Events
                         // Wait until we have all the necessary data
                         while (ParserState.CurrentGame.FormatType == -1 || ParserState.CurrentGame.GameType == -1 || ParserState.LocalPlayer == null)
                         {
+                            //Logger.Log("Awaiting metadata", "");
                             await Task.Delay(100);
                         }
                         waitingForMetaData = false;
@@ -321,9 +324,11 @@ namespace HearthstoneReplays.Events
                 catch (Exception ex)
                 {
                     Logger.Log("Exception while parsing event queue " + ex.Message, ex.StackTrace);
+                    processing = false;
                     return;
                 }
             }
+            processing = false;
         }
 
         private void ProcessGameEvent(GameEventProvider provider)
@@ -342,6 +347,7 @@ namespace HearthstoneReplays.Events
             }
             else if (provider.SupplyGameEvent == null && provider.GameEvent == null)
             {
+                //Logger.Log("No game event", "");
                 return;
             }
             var gameEvent = provider.GameEvent != null ? provider.GameEvent : provider.SupplyGameEvent();
@@ -349,6 +355,7 @@ namespace HearthstoneReplays.Events
             // have the full meta data, like dungeon run step
             if (gameEvent != null)
             {
+                //Logger.Log("Handling game event", gameEvent.Type);
                 GameEventHandler.Handle(gameEvent, NodeParser.DevMode);
             }
         }
@@ -358,7 +365,6 @@ namespace HearthstoneReplays.Events
             try
             {
                 var isEvent = false;
-
                 lock (listLock)
                 {
                     // We leave some time so that events parsed later can be processed sooner (typiecally the case 
@@ -370,6 +376,8 @@ namespace HearthstoneReplays.Events
                             || eventQueue.First().ShortCircuit
                             || DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds > 500);
                 }
+                //Logger.Log("Is event to process? " + isEvent + " // " + eventQueue.Count, 
+                //    eventQueue.Count > 0 ? "" + DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds : "");
                 return isEvent;
             }
             catch (Exception ex)
@@ -395,6 +403,7 @@ namespace HearthstoneReplays.Events
                 new MercenariesAbilityRevealedParser(ParserState),
                 new MercenariesAbilityActivatedParser(ParserState),
                 new MercenariesAbilityCooldownUpdatedParser(ParserState),
+                new MercenariesQueuedAbilityParser(ParserState),
 
                 new WinnerParser(ParserState),
                 new GameEndParser(ParserState),

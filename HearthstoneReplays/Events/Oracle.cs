@@ -6,7 +6,6 @@ using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using static HearthstoneReplays.Events.CardIds;
-using static HearthstoneReplays.Events.CardIds.Collectible;
 using HearthstoneReplays.Parser.ReplayData.Meta;
 using System.Linq;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
@@ -104,7 +103,7 @@ namespace HearthstoneReplays.Events
                     var creator = GameState.CurrentEntities[act.Entity];
                     // Spoecial case for Draem Portals, since for some reasons a Dream Portal the nests the next 
                     // action (which can lead to nested dream portal blocks)
-                    if (creator?.CardId == CardIds.NonCollectible.Druid.YseraUnleashed_DreamPortalToken)
+                    if (creator?.CardId == YseraUnleashed_DreamPortalToken)
                     {
                         if (node.Object.GetType() == typeof(ShowEntity))
                         {
@@ -164,167 +163,179 @@ namespace HearthstoneReplays.Events
             {
                 switch (creatorCardId)
                 {
-                    case NonCollectible.Demonhunter.FinalShowdown_CloseThePortalToken: return NonCollectible.Demonhunter.FinalShowdown_DemonslayerKurtrusToken;
-                    case NonCollectible.Demonhunter.InfernalStrike1: return NonCollectible.Demonhunter.TwinSlice_SecondSliceToken;
-                    case Demonhunter.Marrowslicer: return NonCollectible.Warlock.SchoolSpirits_SoulFragmentToken;
-                    case Demonhunter.ThrowGlaive: return Collectible.Demonhunter.ThrowGlaive; // TO CHECK
-                    case Demonhunter.TwinSlice: return NonCollectible.Demonhunter.TwinSlice_SecondSliceToken;
-                    case Demonhunter.UrzulHorror: return NonCollectible.Demonhunter.UrzulHorror_LostSoulToken;
-                    case Druid.ArchsporeMsshifn: return NonCollectible.Druid.ArchsporeMsshifn_MsshifnPrimeToken;
-                    case Druid.AstralTiger: return Druid.AstralTiger;
-                    case Druid.JadeIdol: return Druid.JadeIdol;
-                    case Druid.JungleGiants: return NonCollectible.Druid.JungleGiants_BarnabusTheStomperToken;
-                    case Druid.Malorne: return Druid.Malorne;
-                    case Druid.SecureTheDeck: return Druid.ClawLegacy;
-                    case Druid.WitchwoodApple: return NonCollectible.Druid.WitchwoodApple_TreantToken;
-                    case Druid.YseraUnleashed: return NonCollectible.Druid.YseraUnleashed_DreamPortalToken;
-                    case Hunter.AdorableInfestation: return NonCollectible.Hunter.AdorableInfestation_MarsuulCubToken;
-                    case Hunter.HalazziTheLynx: return NonCollectible.Hunter.Springpaw_LynxToken;
-                    case Hunter.RaptorHatchling: return NonCollectible.Hunter.RaptorHatchling_RaptorPatriarchToken;
-                    case Hunter.SunscaleRaptor: return Collectible.Hunter.SunscaleRaptor;
-                    case Hunter.Springpaw: return NonCollectible.Hunter.Springpaw_LynxToken;
-                    case Hunter.TheMarshQueen: return NonCollectible.Hunter.TheMarshQueen_QueenCarnassaToken;
-                    case Hunter.ZixorApexPredator: return NonCollectible.Hunter.ZixorApexPredator_ZixorPrimeToken;
-                    case Mage.ArchmageAntonidas: return Mage.FireballCore;
-                    case Mage.AstromancerSolarian: return NonCollectible.Mage.AstromancerSolarian_SolarianPrimeToken;
-                    case Mage.ConfectionCyclone: return NonCollectible.Mage.ConfectionCyclone_SugarElementalToken;
-                    case Mage.ConjureManaBiscuit: return NonCollectible.Mage.ConjureManaBiscuit_ManaBiscuitToken;
-                    case Mage.DeckOfWonders: return NonCollectible.Mage.DeckofWonders_ScrollOfWonderToken;
-                    case Mage.FirstFlame: return NonCollectible.Mage.FirstFlame_SecondFlameToken;
-                    case Mage.FlameGeyser: return NonCollectible.Neutral.FireFly_FlameElementalToken;
-                    case Mage.ForgottenTorch: return NonCollectible.Mage.ForgottenTorch_RoaringTorchToken;
-                    case Mage.GhastlyConjurer: return Mage.MirrorImageLegacy;
-                    case Mage.Ignite: return Mage.Ignite;
-                    case Mage.OpenTheWaygate: return NonCollectible.Mage.OpentheWaygate_TimeWarpToken;
-                    case Mage.Pyros: return NonCollectible.Mage.Pyros_PyrosToken1;
-                    case NonCollectible.Mage.Pyros_PyrosToken1: return NonCollectible.Mage.Pyros_PyrosToken2;
-                    case NonCollectible.Mage.SorcerersGambit_ReachThePortalRoomToken: return NonCollectible.Mage.SorcerersGambit_ArcanistDawngraspToken;
-                    case Mage.Rhonin: return Mage.ArcaneMissilesLegacy;
-                    case Mage.SteamSurger: return Mage.FlameGeyser;
-                    case Mage.VioletSpellwing: return Mage.ArcaneMissilesLegacy;
-                    case NonCollectible.Paladin.BringOnRecruits: return NonCollectible.Paladin.SilverHandRecruitLegacyToken;
-                    case Paladin.DrygulchJailor: return NonCollectible.Paladin.SilverHandRecruitLegacyToken;
-                    case Paladin.MurgurMurgurgle: return NonCollectible.Paladin.MurgurMurgurgle_MurgurglePrimeToken;
-                    case Paladin.TheLastKaleidosaur: return NonCollectible.Paladin.TheLastKaleidosaur_GalvadonToken;
-                    case Paladin.SandwaspQueen: return NonCollectible.Paladin.SandwaspQueen_SandwaspToken;
-                    case Paladin.BronzeHerald: return NonCollectible.Paladin.BronzeHerald_BronzeDragonToken;
-                    case Priest.AwakenTheMakers: return NonCollectible.Priest.AwakentheMakers_AmaraWardenOfHopeToken;
-                    case Priest.GildedGargoyle: return NonCollectible.Neutral.TheCoinCore;
-                    case Priest.ExcavatedEvil: return Priest.ExcavatedEvil;
-                    case Priest.ExtraArms: return NonCollectible.Priest.ExtraArms_MoreArmsToken;
-                    case Priest.ReliquaryOfSouls: return NonCollectible.Priest.ReliquaryofSouls_ReliquaryPrimeToken;
-                    case NonCollectible.Priest.SeekGuidance_IlluminateTheVoidToken: return NonCollectible.Priest.SeekGuidance_XyrellaTheSanctifiedToken;
-                    case NonCollectible.Priest.SeekGuidance_XyrellaTheSanctifiedToken: return NonCollectible.Priest.SeekGuidance_PurifiedShardToken;
-                    case Rogue.Akama: return NonCollectible.Rogue.Akama_AkamaPrimeToken;
-                    case Rogue.BeneathTheGrounds: return NonCollectible.Rogue.BeneaththeGrounds_NerubianAmbushToken;
-                    case Rogue.BloodsailFlybooter: return NonCollectible.Rogue.BloodsailFlybooter_SkyPirateToken;
-                    case Rogue.BoneBaron: return NonCollectible.Neutral.GrimNecromancer_SkeletonToken;
-                    case Rogue.DeadlyFork: return NonCollectible.Rogue.DeadlyFork_SharpFork;
-                    case Rogue.FaldoreiStrider: return NonCollectible.Rogue.FaldoreiStrider_SpiderAmbushEnchantment;
-                    case Rogue.LoanShark: return NonCollectible.Neutral.TheCoinCore;
-                    case Rogue.RazorpetalLasher: return NonCollectible.Rogue.RazorpetalVolley_RazorpetalToken;
-                    case Rogue.RazorpetalVolley: return NonCollectible.Rogue.RazorpetalVolley_RazorpetalToken;
-                    case Rogue.ShadowOfDeath: return NonCollectible.Rogue.ShadowofDeath_ShadowToken;
-                    case Rogue.TheCavernsBelow: return NonCollectible.Rogue.TheCavernsBelow_CrystalCoreTokenUNGORO;
-                    case Rogue.UmbralSkulker: return NonCollectible.Neutral.TheCoinCore;
-                    case Rogue.Wanted: return NonCollectible.Neutral.Coin;
-                    case Rogue.Waxadred: return NonCollectible.Rogue.Waxadred_WaxadredsCandleToken;
-                    case Shaman.LadyVashj: return NonCollectible.Shaman.LadyVashj_VashjPrimeToken;
-                    case Shaman.UniteTheMurlocs: return NonCollectible.Shaman.UnitetheMurlocs_MegafinToken;
-                    case Shaman.WhiteEyes: return NonCollectible.Shaman.WhiteEyes_TheStormGuardianToken;
-                    case NonCollectible.Shaman.CommandtheElements_TameTheFlamesToken: return NonCollectible.Shaman.CommandtheElements_StormcallerBrukanToken;
-                    case NonCollectible.Warlock.TheDemonSeed_CompleteTheRitualToken: return NonCollectible.Warlock.TheDemonSeed_BlightbornTamsinToken;
-                    case Warlock.CurseOfRafaam: return NonCollectible.Warlock.CurseofRafaam_CursedToken;
-                    case Warlock.HighPriestessJeklik: return Warlock.HighPriestessJeklik;
-                    case Warlock.Impbalming: return NonCollectible.Warlock.Impbalming_WorthlessImpToken;
-                    case Warlock.KanrethadEbonlocke: return NonCollectible.Warlock.KanrethadEbonlocke_KanrethadPrimeToken;
-                    case Warlock.LakkariSacrifice: return NonCollectible.Warlock.LakkariSacrifice_NetherPortalToken1;
-                    case Warlock.RinTheFirstDisciple: return NonCollectible.Warlock.RintheFirstDisciple_TheFirstSealToken;
-                    case NonCollectible.Warlock.RintheFirstDisciple_TheFirstSealToken: return NonCollectible.Warlock.RintheFirstDisciple_TheSecondSealToken;
-                    case NonCollectible.Warlock.RintheFirstDisciple_TheSecondSealToken: return NonCollectible.Warlock.RintheFirstDisciple_TheThirdSealToken;
-                    case NonCollectible.Warlock.RintheFirstDisciple_TheFourthSealToken: return NonCollectible.Warlock.RintheFirstDisciple_TheFinalSealToken;
-                    case NonCollectible.Warlock.RintheFirstDisciple_TheFinalSealToken: return NonCollectible.Warlock.RintheFirstDisciple_AzariTheDevourerToken;
-                    case Warlock.SchoolSpirits: return NonCollectible.Warlock.SchoolSpirits_SoulFragmentToken;
-                    case Warlock.SoulShear: return NonCollectible.Warlock.SchoolSpirits_SoulFragmentToken;
-                    case Warlock.SpiritJailer: return NonCollectible.Warlock.SchoolSpirits_SoulFragmentToken;
-                    case Warrior.BumperCar: return NonCollectible.Neutral.BumperCar_DarkmoonRiderToken;
-                    case Warrior.ClockworkGoblin: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
-                    case Warrior.DirehornHatchling: return NonCollectible.Warrior.DirehornHatchling_DirehornMatriarchToken;
-                    case Warrior.ExploreUngoro: return NonCollectible.Warrior.ExploreUnGoro_ChooseYourPathToken;
-                    case Warrior.FirePlumesHeart: return NonCollectible.Warrior.FirePlumesHeart_SulfurasToken;
-                    case Warrior.KargathBladefist: return NonCollectible.Warrior.KargathBladefist_KargathPrimeToken;
-                    case Warrior.IronJuggernaut: return NonCollectible.Warrior.IronJuggernaut_BurrowingMineToken;
-                    case NonCollectible.Warrior.RaidtheDocks_SecureTheSuppliesToken: return NonCollectible.Warrior.RaidtheDocks_CapnRokaraToken;
-                    case Warrior.Wrenchcalibur: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
+                    case AdorableInfestation: return AdorableInfestation_MarsuulCubToken;
+                    case ArchsporeMsshifn: return ArchsporeMsshifn_MsshifnPrimeToken;
+                    case AstralTiger: return AstralTiger;
+                    case BuildASnowman: return BuildASnowman_BuildASnowbruteToken;
+                    case BuildASnowman_BuildASnowbruteToken: return BuildASnowman_BuildASnowgreToken;
+                    case DreadlichTamsin: return DreadlichTamsin_FelRiftToken;
+                    case FinalShowdown_CloseThePortalToken: return DemonslayerKurtrusToken;
+                    case HalazziTheLynx: return Springpaw_LynxToken;
+                    case InfernalStrikeTavernBrawl: return TwinSlice_SecondSliceToken;
+                    case JadeIdol: return JadeIdol;
+                    case JungleGiants: return JungleGiants_BarnabusTheStomperToken;
+                    case KoboldTaskmaster: return KoboldTaskmaster_ArmorScrapToken;
+                    case Malorne: return Malorne;
+                    case Marrowslicer: return SchoolSpirits_SoulFragmentToken;
+                    case RamCommander: return RamCommander_BattleRamToken;
+                    case RaptorHatchling: return RaptorHatchling_RaptorPatriarchToken;
+                    case Scrapsmith: return Scrapsmith_ScrappyGruntToken;
+                    case SecureTheDeck: return ClawLegacy;
+                    case SeedsOfDestruction: return DreadlichTamsin_FelRiftToken;
+                    case Sleetbreaker: return Windchill;
+                    case Springpaw: return Springpaw_LynxToken;
+                    case SunscaleRaptor: return SunscaleRaptor;
+                    case TheMarshQueen: return TheMarshQueen_QueenCarnassaToken;
+                    case ThrowGlaive: return ThrowGlaive; // TO CHECK
+                    case TwinSlice1: return TwinSlice_SecondSliceToken;
+                    case TwinSlice2: return TwinSlice_SecondSliceToken;
+                    case UrzulHorror: return UrzulHorror_LostSoulToken;
+                    case Wrenchcalibur: return SeaforiumBomber_BombToken;
+                    case WitchwoodApple: return WitchwoodApple_TreantToken;
+                    case YseraUnleashed: return YseraUnleashed_DreamPortalToken;
+                    case ZixorApexPredator: return ZixorApexPredator_ZixorPrimeToken;
 
-                    case Neutral.AncientShade: return NonCollectible.Neutral.AncientShade_AncientCurseToken;
-                    case Neutral.BadLuckAlbatross: return NonCollectible.Neutral.BadLuckAlbatross_AlbatrossToken;
-                    case Neutral.BananaBuffoon: return NonCollectible.Neutral.BananaBuffoon_BananasToken;
-                    case Neutral.BananaVendor: return NonCollectible.Neutral.BananaVendor_BananasToken;
-                    case Neutral.BootyBayBookie: return NonCollectible.Neutral.TheCoinCore;
-                    case Neutral.BurglyBully: return NonCollectible.Neutral.TheCoinCore;
-                    case NonCollectible.Neutral.SurlyMobGILNEAS: return NonCollectible.Neutral.AngryMobGILNEAS;
-                    case NonCollectible.Neutral.AngryMobGILNEAS: return NonCollectible.Neutral.CrazedMobGILNEAS;
-                    case NonCollectible.Neutral.SurlyMobTavernBrawl: return NonCollectible.Neutral.AngryMobTavernBrawl;
-                    case NonCollectible.Neutral.AngryMobTavernBrawl: return NonCollectible.Neutral.CrazedMobTavernBrawl;
-                    case NonCollectible.Neutral.CoinPouchGILNEAS: return NonCollectible.Neutral.SackOfCoinsGILNEAS;
-                    case NonCollectible.Neutral.SackOfCoinsGILNEAS: return NonCollectible.Neutral.HeftySackOfCoinsGILNEAS;
-                    case NonCollectible.Neutral.CoinPouchTavernBrawl: return NonCollectible.Neutral.SackOfCoinsTavernBrawl;
-                    case NonCollectible.Neutral.SackOfCoinsTavernBrawl: return NonCollectible.Neutral.HeftySackOfCoinsTavernBrawl;
-                    case NonCollectible.Neutral.CreepyCurioGILNEAS: return NonCollectible.Neutral.HauntedCurioGILNEAS;
-                    case NonCollectible.Neutral.HauntedCurioGILNEAS: return NonCollectible.Neutral.CursedCurioGILNEAS;
-                    case NonCollectible.Neutral.CreepyCurioTavernBrawl: return NonCollectible.Neutral.HauntedCurioTavernBrawl;
-                    case NonCollectible.Neutral.HauntedCurioTavernBrawl: return NonCollectible.Neutral.CursedCurioTavernBrawl;
-                    case NonCollectible.Neutral.MilitiaHornGILNEAS: return NonCollectible.Neutral.VeteransMilitiaHornGILNEAS;
-                    case NonCollectible.Neutral.OldMilitiaHornGILNEAS: return NonCollectible.Neutral.MilitiaHornGILNEAS;
-                    case NonCollectible.Neutral.MilitiaHornTavernBrawl: return NonCollectible.Neutral.VeteransMilitiaHornTavernBrawl;
-                    case NonCollectible.Neutral.OldMilitiaHornTavernBrawl: return NonCollectible.Neutral.MilitiaHornTavernBrawl;
-                    case Neutral.Doomcaller: return Neutral.Cthun;
-                    case Neutral.EliseTheTrailblazer: return NonCollectible.Neutral.ElisetheTrailblazer_UngoroPackToken;
-                    case Neutral.EliseStarseeker: return NonCollectible.Neutral.EliseStarseeker_MapToTheGoldenMonkeyToken;
-                    case Neutral.FeralGibberer: return Neutral.FeralGibberer;
-                    case Neutral.FireFly: return NonCollectible.Neutral.FireFly_FlameElementalToken;
-                    case Neutral.FishyFlyer: return NonCollectible.Neutral.FishyFlyer_SpectralFlyerToken;
-                    case NonCollectible.Neutral.ForgingQueldelar: return NonCollectible.Neutral.QueldelarTavernBrawl;
-                    case Neutral.EncumberedPackMule: return Neutral.EncumberedPackMule;
-                    case Neutral.HakkarTheSoulflayer: return NonCollectible.Neutral.HakkartheSoulflayer_CorruptedBloodToken;
-                    case Neutral.HoardingDragon: return NonCollectible.Neutral.TheCoinCore;
-                    case Neutral.IgneousElemental: return NonCollectible.Neutral.FireFly_FlameElementalToken;
-                    case Neutral.InfestedGoblin: return NonCollectible.Neutral.WrappedGolem_ScarabToken;
-                    case Neutral.KingMukla: return NonCollectible.Neutral.BananasMissions;
-                    case Neutral.LicensedAdventurer: return NonCollectible.Neutral.TheCoinCore;
-                    case Neutral.MailboxDancer: return NonCollectible.Neutral.TheCoinCore;
-                    case Neutral.Mankrik: return NonCollectible.Neutral.Mankrik_OlgraMankriksWifeToken;
-                    case Neutral.MuklaTyrantOfTheVale: return NonCollectible.Neutral.BananasMissions;
-                    case Neutral.PortalKeeper: return NonCollectible.Neutral.PortalKeeper_FelhoundPortalToken;
-                    case Neutral.PortalOverfiend: return NonCollectible.Neutral.PortalKeeper_FelhoundPortalToken;
-                    case Neutral.SeaforiumBomber: return NonCollectible.Neutral.SeaforiumBomber_BombToken;
-                    case Neutral.SmugSenior: return NonCollectible.Neutral.SmugSenior_SpectralSeniorToken;
-                    case Neutral.SneakyDelinquent: return NonCollectible.Neutral.SneakyDelinquent_SpectralDelinquentToken;
-                    case Neutral.SoldierOfFortune: return NonCollectible.Neutral.TheCoinCore;
-                    case Neutral.SparkDrill: return NonCollectible.Neutral.SparkDrill_SparkToken;
-                    case Neutral.SparkEngine: return NonCollectible.Neutral.SparkDrill_SparkToken;
-                    case NonCollectible.Neutral.TheCandle: return NonCollectible.Neutral.TheCandle;
-                    case NonCollectible.Neutral.TheDarkness: return NonCollectible.Neutral.TheDarkness_DarknessCandleToken;
-                    case Neutral.WeaselTunneler: return Neutral.WeaselTunneler;
-                    case NonCollectible.Neutral.EliseStarseeker_MapToTheGoldenMonkeyToken: return NonCollectible.Neutral.EliseStarseeker_GoldenMonkeyToken;
+                    case ArchmageAntonidas: return FireballCore;
+                    case AstromancerSolarian: return AstromancerSolarian_SolarianPrimeToken;
+                    case ConfectionCyclone: return ConfectionCyclone_SugarElementalToken;
+                    case ConjureManaBiscuit: return ConjureManaBiscuit_ManaBiscuitToken;
+                    case DeckOfWonders: return DeckOfWonders_ScrollOfWonderToken;
+                    case FirstFlame: return FirstFlame_SecondFlameToken;
+                    case FlameGeyser: return FireFly_FlameElementalToken;
+                    case ForgottenTorch: return ForgottenTorch_RoaringTorchToken;
+                    case GhastlyConjurer: return MirrorImageLegacy2;
+                    case Ignite: return Ignite;
+                    case OpenTheWaygate: return OpenTheWaygate_TimeWarpToken;
+                    case Pyros: return Pyros_PyrosToken1;
+                    case Pyros_PyrosToken1: return Pyros_PyrosToken2;
+                    case SorcerersGambit_ReachThePortalRoomToken: return SorcerersGambit_ArcanistDawngraspToken;
+                    case Rhonin: return ArcaneMissilesLegacy;
+                    case SteamSurger: return FlameGeyser;
+                    case VioletSpellwing: return ArcaneMissilesLegacy;
+                    case BringOnRecruitsTavernBrawl: return SilverHandRecruitLegacyToken;
+                    case DrygulchJailor: return SilverHandRecruitLegacyToken;
+                    case MurgurMurgurgle: return MurgurMurgurgle_MurgurglePrimeToken;
+                    case TheLastKaleidosaur: return TheLastKaleidosaur_GalvadonToken;
+                    case SandwaspQueen: return SandwaspQueen_SandwaspToken;
+                    case BronzeHerald: return BronzeHerald_BronzeDragonToken;
+                    case AwakenTheMakers: return AwakenTheMakers_AmaraWardenOfHopeToken;
+                    case GildedGargoyle: return TheCoinCore;
+                    case ExcavatedEvil: return ExcavatedEvil;
+                    case ExtraArms: return ExtraArms_MoreArmsToken;
+                    case ReliquaryOfSouls: return ReliquaryOfSouls_ReliquaryPrimeToken;
+                    case SeekGuidance_IlluminateTheVoidToken: return SeekGuidance_XyrellaTheSanctifiedToken;
+                    case SeekGuidance_XyrellaTheSanctifiedToken: return XyrellaTheSanctified_PurifiedShard;
+                    case Akama1: return Akama_AkamaPrimeToken;
+                    case BeneathTheGrounds: return BeneathTheGrounds_NerubianAmbushToken;
+                    case BloodsailFlybooter: return BloodsailFlybooter_SkyPirateToken;
+                    case BoneBaron: return GrimNecromancer_SkeletonToken;
+                    case DeadlyFork: return DeadlyFork_SharpFork;
+                    case FaldoreiStrider: return FaldoreiStrider_SpiderAmbush;
+                    case LoanShark: return TheCoinCore;
+                    case RazorpetalLasher: return RazorpetalVolley_RazorpetalToken;
+                    case RazorpetalVolley: return RazorpetalVolley_RazorpetalToken;
+                    case ShadowOfDeath1: return ShadowOfDeath_ShadowToken;
+                    case TheCavernsBelow: return TheCavernsBelow_CrystalCoreToken;
+                    case UmbralSkulker: return TheCoinCore;
+                    case Wanted: return Coin;
+                    case Waxadred: return Waxadred_WaxadredsCandleToken;
+                    case LadyVashj1: return LadyVashj_VashjPrimeToken;
+                    case UniteTheMurlocs: return UniteTheMurlocs_MegafinToken;
+                    case WhiteEyes: return WhiteEyes_TheStormGuardianToken;
+                    case CommandTheElements_TameTheFlamesToken: return CommandTheElements_StormcallerBrukanToken;
+                    case TheDemonSeed_CompleteTheRitualToken: return TheDemonSeed_BlightbornTamsinToken;
+                    case CurseOfRafaam: return CurseOfRafaam_CursedToken;
+                    case HighPriestessJeklik: return HighPriestessJeklik;
+                    case Impbalming: return Impbalming_WorthlessImpToken;
+                    case KanrethadEbonlocke: return KanrethadEbonlocke_KanrethadPrimeToken;
+                    case LakkariSacrifice: return LakkariSacrifice_NetherPortalToken1;
+                    case RinTheFirstDisciple: return RinTheFirstDisciple_TheFirstSealToken;
+                    case RinTheFirstDisciple_TheFirstSealToken: return RinTheFirstDisciple_TheSecondSealToken;
+                    case RinTheFirstDisciple_TheSecondSealToken: return RinTheFirstDisciple_TheThirdSealToken;
+                    case RinTheFirstDisciple_TheFourthSealToken: return RinTheFirstDisciple_TheFinalSealToken;
+                    case RinTheFirstDisciple_TheFinalSealToken: return RinTheFirstDisciple_AzariTheDevourerToken;
+                    case SchoolSpirits1: return SchoolSpirits_SoulFragmentToken;
+                    case SoulShear1: return SchoolSpirits_SoulFragmentToken;
+                    case SpiritJailer1: return SchoolSpirits_SoulFragmentToken;
+                    case BumperCar: return BumperCar_DarkmoonRiderToken;
+                    case ClockworkGoblin: return SeaforiumBomber_BombToken;
+                    case DirehornHatchling: return DirehornHatchling_DirehornMatriarchToken;
+                    case ExploreUngoro: return ExploreUngoro_ChooseYourPathToken;
+                    case FirePlumesHeart: return FirePlumesHeart_SulfurasToken;
+                    case KargathBladefist1: return KargathBladefist_KargathPrimeToken;
+                    case IronJuggernaut: return IronJuggernaut_BurrowingMineToken;
+                    case RaidTheDocks_SecureTheSuppliesToken: return RaidTheDocks_CapnRokaraToken;
 
-                    case Neutral.BalefulBanker:
-                    case Neutral.DollmasterDorian:
-                    case Neutral.DragonBreeder:
-                    case Neutral.Sathrovarr:
-                    case Neutral.ZolaTheGorgon:
-                    case Druid.Recycle:
-                    case Druid.Splintergraft:
-                    case Druid.MarkOfTheSpikeshell:
-                    case Hunter.DireFrenzy:
-                    case Mage.ManicSoulcaster:
-                    case Priest.HolyWater:
-                    case Priest.Seance:
-                    case Rogue.GangUp:
-                    case Rogue.LabRecruiter:
-                    case Rogue.Shadowcaster:
-                    case Rogue.TogwagglesScheme:
+                    case AncientShade: return AncientShade_AncientCurseToken;
+                    case BadLuckAlbatross: return BadLuckAlbatross_AlbatrossToken;
+                    case BananaBuffoon: return BananaBuffoon_BananasToken;
+                    case BananaVendor: return BananaVendor_BananasToken;
+                    case BootyBayBookie: return TheCoinCore;
+                    case BurglyBully: return TheCoinCore;
+                    case SurlyMob: return AngryMob;
+                    case AngryMob: return CrazedMob;
+                    case SurlyMobTavernBrawl: return SurlyMob_AngryMobTavernBrawl;
+                    case SurlyMob_AngryMobTavernBrawl: return SurlyMob_CrazedMobTavernBrawl;
+                    case CoinPouch: return SackOfCoins;
+                    case SackOfCoins: return HeftySackOfCoins;
+                    case CoinPouchTavernBrawl: return CoinPouch_SackOfCoinsTavernBrawl;
+                    case CoinPouch_SackOfCoinsTavernBrawl: return CoinPouch_HeftySackOfCoinsTavernBrawl;
+                    case CreepyCurio: return HauntedCurio;
+                    case HauntedCurio: return CursedCurio;
+                    case CreepyCurioTavernBrawl: return CreepyCurio_HauntedCurioTavernBrawl;
+                    case CreepyCurio_HauntedCurioTavernBrawl: return CreepyCurio_CursedCurioTavernBrawl;
+                    case MilitiaHorn: return VeteransMilitiaHorn;
+                    case OldMilitiaHorn: return MilitiaHorn;
+                    case OldMilitiaHornTavernBrawl: return OldMilitiaHorn_MilitiaHornTavernBrawl;
+                    case OldMilitiaHorn_MilitiaHornTavernBrawl: return OldMilitiaHorn_VeteransMilitiaHornTavernBrawl;
+                    case Doomcaller: return Cthun2;
+                    case EliseTheTrailblazer: return EliseTheTrailblazer_UngoroPackToken;
+                    case EliseStarseeker1: return UnearthedRaptor_MapToTheGoldenMonkeyToken;
+                    case FeralGibberer: return FeralGibberer;
+                    case FireFly: return FireFly_FlameElementalToken;
+                    case FishyFlyer: return FishyFlyer_SpectralFlyerToken;
+                    case Queldelar_ForgingQueldelarToken: return QueldelarTavernBrawl;
+                    case EncumberedPackMule: return EncumberedPackMule;
+                    case HakkarTheSoulflayer: return HakkarTheSoulflayer_CorruptedBloodToken;
+                    case HoardingDragon1: return TheCoinCore;
+                    case IgneousElemental: return FireFly_FlameElementalToken;
+                    case InfestedGoblin: return WrappedGolem_ScarabToken;
+                    case KingMuklaLegacy: return KingMukla_BananasLegacyToken;
+                    case KingMuklaVanilla: return KingMukla_BananasLegacyToken;
+                    case KingMuklaCore: return KingMukla_BananasLegacyToken;
+                    case LicensedAdventurer: return TheCoinCore;
+                    case MailboxDancer: return TheCoinCore;
+                    case Mankrik: return Mankrik_OlgraMankriksWifeToken;
+                    case MuklaTyrantOfTheVale: return KingMukla_BananasLegacyToken;
+                    case PortalKeeper: return PortalKeeper_FelhoundPortalToken;
+                    case PortalOverfiend: return PortalKeeper_FelhoundPortalToken;
+                    case SeaforiumBomber: return SeaforiumBomber_BombToken;
+                    case SmugSenior: return SmugSenior_SpectralSeniorToken;
+                    case SneakyDelinquent: return SneakyDelinquent_SpectralDelinquentToken;
+                    case SoldierOfFortune: return TheCoinCore;
+                    case SparkDrill: return SparkDrill_SparkToken;
+                    case SparkEngine: return SparkDrill_SparkToken;
+                    case TheCandle: return TheCandle;
+                    case TheDarkness1: return TheDarkness_DarknessCandleToken;
+                    case WeaselTunneler: return WeaselTunneler;
+                    case UnearthedRaptor_MapToTheGoldenMonkeyToken: return UnearthedRaptor_GoldenMonkeyToken;
+
+                    case BalefulBanker:
+                    case DollmasterDorian:
+                    case DragonBreeder:
+                    case Sathrovarr:
+                    case ZolaTheGorgon:
+                    case Recycle:
+                    case Splintergraft:
+                    case MarkOfTheSpikeshell:
+                    case DireFrenzy:
+                    case ManicSoulcaster:
+                    case HolyWater:
+                    case Seance:
+                    case GangUp:
+                    case LabRecruiter:
+                    case Shadowcaster:
+                    case TogwagglesScheme:
                         if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
                             var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
@@ -336,7 +347,7 @@ namespace HearthstoneReplays.Events
                         }
                         return null;
 
-                    case Neutral.AugmentedElekk:
+                    case AugmentedElekk:
                         // The parent action is Augmented Elekk trigger, which is not the one we're interested in
                         // Its parent is the one that created the new entity
                         if (node.Parent.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
@@ -362,11 +373,11 @@ namespace HearthstoneReplays.Events
                         }
                         return null;
 
-                    case Warlock.ExpiredMerchant:
+                    case ExpiredMerchant:
                         Console.WriteLine("TODO! Implement ExpiredMerchant card guess");
                         return null;
 
-                    case Priest.SpiritOfTheDead:
+                    case SpiritOfTheDead:
                         if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
                             var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
@@ -385,8 +396,8 @@ namespace HearthstoneReplays.Events
                         }
                         return null;
 
-                    case Mage.ManaBind:
-                    case Mage.FrozenClone:
+                    case ManaBind:
+                    case FrozenClone:
                         if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action)
                             && node.Parent.Parent?.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
@@ -396,7 +407,7 @@ namespace HearthstoneReplays.Events
                         }
                         return null;
 
-                    case Mage.Duplicate:
+                    case Duplicate:
                         if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
                             var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
@@ -413,7 +424,7 @@ namespace HearthstoneReplays.Events
                         }
                         return null;
 
-                    case Neutral.PotionOfIllusion:
+                    case PotionOfIllusion:
                         if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
                             var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
@@ -433,7 +444,7 @@ namespace HearthstoneReplays.Events
                         }
                         return null;
 
-                    case Neutral.YseraTheDreamerCore:
+                    case YseraTheDreamerCore:
                         if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
                             var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
@@ -443,11 +454,11 @@ namespace HearthstoneReplays.Events
                             {
                                 dreamCardsLeft = new List<string>()
                                 {
-                                    NonCollectible.DreamCards.NightmareExpert1,
-                                    NonCollectible.DreamCards.Dream,
-                                    NonCollectible.DreamCards.LaughingSister,
-                                    NonCollectible.DreamCards.YseraAwakens,
-                                    NonCollectible.DreamCards.EmeraldDrake,
+                                    NightmareLegacy,
+                                    DreamLegacy,
+                                    LaughingSisterLegacy,
+                                    YseraAwakensLegacy,
+                                    EmeraldDrakeLegacy,
                                 };
                                 existingEntity.CardIdsToCreate = dreamCardsLeft;
                             }
@@ -457,7 +468,7 @@ namespace HearthstoneReplays.Events
                         }
                         return null;
 
-                    case NonCollectible.Rogue.FindtheImposter_SpymasterScabbsToken:
+                    case FindTheImposter_SpymasterScabbsToken:
                         if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
                             var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
@@ -467,11 +478,11 @@ namespace HearthstoneReplays.Events
                             {
                                 gizmosLeft = new List<string>()
                                 {
-                                    NonCollectible.Rogue.FindtheImposter_SpyOMaticToken,
-                                    NonCollectible.Rogue.FindtheImposter_FizzflashDistractorToken,
-                                    NonCollectible.Rogue.FindtheImposter_HiddenGyrobladeToken,
-                                    NonCollectible.Rogue.FindtheImposter_UndercoverMoleToken,
-                                    NonCollectible.Rogue.FindtheImposter_NoggenFogGeneratorToken,
+                                    FindTheImposter_SpyOMaticToken,
+                                    FindTheImposter_FizzflashDistractorToken,
+                                    FindTheImposter_HiddenGyrobladeToken,
+                                    UndercoverMoleToken,
+                                    FindTheImposter_NoggenFogGeneratorToken,
                                 };
                                 existingEntity.CardIdsToCreate = gizmosLeft;
                             }
@@ -493,7 +504,7 @@ namespace HearthstoneReplays.Events
                             ? GameState.CurrentEntities[action.Entity]
                             : null;
                     // Tamsin Roana
-                    if (actionEntity != null && actionEntity.CardId == Warlock.TamsinRoame)
+                    if (actionEntity != null && actionEntity.CardId == TamsinRoame1)
                     {
                         // Now get the parent PLAY action
                         if (node.Parent.Parent != null && node.Parent.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
@@ -511,7 +522,7 @@ namespace HearthstoneReplays.Events
                     }
 
                     // Keymaster Alabaster
-                    if (actionEntity != null && GameState.LastCardDrawnEntityId > 0 && actionEntity.CardId == Neutral.KeymasterAlabaster)
+                    if (actionEntity != null && GameState.LastCardDrawnEntityId > 0 && actionEntity.CardId == KeymasterAlabaster)
                     {
                         var lastDrawnEntity = GameState.CurrentEntities.ContainsKey(GameState.LastCardDrawnEntityId)
                             ? GameState.CurrentEntities[GameState.LastCardDrawnEntityId]
@@ -520,7 +531,7 @@ namespace HearthstoneReplays.Events
                     }
 
                     // Plagiarize
-                    if (action.TriggerKeyword == (int)GameTag.SECRET && actionEntity != null && actionEntity.KnownEntityIds.Count > 0 && actionEntity.CardId == Rogue.Plagiarize)
+                    if (action.TriggerKeyword == (int)GameTag.SECRET && actionEntity != null && actionEntity.KnownEntityIds.Count > 0 && actionEntity.CardId == Plagiarize)
                     {
                         var plagiarizeController = actionEntity.GetEffectiveController();
                         var entitiesPlayedByActivePlayer = actionEntity.KnownEntityIds
@@ -537,7 +548,7 @@ namespace HearthstoneReplays.Events
                     }
 
                     // Diligent Notetaker
-                    if (action.TriggerKeyword == (int)GameTag.SPELLBURST && actionEntity != null && GameState.LastCardPlayedEntityId > 0 && actionEntity.CardId == Shaman.DiligentNotetaker)
+                    if (action.TriggerKeyword == (int)GameTag.SPELLBURST && actionEntity != null && GameState.LastCardPlayedEntityId > 0 && actionEntity.CardId == DiligentNotetaker)
                     {
                         var lastPlayedEntity = GameState.CurrentEntities.ContainsKey(GameState.LastCardPlayedEntityId)
                             ? GameState.CurrentEntities[GameState.LastCardPlayedEntityId]
@@ -549,7 +560,7 @@ namespace HearthstoneReplays.Events
                 if (action.Type == (int)BlockType.POWER)
                 {
                     var actionEntity = GameState.CurrentEntities[action.Entity];
-                    if (actionEntity.CardId == Hunter.DevouringSwarm)
+                    if (actionEntity.CardId == DevouringSwarm)
                     {
                         if (actionEntity.CardIdsToCreate.Count == 0)
                         {
@@ -579,7 +590,7 @@ namespace HearthstoneReplays.Events
                     }
 
                     // Second card for Archivist Elysiana
-                    if (actionEntity.CardId == Neutral.ArchivistElysiana)
+                    if (actionEntity.CardId == ArchivistElysiana)
                     {
                         // Now let's find the ID of the card that was created right before
                         var lastTagChange = action.Data
@@ -595,7 +606,7 @@ namespace HearthstoneReplays.Events
                     }
 
                     // Southsea Scoundrel
-                    if (actionEntity.CardId == Neutral.SouthseaScoundrel)
+                    if (actionEntity.CardId == SouthseaScoundrel)
                     {
                         // If we are the ones who draw it, it's all good, and if it's teh opponent, 
                         // then we know it's the same one
@@ -609,7 +620,7 @@ namespace HearthstoneReplays.Events
                     }
 
                     // Vanessa VanCleed
-                    if (actionEntity.CardId == Rogue.VanessaVancleefCore)
+                    if (actionEntity.CardId == VanessaVancleefCore)
                     {
                         var vanessaControllerId = GameState.CurrentEntities[actionEntity.Entity].GetController();
                         var playerIds = GameState.CardsPlayedByPlayerEntityId.Keys;
@@ -635,7 +646,7 @@ namespace HearthstoneReplays.Events
                     }
 
                     // Ace in the Hole
-                    if (actionEntity.CardId == NonCollectible.Rogue.AceInTheHole)
+                    if (actionEntity.CardId == AceInTheHoleTavernBrawlToken)
                     {
                         var actionControllerId = actionEntity.GetController();
                         if (actionEntity.KnownEntityIds.Count == 0)
@@ -679,7 +690,7 @@ namespace HearthstoneReplays.Events
             // Libram of Wisdom
             if (node.Type == typeof(FullEntity) && (node.Object as FullEntity).SubSpellInEffect?.Prefab == "Librams_SpawnToHand_Book")
             {
-                return Paladin.LibramOfWisdom;
+                return LibramOfWisdom1;
             }
 
             return null;
@@ -689,7 +700,7 @@ namespace HearthstoneReplays.Events
         {
             switch (creatorCardId)
             {
-                case CardIds.Collectible.Warlock.TamsinRoame: return CardIds.NonCollectible.Warlock.TamsinRoame_GatheredShadowsEnchantment;
+                case TamsinRoame1: return TamsinRoame_GatheredShadowsEnchantment;
                 default: return null;
             }
 
@@ -699,7 +710,7 @@ namespace HearthstoneReplays.Events
         {
             switch (creatorCardId)
             {
-                case CardIds.Collectible.Warlock.TamsinRoame: return creatorCardId;
+                case TamsinRoame1: return creatorCardId;
                 default: return null;
             }
         }

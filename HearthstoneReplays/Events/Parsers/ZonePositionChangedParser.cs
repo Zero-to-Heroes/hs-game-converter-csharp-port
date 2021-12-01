@@ -22,7 +22,9 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnNewNode(Node node)
         {
             TagChange tagChange;
-            return node.Type == typeof(TagChange)
+            // Limit it to merceanries, the only mode where this is used, to limit the impact on the number of events sent (esp. in BG)
+            return ParserState.IsMercenaries()
+                && node.Type == typeof(TagChange)
                 && ((tagChange = node.Object as TagChange).Name == (int)GameTag.ZONE_POSITION);
         }
 

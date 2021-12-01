@@ -25,7 +25,7 @@ namespace HearthstoneReplays.Events.Parsers
             return node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ATK
                 && GameState.CurrentEntities.ContainsKey((node.Object as TagChange).Entity)
-                && GameState.CurrentEntities[((node.Object as TagChange).Entity)].CardId == NonCollectible.Neutral.Cthun;
+                && GameState.CurrentEntities[((node.Object as TagChange).Entity)].CardId == Cthun2;
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -42,7 +42,7 @@ namespace HearthstoneReplays.Events.Parsers
                 if (GameState.CurrentEntities.ContainsKey(parentAction.Entity))
                 {
                     var parentEntity = GameState.CurrentEntities[parentAction.Entity];
-                    if (parentAction.Type == (int)BlockType.POWER && parentEntity.CardId == NonCollectible.Rogue.TheCavernsBelow_CrystalCoreTokenUNGORO)
+                    if (parentAction.Type == (int)BlockType.POWER && parentEntity.CardId == TheCavernsBelow_CrystalCoreToken)
                     {
                         return null;
                     }

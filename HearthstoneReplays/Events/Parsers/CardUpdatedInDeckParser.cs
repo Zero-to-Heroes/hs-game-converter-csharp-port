@@ -35,7 +35,7 @@ namespace HearthstoneReplays.Events.Parsers
                 && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) == (int)Zone.DECK;
             var appliesForAction = node.Type == typeof(Action)
                 && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
-                && GameState.CurrentEntities[(node.Object as Action).Entity].CardId == CardIds.NonCollectible.Rogue.FindtheImposter_SpyOMaticToken;
+                && GameState.CurrentEntities[(node.Object as Action).Entity].CardId == CardIds.FindTheImposter_SpyOMaticToken;
             return appliesOnShow || appliesForAction;
         }
 
@@ -106,7 +106,7 @@ namespace HearthstoneReplays.Events.Parsers
             // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 
             // have a special rule
             var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
-            if (isBeforeMulligan && cardId == CardIds.Collectible.Neutral.EncumberedPackMule)
+            if (isBeforeMulligan && cardId == CardIds.EncumberedPackMule)
             {
                 return null;
             }

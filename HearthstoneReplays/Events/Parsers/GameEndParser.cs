@@ -39,6 +39,7 @@ namespace HearthstoneReplays.Events.Parsers
             var xmlReplay = new ReplayConverter().xmlFromReplay(replayCopy);
             var gameStateReport = GameState.BuildGameStateReport();
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
+            Logger.Log("Enqueuing GAME_END event", "");
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "GAME_END",

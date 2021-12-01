@@ -11,16 +11,17 @@ namespace HearthstoneReplays.Events.Parsers
     public class BattlegroundsPlayerBoardParser : ActionParser
     {
         private static List<string> COMPETING_BATTLE_START_HERO_POWERS = new List<string>() {
-            NonCollectible.Neutral.RebornRitesTavernBrawl,
-            NonCollectible.Neutral.SwattingInsectsTavernBrawl,
-            NonCollectible.Neutral.EmbraceYourRageTavernBrawl,
+            RebornRitesBattlegrounds,
+            SwattingInsectsBattlegrounds,
+            EmbraceYourRageBattlegrounds,
+            TamsinRoame_FragrantPhylactery,
         }; 
 
         static List<string> START_OF_COMBAT_MINION_EFFECT = new List<string>() {
-            NonCollectible.Neutral.RedWhelp,
-            NonCollectible.Neutral.RedWhelpTavernBrawl,
-            NonCollectible.Neutral.PrizedPromoDrake,
-            NonCollectible.Neutral.PrizedPromoDrake_PrizedPromoDrake,
+            RedWhelp,
+            RedWhelpBattlegrounds,
+            PrizedPromoDrake,
+            PrizedPromoDrakeBattlegrounds,
         };
 
         private GameState GameState { get; set; }
@@ -39,7 +40,9 @@ namespace HearthstoneReplays.Events.Parsers
                 && GameState.BgsCurrentBattleOpponent == null
                 && node.Type == typeof(Action)
                 && ((node.Object as Action).Type == (int)BlockType.ATTACK
-                        || (node.Object as Action).Type == (int)BlockType.DEATHS
+                        // Why do we want deaths? Can there be a death without an attack or trigger first? AFAIK sacrifices like Tamsin's hero
+                        // power is the only option?
+                        //|| (node.Object as Action).Type == (int)BlockType.DEATHS
                         // Basically trigger as soon as we can, and just leave some room for the Lich King's hero power
                         // Here we assume that hero powers are triggered first, before Start of Combat events
                         // The issue is if two hero powers (including the Lich King) compete, which is the case when Al'Akir triggers first for instance
@@ -52,7 +55,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 && (
                                     // This was introduced to wait until the damage is done to each hero before sending the board state. However,
                                     // forcing the entity to be the root entity means that sometimes we send the info way too late.
-                                    GameState.CurrentEntities[(node.Object as Action).Entity].CardId == CardIds.NonCollectible.Neutral.Baconshop8playerenchantTavernBrawl
+                                    GameState.CurrentEntities[(node.Object as Action).Entity].CardId == CardIds.Baconshop8playerenchantEnchantmentBattlegrounds
                                     // This condition has been introduced to solve an issue when the Wingmen hero power triggers. In that case, the parent action of attacks
                                     // is not a TB_BaconShop_8P_PlayerE, but the hero power action itself.
                                     || GameState.CurrentEntities[(node.Object as Action).Entity].GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER
@@ -144,12 +147,12 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                 // Here we accept to face the ghost
-                .Where(entity => entity.CardId != NonCollectible.Neutral.BartenderBobTavernBrawl
-                    && entity.CardId != NonCollectible.Neutral.BaconphheroTavernBrawl
-                    && entity.CardId != NonCollectible.Neutral.BaconphheroTavernBrawl)
+                .Where(entity => entity.CardId != BartenderBobBattlegrounds
+                    && entity.CardId != BaconphheroHeroicBattlegrounds
+                    && entity.CardId != BaconphheroHeroicBattlegrounds)
                 .ToList();
             var hero = potentialHeroes
-                //.Where(entity => entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
+                //.Where(entity => entity.CardId != KelthuzadBattlegrounds)
                 .FirstOrDefault()
                 ?.Clone();
             //Logger.Log("Trying to handle board", "" + ParserState.CurrentGame.GameType + " // " + hero?.CardId);
@@ -160,16 +163,16 @@ namespace HearthstoneReplays.Events.Parsers
                 GameState.BgsCurrentBattleOpponent = cardId;
             }
 
-            if (cardId == NonCollectible.Neutral.KelthuzadTavernBrawl2)
+            if (cardId == KelthuzadBattlegrounds)
             {
                 // Finding the one that is flagged as the player's NEXT_OPPONENT
                 var playerEntity = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
-                    .Where(entity => entity.CardId != NonCollectible.Neutral.BartenderBobTavernBrawl
-                        && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2
-                        && entity.CardId != NonCollectible.Neutral.BaconphheroTavernBrawl)
+                    .Where(entity => entity.CardId != BartenderBobBattlegrounds
+                        && entity.CardId != KelthuzadBattlegrounds
+                        && entity.CardId != BaconphheroHeroicBattlegrounds)
                     .OrderBy(entity => entity.Id)
                     .LastOrDefault();
                 var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
@@ -177,9 +180,9 @@ namespace HearthstoneReplays.Events.Parsers
                 var nextOpponentCandidates = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
-                    .Where(entity => entity.CardId != NonCollectible.Neutral.BartenderBobTavernBrawl
-                        && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2
-                        && entity.CardId != NonCollectible.Neutral.BaconphheroTavernBrawl)
+                    .Where(entity => entity.CardId != BartenderBobBattlegrounds
+                        && entity.CardId != KelthuzadBattlegrounds
+                        && entity.CardId != BaconphheroHeroicBattlegrounds)
                     .ToList();
                 var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
 
@@ -223,7 +226,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Logger.Log("WARNING: could not find hero power", "");
                 }
                 var heroPowerUsed = heroPower?.GetTag(GameTag.EXHAUSTED) == 1 || heroPower?.GetTag(GameTag.BACON_HERO_POWER_ACTIVATED) == 1;
-                if (heroPower?.CardId == CardIds.NonCollectible.Neutral.EmbraceYourRageTavernBrawl)
+                if (heroPower?.CardId == CardIds.EmbraceYourRageBattlegrounds)
                 {
                     var parentAction = (node.Parent.Object as Parser.ReplayData.GameActions.Action);
                     var hasTriggerBlock = parentAction.Data
@@ -231,7 +234,7 @@ namespace HearthstoneReplays.Events.Parsers
                         .Select(data => data as Parser.ReplayData.GameActions.Action)
                         .Where(action => action.Type == (int)BlockType.TRIGGER)
                         .Where(action => GameState.CurrentEntities.ContainsKey(action.Entity)
-                            && GameState.CurrentEntities[action.Entity]?.CardId == CardIds.NonCollectible.Neutral.EmbraceYourRageTavernBrawl)
+                            && GameState.CurrentEntities[action.Entity]?.CardId == CardIds.EmbraceYourRageBattlegrounds)
                         .Count() > 0;
                     heroPowerUsed = heroPowerUsed || hasTriggerBlock;
                 }

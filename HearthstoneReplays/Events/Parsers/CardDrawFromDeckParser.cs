@@ -46,6 +46,16 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
+            // When a card is sent back to the deck using tradeable, we know its card ID
+            // We can't simply remove the card ID when the card is sent back to the deck, because this would lead to
+            // a desynch between HS's game state and our own game state, which can then cause further problems down 
+            // the line that can be hard to debug
+            // So we need to know, here, if the cardId should be public or not
+            // About using "REVEALED": if a card is set to REVEALED = 0, then drawn in a context where we should know what 
+            // it is (eg for your own cards), we don't want to hide the info
+            // About using "IS_USING_TRADE
+
+
             var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
             // If we compute this when triggering the event, we will get a "gift" icon because the 
@@ -54,7 +64,7 @@ namespace HearthstoneReplays.Events.Parsers
             // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 
             // have a special rule
             var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
-            if (isBeforeMulligan && cardId == CardIds.Collectible.Neutral.EncumberedPackMule)
+            if (isBeforeMulligan && cardId == CardIds.EncumberedPackMule)
             {
                 return null;
             }
@@ -118,7 +128,7 @@ namespace HearthstoneReplays.Events.Parsers
             // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 
             // have a special rule
             var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
-            if (isBeforeMulligan && cardId == CardIds.Collectible.Neutral.EncumberedPackMule)
+            if (isBeforeMulligan && cardId == CardIds.EncumberedPackMule)
             {
                 return null;
             }
@@ -164,7 +174,7 @@ namespace HearthstoneReplays.Events.Parsers
             // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 
             // have a special rule
             var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
-            if (isBeforeMulligan && cardId == CardIds.Collectible.Neutral.EncumberedPackMule)
+            if (isBeforeMulligan && cardId == CardIds.EncumberedPackMule)
             {
                 cardId = "";
             }

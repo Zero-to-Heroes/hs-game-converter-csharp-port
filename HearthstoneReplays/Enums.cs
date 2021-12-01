@@ -958,6 +958,7 @@ namespace HearthstoneReplays.Enums
         LETTUCE_NODE_TYPE = 1808,
         SHOW_DISCOVER_FROM_DECK = 1816,
         MINI_SET = 1824,
+        ARMOR_GAINED_THIS_GAME = 1828,
         CANT_TRIGGER_DEATHRATTLE = 1831,
         CANT_MOVE_MINION = 1848,
         LETTUCE_MERCENARY_EXPERIENCE = 1852,
@@ -966,6 +967,7 @@ namespace HearthstoneReplays.Enums
         LETTUCE_EQUIPMENT_ID = 1856,
         DARKMOON_FAIRE_PRIZES_ACTIVE = 1895,
         IGNORE_DECK_RULESET = 1896,
+        HONORABLEKILL = 1920,
         HAS_DIAMOND_QUALITY = 1932,
         CURRENT_SPELLPOWER_ARCANE = 1936,
         CURRENT_SPELLPOWER_FIRE = 1937,
@@ -1041,6 +1043,14 @@ namespace HearthstoneReplays.Enums
         ROOT = 2220,
         LETTUCE_SHOW_OPPOSING_FAKE_HAND = 2224,
         LETTUCE_VERSUS_SPELL_STATE = 2228,
+        BACON_CHOSEN_BOARD_SKIN_ID = 2264,
+        OBJECTIVE = 2311,
+        LETTUCE_REFRESH = 2312,
+        LETTUCE_ELVES = 2322,
+        AVFACTION = 2323,
+        AVRANK = 2324,
+        OBJECTIVE_AURA = 2329,
+        CURRENT_HEALING_POWER = 2333,
     }
 
     public enum GameType

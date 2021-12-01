@@ -25,7 +25,7 @@ namespace HearthstoneReplays.Events.Parsers
             return node.Type == typeof(Action)
                 && (node.Object as Action).Type == (int)BlockType.POWER
                 && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
-                && GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == Collectible.Priest.MindrenderIllucia;
+                && GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == MindrenderIllucia;
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -33,7 +33,7 @@ namespace HearthstoneReplays.Events.Parsers
             return node.Type == typeof(Action)
                 && (node.Object as Action).Type == (int)BlockType.TRIGGER
                 && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
-                && GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == NonCollectible.Priest.MindrenderIllucia_MindSwapEnchantment;
+                && GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == MindrenderIllucia_MindSwapEnchantment;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -84,10 +84,10 @@ namespace HearthstoneReplays.Events.Parsers
                 // Effect start
                 (parentAction.Type == (int)BlockType.POWER
                     && gameState.CurrentEntities.ContainsKey(parentAction.Entity)
-                    && gameState.CurrentEntities[parentAction.Entity].CardId == Collectible.Priest.MindrenderIllucia)
+                    && gameState.CurrentEntities[parentAction.Entity].CardId == MindrenderIllucia)
                 || (parentAction.Type == (int)BlockType.TRIGGER
                     && gameState.CurrentEntities.ContainsKey(parentAction.Entity)
-                    && gameState.CurrentEntities[parentAction.Entity].CardId == NonCollectible.Priest.MindrenderIllucia_MindSwapEnchantment);
+                    && gameState.CurrentEntities[parentAction.Entity].CardId == MindrenderIllucia_MindSwapEnchantment);
         }
     }
 }

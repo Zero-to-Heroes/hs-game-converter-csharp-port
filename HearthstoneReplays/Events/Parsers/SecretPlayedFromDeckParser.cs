@@ -84,6 +84,7 @@ namespace HearthstoneReplays.Events.Parsers
             var eventName = showEntity.GetTag(GameTag.SECRET) == 1 
                 ? "SECRET_PLAYED_FROM_DECK"
                 : "QUEST_PLAYED_FROM_DECK";
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 eventName,

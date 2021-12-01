@@ -796,10 +796,7 @@ namespace HearthstoneReplays.Parser.Handlers
                             };
                         },
                         false,
-                        new Node(null, null, 0, null, data),
-                        false,
-                        false,
-                        false) });
+                        new Node(null, null, 0, null, data)) });
                 }
                 this.metadata = new GameMetaData()
                 {

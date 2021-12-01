@@ -51,7 +51,7 @@ namespace HearthstoneReplays.Events.Parsers
             var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
             var isOpponentMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == (int)Step.BEGIN_MULLIGAN
                 && entity.GetController() == ParserState.OpponentPlayer.PlayerId;
-            if ((isOpponentMulligan || isBeforeMulligan) && cardId == CardIds.Collectible.Neutral.EncumberedPackMule)
+            if ((isOpponentMulligan || isBeforeMulligan) && cardId == CardIds.EncumberedPackMule)
             {
                 cardId = "";
             }

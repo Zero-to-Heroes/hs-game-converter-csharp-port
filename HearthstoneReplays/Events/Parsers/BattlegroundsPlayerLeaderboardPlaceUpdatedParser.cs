@@ -37,7 +37,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var hero = GameState.CurrentEntities[tagChange.Entity];
-            if (tagChange.Value > 0 && hero?.CardId != null && hero.CardId != NonCollectible.Neutral.BartenderBobTavernBrawl)
+            if (tagChange.Value > 0 && hero?.CardId != null && hero.CardId != BartenderBobBattlegrounds)
             {
                 return new List<GameEventProvider> {  GameEventProvider.Create(
                tagChange.TimeStamp,

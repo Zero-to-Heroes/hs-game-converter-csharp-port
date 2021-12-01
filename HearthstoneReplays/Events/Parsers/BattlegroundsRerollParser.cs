@@ -34,7 +34,9 @@ namespace HearthstoneReplays.Events.Parsers
                 && node.Type == typeof(Action)
                 && (node.Object as Action).Type == (int)BlockType.POWER
                 && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
-                && GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == CardIds.NonCollectible.Neutral.RefreshTavernBrawl2;
+                && (
+                    GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == RefreshBattlegrounds1
+                    || GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == RefreshBattlegrounds2);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)

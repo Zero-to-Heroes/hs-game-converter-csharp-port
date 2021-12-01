@@ -35,12 +35,12 @@ namespace HearthstoneReplayTests
                 foreach (GameEvent gameEvent in gameEvents)
                 {
                     dynamic Value = gameEvent.Value;
-                    var shouldLog = true;
-                    //var shouldLog = gameEvent.Type != "GAME_STATE_UPDATE";
+                    //var shouldLog = true;
+                    var shouldLog = gameEvent.Type != "GAME_STATE_UPDATE" && gameEvent.Type != "GAME_END";
                     if (shouldLog)
                     {
-                        var serialized = JsonConvert.SerializeObject(gameEvent);
-                        //var serialized = JsonConvert.SerializeObject(gameEvent, serializerSettings);
+                        //var serialized = JsonConvert.SerializeObject(gameEvent);
+                        var serialized = JsonConvert.SerializeObject(gameEvent, serializerSettings);
                         //if (serialized.Contains("\"TargetCardId\":\"TB_BaconShop_HERO_53\""))
                         //{
                         Console.WriteLine(serialized + ",");

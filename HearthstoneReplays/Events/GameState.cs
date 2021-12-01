@@ -280,7 +280,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         {
             if (!CurrentEntities.ContainsKey(tagChange.Entity))
             {
-                //Logger.Log("error while parsing, tagchange doesn't have an entity in memory yet", "" + tagChange.Entity);
                 return;
             }
             var existingTag = CurrentEntities[tagChange.Entity].Tags.Find((tag) => tag.Name == tagChange.Name);
@@ -312,12 +311,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public int PlayerIdFromEntityName(string data)
         {
-            //Logger.Log("Gettingg player Id from EntityName", data);
             int entityId;
             EntityNames.TryGetValue(data, out entityId);
             if (entityId != 0)
             {
-                //Logger.Log("Found matching entity id", entityId);
                 // Now find the player this entity is attached to
                 int playerId = CurrentEntities.Values
                     .Where(e => e.Tags.Find(x => (x.Name == (int)GameTag.HERO_ENTITY && x.Value == entityId)) != null)
@@ -330,7 +327,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                     //Console.WriteLine("Controller ID = " + entityControllerId);
                     playerId = ParserState.getPlayers().Find(x => x.PlayerId == entityControllerId).Id;
                 }
-                //Logger.Log("Found matching player entity id for " + data, playerId);
                 return playerId;
             }
             return 0;
@@ -381,7 +377,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 }
 
                 // Potion of Illusion
-                if (playedEntity.CardId == CardIds.Collectible.Neutral.PotionOfIllusion)
+                if (playedEntity.CardId == CardIds.PotionOfIllusion)
                 {
                     this.EntityIdsOnBoardWhenPlayingPotionOfIllusion = CurrentEntities.Values
                         .Where(entity => (entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY))
@@ -463,6 +459,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 // This handles reconnects
                 || (tagChange.Name == (int)GameTag.STATE && tagChange.Value == (int)State.COMPLETE))
             {
+                Logger.Log("Ending current game", tagChange.Name + "=" + tagChange.Value);
                 ParserState.EndCurrentGame();
             }
 

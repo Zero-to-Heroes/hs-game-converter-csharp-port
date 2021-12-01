@@ -58,7 +58,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
-            if (chosenEntity.CardId == NonCollectible.Neutral.BaconphheroTavernBrawl)
+            if (chosenEntity.CardId == BaconphheroHeroicBattlegrounds)
             {
                 return null;
             }
@@ -122,7 +122,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
 
-            if (fullEntity.CardId == NonCollectible.Neutral.BaconphheroTavernBrawl)
+            if (fullEntity.CardId == BaconphheroHeroicBattlegrounds)
             {
                 return null;
             }
@@ -131,8 +131,8 @@ namespace HearthstoneReplays.Events.Parsers
             var heroes = GameState.CurrentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
-                .Where(entity => entity.CardId != NonCollectible.Neutral.BartenderBobTavernBrawl
-                    && entity.CardId != NonCollectible.Neutral.KelthuzadTavernBrawl2)
+                .Where(entity => entity.CardId != BartenderBobBattlegrounds
+                    && entity.CardId != KelthuzadBattlegrounds)
                 .ToList();
             var hero = heroes == null || heroes.Count == 0 ? null : heroes[0];
             // Happens in some circumstances, though it's not clear for me which ones. Maybe

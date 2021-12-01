@@ -5,9 +5,6 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
-using static HearthstoneReplays.Events.CardIds;
-using static HearthstoneReplays.Events.CardIds.Collectible;
-using HearthstoneReplays.Parser.ReplayData.Meta;
 
 namespace HearthstoneReplays.Events.Parsers
 {

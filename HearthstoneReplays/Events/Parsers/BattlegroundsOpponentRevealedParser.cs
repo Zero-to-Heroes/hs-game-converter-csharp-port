@@ -42,7 +42,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var fullEntity = node.Object as FullEntity;
             var cardId = fullEntity.CardId;
-            if (cardId == CardIds.NonCollectible.Neutral.BaconphheroTavernBrawl)
+            if (cardId == CardIds.BaconphheroHeroicBattlegrounds)
             {
                 return null;
             }
