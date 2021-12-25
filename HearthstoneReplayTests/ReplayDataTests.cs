@@ -54,8 +54,70 @@ namespace HearthstoneReplayTests
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile);
             Thread.Sleep(3000);
+            GC.Collect();
+            Thread.Sleep(3000);
             //string xml = new ReplayConverter().xmlFromReplay(replay);
             //Console.Write(xml);
+        }
+
+        [TestMethod]
+        public void LeakTest()
+        {
+            int numberOfIterations = 10;
+
+            var serializerSettings = new JsonSerializerSettings()
+            {
+                ContractResolver = new IgnorePropertiesResolver(new[] { "GameState", "ReplayXml", "LocalPlayer", "OpponentPlayer", "GameStateReport", "Game" })
+            };
+
+            var plugin = new ReplayConverterPlugin();
+            plugin.onGlobalEvent += (a, b) => Console.WriteLine(a + " // " + b);
+            plugin.initRealtimeLogConversion(null);
+            NodeParser.DevMode = true;
+            GameEventHandler.EventProviderAll = (IList<GameEvent> gameEvents) =>
+            {
+                //foreach (GameEvent gameEvent in gameEvents)
+                //{
+                //    dynamic Value = gameEvent.Value;
+                //    //var shouldLog = true;
+                //    var shouldLog = gameEvent.Type != "GAME_STATE_UPDATE" && gameEvent.Type != "GAME_END";
+                //    if (shouldLog)
+                //    {
+                //        //var serialized = JsonConvert.SerializeObject(gameEvent);
+                //        var serialized = JsonConvert.SerializeObject(gameEvent, serializerSettings);
+                //        //if (serialized.Contains("\"TargetCardId\":\"TB_BaconShop_HERO_53\""))
+                //        //{
+                //        Console.WriteLine(serialized + ",");
+                //        //}
+                //    }
+                //}
+            };
+            List<string> logFile = TestDataReader.GetInputFile("leak.txt");
+            logFile.Insert(0, "START_CATCHING_UP");
+            logFile.Add("END_CATCHING_UP");
+            var logsArray = logFile.ToArray();
+            for (int i = 0; i < numberOfIterations; i++)
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                var result = PluginProcessingAsync(plugin, logsArray).Result;
+                Thread.Sleep(3000);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                Thread.Sleep(500);
+            }
+            Thread.Sleep(3000);
+            //string xml = new ReplayConverter().xmlFromReplay(replay);
+            //Console.Write(xml);
+        }
+
+        private Task<string> PluginProcessingAsync(ReplayConverterPlugin plugin, string[] logLines)
+        {
+            var t = new TaskCompletionSource<string>();
+            plugin.realtimeLogProcessing(logLines, s => t.TrySetResult(null));
+            return t.Task;
         }
 
         //[TestMethod]
