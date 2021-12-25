@@ -185,15 +185,6 @@ namespace HearthstoneReplays.Events.Parsers
             var mainPlayer = ParserState.LocalPlayer;
             if (opponentCardId == KelthuzadBattlegrounds)
             {
-                var test = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
-                    .ToList();
-                var test2 = GameState.CurrentEntities.Values
-                        .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                        .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                        .ToList();
                 // Finding the one that is flagged as the player's NEXT_OPPONENT
                 var playerEntity = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
