@@ -14,9 +14,7 @@ using System.IO;
 namespace HearthstoneReplays
 {
 	public class ReplayConverter
-	{
-		//private static readonly 
-		
+	{		
 		public string xmlFromLogs(string logString)
 		{
 			string replaced = logString.Replace("\r\n", "\n");
@@ -43,26 +41,5 @@ namespace HearthstoneReplays
 			memoryStream.Position = 0;
 			return new StreamReader(memoryStream).ReadToEnd();
 		}
-
-		//public static void Serialize(HearthstoneReplay replay, string filePath)
-		//{
-		//	var ns = new XmlSerializerNamespaces();
-		//	ns.Add("", "");
-		//	var settings = new XmlWriterSettings {CloseOutput = true, Indent = true, IndentChars = "\t"};
-		//	using(TextWriter writer = new StreamWriter(filePath))
-		//	using(var xmlWriter = XmlWriter.Create(writer, settings))
-		//	{
-		//		xmlWriter.WriteStartDocument();
-		//		xmlWriter.WriteDocType("hsreplay", null, string.Format(@"http://hearthsim.info/hsreplay/dtd/hsreplay-{0}.dtd", replay.Version),
-		//		                       null);
-		//		Serializer.Serialize(xmlWriter, replay, ns);
-		//		xmlWriter.WriteEndDocument();
-		//	}
-		//}
-
-		//public static HearthstoneReplay Deserialize(TextReader reader)
-		//{
-		//	return (HearthstoneReplay)Serializer.Deserialize(reader);
-		//}
 	}
 }

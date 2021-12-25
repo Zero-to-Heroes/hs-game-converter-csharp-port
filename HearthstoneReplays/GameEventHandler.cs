@@ -14,10 +14,6 @@ namespace HearthstoneReplays
 
         private static IList<GameEvent> queuedEvents = new List<GameEvent>();
 
-        //public static void Handle(GameEvent gameEvent) {
-        //	EventProvider?.Invoke(gameEvent);
-        //}
-
         public static void Handle(GameEvent gameEvent, bool isDevMode)
         {
             if (isDevMode)
