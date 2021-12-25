@@ -25,7 +25,7 @@ namespace HearthstoneReplays.Events.Parsers
             return node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ATK
                 && GameState.CurrentEntities.ContainsKey((node.Object as TagChange).Entity)
-                && GameState.CurrentEntities[((node.Object as TagChange).Entity)].CardId == Cthun2;
+                && GameState.CurrentEntities[((node.Object as TagChange).Entity)].CardId == Cthun1;
         }
 
         public bool AppliesOnCloseNode(Node node)
