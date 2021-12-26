@@ -63,8 +63,6 @@ namespace HearthstoneReplayTests
         [TestMethod]
         public void LeakTest()
         {
-            int numberOfIterations = 10;
-
             var serializerSettings = new JsonSerializerSettings()
             {
                 ContractResolver = new IgnorePropertiesResolver(new[] { "GameState", "ReplayXml", "LocalPlayer", "OpponentPlayer", "GameStateReport", "Game" })
@@ -74,43 +72,36 @@ namespace HearthstoneReplayTests
             plugin.onGlobalEvent += (a, b) => Console.WriteLine(a + " // " + b);
             plugin.initRealtimeLogConversion(null);
             NodeParser.DevMode = true;
-            GameEventHandler.EventProviderAll = (IList<GameEvent> gameEvents) =>
+            GameEventHandler.EventProviderAll = (IList<GameEvent> gameEvents) => { };
+            List<string> logFile = TestDataReader.GetInputFile("multiple_bg_games.txt");
+            List<string> logsForGame = new List<string>();
+            for (int i = 0; i < logFile.Count; i++)
             {
-                //foreach (GameEvent gameEvent in gameEvents)
-                //{
-                //    dynamic Value = gameEvent.Value;
-                //    //var shouldLog = true;
-                //    var shouldLog = gameEvent.Type != "GAME_STATE_UPDATE" && gameEvent.Type != "GAME_END";
-                //    if (shouldLog)
-                //    {
-                //        //var serialized = JsonConvert.SerializeObject(gameEvent);
-                //        var serialized = JsonConvert.SerializeObject(gameEvent, serializerSettings);
-                //        //if (serialized.Contains("\"TargetCardId\":\"TB_BaconShop_HERO_53\""))
-                //        //{
-                //        Console.WriteLine(serialized + ",");
-                //        //}
-                //    }
-                //}
-            };
-            List<string> logFile = TestDataReader.GetInputFile("leak.txt");
-            logFile.Insert(0, "START_CATCHING_UP");
-            logFile.Add("END_CATCHING_UP");
-            var logsArray = logFile.ToArray();
-            for (int i = 0; i < numberOfIterations; i++)
-            {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
-                var result = PluginProcessingAsync(plugin, logsArray).Result;
-                Thread.Sleep(3000);
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
-                Thread.Sleep(500);
+                if (logFile[i].Contains("GameState.DebugPrintPower() - CREATE_GAME"))
+                {
+                    this.ProcessPlugin(plugin, logsForGame);
+                    logsForGame.Clear();
+                }
+                logsForGame.Add(logFile[i]);
             }
+            this.ProcessPlugin(plugin, logsForGame);
             Thread.Sleep(3000);
-            //string xml = new ReplayConverter().xmlFromReplay(replay);
-            //Console.Write(xml);
+        }
+
+        private void ProcessPlugin(ReplayConverterPlugin plugin, List<string> logsForGame)
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            logsForGame.Insert(0, "START_CATCHING_UP");
+            logsForGame.Add("END_CATCHING_UP");
+            var logsArray = logsForGame.ToArray();
+            var result = PluginProcessingAsync(plugin, logsArray).Result;
+            Thread.Sleep(3000);
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            Thread.Sleep(500);
         }
 
         private Task<string> PluginProcessingAsync(ReplayConverterPlugin plugin, string[] logLines)

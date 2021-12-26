@@ -206,7 +206,7 @@
     <EmbeddedResource Include="TestData\bg_yshaarj.txt" />
     <EmbeddedResource Include="TestData\merc_solo_bounty.txt" />
     <EmbeddedResource Include="TestData\merc_solo_pvp.txt" />
-    <EmbeddedResource Include="TestData\multiple_games.txt" />
+    <EmbeddedResource Include="TestData\multiple_bg_games.txt" />
     <EmbeddedResource Include="TestData\leak.txt" />
     <Content Include="TestData\unknown_human_player.txt" />
     <EmbeddedResource Include="TestData\shirvallah.txt" />
