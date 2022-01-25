@@ -423,6 +423,7 @@ namespace HearthstoneReplays.Events
                 new CardDrawFromDeckParser(ParserState),
                 new ReceiveCardInHandParser(ParserState),
                 new CardBackToDeckParser(ParserState),
+                new CardTradedParser(ParserState),
                 new DiscardedCardParser(ParserState),
                 new CardRemovedFromDeckParser(ParserState),
                 new CreateCardInDeckParser(ParserState),

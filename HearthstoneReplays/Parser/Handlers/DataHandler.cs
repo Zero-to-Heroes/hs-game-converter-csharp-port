@@ -297,13 +297,14 @@ namespace HearthstoneReplays.Parser.Handlers
             {
                 var subSpellPrefab = match.Groups[1].Value;
                 var sourceEntityId = int.Parse(match.Groups[2].Value);
+                Action parentAction = null;
+                if (state.Node?.Type == typeof(Action))
+                {
+                    parentAction = state.Node.Object as Action;
+                }
                 if (sourceEntityId == 0)
                 {
-                    if (state.Node.Type == typeof(Action))
-                    {
-                        var parentAction = state.Node.Object as Action;
-                        sourceEntityId = parentAction.Entity;
-                    }
+                    sourceEntityId = parentAction?.Entity ?? -1;
                 }
                 var sourceEntity = state.GameState.CurrentEntities.ContainsKey(sourceEntityId) ? state.GameState.CurrentEntities[sourceEntityId] : null;
                 this.currentSubSpell = new SubSpell()
@@ -322,6 +323,8 @@ namespace HearthstoneReplays.Parser.Handlers
                             PrefabId = subSpellPrefab,
                             EntityId = sourceEntityId,
                             CardId = sourceEntity?.CardId,
+                            ParentEntityId = parentAction?.Entity,
+                            ParentCardId = state.GameState.CurrentEntities.ContainsKey(parentAction?.Entity ?? -1) ? state.GameState.CurrentEntities[parentAction.Entity].CardId : null,
                             LocalPlayer = state.LocalPlayer,
                             OpponentPlayer = state.OpponentPlayer,
                             ControllerId = sourceEntity?.GetController(),
@@ -671,7 +674,7 @@ namespace HearthstoneReplays.Parser.Handlers
                     matchingPlayer.InitialName = Helper.innkeeperNames.Contains(playerName)
                         ? Helper.innkeeperNames[0]
                         : Helper.bobTavernNames.Contains(playerName)
-                        ? Helper.bobTavernNames[0] 
+                        ? Helper.bobTavernNames[0]
                         : playerName;
                     state.TryAssignLocalPlayer(timestamp, data);
                     Logger.Log("Tried to assign player name", data);

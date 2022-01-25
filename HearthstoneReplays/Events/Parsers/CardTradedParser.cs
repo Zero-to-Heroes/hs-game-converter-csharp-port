@@ -9,12 +9,12 @@ using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Events.Parsers
 {
-    public class CardBackToDeckParser : ActionParser
+    public class CardTradedParser : ActionParser
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
 
-        public CardBackToDeckParser(ParserState ParserState)
+        public CardTradedParser(ParserState ParserState)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
@@ -25,7 +25,7 @@ namespace HearthstoneReplays.Events.Parsers
             return node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.DECK
-                && !IsTrade(node.Parent);
+                && IsTrade(node.Parent);
         }
 
         public bool AppliesOnCloseNode(Node node)
@@ -60,9 +60,9 @@ namespace HearthstoneReplays.Events.Parsers
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
-                zoneInt == (int)Zone.SETASIDE ? "CREATE_CARD_IN_DECK" : "CARD_BACK_TO_DECK",
+                "TRADE_CARD",
                 GameEvent.CreateProvider(
-                    zoneInt == (int)Zone.SETASIDE ? "CREATE_CARD_IN_DECK" : "CARD_BACK_TO_DECK",
+                    "TRADE_CARD",
                     cardId,
                     controllerId,
                     entity.Id,
@@ -73,7 +73,8 @@ namespace HearthstoneReplays.Events.Parsers
                         InitialZone = initialZone,
                     }),
                 true,
-                node) };
+                node)
+            };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
