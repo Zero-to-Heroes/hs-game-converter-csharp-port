@@ -16,6 +16,7 @@ namespace HearthstoneReplays.Enums
         REVEAL_CARD = 10,
         GAME_RESET = 11,
         MOVE_MINION = 12,
+        TRADE = 13,
         ACTION = 99,
     }
 
@@ -1009,6 +1010,7 @@ namespace HearthstoneReplays.Enums
         REFRESH = 2104,
         LETTUCE_CURRENT_BOUNTY_ID = 2120,
         AVENGE = 2129,
+        BACON_COMPANION_ID = 2130,
         SPELLRESISTANCE_ARCANE = 2138,
         SPELLRESISTANCE_FIRE = 2139,
         SPELLRESISTANCE_FROST = 2140,
@@ -1023,6 +1025,7 @@ namespace HearthstoneReplays.Enums
         SPELLWEAKNESS_HOLY = 2149,
         SPELLWEAKNESS_SHADOW = 2150,
         SPELLWEAKNESS_FEL = 2151,
+        BACON_BUDDY = 2154,
         BACON_STARSTOBOUNCEOFF = 2155,
         LETTUCE_ATTACK = 2159,
         LETTUCE_SPELLCOMBO = 2160,
@@ -1051,6 +1054,13 @@ namespace HearthstoneReplays.Enums
         AVRANK = 2324,
         OBJECTIVE_AURA = 2329,
         CURRENT_HEALING_POWER = 2333,
+        EARLY_CONCEDE_POPUP_AVAILABLE = 2340,
+        BACON_PLAYER_NUM_HERO_BUDDIES_GAINED = 2346,
+        BACON_HERO_BUDDY_PROGRESS = 2364,
+        REVIVE = 2369,
+        LETTUCE_CURSED_ABILITY_VISUAL = 2381,
+        BACON_OMIT_WHEN_OUT_OF_ROTATION = 2387,
+        ALLIED = 2388,
     }
 
     public enum GameType
