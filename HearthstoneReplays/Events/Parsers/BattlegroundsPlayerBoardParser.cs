@@ -14,8 +14,14 @@ namespace HearthstoneReplays.Events.Parsers
             RebornRitesBattlegrounds,
             SwattingInsectsBattlegrounds,
             EmbraceYourRageBattlegrounds,
-            TamsinRoame_FragrantPhylactery,
-        }; 
+        };
+
+        private static List<string> TAVISH_HERO_POWERS = new List<string>() {
+            AimLeftToken,
+            AimRightToken,
+            AimLowToken,
+            AimHighToken,
+        };
 
         static List<string> START_OF_COMBAT_MINION_EFFECT = new List<string>() {
             RedWhelp,
@@ -51,6 +57,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 // board state to include the effect of the hero power, since the simulator can't guess
                                 // what its outcome is (Embrace Your Rage) or what minion it targets (Reborn Rites)
                                 && !COMPETING_BATTLE_START_HERO_POWERS.Contains(GameState.CurrentEntities[(node.Object as Action).Entity].CardId)
+                                && !IsTavishPreparation(node)
                                 && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
                                 && (
                                     // This was introduced to wait until the damage is done to each hero before sending the board state. However,
@@ -70,6 +77,48 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnCloseNode(Node node)
         {
             return false;
+        }
+
+        private bool IsTavishPreparation(Node node)
+        {
+            if (node.Type != typeof(Action))
+            {
+                return false;
+            }
+            var action = node.Object as Action;
+            if (action.Type != (int)BlockType.TRIGGER)
+            {
+                return false;
+            }
+            if (!GameState.CurrentEntities.ContainsKey(action.Entity))
+            {
+                return false;
+            }
+            var entity = GameState.CurrentEntities[action.Entity];
+            if (!TAVISH_HERO_POWERS.Contains(entity.CardId))
+            {
+                return false;
+            }
+            // When we're triggering Tavish in battle, the BLOCK also contains a tag change (earlier)
+            var parent = node.Parent;
+            if (parent.Type != typeof(Action))
+            {
+                return false;
+            }
+            var parentAction = parent.Object as Action;
+            if (parentAction.Type != (int)BlockType.TRIGGER)
+            {
+                return false;
+            }
+
+
+            var isInCombat = parentAction.Data
+                .Where(data => data.GetType() == typeof(TagChange))
+                .Select(data => data as TagChange)
+                // Undocumented tag
+                .Where(data => data.Name == 2029)
+                .FirstOrDefault() != null;
+            return !isInCombat;
         }
 
         // In case a start of combat / Hero Power effect only damages a minion, this is not an issue
@@ -250,6 +299,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Hero = hero,
                     HeroPowerCardId = heroPower?.CardId,
                     HeroPowerUsed = heroPowerUsed,
+                    HeroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0,
                     CardId = cardId,
                     Board = result,
                     Secrets = secrets,
@@ -289,6 +339,8 @@ namespace HearthstoneReplays.Events.Parsers
             public string HeroPowerCardId { get; set; }
 
             public bool HeroPowerUsed { get; set; }
+
+            public int HeroPowerInfo { get; set; }
 
             public string CardId { get; set; }
 
