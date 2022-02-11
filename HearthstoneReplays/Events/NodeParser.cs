@@ -457,6 +457,7 @@ namespace HearthstoneReplays.Events
                 new WeaponDestroyedParser(ParserState),
                 new BattlegroundsPlayerBoardParser(ParserState),
                 new BattlegroundsPlayerTechLevelUpdatedParser(ParserState),
+                new BattlegroundsBuddyGainedParser(ParserState),
                 new BattlegroundsPlayerLeaderboardPlaceUpdatedParser(ParserState),
                 new BattlegroundsHeroSelectionParser(ParserState),
                 new BattlegroundsNextOpponnentParser(ParserState),
