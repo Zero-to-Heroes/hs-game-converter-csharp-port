@@ -168,7 +168,9 @@ namespace HearthstoneReplays.Events
                     case AstralTiger: return AstralTiger;
                     case BuildASnowman: return BuildASnowman_BuildASnowbruteToken;
                     case BuildASnowman_BuildASnowbruteToken: return BuildASnowman_BuildASnowgreToken;
-                    case DreadlichTamsin: return DreadlichTamsin_FelRiftToken;
+                    case CurseOfAgony: return CurseOfAgony_AgonyToken;
+                    case DragonbaneShot: return DragonbaneShot;
+                    case DreadlichTamsin1: return DreadlichTamsin_FelRiftToken;
                     case FinalShowdown_CloseThePortalToken: return DemonslayerKurtrusToken;
                     case HalazziTheLynx: return Springpaw_LynxToken;
                     case InfernalStrikeTavernBrawl: return TwinSlice_SecondSliceToken;
@@ -177,12 +179,13 @@ namespace HearthstoneReplays.Events
                     case KoboldTaskmaster: return KoboldTaskmaster_ArmorScrapToken;
                     case Malorne: return Malorne;
                     case Marrowslicer: return SchoolSpirits_SoulFragmentToken;
+                    case MidaPureLight: return MidaPureLight_FragmentOfMidaToken;
                     case RamCommander: return RamCommander_BattleRamToken;
                     case RaptorHatchling: return RaptorHatchling_RaptorPatriarchToken;
                     case Scrapsmith: return Scrapsmith_ScrappyGruntToken;
                     case SecureTheDeck: return ClawLegacy;
                     case SeedsOfDestruction: return DreadlichTamsin_FelRiftToken;
-                    case Sleetbreaker: return Windchill;
+                    case Sleetbreaker: return Windchill1;
                     case Springpaw: return Springpaw_LynxToken;
                     case SunscaleRaptor: return SunscaleRaptor;
                     case TheMarshQueen: return TheMarshQueen_QueenCarnassaToken;
@@ -294,7 +297,8 @@ namespace HearthstoneReplays.Events
                     case FeralGibberer: return FeralGibberer;
                     case FireFly: return FireFly_FlameElementalToken;
                     case FishyFlyer: return FishyFlyer_SpectralFlyerToken;
-                    case Queldelar_ForgingQueldelarToken: return QueldelarTavernBrawl;
+                    case Queldelar_ForgingQueldelarToken1: return QueldelarTavernBrawl;
+                    case Queldelar_ForgingQueldelarToken2: return Queldelar2;
                     case EncumberedPackMule: return EncumberedPackMule;
                     case HakkarTheSoulflayer: return HakkarTheSoulflayer_CorruptedBloodToken;
                     case HoardingDragon1: return TheCoinCore;
@@ -591,6 +595,22 @@ namespace HearthstoneReplays.Events
 
                     // Second card for Archivist Elysiana
                     if (actionEntity.CardId == ArchivistElysiana)
+                    {
+                        // Now let's find the ID of the card that was created right before
+                        var lastTagChange = action.Data
+                            .Where(data => data is TagChange)
+                            .Select(data => data as TagChange)
+                            .Where(tag => tag.Name == (int)GameTag.ZONE && tag.Value == (int)Zone.DECK)
+                            .LastOrDefault();
+                        if (lastTagChange != null)
+                        {
+                            var lastEntityId = lastTagChange.Entity;
+                            return GameState.CurrentEntities[lastEntityId]?.CardId;
+                        }
+                    }
+
+                    // Second card for Kazakusan (to be tested)
+                    if (actionEntity.CardId == Kazakusan1)
                     {
                         // Now let's find the ID of the card that was created right before
                         var lastTagChange = action.Data
