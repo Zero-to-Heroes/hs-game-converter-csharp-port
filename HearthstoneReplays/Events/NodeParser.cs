@@ -435,6 +435,7 @@ namespace HearthstoneReplays.Events
                 new MinionOnBoardAttackUpdatedParser(ParserState),
                 new RecruitParser(ParserState),
                 new MinionBackOnBoardParser(ParserState),
+                new HeroRevealedParser(ParserState),
                 new CardRevealedParser(ParserState),
                 new InitialCardInDeckParser(ParserState),
                 new FatigueParser(ParserState),
