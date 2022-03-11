@@ -274,7 +274,7 @@ namespace HearthstoneReplays.Events.Parsers
                 {
                     Logger.Log("WARNING: could not find hero power", "");
                 }
-                var heroPowerUsed = heroPower?.GetTag(GameTag.EXHAUSTED) == 1 || heroPower?.GetTag(GameTag.BACON_HERO_POWER_ACTIVATED) == 1;
+                var heroPowerUsed = heroPower?.GetTag(GameTag.BACON_HERO_POWER_ACTIVATED) == 1;
                 if (heroPower?.CardId == CardIds.EmbraceYourRageBattlegrounds)
                 {
                     var parentAction = (node.Parent.Object as Parser.ReplayData.GameActions.Action);
