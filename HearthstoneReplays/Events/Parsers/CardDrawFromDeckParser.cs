@@ -125,18 +125,18 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[showEntity.Entity];
             var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
             var wasInDeck = entity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
-            // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 
-            // have a special rule
             var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
-            if (isBeforeMulligan && cardId == CardIds.EncumberedPackMule)
-            {
-                return null;
-            }
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
                 () => {
+                    // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 
+                    // have a special rule to hide it when the opponent draws it
+                    if (isBeforeMulligan && cardId == CardIds.EncumberedPackMule && controllerId != ParserState.LocalPlayer.PlayerId)
+                    {
+                        return null;
+                    }
                     // We do it here because of Keymaster Alabaster - we need to know the last card
                     // that has been drawn
                     var creatorCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, showEntity, node);
