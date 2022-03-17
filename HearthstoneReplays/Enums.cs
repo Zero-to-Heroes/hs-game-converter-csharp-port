@@ -1061,6 +1061,10 @@ namespace HearthstoneReplays.Enums
         LETTUCE_CURSED_ABILITY_VISUAL = 2381,
         BACON_OMIT_WHEN_OUT_OF_ROTATION = 2387,
         ALLIED = 2388,
+        DONT_SUPPRESS_SUMMON_VO = 2440,
+        BACON_FREEZE = 2455,
+        MERCS_SPELLWEAKNESS = 2464,
+        MERCS_SPELLRESISTANCE = 2465,
     }
 
     public enum GameType
