@@ -164,6 +164,7 @@ namespace HearthstoneReplays.Events
                 switch (creatorCardId)
                 {
                     case AdorableInfestation: return AdorableInfestation_MarsuulCubToken;
+                    case ArchmageAntonidas: return FireballCore;
                     case ArchsporeMsshifn: return ArchsporeMsshifn_MsshifnPrimeToken;
                     case AstralTiger: return AstralTiger;
                     case BuildASnowman: return BuildASnowman_BuildASnowbruteToken;
@@ -180,8 +181,10 @@ namespace HearthstoneReplays.Events
                     case Malorne: return Malorne;
                     case Marrowslicer: return SchoolSpirits_SoulFragmentToken;
                     case MidaPureLight: return MidaPureLight_FragmentOfMidaToken;
+                    case PlagueOfMurlocs: return TwistPlagueOfMurlocs_SurpriseMurlocsToken;
                     case RamCommander: return RamCommander_BattleRamToken;
                     case RaptorHatchling: return RaptorHatchling_RaptorPatriarchToken;
+                    case RunawayGyrocopter: return RunawayGyrocopter;
                     case Scrapsmith: return Scrapsmith_ScrappyGruntToken;
                     case SecureTheDeck: return ClawLegacy;
                     case SeedsOfDestruction: return DreadlichTamsin_FelRiftToken;
@@ -198,7 +201,6 @@ namespace HearthstoneReplays.Events
                     case YseraUnleashed: return YseraUnleashed_DreamPortalToken;
                     case ZixorApexPredator: return ZixorApexPredator_ZixorPrimeToken;
 
-                    case ArchmageAntonidas: return FireballCore;
                     case AstromancerSolarian: return AstromancerSolarian_SolarianPrimeToken;
                     case ConfectionCyclone: return ConfectionCyclone_SugarElementalToken;
                     case ConjureManaBiscuit: return ConjureManaBiscuit_ManaBiscuitToken;
