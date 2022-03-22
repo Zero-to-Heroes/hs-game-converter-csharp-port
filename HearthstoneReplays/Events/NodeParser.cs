@@ -405,6 +405,7 @@ namespace HearthstoneReplays.Events
                 new MercenariesAbilityCooldownUpdatedParser(ParserState),
                 new MercenariesQueuedAbilityParser(ParserState),
 
+
                 new WinnerParser(ParserState),
                 new GameEndParser(ParserState),
                 new TurnStartParser(ParserState),
@@ -449,6 +450,7 @@ namespace HearthstoneReplays.Events
                 new ArmorChangeParser(ParserState),
                 new CardStolenParser(ParserState),
                 new SecretTriggeredParser(ParserState),
+                new CounterTriggerParser(ParserState),
                 new DeathrattleTriggeredParser(ParserState),
                 new HealthDefChangeParser(ParserState),
                 new ChangeCardCreatorParser(ParserState),
