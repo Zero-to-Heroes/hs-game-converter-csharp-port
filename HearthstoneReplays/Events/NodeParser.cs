@@ -404,6 +404,7 @@ namespace HearthstoneReplays.Events
                 new MercenariesAbilityActivatedParser(ParserState),
                 new MercenariesAbilityCooldownUpdatedParser(ParserState),
                 new MercenariesQueuedAbilityParser(ParserState),
+                new MercenariesSelectedTargetParser(ParserState),
 
 
                 new WinnerParser(ParserState),
