@@ -119,6 +119,7 @@
     <Compile Include="Events\Parsers\CardTradedParser.cs" />
     <Compile Include="Events\Parsers\CostChangedParser.cs" />
     <Compile Include="Events\Parsers\MercenariesQueuedAbilityParser.cs" />
+    <Compile Include="Events\Parsers\MercenariesSelectedTargetParser.cs" />
     <Compile Include="Events\Parsers\MercenariesHeroRevealed.cs" />
     <Compile Include="Events\Parsers\MercenariesAbilityActivatedParser.cs" />
     <Compile Include="Events\Parsers\MercenariesAbilityRevealedParser.cs" />
