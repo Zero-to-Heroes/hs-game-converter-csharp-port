@@ -99,7 +99,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
         }
 
-        public GameStateReport BuildGameStateReport()
+        public GameStateReport BuildGameStateReport(StateFacade helper)
         {
             // Cna happen when joining a BG game as spectate
             if (ParserState?.LocalPlayer == null)
@@ -108,8 +108,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
             return new GameStateReport
             {
-                LocalPlayer = PlayerReport.BuildPlayerReport(this, ParserState.LocalPlayer.Id),
-                OpponentReport = PlayerReport.BuildPlayerReport(this, ParserState.OpponentPlayer.Id),
+                LocalPlayer = PlayerReport.BuildPlayerReport(this, helper.LocalPlayer.Id),
+                OpponentReport = PlayerReport.BuildPlayerReport(this, helper.OpponentPlayer.Id),
             };
         }
 
@@ -337,11 +337,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             var activePlayer = CurrentEntities.Values
                     .Where(e => e.Tags.Find(x => (x.Name == (int)GameTag.CURRENT_PLAYER && x.Value == 1)) != null)
                     .FirstOrDefault();
-            var activePlayerEntityId = activePlayer.Id;
+            var activePlayerEntityId = activePlayer?.Id;
             var activePlayerEntity = ParserState.CurrentGame.FilterGameData(typeof(PlayerEntity))
                 .Select(player => (PlayerEntity)player)
-                .First(player => player.Id == activePlayerEntityId);
-            return activePlayerEntity.PlayerId;
+                .FirstOrDefault(player => player.Id == activePlayerEntityId);
+            return activePlayerEntity?.PlayerId ?? -1;
         }
 
         public void OnCardPlayed(int entityId, int? targetEntityId = null)
@@ -447,14 +447,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         private void RaiseTagChangeEvents(TagChange tagChange, int previousValue, string defChange, string initialLog = null)
         {
-            // Wait until we have all the necessary data
-            //         while (ParserState.CurrentGame.FormatType == 0 
-            //             || ParserState.CurrentGame.GameType == 0 
-            //             || ParserState.LocalPlayer == null)
-            //{
-            //	await Task.Delay(100);
-            //         }
-
             if (tagChange.Name == (int)GameTag.GOLD_REWARD_STATE
                 // This handles reconnects
                 || (tagChange.Name == (int)GameTag.STATE && tagChange.Value == (int)State.COMPLETE))

@@ -12,7 +12,12 @@ namespace HearthstoneReplays.Parser.Handlers
 {
 	public class OptionsHandler
 	{
-		private Helper helper = new Helper();
+		private Helper helper;
+
+		public OptionsHandler(Helper helper)
+        {
+			this.helper = helper;
+        }
 
 		public void Handle(DateTime timestamp, string data, ParserState state)
 		{
@@ -43,7 +48,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				var rawEntity = match.Groups[3].Value;
 				var rawError = match.Groups[4].Value;
 
-				var entity = helper.ParseEntity(rawEntity, state);
+				var entity = helper.ParseEntity(rawEntity);
 			    var type = helper.ParseEnum<OptionType>(rawType);
 				var error = helper.ParseEnum<PlayReq>(rawError);
 
@@ -60,7 +65,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				var subOptionType = match.Groups[1].Value;
 				var index = match.Groups[2].Value;
 				var rawEntity = match.Groups[3].Value;
-				var entity = helper.ParseEntity(rawEntity, state);
+				var entity = helper.ParseEntity(rawEntity);
 
 				if(subOptionType == "subOption")
 				{

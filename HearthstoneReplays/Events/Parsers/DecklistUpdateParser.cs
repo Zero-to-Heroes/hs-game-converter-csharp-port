@@ -18,22 +18,25 @@ namespace HearthstoneReplays.Events.Parsers
 
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public DecklistUpdateParser(ParserState ParserState)
+        public DecklistUpdateParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
         // We use the action so that the event is emitted after all the "create card in deck" events
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return IsDecklistUpdateAction(node);
+            return stateType == StateType.PowerTaskList
+                && IsDecklistUpdateAction(node);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -61,18 +64,18 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity =>
                      {
-                         if (DECK_ID_SCENARIOS.Contains(ParserState?.CurrentGame?.ScenarioID ?? -1))
+                         if (DECK_ID_SCENARIOS.Contains(StateFacade.ScenarioID))
                          {
                              return entity.GetTag(GameTag.HERO_DECK_ID) > 0;
 
                          }
                          return entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO
-                             && entity.GetEffectiveController() == ParserState.OpponentPlayer.PlayerId;
+                             && entity.GetEffectiveController() == StateFacade.OpponentPlayer.PlayerId;
                      })
                     .ToList();
             return fullEntities.Select(fullEntity =>
                 {
-                    var deckId = DECK_ID_SCENARIOS.Contains(ParserState?.CurrentGame?.ScenarioID ?? -1)
+                    var deckId = DECK_ID_SCENARIOS.Contains(StateFacade.ScenarioID)
                         ? "" + fullEntity.GetTag(GameTag.HERO_DECK_ID)
                         : fullEntity.CardId;
                     var controllerId = fullEntity.GetEffectiveController();
@@ -84,8 +87,7 @@ namespace HearthstoneReplays.Events.Parsers
                             null,
                             controllerId,
                             -1,
-                            ParserState,
-                            GameState,
+                            StateFacade,
                             null,
                             new
                             {
@@ -111,13 +113,13 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity =>
                     {
-                        if (DecklistUpdateParser.DECK_ID_SCENARIOS.Contains(ParserState?.CurrentGame?.ScenarioID ?? -1))
+                        if (DecklistUpdateParser.DECK_ID_SCENARIOS.Contains(StateFacade.ScenarioID))
                         {
                             return entity.GetTag(GameTag.HERO_DECK_ID) > 0;
 
                         }
                         return entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO
-                            && entity.GetEffectiveController() == ParserState.OpponentPlayer.PlayerId;
+                            && entity.GetEffectiveController() == StateFacade.OpponentPlayer.PlayerId;
                     })
                     .ToList()
                     .Count > 0);

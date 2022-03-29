@@ -13,21 +13,24 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade Helper { get; set; }
 
-        public HealingParser(ParserState ParserState)
+        public HealingParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.Helper = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(Parser.ReplayData.GameActions.Action)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(Parser.ReplayData.GameActions.Action)
                 && HashHealingTag(node.Object as Parser.ReplayData.GameActions.Action);
         }
 
@@ -109,8 +112,8 @@ namespace HearthstoneReplays.Events.Parsers
                             SourceEntityId = totalHealings[healingSource].First().Value.SourceEntityId,
                             SourceControllerId = totalHealings[healingSource].First().Value.SourceControllerId,
                             Targets = totalHealings[healingSource],
-                            LocalPlayer = ParserState.LocalPlayer,
-                            OpponentPlayer = ParserState.OpponentPlayer,
+                            LocalPlayer = Helper.LocalPlayer,
+                            OpponentPlayer = Helper.OpponentPlayer,
                         }
                     },
                     true,

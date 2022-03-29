@@ -13,21 +13,24 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public BattlegroundsHeroSelectionParser(ParserState ParserState)
+        public BattlegroundsHeroSelectionParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(TagChange)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.MULLIGAN_STATE
                 && (node.Object as TagChange).Value == (int)Mulligan.INPUT;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }
@@ -35,7 +38,7 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
-            var playerId = ParserState.LocalPlayer.PlayerId;
+            var playerId = StateFacade.LocalPlayer.PlayerId;
             var fullEntities = GameState.CurrentEntities.Values
                 .Where(data => data.GetEffectiveController() == playerId)
                 .Where(data => data.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
@@ -51,8 +54,7 @@ namespace HearthstoneReplays.Events.Parsers
                    tagChange.TimeStamp,
                    "BATTLEGROUNDS_HERO_SELECTION",
                    () => {
-                       if (ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS
-                            && ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+                       if (!StateFacade.IsBattlegrounds())
                        {
                            return null;
                        }

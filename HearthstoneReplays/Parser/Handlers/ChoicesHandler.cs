@@ -13,7 +13,12 @@ namespace HearthstoneReplays.Parser.Handlers
 {
 	public class ChoicesHandler
 	{
-		private Helper helper = new Helper();
+		private Helper helper;
+
+		public ChoicesHandler(Helper helper)
+        {
+			this.helper = helper;
+        }
 
 		public void Handle(DateTime timestamp, string data, ParserState state)
         {
@@ -52,8 +57,8 @@ namespace HearthstoneReplays.Parser.Handlers
 				var rawType = match.Groups[4].Value;
 				var min = match.Groups[5].Value;
 				var max = match.Groups[6].Value;
-				var entity = helper.ParseEntity(rawEntity, state);
-				var player = helper.ParseEntity(rawPlayer, state);
+				var entity = helper.ParseEntity(rawEntity);
+				var player = helper.ParseEntity(rawPlayer);
 				var type = helper.ParseEnum<ChoiceType>(rawType);
 				int taskList = -1;
 				taskList = int.TryParse(rawTaskList, out taskList) ? taskList : -1;
@@ -83,7 +88,7 @@ namespace HearthstoneReplays.Parser.Handlers
 			if (match.Success)
 			{
 				var rawEntity = match.Groups[1].Value;
-				var entity = helper.ParseEntity(rawEntity, state);
+				var entity = helper.ParseEntity(rawEntity);
 				state.Choices.Source = entity;
 				return;
 			}
@@ -93,7 +98,7 @@ namespace HearthstoneReplays.Parser.Handlers
 			{
 				var index = match.Groups[1].Value;
 				var rawEntity = match.Groups[2].Value;
-				var entity = helper.ParseEntity(rawEntity, state);
+				var entity = helper.ParseEntity(rawEntity);
 				var choice = new Choice { Entity = entity, Index = int.Parse(index) };
 				state.Choices.ChoiceList.Add(choice);
 			}

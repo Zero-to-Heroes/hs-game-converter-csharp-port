@@ -19,20 +19,24 @@ namespace HearthstoneReplays.Parser.Handlers
 {
     public class DataHandler
     {
-        //public int index;
-
-        private Helper helper = new Helper();
+        private Helper helper;
         private GameMetaData metadata;
         private SubSpell currentSubSpell;
 
-        public void Handle(DateTime timestamp, string data, ParserState state, DateTime previousTimestamp)
+
+        public DataHandler(Helper helper)
+        {
+            this.helper = helper;
+        }
+
+        public void Handle(DateTime timestamp, string data, ParserState state, StateType stateType, DateTime previousTimestamp, StateFacade gameInfoHelper)
         {
             var trimmed = data.Trim();
             var indentLevel = data.Length - trimmed.Length;
             data = trimmed;
-            HandleNewGame(timestamp, data, state, previousTimestamp);
+            HandleNewGame(timestamp, data, state, previousTimestamp, stateType, gameInfoHelper);
             bool isApplied = false;
-            isApplied = isApplied || HandleSpectator(timestamp, data, state);
+            isApplied = isApplied || HandleSpectator(timestamp, data, state, gameInfoHelper);
 
             // When catching up with some log lines, sometimes we get some leftover from a previous game.
             // Only checking the state does not account for these, and parsing fails because there is no
@@ -44,13 +48,13 @@ namespace HearthstoneReplays.Parser.Handlers
 
             isApplied = isApplied || HandleBlockEnd(data, state);
             isApplied = isApplied || HandleCreateGame(data, state, indentLevel);
-            isApplied = isApplied || HandlePlayerName(timestamp, data, state);
-            isApplied = isApplied || HandleMetaData(timestamp, data, state);
+            isApplied = isApplied || HandlePlayerName(timestamp, data, state, stateType);
+            isApplied = isApplied || HandleMetaData(timestamp, data, state, stateType);
             isApplied = isApplied || HandleCreatePlayer(data, state, indentLevel);
             isApplied = isApplied || HandleBlockStart(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleActionMetaData(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleActionMetaDataInfo(timestamp, data, state, indentLevel);
-            isApplied = isApplied || HandleSubSpell(timestamp, data, state);
+            isApplied = isApplied || HandleSubSpell(timestamp, data, state, stateType);
             isApplied = isApplied || HandleShowEntity(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleChangeEntity(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleHideEntity(timestamp, data, state);
@@ -147,12 +151,19 @@ namespace HearthstoneReplays.Parser.Handlers
                 {
                     if (state.FirstPlayerId == -1)
                     {
-                        state.FirstPlayerId = int.Parse(rawEntity);
+                        // If GameState logs, this is an int, in PowerTaskList, this is the player's BTag
+                        int entityId = -1;
+                        int.TryParse(rawEntity, out entityId);
+                        if (entityId <= 0)
+                        {
+                            entityId = helper.GetPlayerIdFromName(rawEntity);
+                        }
+                        state.FirstPlayerId = entityId;
                     }
                     UpdateCurrentPlayer(state, rawEntity, tag);
                 }
 
-                var entity = helper.ParseEntity(rawEntity, state);
+                var entity = helper.ParseEntity(rawEntity);
                 if (tag.Name == (int)GameTag.ENTITY_ID)
                 {
                     entity = UpdatePlayerEntity(state, rawEntity, tag, entity);
@@ -193,7 +204,7 @@ namespace HearthstoneReplays.Parser.Handlers
             {
                 var rawEntity = match.Groups[1].Value;
                 var cardId = match.Groups[2].Value;
-                var entity = helper.ParseEntity(rawEntity, state);
+                var entity = helper.ParseEntity(rawEntity);
                 state.GameState.UpdateEntityName(rawEntity);
 
                 var fullEntity = new FullEntity { CardId = cardId, Id = entity, Tags = new List<Tag>(), TimeStamp = timestamp };
@@ -222,7 +233,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 var rawEntity = match.Groups[1].Value;
                 var tagName = match.Groups[2].Value;
                 var value = match.Groups[3].Value;
-                var entity = helper.ParseEntity(rawEntity, state);
+                var entity = helper.ParseEntity(rawEntity);
                 var zone = helper.ParseTag(tagName, value);
 
                 var hideEntity = new HideEntity { Entity = entity, Zone = zone.Value, TimeStamp = timestamp };
@@ -246,7 +257,7 @@ namespace HearthstoneReplays.Parser.Handlers
             {
                 var rawEntity = match.Groups[1].Value;
                 var cardId = match.Groups[2].Value;
-                var entity = helper.ParseEntity(rawEntity, state);
+                var entity = helper.ParseEntity(rawEntity);
 
                 var changeEntity = new ChangeEntity { CardId = cardId, Entity = entity, Tags = new List<Tag>(), TimeStamp = timestamp };
                 state.UpdateCurrentNode(typeof(Game), typeof(Action));
@@ -271,7 +282,7 @@ namespace HearthstoneReplays.Parser.Handlers
             {
                 var rawEntity = match.Groups[1].Value;
                 var cardId = match.Groups[2].Value;
-                var entity = helper.ParseEntity(rawEntity, state);
+                var entity = helper.ParseEntity(rawEntity);
 
                 var showEntity = new ShowEntity { CardId = cardId, Entity = entity, Tags = new List<Tag>(), TimeStamp = timestamp };
                 showEntity.SubSpellInEffect = this.currentSubSpell;
@@ -290,7 +301,7 @@ namespace HearthstoneReplays.Parser.Handlers
             return false;
         }
 
-        private bool HandleSubSpell(DateTime timestamp, string data, ParserState state)
+        private bool HandleSubSpell(DateTime timestamp, string data, ParserState state, StateType stateType)
         {
             var match = Regexes.SubSpellStartRegex.Match(data);
             if (match.Success)
@@ -312,7 +323,10 @@ namespace HearthstoneReplays.Parser.Handlers
                     Prefab = subSpellPrefab,
                     Timestamp = timestamp,
                 };
-                state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
+
+                if (stateType == StateType.PowerTaskList)
+                {
+                    state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
                     "SUB_SPELL_START",
                     () => new GameEvent
@@ -333,6 +347,7 @@ namespace HearthstoneReplays.Parser.Handlers
                     false,
                     new Node(null, null, 0, null, data)
                 )});
+                }
                 return true;
             }
 
@@ -340,7 +355,7 @@ namespace HearthstoneReplays.Parser.Handlers
             if (match.Success && this.currentSubSpell != null)
             {
                 var rawEntity = match.Groups[1].Value;
-                var entity = helper.ParseEntity(rawEntity, state);
+                var entity = helper.ParseEntity(rawEntity);
                 this.currentSubSpell.Source = entity;
                 return true;
             }
@@ -349,7 +364,7 @@ namespace HearthstoneReplays.Parser.Handlers
             if (match.Success && this.currentSubSpell != null)
             {
                 var rawEntity = match.Groups[1].Value;
-                var entity = helper.ParseEntity(rawEntity, state);
+                var entity = helper.ParseEntity(rawEntity);
                 if (this.currentSubSpell.Targets == null)
                 {
                     this.currentSubSpell.Targets = new List<int>();
@@ -361,7 +376,7 @@ namespace HearthstoneReplays.Parser.Handlers
             if (data == "SUB_SPELL_END")
             {
                 //Logger.Log("Sub spell end", this.currentSubSpell);
-                state.NodeParser.CloseNode(new Node(typeof(SubSpell), this.currentSubSpell, 0, state.Node, data));
+                state.NodeParser.CloseNode(new Node(typeof(SubSpell), this.currentSubSpell, 0, state.Node, data), stateType);
                 this.currentSubSpell = null;
                 return true;
             }
@@ -375,7 +390,7 @@ namespace HearthstoneReplays.Parser.Handlers
             {
                 var index = match.Groups[1].Value;
                 var rawEntity = match.Groups[2].Value;
-                var entity = helper.ParseEntity(rawEntity, state);
+                var entity = helper.ParseEntity(rawEntity);
                 var metaInfo = new Info { Id = entity, Index = int.Parse(index), Entity = entity, TimeStamp = timestamp };
                 if (state.Node.Type == typeof(MetaData))
                     ((MetaData)state.Node.Object).MetaInfo.Add(metaInfo);
@@ -395,7 +410,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 var rawMeta = match.Groups[1].Value;
                 var rawData = match.Groups[2].Value;
                 var info = match.Groups[3].Value;
-                var parsedData = helper.ParseEntity(rawData, state);
+                var parsedData = helper.ParseEntity(rawData);
                 var meta = helper.ParseEnum<MetaDataType>(rawMeta);
                 var metaData = new MetaData { Data = parsedData, Info = int.Parse(info), Meta = meta, MetaInfo = new List<Info>(), TimeStamp = timestamp };
                 state.UpdateCurrentNode(typeof(Action));
@@ -429,8 +444,8 @@ namespace HearthstoneReplays.Parser.Handlers
                 //Console.WriteLine("Really updating entityname " + rawEntity + " for full log " + data);
                 state.GameState.UpdateEntityName(rawEntity);
 
-                var entity = helper.ParseEntity(rawEntity, state);
-                var target = helper.ParseEntity(rawTarget, state);
+                var entity = helper.ParseEntity(rawEntity);
+                var target = helper.ParseEntity(rawTarget);
                 var type = helper.ParseEnum<BlockType>(rawType);
                 var triggerKeyword = helper.ParseEnum<GameTag>(rawTriggerKeyword);
                 var action = new Action
@@ -473,8 +488,8 @@ namespace HearthstoneReplays.Parser.Handlers
                 var rawTarget = match.Groups[5].Value;
                 var subOption = int.Parse(match.Groups[6].Value);
 
-                var entity = helper.ParseEntity(rawEntity, state);
-                var target = helper.ParseEntity(rawTarget, state);
+                var entity = helper.ParseEntity(rawEntity);
+                var target = helper.ParseEntity(rawTarget);
                 var type = helper.ParseEnum<BlockType>(rawType);
                 var action = new Action
                 {
@@ -513,8 +528,8 @@ namespace HearthstoneReplays.Parser.Handlers
                 var effectId = match.Groups[3].Value;
                 var effectIndex = match.Groups[4].Value;
                 var rawTarget = match.Groups[5].Value;
-                var entity = helper.ParseEntity(rawEntity, state);
-                var target = helper.ParseEntity(rawTarget, state);
+                var entity = helper.ParseEntity(rawEntity);
+                var target = helper.ParseEntity(rawTarget);
                 var type = helper.ParseEnum<BlockType>(rawType);
                 var action = new Action
                 {
@@ -573,7 +588,7 @@ namespace HearthstoneReplays.Parser.Handlers
             return false;
         }
 
-        private bool HandleMetaData(DateTime timestamp, string data, ParserState state)
+        private bool HandleMetaData(DateTime timestamp, string data, ParserState state, StateType stateType)
         {
             System.Text.RegularExpressions.Match match = Regexes.BuildNumber.Match(data);
             if (match.Success)
@@ -610,7 +625,9 @@ namespace HearthstoneReplays.Parser.Handlers
             {
                 this.metadata.ScenarioID = int.Parse(match.Groups[1].Value);
                 state.CurrentGame.ScenarioID = metadata.ScenarioID;
-                state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
+                if (stateType == StateType.GameState)
+                {
+                    state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
                     "MATCH_METADATA",
                     () => {
@@ -629,16 +646,16 @@ namespace HearthstoneReplays.Parser.Handlers
                         };
                     },
                     false,
-                    new Node(null, null, 0, null, data),
-                    false,
-                    false,
-                    true) });
+                    new Node(null, null, 0, null, data)) });
+                }
 
 
                 if (state.ReconnectionOngoing)
                 {
                     state.ReconnectionOngoing = false;
-                    state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
+                    if (stateType == StateType.GameState)
+                    {
+                        state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                         timestamp,
                         "RECONNECT_OVER",
                         () => {
@@ -648,17 +665,15 @@ namespace HearthstoneReplays.Parser.Handlers
                             };
                         },
                         false,
-                        new Node(null, null, 0, null, data),
-                        true,
-                        false,
-                        false) });
+                        new Node(null, null, 0, null, data)) });
+                    }
                 }
                 return true;
             }
             return false;
         }
 
-        private static bool HandlePlayerName(DateTime timestamp, string data, ParserState state)
+        private static bool HandlePlayerName(DateTime timestamp, string data, ParserState state, StateType stateType)
         {
             var match = Regexes.PlayerNameAssignment.Match(data);
             if (match.Success)
@@ -721,11 +736,11 @@ namespace HearthstoneReplays.Parser.Handlers
             return false;
         }
 
-        private static bool HandleSpectator(DateTime timestamp, string data, ParserState state)
+        private static bool HandleSpectator(DateTime timestamp, string data, ParserState state, StateFacade stateFacade)
         {
             if (data.Contains("Begin Spectating"))
             {
-                state.Reset();
+                state.Reset(stateFacade);
                 state.Spectating = true;
                 state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
@@ -754,7 +769,7 @@ namespace HearthstoneReplays.Parser.Handlers
 
                 var replayCopy = state.Replay;
                 var xmlReplay = new ReplayConverter().xmlFromReplay(replayCopy);
-                var gameStateReport = state.GameState.BuildGameStateReport();
+                var gameStateReport = state.GameState.BuildGameStateReport(stateFacade);
                 state.Spectating = false;
                 state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
@@ -779,7 +794,7 @@ namespace HearthstoneReplays.Parser.Handlers
             return false;
         }
 
-        private bool HandleNewGame(DateTime timestamp, string data, ParserState state, DateTime previousTimestamp)
+        private bool HandleNewGame(DateTime timestamp, string data, ParserState state, DateTime previousTimestamp, StateType stateType, StateFacade gameInfoHelper)
         {
             if (data == "CREATE_GAME")
             {
@@ -789,7 +804,9 @@ namespace HearthstoneReplays.Parser.Handlers
                 if (isReconnecting)
                 {
                     Logger.Log("Probable reconnect detected " + timestamp + " // " + previousTimestamp, "" + (timestamp - previousTimestamp));
-                    state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
+                    if (stateType == StateType.PowerTaskList)
+                    {
+                        state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                         timestamp,
                         "RECONNECT_START",
                         () => {
@@ -800,6 +817,7 @@ namespace HearthstoneReplays.Parser.Handlers
                         },
                         false,
                         new Node(null, null, 0, null, data)) });
+                    }
                 }
                 this.metadata = new GameMetaData()
                 {
@@ -808,7 +826,7 @@ namespace HearthstoneReplays.Parser.Handlers
                     GameType = -1,
                     ScenarioID = -1,
                 };
-                state.Reset();
+                state.Reset(gameInfoHelper);
                 state.NumberOfCreates++;
                 state.ReconnectionOngoing = isReconnecting;
                 state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
@@ -852,7 +870,7 @@ namespace HearthstoneReplays.Parser.Handlers
             {
                 try
                 {
-                    helper.ParseEntity(rawEntity, state);
+                    helper.ParseEntity(rawEntity);
                 }
                 catch
                 {
@@ -870,7 +888,7 @@ namespace HearthstoneReplays.Parser.Handlers
             {
                 try
                 {
-                    helper.ParseEntity(rawEntity, state);
+                    helper.ParseEntity(rawEntity);
                 }
                 catch
                 {
@@ -883,7 +901,7 @@ namespace HearthstoneReplays.Parser.Handlers
                         ? Helper.bobTavernNames[0]
                         : rawEntity;
                 }
-                state.CurrentPlayerId = helper.ParseEntity(rawEntity, state);
+                state.CurrentPlayerId = helper.ParseEntity(rawEntity);
             }
         }
     }

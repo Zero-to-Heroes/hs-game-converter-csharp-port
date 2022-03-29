@@ -92,17 +92,17 @@ namespace HearthstoneReplays
 			});
         }
 
-        public void startDevMode()
-        {
-            NodeParser.DevMode = true;
-			Logger.Log("Setting DevMode", NodeParser.DevMode);
-		}
+        //      public void startDevMode()
+        //      {
+        //          NodeParser.DevMode = true;
+        //	Logger.Log("Setting DevMode", NodeParser.DevMode);
+        //}
 
-        public void stopDevMode()
-        {
-            NodeParser.DevMode = false;
-			Logger.Log("Setting DevMode", NodeParser.DevMode);
-		}
+        //      public void stopDevMode()
+        //      {
+        //          NodeParser.DevMode = false;
+        //	Logger.Log("Setting DevMode", NodeParser.DevMode);
+        //}
     }
 
 }

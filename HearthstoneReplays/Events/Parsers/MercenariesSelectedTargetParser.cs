@@ -12,21 +12,24 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public MercenariesSelectedTargetParser(ParserState ParserState)
+        public MercenariesSelectedTargetParser(ParserState ParserState, StateFacade stateFacade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = stateFacade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             TagChange tagChange = null;
-            return node.Type == typeof(TagChange)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(TagChange)
                 && ((tagChange = node.Object as TagChange).Name == (int)GameTag.LETTUCE_SELECTED_TARGET);
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }
@@ -47,8 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
                         cardId,
                         controllerId,
                         entity.Id,
-                        ParserState,
-                        GameState,
+                        StateFacade,
                         null),
                     true,
                     node) };
@@ -66,8 +68,7 @@ namespace HearthstoneReplays.Events.Parsers
                         cardId,
                         controllerId,
                         entity.Id,
-                        ParserState,
-                        GameState,
+                        StateFacade,
                         null,
                         new {
                             TargetControllerId = targetControllerId,

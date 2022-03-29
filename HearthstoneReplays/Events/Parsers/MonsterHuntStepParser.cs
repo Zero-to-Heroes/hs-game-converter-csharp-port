@@ -15,14 +15,16 @@ namespace HearthstoneReplays.Events.Parsers
 
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public MonsterRunStepParser(ParserState ParserState)
+        public MonsterRunStepParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
             //return node.Type == typeof(TagChange)
@@ -30,9 +32,10 @@ namespace HearthstoneReplays.Events.Parsers
             //    && !string.IsNullOrWhiteSpace((node.Object as TagChange).DefChange);
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(Parser.ReplayData.GameActions.Action)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(Parser.ReplayData.GameActions.Action)
                 && (node.Object as Parser.ReplayData.GameActions.Action).Data
                     .Where(data => data.GetType() == typeof(TagChange))
                     .Select(data => data as TagChange)
@@ -51,12 +54,12 @@ namespace HearthstoneReplays.Events.Parsers
                 (node.Object as Parser.ReplayData.GameActions.Action).TimeStamp,
                 "MONSTER_HUNT_STEP",
                 () => {
-                    if (ParserState.CurrentGame.ScenarioID != (int)Scenario.MONSTER_HUNT)
+                    if (StateFacade.ScenarioID != (int)Scenario.MONSTER_HUNT)
                     {
                         return null;
                     }
                     var action = (node.Object as Parser.ReplayData.GameActions.Action);
-                    var heroEntityId = ParserState.GetEntity(ParserState.LocalPlayer.Id).GetTag(GameTag.HERO_ENTITY);
+                    var heroEntityId = ParserState.GetEntity(StateFacade.LocalPlayer.Id).GetTag(GameTag.HERO_ENTITY);
                     var tagChange = action.Data
                             .Where(data => data.GetType() == typeof(TagChange))
                             .Select(data => data as TagChange)

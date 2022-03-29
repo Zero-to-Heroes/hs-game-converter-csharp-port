@@ -22,14 +22,15 @@ namespace HearthstoneReplays.Events.Parsers
             this.GameState = ParserState.GameState;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(GameEntity);
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(GameEntity);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)

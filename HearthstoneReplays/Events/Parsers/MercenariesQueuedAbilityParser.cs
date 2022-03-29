@@ -12,22 +12,25 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public MercenariesQueuedAbilityParser(ParserState ParserState)
+        public MercenariesQueuedAbilityParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             TagChange tagChange = null;
-            return node.Type == typeof(TagChange)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(TagChange)
                 && ((tagChange = node.Object as TagChange).Name == (int)GameTag.LETTUCE_ABILITY_TILE_VISUAL_ALL_VISIBLE
                     || tagChange.Name == (int)GameTag.LETTUCE_ABILITY_TILE_VISUAL_SELF_ONLY);
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }
@@ -48,8 +51,7 @@ namespace HearthstoneReplays.Events.Parsers
                         cardId,
                         controllerId,
                         entity.Id,
-                        ParserState,
-                        GameState,
+                        StateFacade,
                         null),
                     true,
                     node) };
@@ -61,7 +63,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var abilityCardId = abilityEntity?.CardId;
                 var abilitySpeed = abilityEntity.GetTag(GameTag.COST);
                 // Only queue the player's ability when they queue it themselves, not when they are revealed
-                if (controllerId == ParserState.LocalPlayer?.PlayerId && tagChange.Name == (int)GameTag.LETTUCE_ABILITY_TILE_VISUAL_ALL_VISIBLE)
+                if (controllerId == StateFacade.LocalPlayer?.PlayerId && tagChange.Name == (int)GameTag.LETTUCE_ABILITY_TILE_VISUAL_ALL_VISIBLE)
                 {
                     return null;
                 }
@@ -73,8 +75,7 @@ namespace HearthstoneReplays.Events.Parsers
                         cardId,
                         controllerId,
                         entity.Id,
-                        ParserState,
-                        GameState,
+                        StateFacade,
                         null,
                         new {
                             AbillityEntityId = abilityEntityId,

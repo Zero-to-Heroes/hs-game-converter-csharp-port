@@ -12,23 +12,26 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public ReceiveCardInHandParser(ParserState ParserState)
+        public ReceiveCardInHandParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(TagChange)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.HAND
                 && GameState.CurrentEntities.ContainsKey((node.Object as TagChange).Entity)
                 && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) != (int)Zone.DECK;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             var appliesToShowEntity = node.Type == typeof(ShowEntity)
                 && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.HAND
@@ -40,7 +43,8 @@ namespace HearthstoneReplays.Events.Parsers
                 && (!GameState.CurrentEntities.ContainsKey((node.Object as FullEntity).Id)
                     || (GameState.CurrentEntities[(node.Object as FullEntity).Id].GetTag(GameTag.ZONE) != (int)Zone.DECK
                         && GameState.CurrentEntities[(node.Object as FullEntity).Id].GetTag(GameTag.ZONE) != (int)Zone.HAND));
-            return appliesToShowEntity || appliesToFullEntity;
+            return stateType == StateType.PowerTaskList
+                && (appliesToShowEntity || appliesToFullEntity);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -49,7 +53,7 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             var creator = Oracle.FindCardCreator(GameState, entity, node);
 
             return new List<GameEventProvider> { GameEventProvider.Create(
@@ -60,8 +64,7 @@ namespace HearthstoneReplays.Events.Parsers
                         cardId,
                         controllerId,
                         entity.Id,
-                        ParserState,
-                        GameState,
+                        StateFacade,
                         gameState,
                         new {
                             CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
@@ -92,7 +95,7 @@ namespace HearthstoneReplays.Events.Parsers
             //var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, showEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creator.Item1, creator.Item2, node, showEntity.CardId);
             var controllerId = showEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             var entity = GameState.CurrentEntities[showEntity.Entity];
             // Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, showEntity.CardId);
             return new List<GameEventProvider> { GameEventProvider.Create(
@@ -103,8 +106,7 @@ namespace HearthstoneReplays.Events.Parsers
                         cardId,
                         controllerId,
                         showEntity.Entity,
-                        ParserState,
-                        GameState,
+                        StateFacade,
                         gameState,
                         new {
                             CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
@@ -123,7 +125,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 previousZone = GameState.CurrentEntities[fullEntity.Id].GetTag(GameTag.ZONE);
             }
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     fullEntity.TimeStamp,
                     "RECEIVE_CARD_IN_HAND",
@@ -155,8 +157,8 @@ namespace HearthstoneReplays.Events.Parsers
                             {
                                 CardId = cardId,
                                 ControllerId = controllerId,
-                                LocalPlayer = ParserState.LocalPlayer,
-                                OpponentPlayer = ParserState.OpponentPlayer,
+                                LocalPlayer = StateFacade.LocalPlayer,
+                                OpponentPlayer = StateFacade.OpponentPlayer,
                                 EntityId = fullEntity.Id,
                                 GameState = gameState,
                                 AdditionalProps = new {

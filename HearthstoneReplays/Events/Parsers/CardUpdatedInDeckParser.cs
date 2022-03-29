@@ -15,19 +15,21 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public CardUpdatedInDeckParser(ParserState ParserState)
+        public CardUpdatedInDeckParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             var appliesOnShow = node.Type == typeof(ShowEntity)
                 && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.DECK
@@ -36,7 +38,8 @@ namespace HearthstoneReplays.Events.Parsers
             var appliesForAction = node.Type == typeof(Action)
                 && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
                 && GameState.CurrentEntities[(node.Object as Action).Entity].CardId == CardIds.FindTheImposter_SpyOMaticToken;
-            return appliesOnShow || appliesForAction;
+            return stateType == StateType.PowerTaskList
+                && (appliesOnShow || appliesForAction);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -80,8 +83,7 @@ namespace HearthstoneReplays.Events.Parsers
                             entity.CardId,
                             entity.GetController(),
                             entity.Id,
-                            ParserState,
-                            GameState,
+                            StateFacade,
                             null,
                             new
                             {
@@ -113,7 +115,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             var entity = GameState.CurrentEntities[showEntity.Entity];
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             var creatorEntityId = showEntity.GetTag(GameTag.CREATOR);
             var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
                 ? GameState.CurrentEntities[creatorEntityId].CardId
@@ -126,8 +128,7 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     entity.Id,
-                    ParserState,
-                    GameState,
+                    StateFacade,
                     gameState,
                     new {
                         CreatorCardId = creatorEntityCardId,

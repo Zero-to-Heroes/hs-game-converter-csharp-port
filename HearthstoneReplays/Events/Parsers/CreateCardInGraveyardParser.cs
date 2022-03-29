@@ -14,28 +14,31 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade Helper { get; set; }
 
-        public CreateCardInGraveyardParser(ParserState ParserState)
+        public CreateCardInGraveyardParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.Helper = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             // For some reason, when spectating a game a lot of cards (from previous games I've watched / played?) are created
             // in the graveyard at the start of the game;
-            var isValidElement = !ParserState.Spectating || ParserState.LocalPlayer?.Name != null;
+            var isValidElement = !ParserState.Spectating || Helper.LocalPlayer?.Name != null;
             var appliesToFullEntity = isValidElement 
                 && node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD
                 && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT;
-            return appliesToFullEntity;
+            return stateType == StateType.PowerTaskList
+                && appliesToFullEntity;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -92,7 +95,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             FullEntity fullEntity = node.Object as FullEntity;
             var controllerId = fullEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
+            var gameState = GameEvent.BuildGameState(ParserState, Helper, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     fullEntity.TimeStamp,
                     "CREATE_CARD_IN_GRAVEYARD",
@@ -122,8 +125,8 @@ namespace HearthstoneReplays.Events.Parsers
                             {
                                 CardId = cardId,
                                 ControllerId = controllerId,
-                                LocalPlayer = ParserState.LocalPlayer,
-                                OpponentPlayer = ParserState.OpponentPlayer,
+                                LocalPlayer = Helper.LocalPlayer,
+                                OpponentPlayer = Helper.OpponentPlayer,
                                 EntityId = fullEntity.Id,
                                 GameState = gameState,
                                 AdditionalProps = new {

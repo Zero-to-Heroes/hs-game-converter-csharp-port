@@ -37,7 +37,14 @@ namespace HearthstoneReplays.Parser
             {GameTag.ZONE, typeof(Zone)}
 		};
 
-		public int ParseEntity(string data, ParserState state)
+		private CombinedState State { get; set; }
+
+		public Helper(CombinedState state)
+        {
+			this.State = state;
+        }
+
+		public int ParseEntity(string data)
 		{
 		    if (string.IsNullOrEmpty(data))
 		        return 0;
@@ -45,26 +52,26 @@ namespace HearthstoneReplays.Parser
 			if(match.Success)
 				return int.Parse(match.Groups[1].Value);
             if (data == "GameEntity")
-                return state.CurrentGame.Data.Where(d => d is GameEntity).Select(d => d as GameEntity).FirstOrDefault().Id;
+                return State.GSState.CurrentGame.Data.Where(d => d is GameEntity).Select(d => d as GameEntity).FirstOrDefault().Id;
 			int numeric;
 			if(int.TryParse(data, out numeric))
 				return numeric;
-			return GetPlayerIdFromName(data, state);
+			return GetPlayerIdFromName(data);
 		}
 
-		public int GetPlayerIdFromName(string data, ParserState state)
+		public int GetPlayerIdFromName(string data)
 		{
-			var firstPlayer = (PlayerEntity)state.CurrentGame.Data.FirstOrDefault(x => (x is PlayerEntity) && ((PlayerEntity)x).Id == state.FirstPlayerId);
+			var firstPlayer = (PlayerEntity)State.GSState.CurrentGame.Data.FirstOrDefault(x => (x is PlayerEntity) && ((PlayerEntity)x).Id == State.GSState.FirstPlayerId);
 			if(firstPlayer == null) throw new Exception("Could not find first player " + data);
 
-            var secondPlayer = (PlayerEntity)state.CurrentGame.Data.FirstOrDefault(x => (x is PlayerEntity) && ((PlayerEntity)x).Id != state.FirstPlayerId);
+            var secondPlayer = (PlayerEntity)State.GSState.CurrentGame.Data.FirstOrDefault(x => (x is PlayerEntity) && ((PlayerEntity)x).Id != State.GSState.FirstPlayerId);
             if(secondPlayer == null) throw new Exception("Could not find second player " + data);
 
             if (firstPlayer.Name == data) return firstPlayer.Id;
             if (secondPlayer.Name == data) return secondPlayer.Id;
             if (string.IsNullOrEmpty(firstPlayer.Name))
 		    {
-				if (firstPlayer.AccountHi == "0" && firstPlayer.AccountLo == "0" && state.IsBattlegrounds())
+				if (firstPlayer.AccountHi == "0" && firstPlayer.AccountLo == "0" && State.GSState.IsBattlegrounds())
                 {
 					firstPlayer.Name = "Bartender Bob";
 				} else
@@ -112,7 +119,7 @@ namespace HearthstoneReplays.Parser
 				return secondPlayer.Id;
 			}
             // Case where the entity itself is replaced by a new hero, like in the Crooked Pete / Beastly Pete case
-            var idFromState = state.GameState.PlayerIdFromEntityName(data);
+            var idFromState = State.GSState.GameState.PlayerIdFromEntityName(data);
             if (idFromState != 0)
             {
                 return idFromState;
@@ -130,7 +137,7 @@ namespace HearthstoneReplays.Parser
             // Eg BLOCK_START BlockType=TRIGGER Entity=dobroeytro EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=-1 Target=0 SubOption=-1 TriggerKeyword=TAG_NOT_SET
             // Sometimes, this is even the first time we even see this name
             // In this case, we default to the Bartender Bob entity
-            if (state.IsBattlegrounds())
+            if (State.GSState.IsBattlegrounds())
             {
                 //Logger.Log("Could not find player for " + data, "Defaulting to Bartender Bob instead of crashing");
                 var bob = firstPlayer.AccountHi == "0" ? firstPlayer : secondPlayer.AccountHi == "0" ? secondPlayer : null;

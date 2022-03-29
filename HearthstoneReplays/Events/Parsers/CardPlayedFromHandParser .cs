@@ -12,23 +12,21 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public CardPlayedFromHandParser(ParserState ParserState)
+        public CardPlayedFromHandParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             // In this case, it's not a "play"
             var isTriggerPhase = (node.Parent == null
                        || node.Parent.Type != typeof(Parser.ReplayData.GameActions.Action)
                        || (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER);
-            //if (isTriggerPhase)
-            //{
-            //    return false;
-            //}
 
             var sigilPlayed = !isTriggerPhase && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
@@ -43,12 +41,14 @@ namespace HearthstoneReplays.Events.Parsers
                 && (tagChangeEntity = GameState.CurrentEntities[(node.Object as TagChange).Entity]).GetTag(GameTag.ZONE) == (int)Zone.HAND
                 // The only case we actually consider the trigger phases is if we're handling a Cast When Drawn spell
                 && (!isTriggerPhase || tagChangeEntity.GetTag(GameTag.CASTSWHENDRAWN) == 1);
-            return sigilPlayed || cardPlayed;
+            return stateType == StateType.PowerTaskList
+                && (sigilPlayed || cardPlayed);
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(ShowEntity)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(ShowEntity)
                 && node.Parent != null
                 && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action)
                 && (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.PLAY;
@@ -74,7 +74,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var creatorCardId = creator != -1 && GameState.CurrentEntities.ContainsKey(creator)
                     ? GameState.CurrentEntities[creator].CardId
                     : null;
-                var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
+                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
 
                 System.Action preprocess = () => GameState.OnCardPlayed(tagChange.Entity, targetId);
                 return new List<GameEventProvider> { GameEventProvider.Create(
@@ -85,8 +85,7 @@ namespace HearthstoneReplays.Events.Parsers
                         cardId,
                         controllerId,
                         entity.Id,
-                        ParserState,
-                        GameState,
+                        StateFacade,
                         gameState,
                         new {
                             TargetEntityId = targetId,
@@ -127,7 +126,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var parentAction = node.Parent.Object as Parser.ReplayData.GameActions.Action;
                 var cardId = showEntity.CardId;
                 var controllerId = showEntity.GetEffectiveController();
-                var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
+                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
                 var targetId = parentAction.Target;
                 string targetCardId = targetId > 0 ? GameState.CurrentEntities[targetId].CardId : null;
                 var creator = showEntity.GetTag(GameTag.CREATOR);
@@ -145,8 +144,7 @@ namespace HearthstoneReplays.Events.Parsers
                         cardId,
                         controllerId,
                         showEntity.Entity,
-                        ParserState,
-                        GameState,
+                        StateFacade,
                         gameState,
                         new {
                             TargetEntityId = targetId,

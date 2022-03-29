@@ -13,7 +13,12 @@ namespace HearthstoneReplays.Parser.Handlers
 {
 	public class SendChoicesHandler
 	{
-		private Helper helper = new Helper();
+		private Helper helper;
+
+		public SendChoicesHandler(Helper helper)
+        {
+			this.helper = helper;
+        }
 
 		public void Handle(DateTime timestamp, string data, ParserState state)
         {
@@ -42,8 +47,8 @@ namespace HearthstoneReplays.Parser.Handlers
 			match = Regexes.SendChoicesEntitiesRegex.Match(data);
 			if(match.Success)
 			{
-				var index = helper.ParseEntity(match.Groups[1].Value, state);
-				var id = helper.ParseEntity(match.Groups[2].Value, state);
+				var index = helper.ParseEntity(match.Groups[1].Value);
+				var id = helper.ParseEntity(match.Groups[2].Value);
 				var choice = new Choice {Entity = id, Index = index};
 				state.SendChoices.Choices.Add(choice);
 			}

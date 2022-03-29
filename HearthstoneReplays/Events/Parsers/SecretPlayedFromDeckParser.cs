@@ -12,28 +12,32 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public SecretPlayedFromDeckParser(ParserState ParserState)
+        public SecretPlayedFromDeckParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(TagChange)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.SECRET
                 && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.DECK;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             var appliesToShowEntity = node.Type == typeof(ShowEntity)
                 && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.SECRET
                 && GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
                 && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) == (int)Zone.DECK;
-            return appliesToShowEntity;
+            return stateType == StateType.PowerTaskList
+                && appliesToShowEntity;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -44,7 +48,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetEffectiveController();
             if (entity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT && entity.GetTag(GameTag.SIGIL) != 1)
             {
-                var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
+                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
                 var playerClass = entity.GetPlayerClass();
                 var eventName = GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.SECRET) == 1 
                     ? "SECRET_PLAYED_FROM_DECK"
@@ -57,8 +61,7 @@ namespace HearthstoneReplays.Events.Parsers
                             cardId,
                             controllerId,
                             entity.Id,
-                            ParserState,
-                            GameState,
+                            StateFacade,
                             gameState,
                             new {
                                 PlayerClass = playerClass,
@@ -79,7 +82,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             var playerClass = showEntity.GetPlayerClass();
             var eventName = showEntity.GetTag(GameTag.SECRET) == 1 
                 ? "SECRET_PLAYED_FROM_DECK"
@@ -93,8 +96,7 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     showEntity.Entity,
-                    ParserState,
-                    GameState,
+                    StateFacade,
                     gameState,
                     new {
                         PlayerClass = playerClass,

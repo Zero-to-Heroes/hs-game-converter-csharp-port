@@ -12,21 +12,24 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public DeathrattleTriggeredParser(ParserState ParserState)
+        public DeathrattleTriggeredParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(Parser.ReplayData.GameActions.Action)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(Parser.ReplayData.GameActions.Action)
                 && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER
                 && (node.Object as Parser.ReplayData.GameActions.Action).TriggerKeyword == (int)GameTag.DEATHRATTLE;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }
@@ -39,7 +42,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetEffectiveController();
             if (GameState.CurrentEntities[action.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
-                var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
+                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                         action.TimeStamp,
                         "DEATHRATTLE_TRIGGERED",
@@ -48,8 +51,7 @@ namespace HearthstoneReplays.Events.Parsers
                             cardId,
                             controllerId,
                             entity.Id,
-                            ParserState,
-                            GameState,
+                            StateFacade,
                             gameState),
                        true,
                        node) };
@@ -72,7 +74,7 @@ namespace HearthstoneReplays.Events.Parsers
                     {
                         var cardId = showEntity.CardId;
                         var controllerId = showEntity.GetEffectiveController();
-                        var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
+                        var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
                         // For now there can only be one card played per block
                         return new List<GameEventProvider> { GameEventProvider.Create(
                             action.TimeStamp,
@@ -82,8 +84,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 cardId,
                                 controllerId,
                                 showEntity.Entity,
-                                ParserState,
-                                GameState,
+                                StateFacade,
                                 gameState),
                             true,
                             node) };

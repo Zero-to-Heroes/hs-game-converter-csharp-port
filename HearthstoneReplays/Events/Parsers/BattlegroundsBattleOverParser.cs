@@ -15,29 +15,31 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public BattlegroundsBattleOverParser(ParserState ParserState)
+        public BattlegroundsBattleOverParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             // The tag change is only used as a fallback mechanism in case no battle result was sent
             // This can happen in case of draws sometimes
-            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                    || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+            return stateType == StateType.PowerTaskList
+                && StateFacade.IsBattlegrounds()
                 && !GameState.BattleResultSent
                 && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.BOARD_VISUAL_STATE
                 && (node.Object as TagChange).Value == 1;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                    || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+            return stateType == StateType.PowerTaskList
+                && StateFacade.IsBattlegrounds()
                 && node.Type == typeof(Action)
                 && (node.Object as Action).Type == (int)BlockType.TRIGGER
                 // Also modify this in trigger-sync KDA
@@ -50,7 +52,7 @@ namespace HearthstoneReplays.Events.Parsers
             GameState.BattleResultSent = true;
             var tagChange = node.Object as TagChange;
             string opponentCardId = GameState.BgsCurrentBattleOpponent;
-            var mainPlayer = ParserState.LocalPlayer;
+            var mainPlayer = StateFacade.LocalPlayer;
             if (opponentCardId == null || opponentCardId == KelthuzadBattlegrounds)
             {
                 // Finding the one that is flagged as the player's NEXT_OPPONENT
@@ -122,7 +124,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             if (attackAction == null)
             {
-                var opponentPlayerId = ParserState.OpponentPlayer.PlayerId;
+                var opponentPlayerId = StateFacade.OpponentPlayer.PlayerId;
                 var opponentHero = GameState.CurrentEntities.Values
                     .Where(data => data.GetEffectiveController() == opponentPlayerId)
                     .Where(data => data.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
@@ -132,7 +134,7 @@ namespace HearthstoneReplays.Events.Parsers
                 if (cardId == KelthuzadBattlegrounds)
                 {
                     // Find the nexwt_opponent_id
-                    var player = GameState.CurrentEntities[ParserState.LocalPlayer.Id];
+                    var player = GameState.CurrentEntities[StateFacade.LocalPlayer.Id];
                     opponentPlayerId = player.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
                     opponentHero = GameState.CurrentEntities.Values
                         .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == opponentPlayerId)
@@ -160,7 +162,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var winner = GameState.CurrentEntities[attackAction.Entity];
-            var result = winner.GetEffectiveController() == ParserState.LocalPlayer.PlayerId ? "won" : "lost";
+            var result = winner.GetEffectiveController() == StateFacade.LocalPlayer.PlayerId ? "won" : "lost";
             var damageTag = attackAction.Data
                 .Where(data => data.GetType() == typeof(TagChange))
                 .Select(data => data as TagChange)
@@ -178,11 +180,11 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(tag => tag.Name == (int)GameTag.DEFENDING && tag.Value == 1)
                 .FirstOrDefault()
                 .Entity;
-            var opponentEntityId = GameState.CurrentEntities[attackerEntityId].GetEffectiveController() == ParserState.LocalPlayer.PlayerId
+            var opponentEntityId = GameState.CurrentEntities[attackerEntityId].GetEffectiveController() == StateFacade.LocalPlayer.PlayerId
                 ? defenderEntityId
                 : attackerEntityId;
             var opponentCardId = GameState.CurrentEntities[opponentEntityId].CardId;
-            var mainPlayer = ParserState.LocalPlayer;
+            var mainPlayer = StateFacade.LocalPlayer;
             if (opponentCardId == KelthuzadBattlegrounds)
             {
                 // Finding the one that is flagged as the player's NEXT_OPPONENT

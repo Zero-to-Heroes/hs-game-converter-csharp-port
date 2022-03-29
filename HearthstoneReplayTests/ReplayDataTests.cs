@@ -25,7 +25,7 @@ namespace HearthstoneReplayTests
         [TestMethod]
         public void Test()
         {
-            NodeParser.DevMode = true;
+            //NodeParser.DevMode = true;
             var serializerSettings = new JsonSerializerSettings()
             {
                 ContractResolver = new IgnorePropertiesResolver(new[] { "GameState", "ReplayXml", "LocalPlayer", "OpponentPlayer", "GameStateReport", "Game" })
@@ -46,6 +46,21 @@ namespace HearthstoneReplayTests
                         Console.WriteLine(serialized + ",");
                         //}
                     }
+                }
+            };
+            GameEventHandler.EventProvider = (GameEvent gameEvent) =>
+            {
+                dynamic Value = gameEvent.Value;
+                //var shouldLog = true;
+                var shouldLog = gameEvent.Type != "GAME_STATE_UPDATE" && gameEvent.Type != "GAME_END";
+                if (shouldLog)
+                {
+                    //var serialized = JsonConvert.SerializeObject(gameEvent);
+                    var serialized = JsonConvert.SerializeObject(gameEvent, serializerSettings);
+                    //if (serialized.Contains("\"TargetCardId\":\"TB_BaconShop_HERO_53\""))
+                    //{
+                    Console.WriteLine(serialized + ",");
+                    //}
                 }
             };
             List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
@@ -71,7 +86,7 @@ namespace HearthstoneReplayTests
             var plugin = new ReplayConverterPlugin();
             plugin.onGlobalEvent += (a, b) => Console.WriteLine(a + " // " + b);
             plugin.initRealtimeLogConversion(null);
-            NodeParser.DevMode = true;
+            //NodeParser.DevMode = true;
             GameEventHandler.EventProviderAll = (IList<GameEvent> gameEvents) => { };
             List<string> logFile = TestDataReader.GetInputFile("multiple_bg_games.txt");
             List<string> logsForGame = new List<string>();

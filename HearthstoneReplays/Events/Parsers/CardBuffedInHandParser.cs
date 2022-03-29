@@ -16,6 +16,7 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
         // When adding an entity to this list, also add the corresponding buff in the map below
         private List<string> validBuffers = new List<string>()
@@ -202,18 +203,19 @@ namespace HearthstoneReplays.Events.Parsers
             CardIds.Si7Skulker_SpyStuffEnchantment,
         };
 
-        public CardBuffedInHandParser(ParserState ParserState)
+        public CardBuffedInHandParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             // Use the meta node and not the action so that we can properly sequence events thanks to the 
             // node's index
@@ -222,7 +224,8 @@ namespace HearthstoneReplays.Events.Parsers
                     // Skull of Gul'dan doesn't have the TARGET info anymore, but the HOLD_DRAWN_CARD effect is only
                     // present when the card is buffed, so maybe we can use that
                     || (node.Object as MetaData).Meta == (int)MetaDataType.HOLD_DRAWN_CARD);
-            return isCorrectMeta
+            return stateType == StateType.PowerTaskList
+                && isCorrectMeta
                 || (node.Type == typeof(SubSpell) && node.Object != null)
                 || (node.Type == typeof(Action) 
                     && (node.Object as Action).Type == (int)BlockType.TRIGGER)
@@ -293,8 +296,7 @@ namespace HearthstoneReplays.Events.Parsers
                             entity.CardId,
                             entity.GetEffectiveController(),
                             entity.Entity,
-                            ParserState,
-                            GameState,
+                            StateFacade,
                             null,
                             new
                             {
@@ -333,8 +335,7 @@ namespace HearthstoneReplays.Events.Parsers
                             entity.CardId,
                             entity.GetEffectiveController(),
                             entity.Entity,
-                            ParserState,
-                            GameState,
+                            StateFacade,
                             null,
                             new
                             {
@@ -416,8 +417,7 @@ namespace HearthstoneReplays.Events.Parsers
                             entity.CardId,
                             entity.GetEffectiveController(),
                             entity.Entity,
-                            ParserState,
-                            GameState,
+                            StateFacade,
                             null,
                             new
                             {

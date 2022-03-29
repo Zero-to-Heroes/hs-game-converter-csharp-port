@@ -12,20 +12,23 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public WinnerParser(ParserState ParserState)
+        public WinnerParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(TagChange)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.PLAYSTATE;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }
@@ -48,8 +51,8 @@ namespace HearthstoneReplays.Events.Parsers
                                 Value = new
                                 {
                                     Winner = winner,
-                                    LocalPlayer = ParserState.LocalPlayer,
-                                    OpponentPlayer = ParserState.OpponentPlayer,
+                                    LocalPlayer = StateFacade.LocalPlayer,
+                                    OpponentPlayer = StateFacade.OpponentPlayer,
                                 }
                             };
                        },

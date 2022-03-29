@@ -16,16 +16,25 @@ using HearthstoneReplays.Enums;
 
 namespace HearthstoneReplays.Parser
 {
+    public enum StateType
+    {
+        GameState,
+        PowerTaskList,
+    }
+
     public class ParserState
     {
-        public ParserState()
+        public ParserState(StateType type, EventQueueHandler queueHandler, StateFacade stateFacade)
         {
-            Logger.Log("Calling reset from ParserState constructor", "");
-            //Reset();
+            Logger.Log("Calling reset from ParserState constructor", type);
+            this.StateType = type;
+            this.StateFacade = stateFacade;
+            this.NodeParser = new NodeParser(queueHandler, stateFacade);
         }
 
         public GameState GameState = new GameState();
-        public NodeParser NodeParser = new NodeParser();
+        public NodeParser NodeParser;
+        public StateFacade StateFacade;
         public HearthstoneReplay Replay { get; set; }
         public Game CurrentGame { get; set; }
         public GameData GameData { get; set; }
@@ -42,6 +51,8 @@ namespace HearthstoneReplays.Parser
         public bool ReconnectionOngoing { get; set; }
         public bool Spectating { get; set; }
         //public string FullLog { get; set; } = "";
+
+        private StateType StateType { get; set; }
 
         private Node _node;
         public Node Node
@@ -82,12 +93,12 @@ namespace HearthstoneReplays.Parser
                     }
                     if (_node != null && _node.Type == typeof(PlayerEntity))
                     {
-                        NodeParser.CloseNode(_node);
+                        NodeParser.CloseNode(_node, StateType);
                         GameState.PlayerEntity(_node.Object as PlayerEntity);
                     }
                     if (_node != null && _node.Type == typeof(GameEntity))
                     {
-                        NodeParser.CloseNode(_node);
+                        NodeParser.CloseNode(_node, StateType);
                         GameState.GameEntity(_node.Object as GameEntity);
                     }
                     if (_node != null && _node.Type == typeof(MetaData))
@@ -106,13 +117,15 @@ namespace HearthstoneReplays.Parser
             get { return _localPlayer; }
         }
 
-        public void SetLocalPlayer(Player value, DateTime timestamp, string data)
+        public void SetLocalPlayer(Player value, DateTime timestamp, string data, bool sendEvent)
         {
             _localPlayer = value;
             value.IsMainPlayer = true;
             var playerEntity = getPlayers().Find(player => player.PlayerId == value.PlayerId);
             playerEntity.IsMainPlayer = value.IsMainPlayer;
-            NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
+            if (sendEvent)
+            {
+                NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
                     "LOCAL_PLAYER",
                     () => new GameEvent
@@ -123,6 +136,7 @@ namespace HearthstoneReplays.Parser
                     false,
                     new Node(null, null, 0, null, data)
             )});
+            }
         }
 
         private Player _opponentPlayer;
@@ -131,14 +145,16 @@ namespace HearthstoneReplays.Parser
             get { return _opponentPlayer; }
         }
 
-        public void SetOpponentPlayer(Player value, DateTime timestamp, string data)
+        public void SetOpponentPlayer(Player value, DateTime timestamp, string data, bool sendEvent)
         {
             _opponentPlayer = value;
             value.IsMainPlayer = false;
             var playerEntity = getPlayers().Find(player => player.PlayerId == value.PlayerId);
             playerEntity.IsMainPlayer = value.IsMainPlayer;
-            var gameState = GameEvent.BuildGameState(this, GameState, null, null);
-            NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
+            var gameState = GameEvent.BuildGameState(this, StateFacade, GameState, null, null);
+            if (sendEvent)
+            {
+                NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                     timestamp,
                     "OPPONENT_PLAYER",
                     () => new GameEvent
@@ -151,13 +167,14 @@ namespace HearthstoneReplays.Parser
                     },
                     false,
                     new Node(null, null, 0, null, data)
-            )}); ;
+                )});
+            }
         }
 
-        public void Reset()
+        public void Reset(StateFacade helper)
         {
             GameState.Reset(this);
-            NodeParser.Reset(this);
+            NodeParser.Reset(this, helper);
             Replay = new HearthstoneReplay();
             Replay.Games = new List<Game>();
             CurrentGame = new Game();
@@ -177,17 +194,17 @@ namespace HearthstoneReplays.Parser
             ReconnectionOngoing = false;
             //FullLog = "";
             NumberOfCreates = 0;
-            Logger.Log("resetting game state", "");
+            Logger.Log("resetting game state", this.StateType);
         }
 
         public void CreateNewNode(Node newNode)
         {
-            NodeParser.NewNode(newNode);
+            NodeParser.NewNode(newNode, StateType);
         }
 
         public void EndAction()
         {
-            NodeParser.CloseNode(Node);
+            NodeParser.CloseNode(Node, StateType);
         }
 
         public void EndCurrentGame()
@@ -250,14 +267,14 @@ namespace HearthstoneReplays.Parser
                         || player.AccountHi == "0" && player.PlayerId == 2 && data.Contains("PlayerID=2"))
                     {
                         var newPlayer = Player.from(player);
-                        SetOpponentPlayer(newPlayer, timestamp, data);
+                        SetOpponentPlayer(newPlayer, timestamp, data, StateType == StateType.GameState);
                         return;
                     }
                     else if (player.PlayerId == localPlayerPlayerId && data.Contains("PlayerID=" + localPlayerPlayerId))
                     {
                         var newPlayer = Player.from(player);
                         FirstPlayerId = player.Id;
-                        SetLocalPlayer(newPlayer, timestamp, data);
+                        SetLocalPlayer(newPlayer, timestamp, data, StateType == StateType.GameState);
                         return;
                     }
 
@@ -332,7 +349,7 @@ namespace HearthstoneReplays.Parser
                                 .Where(e => e.Id == playerEntityId)
                                 .First();
                             newPlayer.CardID = playerEntity.CardId;
-                            SetLocalPlayer(newPlayer, timestamp, data);
+                            SetLocalPlayer(newPlayer, timestamp, data, StateType == StateType.GameState);
                         }
                     }
                     if (LocalPlayer != null)
@@ -351,7 +368,7 @@ namespace HearthstoneReplays.Parser
                                 .Where(e => e.Id == playerEntityId)
                                 .First();
                             newPlayer.CardID = playerEntity.CardId;
-                            SetOpponentPlayer(newPlayer, timestamp, data);
+                            SetOpponentPlayer(newPlayer, timestamp, data, StateType == StateType.GameState);
                         }
                         return;
                     }

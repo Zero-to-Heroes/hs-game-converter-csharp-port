@@ -109,12 +109,15 @@
   <ItemGroup>
     <Compile Include="Enums.cs" />
     <Compile Include="Events\GameMetaData.cs" />
+    <Compile Include="Events\EventQueueHandler.cs" />
+    <Compile Include="Events\GameStateShort.cs" />
     <Compile Include="Events\Parsers\BattlegroundsBuddyGainedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsTavernPrizesParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsFreezeParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsMinionsSoldParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsMinionsBoughtParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsRerollParser.cs" />
+    <Compile Include="Events\Parsers\CounterWillTriggerParser.cs" />
     <Compile Include="Events\Parsers\HeroRevealedParser.cs" />
     <Compile Include="Events\Parsers\CardTradedParser.cs" />
     <Compile Include="Events\Parsers\CostChangedParser.cs" />
@@ -136,6 +139,8 @@
     <Compile Include="Events\Parsers\ResourcesUsedThisTurnParser.cs" />
     <Compile Include="Events\Parsers\ResourcesThisTurnParser.cs" />
     <Compile Include="Events\Parsers\CounterTriggerParser.cs" />
+    <Compile Include="Events\Parsers\SecretWillTriggerParser.cs" />
+    <Compile Include="Events\Parsers\TurnCleanupParser.cs" />
     <Compile Include="Events\Parsers\WhizbangDeckParser.cs" />
     <Compile Include="Events\Parsers\ZoneChangeParser.cs" />
     <Compile Include="Events\Parsers\ZonePositionChangedParser.cs" />
@@ -222,6 +227,8 @@
     <Compile Include="GameEvent.cs" />
     <Compile Include="GameEventHandler.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Parser\CombinedState.cs" />
+    <Compile Include="Parser\StateFacade.cs" />
     <Compile Include="Parser\Handlers\PowerDataHandler.cs" />
     <Compile Include="Parser\Handlers\EntityChosenHandler.cs" />
     <Compile Include="Parser\Handlers\ChoicesHandler.cs" />

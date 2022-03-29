@@ -11,24 +11,26 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public BattlegroundsHeroKilledParser(ParserState ParserState)
+        public BattlegroundsHeroKilledParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                    || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+            return stateType == StateType.PowerTaskList
+                && StateFacade.IsBattlegrounds()
                 && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.REMOVEDFROMGAME
                 && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.CARDTYPE) == (int)CardType.HERO;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }
@@ -43,7 +45,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
-            if (GameState.CurrentEntities[tagChange.Entity].GetController() == ParserState.LocalPlayer.Id)
+            if (GameState.CurrentEntities[tagChange.Entity].GetController() == StateFacade.LocalPlayer.Id)
             {
                 return null;
             }
@@ -56,8 +58,7 @@ namespace HearthstoneReplays.Events.Parsers
                     GameState.CurrentEntities[tagChange.Entity].CardId,
                     GameState.CurrentEntities[tagChange.Entity].GetController(),
                     tagChange.Entity,
-                    ParserState,
-                    GameState,
+                    StateFacade,
                     null),
                 true,
                 node) };

@@ -14,21 +14,24 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade Helper { get; set; }
 
-        public GameRunningParser(ParserState ParserState)
+        public GameRunningParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.Helper = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(TagChange)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.STATE
                 && (node.Object as TagChange).Value == (int)State.RUNNING;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }
@@ -47,11 +50,11 @@ namespace HearthstoneReplays.Events.Parsers
                 "GAME_RUNNING",
                 () => {
                     var playerDeckCount = stateCopy
-                            .Where(entity => entity == ParserState.LocalPlayer.PlayerId)
+                            .Where(entity => entity == Helper.LocalPlayer.PlayerId)
                             .ToList()
                             .Count();
                     var opponentDeckCount = stateCopy
-                            .Where(entity => entity == ParserState.OpponentPlayer.PlayerId)
+                            .Where(entity => entity == Helper.OpponentPlayer.PlayerId)
                             .ToList()
                             .Count();
                     return new GameEvent
@@ -59,8 +62,8 @@ namespace HearthstoneReplays.Events.Parsers
                             Type = "GAME_RUNNING",
                             Value = new
                             {
-                                LocalPlayer = ParserState.LocalPlayer,
-                                OpponentPlayer = ParserState.OpponentPlayer,
+                                LocalPlayer = Helper.LocalPlayer,
+                                OpponentPlayer = Helper.OpponentPlayer,
                                 AdditionalProps = new
                                 {
                                     PlayerDeckCount = playerDeckCount,

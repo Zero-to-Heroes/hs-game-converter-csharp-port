@@ -12,20 +12,23 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public LocalPlayerLeaderboardPlaceChangedParser(ParserState ParserState)
+        public LocalPlayerLeaderboardPlaceChangedParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(TagChange)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.PLAYER_LEADERBOARD_PLACE;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }
@@ -38,7 +41,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return null;
             }
-            if (entity.GetEffectiveController() == ParserState.LocalPlayer.PlayerId)
+            if (entity.GetEffectiveController() == StateFacade.LocalPlayer.PlayerId)
             {
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
@@ -48,8 +51,7 @@ namespace HearthstoneReplays.Events.Parsers
                         null,
                         -1,
                         entity.Id,
-                        ParserState,
-                        GameState,
+                        StateFacade,
                         null,
                         new {
                             NewPlace = tagChange.Value

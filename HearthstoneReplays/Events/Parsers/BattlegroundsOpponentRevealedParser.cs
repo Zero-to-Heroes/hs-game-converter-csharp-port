@@ -14,21 +14,24 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public BattlegroundsOpponentRevealedParser(ParserState ParserState)
+        public BattlegroundsOpponentRevealedParser(ParserState ParserState, StateFacade stateFacade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = stateFacade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(FullEntity)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SETASIDE 
                 && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.HERO;
         }
@@ -62,8 +65,7 @@ namespace HearthstoneReplays.Events.Parsers
                         "BATTLEGROUNDS_NEXT_OPPONENT",
                         () =>
                         {
-                            if (ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS
-                                && ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+                            if (!StateFacade.IsBattlegrounds())
                             {
                                 return null;
                             }
@@ -89,13 +91,12 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var fullEntity = node.Object as FullEntity;
             var cardId = fullEntity.CardId;
-            if (ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS
-                && ParserState.CurrentGame.GameType != (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+            if (!StateFacade.IsBattlegrounds())
             {
                 return null;
             }
 
-            if (ParserState.OpponentPlayer?.PlayerId != fullEntity.GetEffectiveController())
+            if (StateFacade.OpponentPlayer?.PlayerId != fullEntity.GetEffectiveController())
             {
                 return null;
             }

@@ -32,16 +32,21 @@ namespace HearthstoneReplays.Events.Parsers
 
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public BattlegroundsPlayerBoardParser(ParserState ParserState)
+        public BattlegroundsPlayerBoardParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+            var theLine = "BLOCK_START BlockType=ATTACK Entity=[entityName=Infinite Toki id=719 zone=PLAY zonePos=0 cardId=TB_BaconShop_HERO_28 player=13] EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1";
+            
+            return stateType == StateType.GameState
+                && StateFacade.IsBattlegrounds()
                 && GameState.GetGameEntity().GetTag(GameTag.TURN) % 2 == 0
                 && GameState.BgsCurrentBattleOpponent == null
                 && node.Type == typeof(Action)
@@ -74,7 +79,7 @@ namespace HearthstoneReplays.Events.Parsers
                    );
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }
@@ -146,8 +151,8 @@ namespace HearthstoneReplays.Events.Parsers
 
 
             //var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
-            var opponent = ParserState.OpponentPlayer;
-            var player = ParserState.LocalPlayer;
+            var opponent = StateFacade.OpponentPlayer;
+            var player = StateFacade.LocalPlayer;
 
             var opponentBoard = CreateProviderFromAction(opponent, true, player, node);
             var playerBoard = CreateProviderFromAction(player, false, player, node);
@@ -158,9 +163,7 @@ namespace HearthstoneReplays.Events.Parsers
             result.Add(GameEventProvider.Create(
                    parentAction.TimeStamp,
                    "BATTLEGROUNDS_PLAYER_BOARD",
-                   () => (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                            || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
-                        ? new GameEvent
+                   () => new GameEvent
                         {
                             Type = "BATTLEGROUNDS_PLAYER_BOARD",
                             Value = new
@@ -168,13 +171,9 @@ namespace HearthstoneReplays.Events.Parsers
                                 PlayerBoard = playerBoard,
                                 OpponentBoard = opponentBoard,
                             }
-                        }
-                        : null,
+                        },
                    true,
-                   node,
-                   false,
-                   false,
-                   true // Don't wait until the animation is ready, so we send the board state right away
+                   node
                ) );
             return result;
         }
@@ -204,8 +203,6 @@ namespace HearthstoneReplays.Events.Parsers
                 //.Where(entity => entity.CardId != KelthuzadBattlegrounds)
                 .FirstOrDefault()
                 ?.Clone();
-            //Logger.Log("Trying to handle board", "" + ParserState.CurrentGame.GameType + " // " + hero?.CardId);
-            //Logger.Log("Hero " + hero.CardId, hero.Entity);
             var cardId = hero?.CardId;
             if (isOpponent)
             {
@@ -240,7 +237,7 @@ namespace HearthstoneReplays.Events.Parsers
             // Happens in the first encounter
             if (cardId == null)
             {
-                var activePlayer = GameState.CurrentEntities[ParserState.LocalPlayer.Id];
+                var activePlayer = GameState.CurrentEntities[StateFacade.LocalPlayer.Id];
                 var opponentPlayerId = activePlayer.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
                 hero = GameState.CurrentEntities.Values
                     .Where(data => data.GetTag(GameTag.PLAYER_ID) == opponentPlayerId)

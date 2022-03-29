@@ -12,22 +12,25 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public ZoneChangeParser(ParserState ParserState)
+        public ZoneChangeParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            // Limit it to merceanries, the only mode where this is used, to limit the impact on the number of events sent (esp. in BG)
-            return ParserState.IsMercenaries()
+            return stateType == StateType.PowerTaskList
+                // Limit it to merceanries, the only mode where this is used, to limit the impact on the number of events sent (esp. in BG)
+                && ParserState.IsMercenaries()
                 && node.Type == typeof(TagChange)
                 && ((node.Object as TagChange).Name == (int)GameTag.ZONE);
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }
@@ -47,8 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     entity.Id,
-                    ParserState,
-                    GameState,
+                    StateFacade,
                     null,
                     new {
                         Zone = zone,

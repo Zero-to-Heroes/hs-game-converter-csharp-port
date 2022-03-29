@@ -12,21 +12,24 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public CardChangedParser(ParserState ParserState)
+        public CardChangedParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(ChangeEntity);
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(ChangeEntity);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -57,7 +60,7 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = changeEntity.CardId;
             var entity = GameState.CurrentEntities[changeEntity.Entity];
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             var creatorEntityId = changeEntity.GetTag(GameTag.CREATOR);
             var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
                 ? GameState.CurrentEntities[creatorEntityId].CardId
@@ -70,8 +73,7 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     entity.Id,
-                    ParserState,
-                    GameState,
+                    StateFacade,
                     gameState,
                     new {
                         CreatorCardId = creatorEntityCardId,

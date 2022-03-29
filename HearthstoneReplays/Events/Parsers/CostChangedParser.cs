@@ -12,22 +12,25 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public CostChangedParser(ParserState ParserState)
+        public CostChangedParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            // This is for now only useful to get the speed update in Mercenaries, so we try to restrict the number of events
-            return ParserState.IsMercenaries()
+            return stateType == StateType.PowerTaskList
+                // This is for now only useful to get the speed update in Mercenaries, so we try to restrict the number of events
+                && ParserState.IsMercenaries()
                 && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.COST;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }
@@ -52,8 +55,7 @@ namespace HearthstoneReplays.Events.Parsers
                         cardId,
                         controllerId,
                         entity.Id,
-                        ParserState,
-                        GameState,
+                        StateFacade,
                         null,
                         new {
                             NewCost = tagChange.Value,

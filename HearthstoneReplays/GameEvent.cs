@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Parser.ReplayData.Meta.Options;
+using HearthstoneReplays.Events;
 
 namespace HearthstoneReplays
 {
@@ -27,9 +28,8 @@ namespace HearthstoneReplays
             string cardId,
             int controllerId,
             int entityId,
-            ParserState parserState,
-            GameState fullGameState,
-            object gameState,
+            StateFacade helper,
+            GameStateShort gameState,
             object additionalProps = null,
             System.Action preprocess = null)
         {
@@ -46,8 +46,8 @@ namespace HearthstoneReplays
                     {
                         CardId = cardId,
                         ControllerId = controllerId,
-                        LocalPlayer = parserState.LocalPlayer,
-                        OpponentPlayer = parserState.OpponentPlayer,
+                        LocalPlayer = helper.LocalPlayer,
+                        OpponentPlayer = helper.OpponentPlayer,
                         EntityId = entityId,
                         // We do it now so that the zone positions should have been resolved, while 
                         // if we compute it when the event is built, there is no guarantee of that
@@ -62,40 +62,40 @@ namespace HearthstoneReplays
         }
 
         // It needs to be built beforehand, as the game state we pass is not immutable
-        public static dynamic BuildGameState(ParserState parserState, GameState gameState, TagChange tagChange, ShowEntity showEntity)
+        public static GameStateShort BuildGameState(ParserState parserState, StateFacade helper, GameState gameState, TagChange tagChange, ShowEntity showEntity)
         {
-            if (parserState == null || parserState.LocalPlayer == null || parserState.OpponentPlayer == null)
+            if (parserState == null || helper.LocalPlayer == null || helper.OpponentPlayer == null)
             {
                 //Logger.Log("Can't build game state", "");
-                return new { };
+                return new GameStateShort();
             }
 
-            var result = new
+            var result = new GameStateShort()
             {
                 ActivePlayerId = gameState.GetActivePlayerId(),
-                Player = new
+                Player = new GameStateShortPlayer()
                 {
-                    Hero = GameEvent.BuildHero(gameState, parserState.Options, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
-                    Weapon = GameEvent.BuildWeapon(gameState, parserState.Options, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
-                    Hand = GameEvent.BuildZone(gameState, parserState.Options, Zone.HAND, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
-                    Board = GameEvent.BuildBoard(gameState, parserState.Options, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
-                    Deck = GameEvent.BuildZone(gameState, parserState.Options, Zone.DECK, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
-                    LettuceAbilities = GameEvent.BuildZone(gameState, parserState.Options, Zone.LETTUCE_ABILITY, parserState.LocalPlayer.PlayerId, tagChange, showEntity),
+                    Hero = GameEvent.BuildHero(gameState, parserState.Options, helper.LocalPlayer.PlayerId, tagChange, showEntity),
+                    Weapon = GameEvent.BuildWeapon(gameState, parserState.Options, helper.LocalPlayer.PlayerId, tagChange, showEntity),
+                    Hand = GameEvent.BuildZone(gameState, parserState.Options, Zone.HAND, helper.LocalPlayer.PlayerId, tagChange, showEntity),
+                    Board = GameEvent.BuildBoard(gameState, parserState.Options, helper.LocalPlayer.PlayerId, tagChange, showEntity),
+                    Deck = GameEvent.BuildZone(gameState, parserState.Options, Zone.DECK, helper.LocalPlayer.PlayerId, tagChange, showEntity),
+                    LettuceAbilities = GameEvent.BuildZone(gameState, parserState.Options, Zone.LETTUCE_ABILITY, helper.LocalPlayer.PlayerId, tagChange, showEntity),
                 },
-                Opponent = new
+                Opponent = new GameStateShortPlayer()
                 {
-                    Hero = GameEvent.BuildHero(gameState, parserState.Options, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
-                    Weapon = GameEvent.BuildWeapon(gameState, parserState.Options, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
-                    Hand = GameEvent.BuildZone(gameState, parserState.Options, Zone.HAND, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
-                    Board = GameEvent.BuildBoard(gameState, parserState.Options, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
-                    Deck = GameEvent.BuildZone(gameState, parserState.Options, Zone.DECK, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
-                    LettuceAbilities = GameEvent.BuildZone(gameState, parserState.Options, Zone.LETTUCE_ABILITY, parserState.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    Hero = GameEvent.BuildHero(gameState, parserState.Options, helper.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    Weapon = GameEvent.BuildWeapon(gameState, parserState.Options, helper.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    Hand = GameEvent.BuildZone(gameState, parserState.Options, Zone.HAND, helper.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    Board = GameEvent.BuildBoard(gameState, parserState.Options, helper.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    Deck = GameEvent.BuildZone(gameState, parserState.Options, Zone.DECK, helper.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    LettuceAbilities = GameEvent.BuildZone(gameState, parserState.Options, Zone.LETTUCE_ABILITY, helper.OpponentPlayer.PlayerId, tagChange, showEntity),
                 }
             };
             return result;
         }
 
-        private static object BuildHero(GameState gameState, Options options, int playerId, TagChange tagChange, ShowEntity showEntity)
+        private static GameStateShortSmallEntity BuildHero(GameState gameState, Options options, int playerId, TagChange tagChange, ShowEntity showEntity)
         {
             try
             {
@@ -106,10 +106,7 @@ namespace HearthstoneReplays
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
                     .FirstOrDefault();
-                return hero != null ? hero : new
-                {
-
-                };
+                return hero ?? new GameStateShortSmallEntity();
             }
             catch (Exception e)
             {
@@ -118,7 +115,7 @@ namespace HearthstoneReplays
             }
         }
 
-        private static object BuildWeapon(GameState gameState, Options options, int playerId, TagChange tagChange, ShowEntity showEntity)
+        private static GameStateShortSmallEntity BuildWeapon(GameState gameState, Options options, int playerId, TagChange tagChange, ShowEntity showEntity)
         {
             try
             {
@@ -128,10 +125,7 @@ namespace HearthstoneReplays
                     .Where(entity => entity.GetEffectiveController() == playerId)
                     .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
                     .FirstOrDefault();
-                return weapon != null ? weapon : new
-                {
-
-                };
+                return weapon ?? new GameStateShortSmallEntity();
             }
             catch (Exception e)
             {
@@ -140,7 +134,7 @@ namespace HearthstoneReplays
             }
         }
 
-        private static List<object> BuildZone(GameState gameState, Options options, Zone zone, int playerId, TagChange tagChange, ShowEntity showEntity)
+        private static List<GameStateShortSmallEntity> BuildZone(GameState gameState, Options options, Zone zone, int playerId, TagChange tagChange, ShowEntity showEntity)
         {
             try
             {
@@ -170,7 +164,7 @@ namespace HearthstoneReplays
             }
         }
 
-        private static List<object> BuildBoard(GameState gameState, Options options, int playerId, TagChange tagChange, ShowEntity showEntity)
+        private static List<GameStateShortSmallEntity> BuildBoard(GameState gameState, Options options, int playerId, TagChange tagChange, ShowEntity showEntity)
         {
             try
             {
@@ -223,7 +217,7 @@ namespace HearthstoneReplays
             return valueTC || valueSE;
         }
 
-        private static object BuildSmallEntity(BaseEntity entity, Options options, TagChange tagChange, ShowEntity showEntity, List<FullEntity> fullEntities = null)
+        private static GameStateShortSmallEntity BuildSmallEntity(BaseEntity entity, Options options, TagChange tagChange, ShowEntity showEntity, List<FullEntity> fullEntities = null)
         {
             string cardId = null;
             if (entity.GetType() == typeof(FullEntity))
@@ -231,7 +225,7 @@ namespace HearthstoneReplays
                 cardId = (entity as FullEntity).CardId;
             }
             var newTags = tagChange != null && tagChange.Entity == entity.Id ? entity.GetTagsCopy(tagChange) : entity.GetTagsCopy();
-            return new
+            return new GameStateShortSmallEntity()
             {
                 entityId = entity.Id,
                 cardId = cardId,
@@ -249,12 +243,13 @@ namespace HearthstoneReplays
                 enchantments = fullEntities
                     ?.Where(e => e.GetTag(GameTag.ATTACHED) == entity.Id)
                     ?.Where(e => e.GetZone() == (int)Zone.PLAY)
-                    .Select(e => new
+                    .Select(e => new GameStateShortEnchantment()
                     {
                         entityId = e.Entity,
                         cardId = e.CardId,
                         tags = e.GetTagsCopy(),
                     })
+                    .ToList()
 
             };
         }

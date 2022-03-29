@@ -13,22 +13,25 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public CardBackToDeckParser(ParserState ParserState)
+        public CardBackToDeckParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(TagChange)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.DECK
                 && !IsTrade(node.Parent);
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }
@@ -41,7 +44,7 @@ namespace HearthstoneReplays.Events.Parsers
             var initialZone = ((Zone)zoneInt).ToString();
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             if (cardId == null || cardId.Length == 0)
             {
                 var creator = Oracle.FindCardCreator(GameState, entity, node);
@@ -52,7 +55,7 @@ namespace HearthstoneReplays.Events.Parsers
             // have a special rule
             var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
             var isOpponentMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == (int)Step.BEGIN_MULLIGAN
-                && entity.GetController() == ParserState.OpponentPlayer.PlayerId;
+                && entity.GetController() == StateFacade.OpponentPlayer.PlayerId;
             if ((isOpponentMulligan || isBeforeMulligan) && cardId == CardIds.EncumberedPackMule)
             {
                 cardId = "";
@@ -66,8 +69,7 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     entity.Id,
-                    ParserState,
-                    GameState,
+                    StateFacade,
                     gameState,
                     new {
                         InitialZone = initialZone,

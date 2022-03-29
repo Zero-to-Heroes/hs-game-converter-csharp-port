@@ -9,13 +9,13 @@ using System.Linq;
 
 namespace HearthstoneReplays.Events.Parsers
 {
-    public class CounterTriggerParser : ActionParser
+    public class CounterWillTriggerParser : ActionParser
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
         private StateFacade StateFacade { get; set; }
 
-        public CounterTriggerParser(ParserState ParserState, StateFacade facade)
+        public CounterWillTriggerParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
@@ -24,7 +24,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return stateType == StateType.PowerTaskList
+            return stateType == StateType.GameState
                 && node.Type == typeof(Parser.ReplayData.GameActions.Action)
                 && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER
                 && (node.Object as Parser.ReplayData.GameActions.Action).TriggerKeyword == (int)GameTag.COUNTER;
@@ -59,9 +59,9 @@ namespace HearthstoneReplays.Events.Parsers
             return new List<GameEventProvider> {
                     GameEventProvider.Create(
                         action.TimeStamp,
-                        "COUNTER_TRIGGERED",
+                        "COUNTER_WILL_TRIGGER",
                         GameEvent.CreateProvider(
-                            "COUNTER_TRIGGERED",
+                            "COUNTER_WILL_TRIGGER",
                             cardId,
                             controllerId,
                             entity.Id,
@@ -69,7 +69,7 @@ namespace HearthstoneReplays.Events.Parsers
                             null,
                             additionalProps),
                        true,
-                       node)
+                       node),
                 };
         }
 

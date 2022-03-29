@@ -12,20 +12,23 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade Helper { get; set; }
 
-        public FatigueParser(ParserState ParserState)
+        public FatigueParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.Helper = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(TagChange)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.FATIGUE;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }
@@ -44,8 +47,8 @@ namespace HearthstoneReplays.Events.Parsers
                     Value = new
                     {
                         EntityId = entity.Id,
-                        LocalPlayer = ParserState.LocalPlayer,
-                        OpponentPlayer = ParserState.OpponentPlayer,
+                        LocalPlayer = Helper.LocalPlayer,
+                        OpponentPlayer = Helper.OpponentPlayer,
                         FatigueDamage = fatigueDamage,
                     }
                 },

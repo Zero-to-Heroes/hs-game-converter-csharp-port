@@ -12,23 +12,27 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public CardStolenParser(ParserState ParserState)
+        public CardStolenParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(TagChange)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.CONTROLLER
                 && !MindrenderIlluciaParser.IsProcessingMindrenderIlluciaEffect(node, GameState);
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(Parser.ReplayData.GameActions.ShowEntity)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(Parser.ReplayData.GameActions.ShowEntity)
                 && GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
                 && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetEffectiveController()
                         != (node.Object as ShowEntity).GetEffectiveController()
@@ -49,7 +53,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
-                var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
+                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "CARD_STOLEN",
@@ -58,8 +62,7 @@ namespace HearthstoneReplays.Events.Parsers
                         cardId,
                         controllerId,
                         entity.Id,
-                        ParserState,
-                        GameState,
+                        StateFacade,
                         gameState,
                         new {
                             newControllerId = tagChange.Value
@@ -83,7 +86,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             if (GameState.CurrentEntities[showEntity.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
-                var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
+                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,
                     "CARD_STOLEN",
@@ -92,8 +95,7 @@ namespace HearthstoneReplays.Events.Parsers
                         cardId,
                         controllerId,
                         showEntity.Entity,
-                        ParserState,
-                        GameState,
+                        StateFacade,
                         gameState,
                         new {
                             newControllerId = showEntity.GetEffectiveController()

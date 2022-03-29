@@ -10,22 +10,25 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public MercenariesAbilityActivatedParser(ParserState ParserState)
+        public MercenariesAbilityActivatedParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             Action action = null;
-            return node.Type == typeof(Action)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(Action)
                 && (action = node.Object as Action).Type == (int)BlockType.PLAY
                 && GameState.CurrentEntities.ContainsKey(action.Entity)
                 && GameState.CurrentEntities[action.Entity].GetZone() == (int)Zone.LETTUCE_ABILITY
@@ -53,8 +56,7 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     entity.Id,
-                    ParserState,
-                    GameState,
+                    StateFacade,
                     null,
                     new
                     {

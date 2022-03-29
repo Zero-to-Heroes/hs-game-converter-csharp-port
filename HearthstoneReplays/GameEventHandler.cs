@@ -16,31 +16,22 @@ namespace HearthstoneReplays
 
         public static void Handle(GameEvent gameEvent, bool isDevMode)
         {
-            if (isDevMode)
+            //if (queuedEvents.Count > 50 && lastEmitDate)
+            // First event we get 
+            if (queuedEvents.Count > 0)
             {
                 if (gameEvent != null)
                 {
                     queuedEvents.Add(gameEvent);
                 }
+                Logger.Log("Sending queued events", "");
+                EventProviderAll?.Invoke(queuedEvents);
+                queuedEvents.Clear();
             }
             else
             {
-                //if (queuedEvents.Count > 50 && lastEmitDate)
-                // First event we get 
-                if (queuedEvents.Count > 0)
-                {
-                    if (gameEvent != null)
-                    {
-                        queuedEvents.Add(gameEvent);
-                    }
-                    Logger.Log("Sending queued events", "");
-                    EventProviderAll?.Invoke(queuedEvents);
-                    queuedEvents.Clear();
-                }
-                else
-                {
-                    EventProvider?.Invoke(gameEvent);
-                }
+                //Logger.Log("Sending event to emit", gameEvent.Type);
+                EventProvider?.Invoke(gameEvent);
             }
         }
     }

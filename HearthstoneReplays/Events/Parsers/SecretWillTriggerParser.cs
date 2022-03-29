@@ -9,13 +9,13 @@ using System.Linq;
 
 namespace HearthstoneReplays.Events.Parsers
 {
-    public class SecretTriggeredParser : ActionParser
+    public class SecretWillTriggeredParser : ActionParser
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
         private StateFacade StateFacade { get; set; }
 
-        public SecretTriggeredParser(ParserState ParserState, StateFacade facade)
+        public SecretWillTriggeredParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
@@ -24,7 +24,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return stateType == StateType.PowerTaskList
+            return stateType == StateType.GameState
                 && node.Type == typeof(Parser.ReplayData.GameActions.Action)
                 && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER
                 && (node.Object as Parser.ReplayData.GameActions.Action).TriggerKeyword == (int)GameTag.SECRET;
@@ -83,9 +83,9 @@ namespace HearthstoneReplays.Events.Parsers
                 return new List<GameEventProvider> {
                     GameEventProvider.Create(
                         action.TimeStamp,
-                        "SECRET_TRIGGERED",
+                        "SECRET_WILL_TRIGGER",
                         GameEvent.CreateProvider(
-                            "SECRET_TRIGGERED",
+                            "SECRET_WILL_TRIGGER",
                             cardId,
                             controllerId,
                             entity.Id,
@@ -93,7 +93,7 @@ namespace HearthstoneReplays.Events.Parsers
                             gameState,
                             additionalProps),
                        true,
-                       node) 
+                       node), 
                 };
             }
             return null;

@@ -13,14 +13,16 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public TurnStartParser(ParserState ParserState)
+        public TurnStartParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             var isNormalTurnChange = !ParserState.IsMercenaries() 
                 && node.Type == typeof(TagChange)
@@ -34,13 +36,15 @@ namespace HearthstoneReplays.Events.Parsers
                 && (node.Object as TagChange).Name == (int)GameTag.STEP
                 && (node.Object as TagChange).Value == (int)Step.MAIN_PRE_ACTION
                 && GameState.GetGameEntity()?.Entity == (node.Object as TagChange).Entity;
-            return isNormalTurnChange || isMercenariesTurnChange;
+            return stateType == StateType.PowerTaskList
+                && (isNormalTurnChange || isMercenariesTurnChange);
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             var isGameNode = node.Type == typeof(GameEntity);
-            return (ParserState.ReconnectionOngoing || ParserState.Spectating)
+            return stateType == StateType.PowerTaskList
+                && (ParserState.ReconnectionOngoing || ParserState.Spectating)
                 && isGameNode;
         }
 
@@ -50,14 +54,14 @@ namespace HearthstoneReplays.Events.Parsers
             var newTurnValue = tagChange.Name == (int)GameTag.TURN ? (int)tagChange.Value : GameState.CurrentTurn + 1;
             GameState.CurrentTurn = newTurnValue;
             //GameState.StartTurn();
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             var result = new List<GameEventProvider>();
             // This event system is sometimes a mess - in some cases we want to reset the info when the event is sent
             // and in others we want to reset the game state, so as it is processed
             GameState.ClearPlagiarize();
             // FIXME?: maybe this should not be inside the event provider, but rather apply on the GameState
             GameState.OnNewTurn();
-            if (ParserState.IsBattlegrounds())
+            if (StateFacade.IsBattlegrounds())
             {
                 if (newTurnValue % 2 != 0)
                 {
@@ -98,16 +102,15 @@ namespace HearthstoneReplays.Events.Parsers
                            {
                                Turn = newTurnValue,
                                GameState = gameState,
-                               LocalPlayer = ParserState.LocalPlayer,
-                               OpponentPlayer = ParserState.OpponentPlayer,
+                               LocalPlayer = StateFacade.LocalPlayer,
+                               OpponentPlayer = StateFacade.OpponentPlayer,
                            }
                        };
                    },
                    false,
                    node));
             // This seems the most reliable way to have the combat_start event as soon as possible
-            if ((ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                        || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY))
+            if (StateFacade.IsBattlegrounds())
             {
                 if (newTurnValue % 2 == 0)
                 {
@@ -168,8 +171,8 @@ namespace HearthstoneReplays.Events.Parsers
                         Value = new
                         {
                             Turn = currentTurn,
-                            LocalPlayer = ParserState.LocalPlayer,
-                            OpponentPlayer = ParserState.OpponentPlayer,
+                            LocalPlayer = StateFacade.LocalPlayer,
+                            OpponentPlayer = StateFacade.OpponentPlayer,
                         }
                     };
                 },

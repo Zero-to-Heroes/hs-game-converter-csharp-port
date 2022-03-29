@@ -12,21 +12,24 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public EntityUpdateParser(ParserState ParserState)
+        public EntityUpdateParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(ShowEntity);
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(ShowEntity);
                 // We need this so that cards that were unknown in the opponent's hand can be assigned
                 // their info
                 //&& !MindrenderIlluciaParser.IsProcessingMindrenderIlluciaEffect(node, GameState);
@@ -66,7 +69,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var controllerId = showEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             var mercXp = showEntity.GetTag(GameTag.LETTUCE_MERCENARY_EXPERIENCE);
             var mercEquipmentId = showEntity.GetTag(GameTag.LETTUCE_EQUIPMENT_ID);
             var abilityOwner = showEntity.GetTag(GameTag.LETTUCE_ABILITY_OWNER);
@@ -88,8 +91,7 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     showEntity.Entity,
-                    ParserState,
-                    GameState,
+                    StateFacade,
                     gameState,
                     new {
                         MercenariesExperience = mercXp,
@@ -103,11 +105,6 @@ namespace HearthstoneReplays.Events.Parsers
                     }),
                 true,
                 node,
-                // For some reason, the event is not sent because of missing animlation log
-                // (I still don't understand why)
-                false,
-                false,
-                false,
                 // See comments in NodeParser
                 new
                 {

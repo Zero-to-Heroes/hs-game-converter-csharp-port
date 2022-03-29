@@ -13,21 +13,24 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public BurnedCardParser(ParserState ParserState)
+        public BurnedCardParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(MetaData)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(MetaData)
                 && (node.Object as MetaData).Meta == (int)MetaDataType.BURNED_CARD;
         }
 
@@ -57,7 +60,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Logger.Log("Could not identify burned card id", info.Entity);
                 }
                 var controllerId = entity.GetEffectiveController();
-                object gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
+                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
                 result.Add(GameEventProvider.Create(
                     meta.TimeStamp,
                     "BURNED_CARD",
@@ -66,8 +69,7 @@ namespace HearthstoneReplays.Events.Parsers
                         cardId,
                         controllerId,
                         entity.Id,
-                        ParserState,
-                        GameState,
+                        StateFacade,
                         gameState),
                     (GameEventProvider provider) =>
                     {

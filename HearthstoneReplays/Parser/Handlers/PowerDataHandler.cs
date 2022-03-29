@@ -20,7 +20,7 @@ namespace HearthstoneReplays.Parser.Handlers
 	{
 		public void Handle(DateTime timestamp, string data, ParserState state)
 		{
-            state.NodeParser.ReceiveAnimationLog(data);
+            //state.NodeParser.ReceiveAnimationLog(data);
 
 			var match = Regexes.ActionStartRegex.Match(data);
 			if (match.Success)

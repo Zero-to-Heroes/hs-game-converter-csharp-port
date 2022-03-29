@@ -12,21 +12,24 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade Helper { get; set; }
 
-        public WhizbangDeckParser(ParserState ParserState)
+        public WhizbangDeckParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.Helper = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(PlayerEntity);
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(PlayerEntity);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -48,7 +51,7 @@ namespace HearthstoneReplays.Events.Parsers
                 "WHIZBANG_DECK_ID",
                 () => {
                     // The info is also logged for the opponent, but we ignore it
-                    if (playerEntity.PlayerId != ParserState.LocalPlayer.PlayerId)
+                    if (playerEntity.PlayerId != Helper.LocalPlayer.PlayerId)
                     {
                         return null;
                     }

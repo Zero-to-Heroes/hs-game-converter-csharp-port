@@ -13,21 +13,24 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public BattlegroundsBuddyGainedParser(ParserState ParserState)
+        public BattlegroundsBuddyGainedParser(ParserState ParserState, StateFacade stateFacade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = stateFacade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return ParserState.IsBattlegrounds()
+            return stateType == StateType.PowerTaskList
+                && StateFacade.IsBattlegrounds()
                 && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.BACON_PLAYER_NUM_HERO_BUDDIES_GAINED;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }

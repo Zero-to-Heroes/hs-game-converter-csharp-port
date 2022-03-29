@@ -1,0 +1,213 @@
+﻿#region
+using System;
+using System.Timers;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using HearthstoneReplays.Enums;
+using HearthstoneReplays.Parser.ReplayData.Entities;
+using HearthstoneReplays.Parser.ReplayData.GameActions;
+using HearthstoneReplays.Parser;
+using HearthstoneReplays.Events.Parsers;
+#endregion
+
+namespace HearthstoneReplays.Events
+{
+    public class EventQueueHandler
+    {
+        public List<GameEventProvider> eventQueue;
+        private Timer timer;
+
+        private bool waitingForMetaData;
+
+        private readonly Object listLock = new object();
+        private StateFacade Helper;
+
+        public EventQueueHandler(StateFacade helper)
+        {
+            Helper = helper;
+            eventQueue = new List<GameEventProvider>();
+            timer = new Timer(100);
+            timer.Elapsed += ProcessGameEventQueue;
+            timer.AutoReset = true;
+            timer.Enabled = true;
+        }
+
+        public void Reset(StateFacade helper)
+        {
+            this.Helper = helper;
+        }
+
+        public void EnqueueGameEvent(List<GameEventProvider> providers)
+        {
+            providers = providers.Where(provider => provider != null).ToList();
+            //Logger.Log("[csharp] Enqueueing game event", providers != null ? providers[0].CreationLogLine : null);
+            //Logger.Log("[csharp] Enqueueing game event", providers != null ? providers[0].EventName : null);
+            lock (listLock)
+            {
+                //Logger.Log("Acquierd list lock in queneGameEvent", "");
+                // Remove outstanding events
+                if (providers.Any(provider => provider.CreationLogLine.Contains("CREATE_GAME")) && eventQueue.Count > 0)
+                {
+                    Logger.Log("Purging queue of outstanding events", eventQueue.Count);
+                    ClearQueue();
+                }
+
+                var shouldUnqueuePredicates = providers
+                    .Select(provider => provider.isDuplicatePredicate)
+                    .ToList();
+                // Remove duplicate events
+                // As we process the queue when the animation is ready, we should not have a race condition 
+                // here, but it's still risky (vs preventing the insertion if a future event is a duplicate, but 
+                // which requires a lot of reengineering of the loop)
+                if (eventQueue != null
+                    && eventQueue.Count > 0
+                    && shouldUnqueuePredicates != null
+                    && shouldUnqueuePredicates.Count > 0)
+                {
+                    //Logger.Log("Before culling dupes", eventQueue.Count);
+                    eventQueue = eventQueue
+                        .Where(queued => queued != null)
+                        .Where((queued) => !shouldUnqueuePredicates.Any((predicate) => predicate(queued)))
+                        .ToList();
+                    //Logger.Log("After culling dupes", eventQueue.Count);
+                }
+                eventQueue.AddRange(providers);
+                // Don't touch the start/stop dev mode processors
+                //var startDevModeIndex = eventQueue.FindIndex(item => item is StartDevModeProvider);
+                //var stopDevModeIndex = eventQueue.FindIndex(item => item is StopDevModeProvider);
+                //Logger.Log("Found start and dev mode index", startDevModeIndex + " // " + stopDevModeIndex);
+                eventQueue = eventQueue
+                    .OrderBy(p => p.Timestamp)
+                    .ThenBy(p => p.Index)
+                    .ToList();
+                //Logger.Log("Enqueued game event", providers != null ? providers[0].CreationLogLine : null);
+            }
+        }
+
+        public void ClearQueue()
+        {
+            lock (listLock)
+            {
+                //Logger.Log("Acquierd list lock in clearqueue", "");
+                // We process all pending events. It can happen (typically with the Hearthstone spell) that 
+                // not all events receive their animation log, so we do it just to be sure there aren't any 
+                // left overs
+                eventQueue.ForEach(provider => ProcessGameEvent(provider));
+                eventQueue.Clear();
+            }
+        }
+
+        private bool processing;
+        private async void ProcessGameEventQueue(Object source, ElapsedEventArgs e)
+        {
+            if (processing)
+            {
+                return;
+            }
+            // If both the first events has just been added, wait a bit, so that we're sure there's no 
+            // other event that should be processed first
+            // Warning: this means the whole event parsing works in real-time, and is not suited for 
+            // post-processing of games
+            // TODO: this is starting to become a big hack. It might be better to rethink the whole event 
+            // processing, and rely only the on the PowerTaskList instead of the GameState, so that I 
+            // can get rid of the timing shennanigans
+            // What the GameState processing is good for:
+            // - Know ahead of time what will happen (eg MINION_WILL_DIE). Maybe this can be worked around by waiting for a short while in some cases
+            // - Start the BG simulation earlier  (this one might be big for me)
+            // - There are some stuff that are only present in the GS logs (metadata, player names) (this can be solved by running on the GS first, once)
+            while (IsEventToProcess())
+            {
+                processing = true;
+                //Logger.Log("[csharp] Event to process", "");
+
+                try
+                {
+                    GameEventProvider provider;
+                    lock (listLock)
+                    {
+                        if (eventQueue.Count == 0)
+                        {
+                            //Logger.Log("No event", "");
+                            processing = false;
+                            return;
+                        }
+
+                        if (waitingForMetaData)
+                        {
+                            Logger.Log("Waiting for metadata", "");
+                            processing = false;
+                            return;
+                        }
+
+                        provider = eventQueue[0];
+                        eventQueue.RemoveAt(0);
+                    }
+                    if (provider.NeedMetaData)
+                    {
+                        waitingForMetaData = true;
+                        // Wait until we have all the necessary data
+                        while (!Helper.HasMetaData())
+                        {
+                            Logger.Log("Awaiting metadata", provider.EventName);
+                            await Task.Delay(100);
+                        }
+                        waitingForMetaData = false;
+                    }
+                    lock (listLock)
+                    {
+                        ProcessGameEvent(provider);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("Exception while parsing event queue " + ex.Message, ex.StackTrace);
+                    processing = false;
+                    return;
+                }
+            }
+            processing = false;
+        }
+
+        private void ProcessGameEvent(GameEventProvider provider)
+        {
+            if (provider.SupplyGameEvent == null && provider.GameEvent == null)
+            {
+                //Logger.Log("No game event", "");
+                return;
+            }
+            var gameEvent = provider.GameEvent != null ? provider.GameEvent : provider.SupplyGameEvent();
+            // This can happen because there are some conditions that are only resolved when we 
+            // have the full meta data, like dungeon run step
+            if (gameEvent != null)
+            {
+                //Logger.Log("Handling game event", gameEvent.Type);
+                GameEventHandler.Handle(gameEvent, false);
+            }
+        }
+
+        private bool IsEventToProcess()
+        {
+            try
+            {
+                var isEvent = false;
+                lock (listLock)
+                {
+                    // We leave some time so that events parsed later can be processed sooner (typiecally the case 
+                    // for end-of-block events vs start-of-block events, like tag changes)
+                    // Update: the 100ms ticks should be enough to play this role
+                    isEvent = eventQueue.Count > 0;
+                }
+                //Logger.Log("Is event to process? " + isEvent + " // " + eventQueue.Count, 
+                //    eventQueue.Count > 0 ? "" + DateTime.Now.Subtract(eventQueue.First().Timestamp).TotalMilliseconds : "");
+                return isEvent;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex.StackTrace, "" + eventQueue.Count);
+                Logger.Log("Exception while trying to determine event to process", ex.Message);
+                return false;
+            }
+        }
+    }
+}

@@ -10,21 +10,24 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public HeroPowerChangedParser(ParserState ParserState)
+        public HeroPowerChangedParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(FullEntity)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY
                 && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER;
                 //&& !ParserState.ReconnectionOngoing;
@@ -40,7 +43,7 @@ namespace HearthstoneReplays.Events.Parsers
             var fullEntity = node.Object as FullEntity;
             var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             var creatorEntityId = fullEntity.GetTag(GameTag.CREATOR);
             var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId) 
                 ? GameState.CurrentEntities[creatorEntityId].CardId
@@ -53,8 +56,7 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     fullEntity.Id,
-                    ParserState,
-                    GameState,
+                    StateFacade,
                     gameState,
                     new {
                         CreatorCardId = creatorEntityCardId,

@@ -10,22 +10,25 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public HeroRevealedParser(ParserState ParserState)
+        public HeroRevealedParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             FullEntity fullEntity;
-            return node.Type == typeof(FullEntity)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(FullEntity)
                 && (fullEntity = node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY
                 && fullEntity.GetCardType() == (int)CardType.HERO;
 
@@ -50,8 +53,7 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     fullEntity.Id,
-                    ParserState,
-                    GameState,
+                    StateFacade,
                     null,
                     new {
                         Health = health,

@@ -9,8 +9,8 @@ namespace HearthstoneReplays.Events
 {
     interface ActionParser
     {
-        bool AppliesOnNewNode(Node node);
-        bool AppliesOnCloseNode(Node node);
+        bool AppliesOnNewNode(Node node, StateType stateType);
+        bool AppliesOnCloseNode(Node node, StateType stateType);
         List<GameEventProvider> CreateGameEventProviderFromNew(Node node);
         List<GameEventProvider> CreateGameEventProviderFromClose(Node node);
     }

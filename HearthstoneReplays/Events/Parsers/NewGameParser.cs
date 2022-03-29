@@ -17,12 +17,13 @@ namespace HearthstoneReplays.Events.Parsers
         {
             this.ParserState = ParserState;
         }
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(Game);
+            return stateType == StateType.GameState
+                && node.Type == typeof(Game);
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }
@@ -41,10 +42,7 @@ namespace HearthstoneReplays.Events.Parsers
                     },
                 },
                 false,
-                node,
-                false,
-                false,
-                true) };
+                node) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)

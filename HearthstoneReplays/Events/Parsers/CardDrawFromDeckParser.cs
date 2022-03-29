@@ -12,23 +12,26 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public CardDrawFromDeckParser(ParserState ParserState)
+        public CardDrawFromDeckParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = helper;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(TagChange)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.HAND
                 && (GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.DECK
                     || GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == -1);
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             var appliesToShowEntity = node.Type == typeof(ShowEntity)
                 && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.HAND
@@ -38,7 +41,8 @@ namespace HearthstoneReplays.Events.Parsers
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.HAND
                 && GameState.CurrentEntities.ContainsKey((node.Object as FullEntity).Id)
                 && GameState.CurrentEntities[(node.Object as FullEntity).Id].GetTag(GameTag.ZONE) == (int)Zone.DECK;
-            return appliesToShowEntity || appliesToFullEntity;
+            return stateType == StateType.PowerTaskList
+                && (appliesToShowEntity || appliesToFullEntity);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -57,7 +61,7 @@ namespace HearthstoneReplays.Events.Parsers
 
 
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, tagChange, null);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             // If we compute this when triggering the event, we will get a "gift" icon because the 
             // card is already in hand
             var wasInDeck = entity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
@@ -89,8 +93,8 @@ namespace HearthstoneReplays.Events.Parsers
                         {
                             CardId = finalCardId,
                             ControllerId = controllerId,
-                            LocalPlayer = ParserState.LocalPlayer,
-                            OpponentPlayer = ParserState.OpponentPlayer,
+                            LocalPlayer = StateFacade.LocalPlayer,
+                            OpponentPlayer = StateFacade.OpponentPlayer,
                             EntityId = entity.Id,
                             GameState = gameState,
                             AdditionalProps = new {
@@ -123,7 +127,7 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetEffectiveController();
             var entity = GameState.CurrentEntities[showEntity.Entity];
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             var wasInDeck = entity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
             var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
 
@@ -133,7 +137,7 @@ namespace HearthstoneReplays.Events.Parsers
                 () => {
                     // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 
                     // have a special rule to hide it when the opponent draws it
-                    if (isBeforeMulligan && cardId == CardIds.EncumberedPackMule && controllerId != ParserState.LocalPlayer.PlayerId)
+                    if (isBeforeMulligan && cardId == CardIds.EncumberedPackMule && controllerId != StateFacade.LocalPlayer.PlayerId)
                     {
                         return null;
                     }
@@ -149,8 +153,8 @@ namespace HearthstoneReplays.Events.Parsers
                         {
                             CardId = cardId,
                             ControllerId = controllerId,
-                            LocalPlayer = ParserState.LocalPlayer,
-                            OpponentPlayer = ParserState.OpponentPlayer,
+                            LocalPlayer = StateFacade.LocalPlayer,
+                            OpponentPlayer = StateFacade.OpponentPlayer,
                             EntityId = showEntity.Entity,
                             GameState = gameState,
                             AdditionalProps = new {
@@ -169,7 +173,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             var wasInDeck = fullEntity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
             // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 
             // have a special rule
@@ -195,8 +199,8 @@ namespace HearthstoneReplays.Events.Parsers
                         {
                             CardId = cardId,
                             ControllerId = controllerId,
-                            LocalPlayer = ParserState.LocalPlayer,
-                            OpponentPlayer = ParserState.OpponentPlayer,
+                            LocalPlayer = StateFacade.LocalPlayer,
+                            OpponentPlayer = StateFacade.OpponentPlayer,
                             EntityId = fullEntity.Entity,
                             GameState = gameState,
                             AdditionalProps = new {

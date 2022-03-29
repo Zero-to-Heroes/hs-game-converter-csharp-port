@@ -15,22 +15,24 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public BattlegroundsMinionsBoughtParser(ParserState ParserState)
+        public BattlegroundsMinionsBoughtParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return (ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
-                    || ParserState.CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY)
+            return stateType == StateType.PowerTaskList
+                && StateFacade.IsBattlegrounds()
                 && node.Type == typeof(Action)
                 && (node.Object as Action).Type == (int)BlockType.POWER
                 && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
@@ -68,8 +70,7 @@ namespace HearthstoneReplays.Events.Parsers
                         cardId,
                         controller,
                         boughtMinion.Entity,
-                        ParserState,
-                        GameState,
+                        StateFacade,
                         null),
                     true,
                     node)

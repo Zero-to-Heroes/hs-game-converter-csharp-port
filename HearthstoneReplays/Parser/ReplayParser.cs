@@ -21,12 +21,10 @@ namespace HearthstoneReplays.Parser
 {
     public class ReplayParser
     {
-        public const string Version = "1.0";
-        public const int HearthstoneBuild = 43246;
-
         public static DateTime start; // The log is not aware of absolute time, time zones, etc. So we just represent it based on the user's computer
 
-        public ParserState State;
+        private CombinedState State;
+        //private ParserState State;
         private DataHandler dataHandler;
         private PowerDataHandler powerDataHandler;
         private ChoicesHandler choicesHandler;
@@ -37,12 +35,13 @@ namespace HearthstoneReplays.Parser
 
         public ReplayParser()
         {
-            State = new ParserState();
-            dataHandler = new DataHandler();
+            State = new CombinedState();
+            Helper helper = new Helper(State);
+            dataHandler = new DataHandler(helper);
             powerDataHandler = new PowerDataHandler();
-            choicesHandler = new ChoicesHandler();
-            entityChosenHandler = new EntityChosenHandler();
-            optionsHandler = new OptionsHandler();
+            choicesHandler = new ChoicesHandler(helper);
+            entityChosenHandler = new EntityChosenHandler(helper);
+            optionsHandler = new OptionsHandler(helper);
             previousTimestamp = default;
             start = DateTime.Now; // Don't use UTC, otherwise it won't match with the log info
         }
@@ -50,16 +49,15 @@ namespace HearthstoneReplays.Parser
         public HearthstoneReplay FromString(IEnumerable<string> lines, params GameType[] gameTypes)
         {
             Read(lines.ToArray());
-            State.Replay.Version = Version;
-            State.Replay.Build = HearthstoneBuild.ToString();
-            for (var i = 0; i < State.Replay.Games.Count; i++)
+            var finalState = State.PTLState;
+            for (var i = 0; i < finalState.Replay.Games.Count; i++)
             {
                 if (gameTypes == null || gameTypes.Length == 1)
-                    State.Replay.Games[i].Type = (int)gameTypes[0];
+                    finalState.Replay.Games[i].Type = (int)gameTypes[0];
                 else
-                    State.Replay.Games[i].Type = gameTypes.Length > i ? (int)gameTypes[i] : 0;
+                    finalState.Replay.Games[i].Type = gameTypes.Length > i ? (int)gameTypes[i] : 0;
             }
-            return State.Replay;
+            return finalState.Replay;
         }
 
         public void Read(string[] lines)
@@ -81,21 +79,19 @@ namespace HearthstoneReplays.Parser
         public void ReadLine(string line)
         {
             // Ignore timestamps when catching up with past events
-            if (line == "START_CATCHING_UP")
-            {
-                State.NodeParser.StartDevMode();
-                return;
-                //NodeParser.DevMode = true;
-                //Logger.Log("Setting Start DevMode", NodeParser.DevMode);
-            }
-            if (line == "END_CATCHING_UP")
-            {
-                State.NodeParser.StopDevMode();
-                return;
-                //NodeParser.DevMode = false;
-                //Logger.Log("Setting Stop DevMode", NodeParser.DevMode);
+            //if (line == "START_CATCHING_UP")
+            //{
+            //    State.StartDevMode();
+            //    return;
+            //}
+            //if (line == "END_CATCHING_UP")
+            //{
+            //    State.NodeParser.StopDevMode();
+            //    return;
+            //    //NodeParser.DevMode = false;
+            //    //Logger.Log("Setting Stop DevMode", NodeParser.DevMode);
 
-            }
+            //}
             Match match;
             Regex logTypeRegex = null;
             if (logTypeRegex == null)
@@ -145,7 +141,7 @@ namespace HearthstoneReplays.Parser
                 case "GameState.DebugPrintPower":
                 case "GameState.DebugPrintGame":
                 case "Spectator":
-                    dataHandler.Handle(normalizedTimestamp, data, State, previousTimestamp);
+                    dataHandler.Handle(normalizedTimestamp, data, State.GSState, StateType.GameState, previousTimestamp, State.GameInfoHelper);
                     previousTimestamp = normalizedTimestamp;
                     break;
                 //case "GameState.SendChoices":
@@ -153,19 +149,29 @@ namespace HearthstoneReplays.Parser
                 //	break;
                 //case "GameState.DebugPrintChoices":
                 case "GameState.DebugPrintEntityChoices":
-                    choicesHandler.Handle(normalizedTimestamp, data, State);
+                    choicesHandler.Handle(normalizedTimestamp, data, State.GSState);
+                    // Assumption here is that the choices are highlighted once the PTL has caught up
+                    // Update: that doesn't seem to be the case. Some choices appear after the GS has completed, 
+                    // but the PTL FullEntity blocks have not appeared yet
+                    // So for now keep the choices purely on the GS side - hoping the timings will be good enough
+                    //choicesHandler.Handle(normalizedTimestamp, data, State.PTLState);
                     previousTimestamp = normalizedTimestamp;
                     break;
                 case "GameState.DebugPrintEntitiesChosen":
-                    entityChosenHandler.Handle(normalizedTimestamp, data, State);
+                    entityChosenHandler.Handle(normalizedTimestamp, data, State.GSState);
+                    //entityChosenHandler.Handle(normalizedTimestamp, data, State.PTLState);
                     previousTimestamp = normalizedTimestamp;
                     break;
                 case "GameState.DebugPrintOptions":
-                    optionsHandler.Handle(normalizedTimestamp, data, State);
+                    optionsHandler.Handle(normalizedTimestamp, data, State.GSState);
+                    optionsHandler.Handle(normalizedTimestamp, data, State.PTLState);
                     previousTimestamp = normalizedTimestamp;
                     break;
                 case "PowerTaskList.DebugPrintPower":
-                    powerDataHandler.Handle(normalizedTimestamp, data, State);
+                    // Process the actual stuff
+                    dataHandler.Handle(normalizedTimestamp, data, State.PTLState, StateType.PowerTaskList, previousTimestamp, State.GameInfoHelper);
+                    // Update entity names
+                    powerDataHandler.Handle(normalizedTimestamp, data, State.PTLState);
                     previousTimestamp = normalizedTimestamp;
                     break;
                 //case "GameState.SendOption":

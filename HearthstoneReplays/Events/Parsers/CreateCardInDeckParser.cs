@@ -12,19 +12,21 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public CreateCardInDeckParser(ParserState ParserState)
+        public CreateCardInDeckParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             // In this case, a FullEntity is created with minimal info, and the real
             // card creation happens in the ShowEntity
@@ -34,7 +36,8 @@ namespace HearthstoneReplays.Events.Parsers
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.DECK
                 // We don't want to include the entities created when the game starts
                 && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action);
-            return appliesOnShowEntity || appliesOnFullEntity;
+            return stateType == StateType.PowerTaskList
+                && (appliesOnShowEntity || appliesOnFullEntity);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -75,7 +78,7 @@ namespace HearthstoneReplays.Events.Parsers
             var creator = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creator.Item1, creator.Item2, node, showEntity.CardId);
             var controllerId = showEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, showEntity);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "CREATE_CARD_IN_DECK",
@@ -84,8 +87,8 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     showEntity.Entity,
-                    ParserState,
-                    GameState,
+                    StateFacade,
+                    gameState,
                     new {
                         CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
                         CreatorEntityId = creator?.Item2 ?? -1,
@@ -107,7 +110,7 @@ namespace HearthstoneReplays.Events.Parsers
             var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node, fullEntity.CardId);
             var controllerId = fullEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, GameState, null, null);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CREATE_CARD_IN_DECK",
@@ -116,8 +119,7 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     fullEntity.Id,
-                    ParserState,
-                        GameState,
+                    StateFacade,
                     gameState,
                     new {
                         CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show "created by ..."

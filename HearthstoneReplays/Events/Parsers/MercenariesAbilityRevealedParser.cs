@@ -10,22 +10,25 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public MercenariesAbilityRevealedParser(ParserState ParserState)
+        public MercenariesAbilityRevealedParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return false;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return (node.Type == typeof(FullEntity) && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.LETTUCE_ABILITY)
-            || (node.Type == typeof(ShowEntity) && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.LETTUCE_ABILITY);
+            return stateType == StateType.PowerTaskList
+                && ((node.Type == typeof(FullEntity) && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.LETTUCE_ABILITY)
+            || (node.Type == typeof(ShowEntity) && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.LETTUCE_ABILITY));
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -70,8 +73,7 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     fullEntity.Id,
-                    ParserState,
-                    GameState,
+                    StateFacade,
                     null,
                     new {
                         AbilityOwnerEntityId = abilityOwner,
@@ -110,8 +112,7 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     showEntity.Entity,
-                    ParserState,
-                    GameState,
+                    StateFacade,
                     null,
                     new {
                         AbilityOwnerEntityId = abilityOwner,

@@ -19,14 +19,15 @@ namespace HearthstoneReplays.Events.Parsers
             this.GameState = ParserState.GameState;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(TagChange)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.MULLIGAN_STATE
                 && (node.Object as TagChange).Value == (int)Mulligan.DEALING;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return false;
         }

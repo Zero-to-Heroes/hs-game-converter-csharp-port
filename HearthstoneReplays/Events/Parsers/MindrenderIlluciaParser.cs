@@ -13,24 +13,28 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public MindrenderIlluciaParser(ParserState ParserState)
+        public MindrenderIlluciaParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = facade;
         }
 
-        public bool AppliesOnNewNode(Node node)
+        public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(Action)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(Action)
                 && (node.Object as Action).Type == (int)BlockType.POWER
                 && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
                 && GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == MindrenderIllucia;
         }
 
-        public bool AppliesOnCloseNode(Node node)
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(Action)
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(Action)
                 && (node.Object as Action).Type == (int)BlockType.TRIGGER
                 && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
                 && GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == MindrenderIllucia_MindSwapEnchantment;
@@ -47,8 +51,7 @@ namespace HearthstoneReplays.Events.Parsers
                     null,
                     -1,
                     -1,
-                    ParserState,
-                    GameState,
+                    StateFacade,
                     null),
                 true,
                 node) };
@@ -65,8 +68,7 @@ namespace HearthstoneReplays.Events.Parsers
                     null,
                     -1,
                     -1,
-                    ParserState,
-                    GameState,
+                    StateFacade,
                     null),
                 true,
                 node) };
