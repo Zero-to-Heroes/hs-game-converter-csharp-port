@@ -187,7 +187,7 @@ namespace HearthstoneReplays.Parser.Handlers
                     ((Action)state.Node.Object).Data.Add(tagChange);
                 else
                     throw new Exception("Invalid node " + state.Node.Type);
-                state.GameState.TagChange(tagChange, defChange, timestamp + " " + data);
+                state.GameState.TagChange(tagChange, defChange);
                 return true;
             }
             return false;
@@ -803,8 +803,10 @@ namespace HearthstoneReplays.Parser.Handlers
                 var isReconnecting = !state.Ended && state.NumberOfCreates >= 1 && !state.Spectating;
                 if (isReconnecting)
                 {
-                    Logger.Log("Probable reconnect detected " + timestamp + " // " + previousTimestamp, "" + (timestamp - previousTimestamp));
-                    if (stateType == StateType.PowerTaskList)
+                    Logger.Log(
+                        $"Probable reconnect detected {timestamp} // {previousTimestamp} // {state.Ended} // {state.NumberOfCreates} // {state.Spectating} // {stateType} // {data}", 
+                        "" + (timestamp - previousTimestamp));
+                    if (stateType == StateType.GameState)
                     {
                         state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                         timestamp,

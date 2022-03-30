@@ -8,13 +8,13 @@ using System.Collections.Generic;
 
 namespace HearthstoneReplays.Events.Parsers
 {
-    public class GameEndParser : ActionParser
+    public class GameCleanupParser : ActionParser
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
         private StateFacade StateFacade { get; set; }
 
-        public GameEndParser(ParserState ParserState, StateFacade helper)
+        public GameCleanupParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
@@ -23,7 +23,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return stateType == StateType.PowerTaskList
+            // Simply to be able to mark the game as ended
+            return stateType == StateType.GameState
                 && node.Type == typeof(TagChange)
                 && ((node.Object as TagChange).Name == (int)GameTag.GOLD_REWARD_STATE
                         || ((node.Object as TagChange).Name == (int)GameTag.STATE
@@ -37,31 +38,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            var tagChange = node.Object as TagChange;
-            var replayCopy = ParserState.Replay;
-            var xmlReplay = new ReplayConverter().xmlFromReplay(replayCopy);
-            var gameStateReport = GameState.BuildGameStateReport(StateFacade);
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
-            Logger.Log("Enqueuing GAME_END event", "");
             ParserState.EndCurrentGame();
-            return new List<GameEventProvider> { GameEventProvider.Create(
-                tagChange.TimeStamp,
-                "GAME_END",
-                () => new GameEvent
-                {
-                    Type = "GAME_END",
-                    Value = new
-                    {
-                        LocalPlayer = StateFacade.LocalPlayer,
-                        OpponentPlayer = StateFacade.OpponentPlayer,
-                        GameStateReport = gameStateReport,
-                        Game = ParserState.CurrentGame,
-                        ReplayXml = xmlReplay,
-                        Spectating = ParserState.Spectating,
-                    }
-                },
-                true,
-                node) };
+            return null;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)

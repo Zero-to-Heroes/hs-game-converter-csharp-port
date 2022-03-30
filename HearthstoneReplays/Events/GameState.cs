@@ -17,7 +17,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public Dictionary<int, FullEntity> CurrentEntities = new Dictionary<int, FullEntity>();
         public Dictionary<string, int> EntityNames = new Dictionary<string, int>();
-        public bool MulliganOver = false;
         public int CurrentTurn = 0;
         public GameMetaData MetaData;
         // Because for BGS the first opponent player id is set as a tag of the player, instead 
@@ -44,7 +43,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             ParserState = state;
             CurrentEntities = new Dictionary<int, FullEntity>();
             EntityNames = new Dictionary<string, int>();
-            MulliganOver = false;
             CurrentTurn = 0;
             MetaData = null;
             NextBgsOpponentPlayerId = -1;
@@ -276,7 +274,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             CurrentEntities[entity.Entity].Tags = oldTagsToKeep;
         }
 
-        public void TagChange(TagChange tagChange, string defChange, string initialLog = null)
+        public void TagChange(TagChange tagChange, string defChange)
         {
             if (!CurrentEntities.ContainsKey(tagChange.Entity))
             {
@@ -288,7 +286,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 existingTag = new Tag { Name = tagChange.Name };
                 CurrentEntities[tagChange.Entity].Tags.Add(existingTag);
             }
-            RaiseTagChangeEvents(tagChange, existingTag.Value, defChange, initialLog);
             existingTag.Value = tagChange.Value;
         }
 
@@ -443,22 +440,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                     .Where(e => e.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
                     .ToList();
             plagiarizes.ForEach(plagia => plagia.KnownEntityIds.Clear());
-        }
-
-        private void RaiseTagChangeEvents(TagChange tagChange, int previousValue, string defChange, string initialLog = null)
-        {
-            if (tagChange.Name == (int)GameTag.GOLD_REWARD_STATE
-                // This handles reconnects
-                || (tagChange.Name == (int)GameTag.STATE && tagChange.Value == (int)State.COMPLETE))
-            {
-                Logger.Log("Ending current game", tagChange.Name + "=" + tagChange.Value);
-                ParserState.EndCurrentGame();
-            }
-
-            if (tagChange.Name == (int)GameTag.MULLIGAN_STATE && tagChange.Value == (int)Mulligan.DONE)
-            {
-                MulliganOver = true;
-            }
         }
 
         internal List<FullEntity> FindEnchantmentsAttachedTo(int entity)

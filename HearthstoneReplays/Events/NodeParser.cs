@@ -104,6 +104,7 @@ namespace HearthstoneReplays.Events
 
                 new WinnerParser(ParserState, StateFacade),
                 new GameEndParser(ParserState, StateFacade),
+                new GameCleanupParser(ParserState, StateFacade),
                 new TurnStartParser(ParserState, StateFacade),
                 new TurnCleanupParser(ParserState, StateFacade),
                 new FirstPlayerParser(ParserState, StateFacade),
