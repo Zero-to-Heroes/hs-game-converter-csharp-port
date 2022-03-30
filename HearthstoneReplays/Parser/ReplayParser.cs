@@ -38,7 +38,7 @@ namespace HearthstoneReplays.Parser
             State = new CombinedState();
             Helper helper = new Helper(State);
             dataHandler = new DataHandler(helper);
-            powerDataHandler = new PowerDataHandler();
+            powerDataHandler = new PowerDataHandler(helper);
             choicesHandler = new ChoicesHandler(helper);
             entityChosenHandler = new EntityChosenHandler(helper);
             optionsHandler = new OptionsHandler(helper);

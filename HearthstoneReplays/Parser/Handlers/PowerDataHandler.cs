@@ -18,6 +18,13 @@ namespace HearthstoneReplays.Parser.Handlers
 {
 	public class PowerDataHandler
 	{
+		private Helper Helper { get; set; }
+
+		public PowerDataHandler(Helper helper)
+        {
+			this.Helper = helper;
+        }
+
 		public void Handle(DateTime timestamp, string data, ParserState state)
 		{
             //state.NodeParser.ReceiveAnimationLog(data);
@@ -49,6 +56,13 @@ namespace HearthstoneReplays.Parser.Handlers
 			{
 				var rawEntity = match.Groups[1].Value;
                 state.GameState.UpdateEntityName(rawEntity);
+
+				// Special case for players
+				//var tagName = match.Groups[2].Value;
+				//if (tagName == GameTag.MULLIGAN_STATE.ToString())
+    //            {
+				//	Helper.GetPlayerIdFromName(rawEntity);
+    //            }
 				return;
 			}
 		}

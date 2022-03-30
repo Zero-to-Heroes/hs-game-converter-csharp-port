@@ -60,5 +60,10 @@ namespace HearthstoneReplays.Parser
         {
             return State.GSState.IsBattlegrounds();
         }
+
+        internal List<PlayerEntity> GetPlayers()
+        {
+            return State.GSState.getPlayers();
+        }
     }
 }

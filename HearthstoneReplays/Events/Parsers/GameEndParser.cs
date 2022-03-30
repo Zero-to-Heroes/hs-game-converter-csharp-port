@@ -39,6 +39,12 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var replayCopy = ParserState.Replay;
+            // Update the name info
+            foreach (var player in ParserState.getPlayers())
+            {
+                var gsPlayer = StateFacade.GetPlayers().Find(p => p.Id == player.Id);
+                player.Name = gsPlayer?.Name ?? player.Name;
+            }
             var xmlReplay = new ReplayConverter().xmlFromReplay(replayCopy);
             var gameStateReport = GameState.BuildGameStateReport(StateFacade);
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);

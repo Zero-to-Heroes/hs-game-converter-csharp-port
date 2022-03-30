@@ -29,14 +29,14 @@ namespace HearthstoneReplays.Parser.Handlers
             this.helper = helper;
         }
 
-        public void Handle(DateTime timestamp, string data, ParserState state, StateType stateType, DateTime previousTimestamp, StateFacade gameInfoHelper)
+        public void Handle(DateTime timestamp, string data, ParserState state, StateType stateType, DateTime previousTimestamp, StateFacade stateFacade)
         {
             var trimmed = data.Trim();
             var indentLevel = data.Length - trimmed.Length;
             data = trimmed;
-            HandleNewGame(timestamp, data, state, previousTimestamp, stateType, gameInfoHelper);
+            HandleNewGame(timestamp, data, state, previousTimestamp, stateType, stateFacade);
             bool isApplied = false;
-            isApplied = isApplied || HandleSpectator(timestamp, data, state, gameInfoHelper);
+            isApplied = isApplied || HandleSpectator(timestamp, data, state, stateFacade);
 
             // When catching up with some log lines, sometimes we get some leftover from a previous game.
             // Only checking the state does not account for these, and parsing fails because there is no
@@ -50,7 +50,7 @@ namespace HearthstoneReplays.Parser.Handlers
             isApplied = isApplied || HandleCreateGame(data, state, indentLevel);
             isApplied = isApplied || HandlePlayerName(timestamp, data, state, stateType);
             isApplied = isApplied || HandleMetaData(timestamp, data, state, stateType);
-            isApplied = isApplied || HandleCreatePlayer(data, state, indentLevel);
+            isApplied = isApplied || HandleCreatePlayer(data, state, stateFacade, indentLevel);
             isApplied = isApplied || HandleBlockStart(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleActionMetaData(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleActionMetaDataInfo(timestamp, data, state, indentLevel);
@@ -560,7 +560,7 @@ namespace HearthstoneReplays.Parser.Handlers
             return false;
         }
 
-        private static bool HandleCreatePlayer(string data, ParserState state, int indentLevel)
+        private static bool HandleCreatePlayer(string data, ParserState state, StateFacade stateFacade, int indentLevel)
         {
             var match = Regexes.ActionCreategamePlayerRegex.Match(data);
             if (match.Success)
@@ -569,13 +569,20 @@ namespace HearthstoneReplays.Parser.Handlers
                 var playerId = match.Groups[2].Value;
                 var accountHi = match.Groups[3].Value;
                 var accountLo = match.Groups[4].Value;
-                var pEntity = new PlayerEntity
+                var gsPlayer = stateFacade.GetPlayers()?.Find(p => p.Id == int.Parse(id));
+                var pEntity = new PlayerEntity()
                 {
                     Id = int.Parse(id),
                     AccountHi = accountHi,
                     AccountLo = accountLo,
                     PlayerId = int.Parse(playerId),
-                    Tags = new List<Tag>()
+                    InitialName = gsPlayer?.InitialName,
+                    Name = gsPlayer?.Name,
+                    Tags = new List<Tag>(),
+                    IsMainPlayer = gsPlayer?.IsMainPlayer ?? false,
+                    Cardback = gsPlayer?.Cardback,
+                    LegendRank = gsPlayer?.LegendRank,
+                    Rank = gsPlayer?.Rank,
                 };
                 state.UpdateCurrentNode(typeof(Game));
                 state.CurrentGame.AddData(pEntity);
