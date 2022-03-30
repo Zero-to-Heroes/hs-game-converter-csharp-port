@@ -12,13 +12,13 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
-        private StateFacade Helper { get; set; }
+        private StateFacade StateFacade { get; set; }
 
         public GameEndParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
-            this.Helper = helper;
+            this.StateFacade = helper;
         }
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
@@ -40,8 +40,14 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var replayCopy = ParserState.Replay;
             var xmlReplay = new ReplayConverter().xmlFromReplay(replayCopy);
-            var gameStateReport = GameState.BuildGameStateReport(Helper);
-            var gameState = GameEvent.BuildGameState(ParserState, Helper, GameState, tagChange, null);
+            var gameStateReport = GameState.BuildGameStateReport(StateFacade);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var currentGame = ParserState.CurrentGame;
+            //var gameMetaData = StateFacade.GetMetaData();
+            //currentGame.BuildNumber = gameMetaData.BuildNumber;
+            //currentGame.FormatType = gameMetaData.BuildNumber;
+            //currentGame.BuildNumber = gameMetaData.BuildNumber;
+            //currentGame.BuildNumber = gameMetaData.BuildNumber;
             Logger.Log("Enqueuing GAME_END event", "");
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
@@ -51,8 +57,8 @@ namespace HearthstoneReplays.Events.Parsers
                     Type = "GAME_END",
                     Value = new
                     {
-                        LocalPlayer = Helper.LocalPlayer,
-                        OpponentPlayer = Helper.OpponentPlayer,
+                        LocalPlayer = StateFacade.LocalPlayer,
+                        OpponentPlayer = StateFacade.OpponentPlayer,
                         GameStateReport = gameStateReport,
                         Game = ParserState.CurrentGame,
                         ReplayXml = xmlReplay,

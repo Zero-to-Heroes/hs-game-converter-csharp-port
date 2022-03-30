@@ -102,7 +102,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public GameStateReport BuildGameStateReport(StateFacade helper)
         {
             // Cna happen when joining a BG game as spectate
-            if (ParserState?.LocalPlayer == null)
+            if (helper.LocalPlayer == null)
             {
                 return null;
             }

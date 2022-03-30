@@ -69,7 +69,8 @@ namespace HearthstoneReplays.Parser.ReplayData
 		public List<GameData> Data { get; set; }
 
         public Game()
-        {
+		{
+			Data = new List<GameData>();
             FormatType = -1;
             GameType = -1;
         }

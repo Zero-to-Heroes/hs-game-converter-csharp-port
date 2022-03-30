@@ -819,17 +819,25 @@ namespace HearthstoneReplays.Parser.Handlers
                         new Node(null, null, 0, null, data)) });
                     }
                 }
-                this.metadata = new GameMetaData()
-                {
-                    BuildNumber = -1,
-                    FormatType = -1,
-                    GameType = -1,
-                    ScenarioID = -1,
-                };
+                this.metadata = stateType == StateType.GameState 
+                    ? new GameMetaData()
+                        {
+                            BuildNumber = -1,
+                            FormatType = -1,
+                            GameType = -1,
+                            ScenarioID = -1,
+                        } 
+                    : gameInfoHelper.GetMetaData();
                 state.Reset(gameInfoHelper);
                 state.NumberOfCreates++;
                 state.ReconnectionOngoing = isReconnecting;
-                state.CurrentGame = new Game { Data = new List<GameData>(), TimeStamp = timestamp };
+                state.CurrentGame = new Game { 
+                    TimeStamp = timestamp, 
+                    BuildNumber = this.metadata.BuildNumber,
+                    ScenarioID = this.metadata.ScenarioID,
+                    FormatType = this.metadata.FormatType,
+                    GameType = this.metadata.GameType
+                };
                 state.Replay.Games.Add(state.CurrentGame);
                 var newNode = new Node(typeof(Game), state.CurrentGame, 0, null, data);
                 state.CreateNewNode(newNode);

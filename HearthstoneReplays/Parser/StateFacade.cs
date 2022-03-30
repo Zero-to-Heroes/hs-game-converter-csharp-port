@@ -45,6 +45,17 @@ namespace HearthstoneReplays.Parser
             return State.GSState.CurrentGame.FormatType != -1 && State.GSState.CurrentGame.GameType != -1 && LocalPlayer != null;
         }
 
+        internal GameMetaData GetMetaData()
+        {
+            return new GameMetaData()
+            {
+                BuildNumber = State.GSState.CurrentGame.BuildNumber,
+                FormatType = State.GSState.CurrentGame.FormatType,
+                GameType = State.GSState.CurrentGame.GameType,
+                ScenarioID = State.GSState.CurrentGame.ScenarioID,
+            };
+        }
+
         internal bool IsBattlegrounds()
         {
             return State.GSState.IsBattlegrounds();
