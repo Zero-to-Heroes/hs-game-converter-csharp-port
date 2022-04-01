@@ -167,8 +167,13 @@ namespace HearthstoneReplays.Events
                     case ArchmageAntonidas: return FireballCore;
                     case ArchsporeMsshifn: return ArchsporeMsshifn_MsshifnPrimeToken;
                     case AstralTiger: return AstralTiger;
+                    case AstromancerSolarian: return AstromancerSolarian_SolarianPrimeToken;
                     case BuildASnowman: return BuildASnowman_BuildASnowbruteToken;
                     case BuildASnowman_BuildASnowbruteToken: return BuildASnowman_BuildASnowgreToken;
+                    case ChainsOfDread1: return DreadlichTamsin_FelRiftToken;
+                    case ChainsOfDread2: return DreadlichTamsin_FelRiftToken;
+                    case ConfectionCyclone: return ConfectionCyclone_SugarElementalToken;
+                    case ConjureManaBiscuit: return ConjureManaBiscuit_ManaBiscuitToken;
                     case CurseOfAgony: return CurseOfAgony_AgonyToken;
                     case DragonbaneShot: return DragonbaneShot;
                     case DreadlichTamsin1: return DreadlichTamsin_FelRiftToken;
@@ -201,9 +206,6 @@ namespace HearthstoneReplays.Events
                     case YseraUnleashed: return YseraUnleashed_DreamPortalToken;
                     case ZixorApexPredator: return ZixorApexPredator_ZixorPrimeToken;
 
-                    case AstromancerSolarian: return AstromancerSolarian_SolarianPrimeToken;
-                    case ConfectionCyclone: return ConfectionCyclone_SugarElementalToken;
-                    case ConjureManaBiscuit: return ConjureManaBiscuit_ManaBiscuitToken;
                     case DeckOfWonders: return DeckOfWonders_ScrollOfWonderToken;
                     case FirstFlame: return FirstFlame_SecondFlameToken;
                     case FlameGeyser: return FireFly_FlameElementalToken;
