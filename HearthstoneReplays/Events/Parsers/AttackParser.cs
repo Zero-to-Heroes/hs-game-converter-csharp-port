@@ -40,6 +40,11 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
+            if (node.Parent?.Object == null)
+            {
+                return null;
+            }
+
             var tagChange = node.Object as TagChange;
             //if (action.Entity)
             // DEFENDING tag is always set in an ATTACK action

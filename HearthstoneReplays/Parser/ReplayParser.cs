@@ -141,8 +141,9 @@ namespace HearthstoneReplays.Parser
                 case "GameState.DebugPrintPower":
                 case "GameState.DebugPrintGame":
                 case "Spectator":
-                    dataHandler.Handle(normalizedTimestamp, data, State.GSState, StateType.GameState, previousTimestamp, State.GameInfoHelper);
+                    dataHandler.Handle(normalizedTimestamp, data, State.GSState, StateType.GameState, previousTimestamp, State.StateFacade);
                     previousTimestamp = normalizedTimestamp;
+                    State.StateFacade.LastProcessedGSLine = data;
                     break;
                 //case "GameState.SendChoices":
                 //	SendChoicesHandler.Handle(timestamp, data, State);
@@ -163,15 +164,21 @@ namespace HearthstoneReplays.Parser
                     previousTimestamp = normalizedTimestamp;
                     break;
                 case "GameState.DebugPrintOptions":
-                    optionsHandler.Handle(normalizedTimestamp, data, State.GSState);
-                    optionsHandler.Handle(normalizedTimestamp, data, State.PTLState);
+                    optionsHandler.Handle(normalizedTimestamp, data, State.GSState, StateType.GameState, State.StateFacade);
+                    optionsHandler.Handle(normalizedTimestamp, data, State.PTLState, StateType.PowerTaskList, State.StateFacade);
                     previousTimestamp = normalizedTimestamp;
                     break;
                 case "PowerTaskList.DebugPrintPower":
                     // Process the actual stuff
-                    dataHandler.Handle(normalizedTimestamp, data, State.PTLState, StateType.PowerTaskList, previousTimestamp, State.GameInfoHelper);
+                    dataHandler.Handle(normalizedTimestamp, data, State.PTLState, StateType.PowerTaskList, previousTimestamp, State.StateFacade);
                     // Update entity names
                     powerDataHandler.Handle(normalizedTimestamp, data, State.PTLState);
+                    // See comment in OptionsHandler
+                    if (State.StateFacade.ShouldUpdateToRoot(data))
+                    {
+                        Logger.Log("Update to root", data);
+                        State.StateFacade.UpdatePTLToRoot();
+                    }
                     previousTimestamp = normalizedTimestamp;
                     break;
                 //case "GameState.SendOption":

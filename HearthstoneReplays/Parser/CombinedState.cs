@@ -13,14 +13,14 @@ namespace HearthstoneReplays.Parser
         public ParserState GSState { get; private set; }
         // The "real-time" state
         public ParserState PTLState { get; private set; }
-        public StateFacade GameInfoHelper { get; private set; }
+        public StateFacade StateFacade { get; private set; }
 
         public CombinedState()
         {
-            GameInfoHelper = new StateFacade(this);
-            EventQueueHandler handler = new EventQueueHandler(GameInfoHelper);
-            GSState = new ParserState(StateType.GameState, handler, GameInfoHelper);
-            PTLState = new ParserState(StateType.PowerTaskList, handler, GameInfoHelper);
+            StateFacade = new StateFacade(this);
+            EventQueueHandler handler = new EventQueueHandler(StateFacade);
+            GSState = new ParserState(StateType.GameState, handler, StateFacade);
+            PTLState = new ParserState(StateType.PowerTaskList, handler, StateFacade);
         }
 
         //public void StartDevMode()

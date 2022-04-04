@@ -38,7 +38,7 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
-            var replayCopy = ParserState.Replay;
+            var replayCopy = StateFacade.GSReplay;
             // Update the name info
             foreach (var player in ParserState.getPlayers())
             {

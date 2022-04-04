@@ -1,4 +1,5 @@
-﻿using HearthstoneReplays.Parser.ReplayData.Entities;
+﻿using HearthstoneReplays.Parser.ReplayData;
+using HearthstoneReplays.Parser.ReplayData.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,9 @@ namespace HearthstoneReplays.Parser
     public class StateFacade
     {
         private CombinedState State { get; set; }
+
+        private string _lastProcessedGSLine;
+        private string _updateToRootAfterLine;
 
         public StateFacade(CombinedState combined)
         {
@@ -40,6 +44,22 @@ namespace HearthstoneReplays.Parser
             }
         }
 
+        public HearthstoneReplay GSReplay
+        {
+            get
+            {
+                return State.GSState.Replay;
+            }
+        }
+
+        public string LastProcessedGSLine
+        {
+            set
+            {
+                this._lastProcessedGSLine = value;
+            }
+        }
+
         internal bool HasMetaData()
         {
             return State.GSState.CurrentGame.FormatType != -1 && State.GSState.CurrentGame.GameType != -1 && LocalPlayer != null;
@@ -64,6 +84,23 @@ namespace HearthstoneReplays.Parser
         internal List<PlayerEntity> GetPlayers()
         {
             return State.GSState.getPlayers();
+        }
+
+        internal void NotifyUpdateToRootNeeded()
+        {
+            this._updateToRootAfterLine = this._lastProcessedGSLine;
+        }
+
+        // TODO: handle the case of the format between GS and PTR being different (eg entity name, card id)
+        internal bool ShouldUpdateToRoot(string data)
+        {
+            return this._updateToRootAfterLine != null && this._updateToRootAfterLine.Equals(data);
+        }
+
+        internal void UpdatePTLToRoot()
+        {
+            this.State.PTLState.UpdateCurrentNode(typeof(Game));
+            this._updateToRootAfterLine = null;
         }
     }
 }

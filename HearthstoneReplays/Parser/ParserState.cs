@@ -29,10 +29,11 @@ namespace HearthstoneReplays.Parser
             Logger.Log("Calling reset from ParserState constructor", type);
             this.StateType = type;
             this.StateFacade = stateFacade;
-            this.NodeParser = new NodeParser(queueHandler, stateFacade);
+            this.NodeParser = new NodeParser(queueHandler, stateFacade, this.StateType);
         }
 
         public GameState GameState = new GameState();
+
         public NodeParser NodeParser;
         public StateFacade StateFacade;
         public HearthstoneReplay Replay { get; set; }

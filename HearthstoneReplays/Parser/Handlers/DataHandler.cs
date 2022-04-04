@@ -46,12 +46,12 @@ namespace HearthstoneReplays.Parser.Handlers
                 return;
             }
 
-            isApplied = isApplied || HandleBlockEnd(data, state);
             isApplied = isApplied || HandleCreateGame(data, state, indentLevel);
             isApplied = isApplied || HandlePlayerName(timestamp, data, state, stateType);
+            isApplied = isApplied || HandleBlockStart(timestamp, data, state, indentLevel);
+            isApplied = isApplied || HandleBlockEnd(data, state);
             isApplied = isApplied || HandleMetaData(timestamp, data, state, stateType);
             isApplied = isApplied || HandleCreatePlayer(data, state, stateFacade, indentLevel);
-            isApplied = isApplied || HandleBlockStart(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleActionMetaData(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleActionMetaDataInfo(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleSubSpell(timestamp, data, state, stateType);
@@ -462,6 +462,26 @@ namespace HearthstoneReplays.Parser.Handlers
                 {
                     action.EffectIndex = int.Parse(effectIndex);
                 }
+
+                // Some battlegrounds files do not balance the BLOCK_START and BLOCK_END
+                // This seems to be mainly about ATTACK block
+                // see https://github.com/HearthSim/python-hslog/commit/63e9e41976cbec7ef95ced0f49f4b9a06c02cf3c
+                if (type == (int)BlockType.PLAY)
+                {
+                    // PLAY is always at the root
+                    state.UpdateCurrentNode(typeof(Game));
+                }
+                // Attack blocks should only have TRIGGER beneath them. If something else, it certainly
+                // means the ATTACK block wasn't correctly closed
+                else if (type != (int)BlockType.TRIGGER && state.Node?.Type == typeof(Action))
+                {
+                    var parentAction = state.Node.Object as Action;
+                    if (parentAction.Type == (int)BlockType.ATTACK)
+                    {
+                        state.UpdateCurrentNode(typeof(Game));
+                    }
+                }
+
                 state.UpdateCurrentNode(typeof(Game), typeof(Action));
                 if (state.Node.Type == typeof(Game))
                     ((Game)state.Node.Object).AddData(action);

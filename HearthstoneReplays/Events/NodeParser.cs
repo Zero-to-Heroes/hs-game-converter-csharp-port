@@ -17,20 +17,23 @@ namespace HearthstoneReplays.Events
     {
         private EventQueueHandler QueueHandler { get; set; }
         private StateFacade StateFacade { get; set; }
+        private StateType StateType { get; set; }
+
         private List<ActionParser> parsers;
 
         // Feed it the PTL parser, as it's the latest one to get the meta data
-        public NodeParser(EventQueueHandler queueHandler, StateFacade helper)
+        public NodeParser(EventQueueHandler queueHandler, StateFacade stateFacade, StateType stateType)
         {
             QueueHandler = queueHandler;
-            StateFacade = helper;
+            StateFacade = stateFacade;
+            StateType = stateType;
         }
 
         public void Reset(ParserState ParserState, StateFacade helper)
         {
             StateFacade = helper;
             QueueHandler.Reset(StateFacade);
-            parsers = BuildActionParsers(ParserState);
+            parsers = BuildActionParsers(ParserState, StateType);
         }
 
         public void NewNode(Node node, StateType stateType)
@@ -83,123 +86,133 @@ namespace HearthstoneReplays.Events
             QueueHandler.ClearQueue();
         }
 
-        private List<ActionParser> BuildActionParsers(ParserState ParserState)
+        private List<ActionParser> BuildActionParsers(ParserState ParserState, StateType stateType)
         {
-            return new List<ActionParser>()
+            if (stateType == StateType.GameState)
             {
-                new NewGameParser(ParserState),
+                return new List<ActionParser>()
+                {
+                    new NewGameParser(ParserState),
+                    new TurnCleanupParser(ParserState, StateFacade),
+                    new GameCleanupParser(ParserState, StateFacade),
+                    new BattlegroundsHeroSelectedParser(ParserState, StateFacade),
+                    new BattlegroundsPlayerBoardParser(ParserState, StateFacade),
+                    new SecretWillTriggeredParser(ParserState, StateFacade),
+                    new CounterWillTriggerParser(ParserState, StateFacade),
+                };
+            }
+            else
+            {
+                return new List<ActionParser>()
+                {
+                    // Ordering is important, as we want to have "ability revealed" before 
+                    // "ability updated" (done by the EntityUpdateParser)
+                    // Also, MINION_SUMMONED need to happen before any Equipment / Ability revealed
+                    new MinionSummonedParser(ParserState, StateFacade),
 
-                // Ordering is important, as we want to have "ability revealed" before 
-                // "ability updated" (done by the EntityUpdateParser)
-                // Also, MINION_SUMMONED need to happen before any Equipment / Ability revealed
-                new MinionSummonedParser(ParserState, StateFacade),
-
-                new MercenariesHeroRevealed(ParserState, StateFacade),
-                new MercenariesAbilityRevealedParser(ParserState, StateFacade),
-                new MercenariesAbilityActivatedParser(ParserState, StateFacade),
-                new MercenariesAbilityCooldownUpdatedParser(ParserState, StateFacade),
-                new MercenariesQueuedAbilityParser(ParserState, StateFacade),
-                new MercenariesSelectedTargetParser(ParserState, StateFacade),
-
-
-                new WinnerParser(ParserState, StateFacade),
-                new GameEndParser(ParserState, StateFacade),
-                new GameCleanupParser(ParserState, StateFacade),
-                new TurnStartParser(ParserState, StateFacade),
-                new TurnCleanupParser(ParserState, StateFacade),
-                new FirstPlayerParser(ParserState, StateFacade),
-                new MainStepReadyParser(ParserState),
-                new CardPlayedFromHandParser(ParserState, StateFacade),
-                new SecretPlayedFromHandParser(ParserState, StateFacade),
-                new MulliganInputParser(ParserState),
-                new MulliganDealingParser(ParserState),
-                new MulliganDoneParser(ParserState),
-                new RumbleRunStepParser(ParserState, StateFacade),
-                new DungeonRunStepParser(ParserState, StateFacade),
-                new MonsterRunStepParser(ParserState, StateFacade),
-                new PassiveBuffParser(ParserState, StateFacade),
-                new CardPresentOnGameStartParser(ParserState, StateFacade),
-                new CardDrawFromDeckParser(ParserState, StateFacade),
-                new ReceiveCardInHandParser(ParserState, StateFacade),
-                new CardBackToDeckParser(ParserState, StateFacade),
-                new CardTradedParser(ParserState, StateFacade),
-                new DiscardedCardParser(ParserState, StateFacade),
-                new CardRemovedFromDeckParser(ParserState, StateFacade),
-                new CreateCardInDeckParser(ParserState, StateFacade),
-                new EndOfEchoInHandParser(ParserState, StateFacade),
-                new CardChangedParser(ParserState, StateFacade),
-                new CardUpdatedInDeckParser(ParserState, StateFacade),
-                new CardRemovedFromHandParser(ParserState, StateFacade),
-                new CardRemovedFromBoardParser(ParserState, StateFacade),
-                new MinionOnBoardAttackUpdatedParser(ParserState, StateFacade),
-                new RecruitParser(ParserState, StateFacade),
-                new MinionBackOnBoardParser(ParserState, StateFacade),
-                new HeroRevealedParser(ParserState, StateFacade),
-                new CardRevealedParser(ParserState, StateFacade),
-                new InitialCardInDeckParser(ParserState, StateFacade),
-                new FatigueParser(ParserState, StateFacade),
-                new DamageParser(ParserState, StateFacade),
-                new HealingParser(ParserState, StateFacade),
-                new BurnedCardParser(ParserState, StateFacade),
-                new MinionDiedParser(ParserState, StateFacade),
-                new SecretPlayedFromDeckParser(ParserState, StateFacade),
-                new SecretCreatedInGameParser(ParserState, StateFacade),
-                new SecretDestroyedParser(ParserState, StateFacade),
-                new ArmorChangeParser(ParserState, StateFacade),
-                new CardStolenParser(ParserState, StateFacade),
-                new SecretWillTriggeredParser(ParserState, StateFacade),
-                new SecretTriggeredParser(ParserState, StateFacade),
-                new CounterTriggerParser(ParserState, StateFacade),
-                new DeathrattleTriggeredParser(ParserState, StateFacade),
-                new HealthDefChangeParser(ParserState, StateFacade),
-                new ChangeCardCreatorParser(ParserState, StateFacade),
-                new LocalPlayerLeaderboardPlaceChangedParser(ParserState, StateFacade),
-                new HeroPowerChangedParser(ParserState, StateFacade),
-                new WeaponEquippedParser(ParserState, StateFacade),
-                new WeaponDestroyedParser(ParserState, StateFacade),
-                new BattlegroundsPlayerBoardParser(ParserState, StateFacade),
-                new BattlegroundsPlayerTechLevelUpdatedParser(ParserState, StateFacade),
-                new BattlegroundsBuddyGainedParser(ParserState, StateFacade),
-                new BattlegroundsPlayerLeaderboardPlaceUpdatedParser(ParserState, StateFacade),
-                new BattlegroundsHeroSelectionParser(ParserState, StateFacade),
-                new BattlegroundsNextOpponnentParser(ParserState),
-                new BattlegroundsTriplesCountUpdatedParser(ParserState, StateFacade),
-                //new BattlegroundsStartOfCombatParser(ParserState),
-                new BattlegroundsOpponentRevealedParser(ParserState, StateFacade),
-                new BattlegroundsHeroSelectedParser(ParserState, StateFacade),
-                new BattlegroundsBattleOverParser(ParserState, StateFacade),
-                new BattlegroundsRerollParser(ParserState, StateFacade),
-                new BattlegroundFreezeParser(ParserState, StateFacade),
-                new BattlegroundsMinionsBoughtParser(ParserState, StateFacade),
-                new BattlegroundsMinionsSoldParser(ParserState, StateFacade),
-                new BattlegroundsHeroKilledParser(ParserState, StateFacade),
-                new DecklistUpdateParser(ParserState, StateFacade),
-                new GameRunningParser(ParserState, StateFacade),
-                new AttackParser(ParserState, StateFacade),
-                new NumCardsPlayedThisTurnParser(ParserState, StateFacade),
-                new NumCardsDrawnThisTurnParser(ParserState, StateFacade),
-                new HeroPowerUsedParser(ParserState, StateFacade),
-                new GalakrondInvokedParser(ParserState, StateFacade),
-                new CardBuffedInHandParser(ParserState, StateFacade),
-                new MinionGoDormantParser(ParserState, StateFacade),
-                new BlockEndParser(ParserState, StateFacade),
-                new JadeGolemParser(ParserState, StateFacade),
-                new CthunParser(ParserState, StateFacade),
-                new EntityUpdateParser(ParserState, StateFacade),
-                new ResourcesThisTurnParser(ParserState, StateFacade),
-                new ResourcesUsedThisTurnParser(ParserState, StateFacade),
-                new WhizbangDeckParser(ParserState, StateFacade),
-                new CopiedFromEntityIdParser(ParserState, StateFacade),
-                new BattlegroundsTavernPrizesParser(ParserState),
-                new LinkedEntityParser(ParserState, StateFacade),
-                new ZoneChangeParser(ParserState, StateFacade),
-                new ZonePositionChangedParser(ParserState, StateFacade),
-                new CostChangedParser(ParserState, StateFacade),
+                    new MercenariesHeroRevealed(ParserState, StateFacade),
+                    new MercenariesAbilityRevealedParser(ParserState, StateFacade),
+                    new MercenariesAbilityActivatedParser(ParserState, StateFacade),
+                    new MercenariesAbilityCooldownUpdatedParser(ParserState, StateFacade),
+                    new MercenariesQueuedAbilityParser(ParserState, StateFacade),
+                    new MercenariesSelectedTargetParser(ParserState, StateFacade),
 
 
-                new CreateCardInGraveyardParser(ParserState, StateFacade),
-                new MindrenderIlluciaParser(ParserState, StateFacade),
-            };
+                    new WinnerParser(ParserState, StateFacade),
+                    new GameEndParser(ParserState, StateFacade),
+                    new TurnStartParser(ParserState, StateFacade),
+                    new FirstPlayerParser(ParserState, StateFacade),
+                    new MainStepReadyParser(ParserState),
+                    new CardPlayedFromHandParser(ParserState, StateFacade),
+                    new SecretPlayedFromHandParser(ParserState, StateFacade),
+                    new MulliganInputParser(ParserState),
+                    new MulliganDealingParser(ParserState),
+                    new MulliganDoneParser(ParserState),
+                    new RumbleRunStepParser(ParserState, StateFacade),
+                    new DungeonRunStepParser(ParserState, StateFacade),
+                    new MonsterRunStepParser(ParserState, StateFacade),
+                    new PassiveBuffParser(ParserState, StateFacade),
+                    new CardPresentOnGameStartParser(ParserState, StateFacade),
+                    new CardDrawFromDeckParser(ParserState, StateFacade),
+                    new ReceiveCardInHandParser(ParserState, StateFacade),
+                    new CardBackToDeckParser(ParserState, StateFacade),
+                    new CardTradedParser(ParserState, StateFacade),
+                    new DiscardedCardParser(ParserState, StateFacade),
+                    new CardRemovedFromDeckParser(ParserState, StateFacade),
+                    new CreateCardInDeckParser(ParserState, StateFacade),
+                    new EndOfEchoInHandParser(ParserState, StateFacade),
+                    new CardChangedParser(ParserState, StateFacade),
+                    new CardUpdatedInDeckParser(ParserState, StateFacade),
+                    new CardRemovedFromHandParser(ParserState, StateFacade),
+                    new CardRemovedFromBoardParser(ParserState, StateFacade),
+                    new MinionOnBoardAttackUpdatedParser(ParserState, StateFacade),
+                    new RecruitParser(ParserState, StateFacade),
+                    new MinionBackOnBoardParser(ParserState, StateFacade),
+                    new HeroRevealedParser(ParserState, StateFacade),
+                    new CardRevealedParser(ParserState, StateFacade),
+                    new InitialCardInDeckParser(ParserState, StateFacade),
+                    new FatigueParser(ParserState, StateFacade),
+                    new DamageParser(ParserState, StateFacade),
+                    new HealingParser(ParserState, StateFacade),
+                    new BurnedCardParser(ParserState, StateFacade),
+                    new MinionDiedParser(ParserState, StateFacade),
+                    new SecretPlayedFromDeckParser(ParserState, StateFacade),
+                    new SecretCreatedInGameParser(ParserState, StateFacade),
+                    new SecretDestroyedParser(ParserState, StateFacade),
+                    new ArmorChangeParser(ParserState, StateFacade),
+                    new CardStolenParser(ParserState, StateFacade),
+                    new SecretTriggeredParser(ParserState, StateFacade),
+                    new CounterTriggerParser(ParserState, StateFacade),
+                    new DeathrattleTriggeredParser(ParserState, StateFacade),
+                    new HealthDefChangeParser(ParserState, StateFacade),
+                    new ChangeCardCreatorParser(ParserState, StateFacade),
+                    new LocalPlayerLeaderboardPlaceChangedParser(ParserState, StateFacade),
+                    new HeroPowerChangedParser(ParserState, StateFacade),
+                    new WeaponEquippedParser(ParserState, StateFacade),
+                    new WeaponDestroyedParser(ParserState, StateFacade),
+                    new BattlegroundsPlayerTechLevelUpdatedParser(ParserState, StateFacade),
+                    new BattlegroundsBuddyGainedParser(ParserState, StateFacade),
+                    new BattlegroundsPlayerLeaderboardPlaceUpdatedParser(ParserState, StateFacade),
+                    new BattlegroundsHeroSelectionParser(ParserState, StateFacade),
+                    new BattlegroundsNextOpponnentParser(ParserState),
+                    new BattlegroundsTriplesCountUpdatedParser(ParserState, StateFacade),
+                    //new BattlegroundsStartOfCombatParser(ParserState),
+                    new BattlegroundsOpponentRevealedParser(ParserState, StateFacade),
+                    new BattlegroundsHeroSelectedParser(ParserState, StateFacade),
+                    new BattlegroundsBattleOverParser(ParserState, StateFacade),
+                    new BattlegroundsRerollParser(ParserState, StateFacade),
+                    new BattlegroundFreezeParser(ParserState, StateFacade),
+                    new BattlegroundsMinionsBoughtParser(ParserState, StateFacade),
+                    new BattlegroundsMinionsSoldParser(ParserState, StateFacade),
+                    new BattlegroundsHeroKilledParser(ParserState, StateFacade),
+                    new DecklistUpdateParser(ParserState, StateFacade),
+                    new GameRunningParser(ParserState, StateFacade),
+                    new AttackParser(ParserState, StateFacade),
+                    new NumCardsPlayedThisTurnParser(ParserState, StateFacade),
+                    new NumCardsDrawnThisTurnParser(ParserState, StateFacade),
+                    new HeroPowerUsedParser(ParserState, StateFacade),
+                    new GalakrondInvokedParser(ParserState, StateFacade),
+                    new CardBuffedInHandParser(ParserState, StateFacade),
+                    new MinionGoDormantParser(ParserState, StateFacade),
+                    new BlockEndParser(ParserState, StateFacade),
+                    new JadeGolemParser(ParserState, StateFacade),
+                    new CthunParser(ParserState, StateFacade),
+                    new EntityUpdateParser(ParserState, StateFacade),
+                    new ResourcesThisTurnParser(ParserState, StateFacade),
+                    new ResourcesUsedThisTurnParser(ParserState, StateFacade),
+                    new WhizbangDeckParser(ParserState, StateFacade),
+                    new CopiedFromEntityIdParser(ParserState, StateFacade),
+                    new BattlegroundsTavernPrizesParser(ParserState),
+                    new LinkedEntityParser(ParserState, StateFacade),
+                    new ZoneChangeParser(ParserState, StateFacade),
+                    new ZonePositionChangedParser(ParserState, StateFacade),
+                    new CostChangedParser(ParserState, StateFacade),
+
+
+                    new CreateCardInGraveyardParser(ParserState, StateFacade),
+                    new MindrenderIlluciaParser(ParserState, StateFacade),
+                };
+            }
         }
     }
 }
