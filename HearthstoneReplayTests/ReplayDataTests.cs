@@ -36,15 +36,13 @@ namespace HearthstoneReplayTests
                 {
                     dynamic Value = gameEvent.Value;
                     //var shouldLog = true;
-                    var shouldLog = gameEvent.Type != "GAME_STATE_UPDATE" && gameEvent.Type != "GAME_END";
+                    //var shouldLog = gameEvent.Type != "GAME_STATE_UPDATE" && gameEvent.Type != "GAME_END";
+                    var shouldLog = gameEvent.Type == "BATTLEGROUNDS_PLAYER_BOARD" || gameEvent.Type == "BATTLEGROUNDS_NEXT_OPPONENT";
                     if (shouldLog)
                     {
                         //var serialized = JsonConvert.SerializeObject(gameEvent);
                         var serialized = JsonConvert.SerializeObject(gameEvent, serializerSettings);
-                        //if (serialized.Contains("\"TargetCardId\":\"TB_BaconShop_HERO_53\""))
-                        //{
                         Console.WriteLine(serialized + ",");
-                        //}
                     }
                 }
             };
@@ -52,7 +50,12 @@ namespace HearthstoneReplayTests
             {
                 dynamic Value = gameEvent.Value;
                 //var shouldLog = true;
-                var shouldLog = gameEvent.Type != "GAME_STATE_UPDATE" && gameEvent.Type != "GAME_END";
+                //var shouldLog = gameEvent.Type != "GAME_STATE_UPDATE" && gameEvent.Type != "GAME_END";
+                var shouldLog = new List<string>() {
+                    "BATTLEGROUNDS_PLAYER_BOARD",
+                    "BATTLEGROUNDS_NEXT_OPPONENT",
+                    "TURN_START"
+                }.Contains(gameEvent.Type);
                 if (shouldLog)
                 {
                     //var serialized = JsonConvert.SerializeObject(gameEvent);

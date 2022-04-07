@@ -82,7 +82,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public FullEntity GetGameEntity()
         {
-            return CurrentEntities[gameEntityId];
+            if (CurrentEntities.ContainsKey(gameEntityId))
+            {
+                return CurrentEntities[gameEntityId];
+            }
+            return null;
         }
 
         public void UpdateEntityName(string rawEntity)

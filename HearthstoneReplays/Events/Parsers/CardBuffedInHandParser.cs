@@ -118,6 +118,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             //CardIds.Felosophy,
             //CardIds.PotionOfIllusion,
+            CardIds.WaywardSage,
         };
 
         private Dictionary<string, string> buffs = new Dictionary<string, string>()
@@ -180,6 +181,7 @@ namespace HearthstoneReplays.Events.Parsers
             { CardIds.EmperorThaurissan1, CardIds.EmperorThaurissan_ImperialFavorEnchantment },
             { CardIds.FarWatchPost, CardIds.FarWatchPost_SpottedEnchantment },
             { CardIds.GrimestreetSmuggler, CardIds.GrimestreetSmuggler_SmugglingEnchantment},
+            { CardIds.WaywardSage, CardIds.WaywardSage_FoundTheWrongWayEnchantment},
         };
 
         private List<string> validHoldWhenDrawnBuffers = new List<string>()
