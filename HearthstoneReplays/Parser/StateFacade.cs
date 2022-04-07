@@ -88,17 +88,19 @@ namespace HearthstoneReplays.Parser
 
         internal void NotifyUpdateToRootNeeded()
         {
-            this._updateToRootAfterLine = this._lastProcessedGSLine;
+            this._updateToRootAfterLine = this._lastProcessedGSLine?.Trim();
         }
 
         // TODO: handle the case of the format between GS and PTR being different (eg entity name, card id)
         internal bool ShouldUpdateToRoot(string data)
         {
-            return this._updateToRootAfterLine != null && this._updateToRootAfterLine.Equals(data);
+            return this._updateToRootAfterLine != null && this._updateToRootAfterLine.Equals(data?.Trim());
         }
 
         internal void UpdatePTLToRoot()
         {
+            // Acts as a BLOCK_END
+            this.State.PTLState.EndAction();
             this.State.PTLState.UpdateCurrentNode(typeof(Game));
             this._updateToRootAfterLine = null;
         }

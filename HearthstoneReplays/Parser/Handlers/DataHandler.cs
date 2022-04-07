@@ -188,6 +188,18 @@ namespace HearthstoneReplays.Parser.Handlers
                 else
                     throw new Exception("Invalid node " + state.Node.Type);
                 state.GameState.TagChange(tagChange, defChange);
+
+                // In BG, it sometimes happen that the BLOCK_END element is missing. This typically happens after 
+                // a non-zero NUM_OPTIONS_PLAYED_THIS_TURN tag change.
+                // From what I've seen, these should always go back to the root afterwards, so we force it here
+                if (tagChange.Name == (int)GameTag.NUM_OPTIONS_PLAYED_THIS_TURN && tagChange.Value > 0)
+                {
+                    if (state.Node.Type != typeof(Game))
+                    {
+                        state.EndAction();
+                    }
+                    state.UpdateCurrentNode(typeof(Game));
+                }
                 return true;
             }
             return false;
@@ -751,10 +763,13 @@ namespace HearthstoneReplays.Parser.Handlers
         {
             if (data == "BLOCK_END")
             {
-                // Logger.Log("Current node after end action", state.Node.CreationLogLine);
-                state.UpdateCurrentNode(typeof(Game), typeof(Action));
-                // Logger.Log("Preparing to end action", timestamp);
-                state.EndAction();
+                if (state.Node.Type != typeof(Game))
+                {
+                    // Logger.Log("Current node after end action", state.Node.CreationLogLine);
+                    state.UpdateCurrentNode(typeof(Game), typeof(Action));
+                    // Logger.Log("Preparing to end action", timestamp);
+                    state.EndAction();
+                }
                 // Logger.Log("Current node after update // " + state.Node.Type + " // " + (state.Node.Type == typeof(Action)), state.Node.CreationLogLine);
                 state.Node = state.Node.Parent ?? state.Node;
                 // Logger.Log("Current node is now", state.Node.CreationLogLine);

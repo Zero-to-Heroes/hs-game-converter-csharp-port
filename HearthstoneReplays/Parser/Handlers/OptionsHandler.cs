@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData;
+using HearthstoneReplays.Parser.ReplayData.Meta;
 using HearthstoneReplays.Parser.ReplayData.Meta.Options;
 
 #endregion
@@ -40,10 +41,12 @@ namespace HearthstoneReplays.Parser.Handlers
                 // 1. Check if a block is being interrupted
                 // 2. If it is, store the log line preceding the options block
                 // 3. In the PTL processing, after we encounter that log line, go back to root
-
                 if (stateType == StateType.GameState)
                 {
-                    if (state.Node.Type != typeof(Game))
+                    if (state.Node.Type != typeof(Game) 
+                        // This doesn't have enough discriminating information to be used safely (ie it causes the root reset
+                        // to happen on unwanted nodes
+                        && state.Node.Type != typeof(MetaData))
                     {
                         stateFacade.NotifyUpdateToRootNeeded();
                         state.UpdateCurrentNode(typeof(Game));

@@ -11,6 +11,7 @@ using HearthstoneReplays.Parser.ReplayData.Meta;
 using HearthstoneReplays.Parser.ReplayData.Meta.Options;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using HearthstoneReplays.Enums;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 #endregion
 
@@ -205,7 +206,10 @@ namespace HearthstoneReplays.Parser
 
         public void EndAction()
         {
-            NodeParser.CloseNode(Node, StateType);
+            if (Node.Type != typeof(Game))
+            {
+                NodeParser.CloseNode(Node, StateType);
+            }
         }
 
         public void EndCurrentGame()
