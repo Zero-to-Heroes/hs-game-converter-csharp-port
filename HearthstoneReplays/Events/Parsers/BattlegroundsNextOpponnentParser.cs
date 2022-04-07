@@ -67,7 +67,7 @@ namespace HearthstoneReplays.Events.Parsers
             if (hero?.CardId != null && hero.CardId != BartenderBobBattlegrounds)
             {
                 GameState.BgsHasSentNextOpponent = true;
-                return new List<GameEventProvider> {  
+                return new List<GameEventProvider> {
                     GameEventProvider.Create(
                         tagChange.TimeStamp,
                         "BATTLEGROUNDS_NEXT_OPPONENT",
@@ -77,6 +77,7 @@ namespace HearthstoneReplays.Events.Parsers
                             Value = new
                             {
                                 CardId = hero.CardId,
+                                OpponentPlayerId = tagChange.Value
                             }
                         },
                         true,

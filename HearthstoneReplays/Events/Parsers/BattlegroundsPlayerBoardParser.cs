@@ -43,10 +43,12 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            var theLine = "BLOCK_START BlockType=ATTACK Entity=[entityName=Infinite Toki id=719 zone=PLAY zonePos=0 cardId=TB_BaconShop_HERO_28 player=13] EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1";
-            
             return stateType == StateType.GameState
-                && StateFacade.IsBattlegrounds()
+                && IsApplyOnNewNode(node);
+        }
+
+        public bool IsApplyOnNewNode(Node node) { 
+            return StateFacade.IsBattlegrounds()
                 && GameState.GetGameEntity().GetTag(GameTag.TURN) % 2 == 0
                 && GameState.BgsCurrentBattleOpponent == null
                 && node.Type == typeof(Action)
@@ -157,7 +159,7 @@ namespace HearthstoneReplays.Events.Parsers
             var opponentBoard = CreateProviderFromAction(opponent, true, player, node);
             var playerBoard = CreateProviderFromAction(player, false, player, node);
 
-            GameState.BgsHasSentNextOpponent = false;
+            //GameState.BgsHasSentNextOpponent = false;
 
             var result = new List<GameEventProvider>();
             result.Add(GameEventProvider.Create(
