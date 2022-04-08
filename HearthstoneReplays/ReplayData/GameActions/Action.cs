@@ -45,6 +45,7 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
 		[XmlElement("TagChange", typeof(TagChange))]
 		[XmlElement("MetaData", typeof(MetaData))]
 		[XmlElement("ChosenEntities", typeof(ChosenEntities))]
+		[XmlElement("ShuffleDeck", typeof(ShuffleDeck))]
 		public List<GameData> Data { get; set; }
 
 		public List<GameData> GetDataRecursive()

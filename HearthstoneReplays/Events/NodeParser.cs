@@ -117,6 +117,7 @@ namespace HearthstoneReplays.Events
                     new MercenariesQueuedAbilityParser(ParserState, StateFacade),
                     new MercenariesSelectedTargetParser(ParserState, StateFacade),
 
+                    new ShuffleDeckParser(ParserState, StateFacade),
 
                     new WinnerParser(ParserState, StateFacade),
                     new GameEndParser(ParserState, StateFacade),

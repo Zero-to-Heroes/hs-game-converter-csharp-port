@@ -31,7 +31,7 @@ namespace HearthstoneReplayTests
                 ContractResolver = new IgnorePropertiesResolver(new[] { 
                     "GameState", 
                     "ReplayXml",
-                    //"LocalPlayer",
+                    "LocalPlayer",
                     "OpponentPlayer", 
                     "GameStateReport", 
                     "Game" 

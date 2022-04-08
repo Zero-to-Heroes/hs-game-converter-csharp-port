@@ -143,6 +143,7 @@
     <Compile Include="Events\Parsers\CounterTriggerParser.cs" />
     <Compile Include="Events\Parsers\SecretWillTriggerParser.cs" />
     <Compile Include="Events\Parsers\TurnCleanupParser.cs" />
+    <Compile Include="Events\Parsers\ShuffleDeckParser.cs" />
     <Compile Include="Events\Parsers\WhizbangDeckParser.cs" />
     <Compile Include="Events\Parsers\ZoneChangeParser.cs" />
     <Compile Include="Events\Parsers\ZonePositionChangedParser.cs" />
@@ -248,6 +249,7 @@
     <Compile Include="ReplayData\GameActions\ChosenEntities.cs" />
     <Compile Include="ReplayData\GameActions\ChangeEntity.cs" />
     <Compile Include="ReplayData\GameActions\IEntityData.cs" />
+    <Compile Include="ReplayData\GameActions\ShuffleDeck.cs" />
     <Compile Include="ReplayData\Meta\Info.cs" />
     <Compile Include="ReplayData\GameActions\Action.cs" />
     <Compile Include="ReplayData\Entities\BaseEntity.cs" />

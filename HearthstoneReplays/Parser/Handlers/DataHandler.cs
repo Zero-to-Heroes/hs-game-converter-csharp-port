@@ -61,6 +61,7 @@ namespace HearthstoneReplays.Parser.Handlers
             isApplied = isApplied || HandleFullEntity(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleTagChange(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleTag(timestamp, data, state);
+            isApplied = isApplied || HandleShuffleDeck(timestamp, data, state, indentLevel);
         }
 
         private bool HandleTag(DateTime timestamp, string data, ParserState state)
@@ -200,6 +201,32 @@ namespace HearthstoneReplays.Parser.Handlers
                     }
                     state.UpdateCurrentNode(typeof(Game));
                 }
+                return true;
+            }
+            return false;
+        }
+
+        private bool HandleShuffleDeck(DateTime timestamp, string data, ParserState state, int indentLevel)
+        {
+            var match = Regexes.ActionShuffleDeckRegex.Match(data);
+            if (match.Success)
+            {
+                var playerId = match.Groups[1].Value;
+
+                var shuffleNode = new ShuffleDeck
+                {
+                    PlayerId = int.Parse(playerId),
+                };
+                state.UpdateCurrentNode(typeof(Game), typeof(Action));
+                state.CreateNewNode(new Node(typeof(ShuffleDeck), shuffleNode, indentLevel, state.Node, data));
+
+                if (state.Node.Type == typeof(Game))
+                    ((Game)state.Node.Object).AddData(shuffleNode);
+                else if (state.Node.Type == typeof(Action))
+                    ((Action)state.Node.Object).Data.Add(shuffleNode);
+                else
+                    throw new Exception("Invalid node " + state.Node.Type);
+
                 return true;
             }
             return false;
