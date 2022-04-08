@@ -28,7 +28,14 @@ namespace HearthstoneReplayTests
             //NodeParser.DevMode = true;
             var serializerSettings = new JsonSerializerSettings()
             {
-                ContractResolver = new IgnorePropertiesResolver(new[] { "GameState", "ReplayXml", "LocalPlayer", "OpponentPlayer", "GameStateReport", "Game" })
+                ContractResolver = new IgnorePropertiesResolver(new[] { 
+                    "GameState", 
+                    "ReplayXml",
+                    //"LocalPlayer",
+                    "OpponentPlayer", 
+                    "GameStateReport", 
+                    "Game" 
+                })
             };
             GameEventHandler.EventProviderAll = (IList<GameEvent> gameEvents) =>
             {
@@ -50,12 +57,12 @@ namespace HearthstoneReplayTests
             {
                 dynamic Value = gameEvent.Value;
                 //var shouldLog = true;
-                //var shouldLog = gameEvent.Type != "GAME_STATE_UPDATE" && gameEvent.Type != "GAME_END";
-                var shouldLog = new List<string>() {
-                    "BATTLEGROUNDS_PLAYER_BOARD",
-                    "BATTLEGROUNDS_NEXT_OPPONENT",
-                    "TURN_START"
-                }.Contains(gameEvent.Type);
+                var shouldLog = gameEvent.Type != "GAME_STATE_UPDATE" && gameEvent.Type != "GAME_END";
+                //var shouldLog = new List<string>() {
+                //    "BATTLEGROUNDS_PLAYER_BOARD",
+                //    "BATTLEGROUNDS_NEXT_OPPONENT",
+                //    "TURN_START"
+                //}.Contains(gameEvent.Type);
                 if (shouldLog)
                 {
                     //var serialized = JsonConvert.SerializeObject(gameEvent);

@@ -54,7 +54,7 @@ namespace HearthstoneReplays.Parser.Handlers
             isApplied = isApplied || HandleCreatePlayer(data, state, stateFacade, indentLevel);
             isApplied = isApplied || HandleActionMetaData(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleActionMetaDataInfo(timestamp, data, state, indentLevel);
-            isApplied = isApplied || HandleSubSpell(timestamp, data, state, stateType);
+            isApplied = isApplied || HandleSubSpell(timestamp, data, state, stateType, stateFacade);
             isApplied = isApplied || HandleShowEntity(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleChangeEntity(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleHideEntity(timestamp, data, state);
@@ -313,7 +313,7 @@ namespace HearthstoneReplays.Parser.Handlers
             return false;
         }
 
-        private bool HandleSubSpell(DateTime timestamp, string data, ParserState state, StateType stateType)
+        private bool HandleSubSpell(DateTime timestamp, string data, ParserState state, StateType stateType, StateFacade stateFacade)
         {
             var match = Regexes.SubSpellStartRegex.Match(data);
             if (match.Success)
@@ -351,8 +351,8 @@ namespace HearthstoneReplays.Parser.Handlers
                             CardId = sourceEntity?.CardId,
                             ParentEntityId = parentAction?.Entity,
                             ParentCardId = state.GameState.CurrentEntities.ContainsKey(parentAction?.Entity ?? -1) ? state.GameState.CurrentEntities[parentAction.Entity].CardId : null,
-                            LocalPlayer = state.LocalPlayer,
-                            OpponentPlayer = state.OpponentPlayer,
+                            LocalPlayer = stateFacade.LocalPlayer,
+                            OpponentPlayer = stateFacade.OpponentPlayer,
                             ControllerId = sourceEntity?.GetController(),
                         }
                     },
@@ -792,8 +792,8 @@ namespace HearthstoneReplays.Parser.Handlers
                         Type = "SPECTATING",
                         Value = new
                         {
-                            LocalPlayer = state.LocalPlayer,
-                            OpponentPlayer = state.OpponentPlayer,
+                            LocalPlayer = stateFacade.LocalPlayer,
+                            OpponentPlayer = stateFacade.OpponentPlayer,
                             Spectating = true,
                         }
                     },
@@ -804,7 +804,7 @@ namespace HearthstoneReplays.Parser.Handlers
             }
             if (data.Contains("End Spectator Mode"))
             {
-                if (state?.LocalPlayer == null)
+                if (stateFacade?.LocalPlayer == null)
                 {
                     return false;
                 }
@@ -821,8 +821,8 @@ namespace HearthstoneReplays.Parser.Handlers
                         Type = "SPECTATING",
                         Value = new
                         {
-                            LocalPlayer = state.LocalPlayer,
-                            OpponentPlayer = state.OpponentPlayer,
+                            LocalPlayer = stateFacade.LocalPlayer,
+                            OpponentPlayer = stateFacade.OpponentPlayer,
                             Spectating = false,
     }
 },
