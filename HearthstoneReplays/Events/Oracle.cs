@@ -195,6 +195,7 @@ namespace HearthstoneReplays.Events
                     case FirstFlame: return FirstFlame_SecondFlameToken;
                     case FlameGeyser: return FireFly_FlameElementalToken;
                     case ForgottenTorch: return ForgottenTorch_RoaringTorchToken;
+                    case FullBlownEvil: return FullBlownEvil;
                     case GhastlyConjurer: return MirrorImageLegacy2;
                     case HalazziTheLynx: return Springpaw_LynxToken;
                     case Ignite: return Ignite;
