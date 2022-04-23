@@ -92,7 +92,7 @@ namespace HearthstoneReplays.Events
             {
                 return new List<ActionParser>()
                 {
-                    new NewGameParser(ParserState),
+                    new NewGameParser(ParserState, StateFacade),
                     new TurnCleanupParser(ParserState, StateFacade),
                     new GameCleanupParser(ParserState, StateFacade),
                     new BattlegroundsHeroSelectedParser(ParserState, StateFacade),

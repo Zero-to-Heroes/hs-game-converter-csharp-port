@@ -36,6 +36,14 @@ namespace HearthstoneReplays.Parser
             }
         }
 
+        public bool Spectating
+        {
+            get
+            {
+                return State?.GSState?.Spectating ?? false;
+            }
+        }
+
         public int ScenarioID
         {
             get

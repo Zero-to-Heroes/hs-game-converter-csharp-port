@@ -45,6 +45,12 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
+            var isEcho = (entity.GetTag(GameTag.NON_KEYWORD_ECHO) == 1 || entity.GetTag(GameTag.ECHO) == 1) && entity.GetTag(GameTag.GHOSTLY) == 1;
+            if (isEcho)
+            {
+                return null;
+            }
+
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);

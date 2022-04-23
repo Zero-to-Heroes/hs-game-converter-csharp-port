@@ -45,7 +45,7 @@ namespace HearthstoneReplays.Parser.Handlers
 					((Action)state.Node.Object).Data.Add(cEntities);
 				else
 					throw new Exception("Invalid node " + state.Node.Type + " -- " + data);
-				state.CurrentChosenEntites = cEntities;
+				state.CurrentChosenEntites = cEntities; 
 				return;
 			}
 			match = Regexes.EntitiesChosenEntitiesRegex.Match(data);

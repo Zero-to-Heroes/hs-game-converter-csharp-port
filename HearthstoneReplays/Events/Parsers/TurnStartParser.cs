@@ -44,7 +44,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var isGameNode = node.Type == typeof(GameEntity);
             return stateType == StateType.PowerTaskList
-                && (ParserState.ReconnectionOngoing || ParserState.Spectating)
+                && (ParserState.ReconnectionOngoing || StateFacade.Spectating)
                 && isGameNode;
         }
 
@@ -178,7 +178,7 @@ namespace HearthstoneReplays.Events.Parsers
                 },
                 // So that we don't send the "turn start" event before the metadata (which triggers the creation of the 
                 // game client-side) is processed
-                ParserState.Spectating,
+                StateFacade.Spectating,
                 node));
             return result;
         }

@@ -14,13 +14,13 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
-        private StateFacade Helper { get; set; }
+        private StateFacade StateFacade { get; set; }
 
         public CreateCardInGraveyardParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
-            this.Helper = helper;
+            this.StateFacade = helper;
         }
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
@@ -32,7 +32,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             // For some reason, when spectating a game a lot of cards (from previous games I've watched / played?) are created
             // in the graveyard at the start of the game;
-            var isValidElement = !ParserState.Spectating || Helper.LocalPlayer?.Name != null;
+            var isValidElement = !StateFacade.Spectating || StateFacade.LocalPlayer?.Name != null;
             var appliesToFullEntity = isValidElement 
                 && node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD
@@ -95,7 +95,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             FullEntity fullEntity = node.Object as FullEntity;
             var controllerId = fullEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, Helper, GameState, null, null);
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     fullEntity.TimeStamp,
                     "CREATE_CARD_IN_GRAVEYARD",
@@ -125,8 +125,8 @@ namespace HearthstoneReplays.Events.Parsers
                             {
                                 CardId = cardId,
                                 ControllerId = controllerId,
-                                LocalPlayer = Helper.LocalPlayer,
-                                OpponentPlayer = Helper.OpponentPlayer,
+                                LocalPlayer = StateFacade.LocalPlayer,
+                                OpponentPlayer = StateFacade.OpponentPlayer,
                                 EntityId = fullEntity.Id,
                                 GameState = gameState,
                                 AdditionalProps = new {

@@ -3,6 +3,7 @@ using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -29,10 +30,10 @@ namespace HearthstoneReplays.Events.Parsers
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SETASIDE;
-                // I don't remember why the card type was restricted to minions
-                // But it makes sense to have it for all card types. In the case of Spy-o-matic, the
-                // spells that are discovered otherwise don't appear in the deck
-                //&& (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.MINION;
+            // I don't remember why the card type was restricted to minions
+            // But it makes sense to have it for all card types. In the case of Spy-o-matic, the
+            // spells that are discovered otherwise don't appear in the deck
+            //&& (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.MINION;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -47,11 +48,36 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = fullEntity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             var creatorEntityId = fullEntity.GetTag(GameTag.CREATOR);
-            var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId) 
-                ? GameState.CurrentEntities[creatorEntityId].CardId
+            var creatorEntity = GameState.CurrentEntities.ContainsKey(creatorEntityId)
+                ? GameState.CurrentEntities[creatorEntityId]
                 : null;
+            var creatorEntityCardId = creatorEntity?.CardId;
             var mercXp = fullEntity.GetTag(GameTag.LETTUCE_MERCENARY_EXPERIENCE);
             var mercEquipmentId = fullEntity.GetTag(GameTag.LETTUCE_EQUIPMENT_ID);
+            string revealedFromBlock = null;
+            int? indexInBlock = null;
+            if (node.Parent != null && node.Parent.Object.GetType() == typeof(Action))
+            {
+                var parentAction = node.Parent.Object as Action;
+                var parentEntityId = parentAction.Entity;
+                var parentEntity = GameState.CurrentEntities.ContainsKey(parentEntityId)
+                    ? GameState.CurrentEntities[parentEntityId]
+                    : null;
+                // Check that 3 options were provided
+                var totalOptions = parentAction.Data
+                    .Where(data => data is FullEntity)
+                    .Count();
+                indexInBlock = parentAction.Data
+                    .Where(data => data is FullEntity)
+                    .Select(data => data as FullEntity)
+                    .Select(e => e.Entity)
+                    .ToList()
+                    .IndexOf(fullEntity.Id);
+                if (parentEntity?.GetTag(GameTag.DREDGE) == 1)
+                {
+                    revealedFromBlock = "DREDGE";
+                }
+            }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CARD_REVEALED",
@@ -66,6 +92,8 @@ namespace HearthstoneReplays.Events.Parsers
                         CreatorCardId = creatorEntityCardId,
                         MercenariesExperience = mercXp,
                         MercenariesEquipmentId = mercEquipmentId,
+                        RevealedFromBlock = revealedFromBlock,
+                        IndexInBlock = indexInBlock,
                     }
                 ),
                 true,

@@ -12,11 +12,14 @@ namespace HearthstoneReplays.Events.Parsers
     public class NewGameParser : ActionParser
     {
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public NewGameParser(ParserState ParserState)
+        public NewGameParser(ParserState ParserState, StateFacade StateFacade)
         {
             this.ParserState = ParserState;
+            this.StateFacade = StateFacade;
         }
+
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return stateType == StateType.GameState
@@ -38,7 +41,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Type = "NEW_GAME",
                     Value = new
                     {
-                        Spectating = ParserState.Spectating,
+                        Spectating = StateFacade.Spectating,
                     },
                 },
                 false,

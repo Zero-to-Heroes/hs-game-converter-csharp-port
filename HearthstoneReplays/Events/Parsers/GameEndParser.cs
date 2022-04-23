@@ -63,7 +63,7 @@ namespace HearthstoneReplays.Events.Parsers
                         GameStateReport = gameStateReport,
                         Game = ParserState.CurrentGame,
                         ReplayXml = xmlReplay,
-                        Spectating = ParserState.Spectating,
+                        Spectating = StateFacade.Spectating,
                     }
                 },
                 true,

@@ -95,7 +95,8 @@ namespace HearthstoneReplays.Events.Parsers
                 .ToList();
         }
 
-        private List<GameEventProvider> CreateFromShowEntity(Node node) { 
+        private List<GameEventProvider> CreateFromShowEntity(Node node)
+        {
             var showEntity = node.Object as ShowEntity;
             // Cards here are just created to show the info, then put aside. We don't want to 
             // show them in the "Other" zone, so we just ignore them
@@ -116,6 +117,42 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[showEntity.Entity];
             var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+
+            var parentNode = node.Parent?.Object;
+            if (parentNode?.GetType() == typeof(Action))
+            {
+                var parentAction = node.Parent.Object as Action;
+                // Harpoon Gun is a TRIGGER
+                if (parentAction.Type == (int)BlockType.POWER || parentAction.Type == (int)BlockType.TRIGGER)
+                {
+
+                    var parentEntityId = parentAction.Entity;
+                    var parentEntity = GameState.CurrentEntities[parentEntityId];
+                    if (parentEntity.GetTag(GameTag.DREDGE) == 1)
+                    {
+                        var lastAffectedByEntity = GameState.CurrentEntities.ContainsKey(parentEntityId)
+                            ? GameState.CurrentEntities[parentEntityId]
+                            : null;
+                        return new List<GameEventProvider> { GameEventProvider.Create(
+                            showEntity.TimeStamp,
+                            "CARD_DREDGED",
+                            GameEvent.CreateProvider(
+                                "CARD_DREDGED",
+                                cardId,
+                                controllerId,
+                                entity.Id,
+                                StateFacade,
+                                gameState,
+                                new {
+                                    DredgedByEntityId = parentEntityId,
+                                    DredgedByCardId = lastAffectedByEntity?.CardId,
+                                }),
+                            true,
+                            node) };
+                    }
+                }
+            }
+
             var creatorEntityId = showEntity.GetTag(GameTag.CREATOR);
             var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
                 ? GameState.CurrentEntities[creatorEntityId].CardId
