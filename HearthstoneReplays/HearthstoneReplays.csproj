@@ -118,6 +118,7 @@
     <Compile Include="Events\Parsers\BattlegroundsMinionsSoldParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsMinionsBoughtParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsRerollParser.cs" />
+    <Compile Include="Events\Parsers\CardPlayedFromEffectParser.cs" />
     <Compile Include="Events\Parsers\CounterWillTriggerParser.cs" />
     <Compile Include="Events\Parsers\GameCleanupParser.cs" />
     <Compile Include="Events\Parsers\HeroRevealedParser.cs" />

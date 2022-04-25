@@ -29,7 +29,9 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(FullEntity)
-                && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SETASIDE;
+                && ((node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SETASIDE
+                // Nagaling
+                || (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.REMOVEDFROMGAME);
             // I don't remember why the card type was restricted to minions
             // But it makes sense to have it for all card types. In the case of Spy-o-matic, the
             // spells that are discovered otherwise don't appear in the deck
@@ -52,6 +54,14 @@ namespace HearthstoneReplays.Events.Parsers
                 ? GameState.CurrentEntities[creatorEntityId]
                 : null;
             var creatorEntityCardId = creatorEntity?.CardId;
+            // For now the only case where the card is created in the REMOVEDFROMGAME zone instead of SETASIDE is 
+            // Nagaling. This might change in the future, but to avoid sending unwanted events, we add this guard 
+            // clause for now
+            if (fullEntity.GetZone() == (int)Zone.REMOVEDFROMGAME && creatorEntityCardId != CardIds.SchoolTeacher_NagalingToken)
+            {
+                return null;
+            }
+
             var mercXp = fullEntity.GetTag(GameTag.LETTUCE_MERCENARY_EXPERIENCE);
             var mercEquipmentId = fullEntity.GetTag(GameTag.LETTUCE_EQUIPMENT_ID);
             string revealedFromBlock = null;

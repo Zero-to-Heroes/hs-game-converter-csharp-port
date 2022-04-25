@@ -125,6 +125,7 @@ namespace HearthstoneReplays.Events
                     new FirstPlayerParser(ParserState, StateFacade),
                     new MainStepReadyParser(ParserState),
                     new CardPlayedFromHandParser(ParserState, StateFacade),
+                    new CardPlayedFromEffectParser(ParserState, StateFacade),
                     new SecretPlayedFromHandParser(ParserState, StateFacade),
                     new MulliganInputParser(ParserState),
                     new MulliganDealingParser(ParserState),

@@ -32,9 +32,15 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return stateType == StateType.PowerTaskList
+            var appliesFullEntity = stateType == StateType.PowerTaskList
                 && node.Type == typeof(FullEntity)
-                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SECRET;
+                && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SECRET;
+            // For Nagaling
+            var appliesShowEntity = stateType == StateType.PowerTaskList
+                && node.Type == typeof(ShowEntity)
+                && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.SECRET
+                && GameState.CurrentEntities[(node.Object as ShowEntity).Entity]?.GetTag(GameTag.ZONE) == (int)Zone.REMOVEDFROMGAME;
+            return appliesFullEntity || appliesShowEntity;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -80,6 +86,19 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
+            if (node.Object is FullEntity)
+            {
+                return CreateGameEventProviderFromFullEntity(node);
+            }
+            else if (node.Object is ShowEntity)
+            {
+                return CreateGameEventProviderFromShowEntity(node);
+            }
+            return null;
+        }
+
+        public List<GameEventProvider> CreateGameEventProviderFromFullEntity(Node node)
+        {
             var fullEntity = node.Object as FullEntity;
             var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetEffectiveController();
@@ -100,6 +119,38 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     fullEntity.Entity,
+                    StateFacade,
+                    gameState,
+                    new {
+                        PlayerClass = playerClass,
+                        CreatorCardId = creatorEntityCardId,
+                    }),
+                true,
+                node) };
+        }
+
+        public List<GameEventProvider> CreateGameEventProviderFromShowEntity(Node node)
+        {
+            var showEntity = node.Object as ShowEntity;
+            var cardId = showEntity.CardId;
+            var controllerId = showEntity.GetEffectiveController();
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            var playerClass = showEntity.GetPlayerClass();
+            var creatorEntityId = showEntity.GetTag(GameTag.CREATOR);
+            var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
+                ? GameState.CurrentEntities[creatorEntityId].CardId
+                : null;
+            var eventName = showEntity.GetTag(GameTag.SECRET) == 1
+                ? "SECRET_CREATED_IN_GAME"
+                : "QUEST_CREATED_IN_GAME";
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                showEntity.TimeStamp,
+                eventName,
+                GameEvent.CreateProvider(
+                    eventName,
+                    cardId,
+                    controllerId,
+                    showEntity.Entity,
                     StateFacade,
                     gameState,
                     new {
