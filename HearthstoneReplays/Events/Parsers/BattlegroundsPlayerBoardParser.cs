@@ -47,38 +47,70 @@ namespace HearthstoneReplays.Events.Parsers
                 && IsApplyOnNewNode(node);
         }
 
-        public bool IsApplyOnNewNode(Node node) { 
-            return StateFacade.IsBattlegrounds()
+        public bool IsApplyOnNewNode(Node node)
+        {
+            var isAction = StateFacade.IsBattlegrounds()
                 && GameState.GetGameEntity().GetTag(GameTag.TURN) % 2 == 0
                 && GameState.BgsCurrentBattleOpponent == null
-                && node.Type == typeof(Action)
-                && ((node.Object as Action).Type == (int)BlockType.ATTACK
-                        // Why do we want deaths? Can there be a death without an attack or trigger first? AFAIK sacrifices like Tamsin's hero
-                        // power is the only option?
-                        //|| (node.Object as Action).Type == (int)BlockType.DEATHS
-                        // Basically trigger as soon as we can, and just leave some room for the Lich King's hero power
-                        // Here we assume that hero powers are triggered first, before Start of Combat events
-                        // The issue is if two hero powers (including the Lich King) compete, which is the case when Al'Akir triggers first for instance
-                        || ((node.Object as Action).Type == (int)BlockType.TRIGGER
-                                // Here we don't want to send the boards when the hero power is triggered, because we want the 
-                                // board state to include the effect of the hero power, since the simulator can't guess
-                                // what its outcome is (Embrace Your Rage) or what minion it targets (Reborn Rites)
-                                && !COMPETING_BATTLE_START_HERO_POWERS.Contains(GameState.CurrentEntities[(node.Object as Action).Entity].CardId)
-                                && !IsTavishPreparation(node)
-                                && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
-                                && (
-                                    // This was introduced to wait until the damage is done to each hero before sending the board state. However,
-                                    // forcing the entity to be the root entity means that sometimes we send the info way too late.
-                                    GameState.CurrentEntities[(node.Object as Action).Entity].CardId == CardIds.Baconshop8playerenchantEnchantmentBattlegrounds
-                                    // This condition has been introduced to solve an issue when the Wingmen hero power triggers. In that case, the parent action of attacks
-                                    // is not a TB_BaconShop_8P_PlayerE, but the hero power action itself.
-                                    || GameState.CurrentEntities[(node.Object as Action).Entity].GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER
-                                    // Here we want the boards to be send before the minions start of combat effects happen, because
-                                    // we want the simulator to include their random effects inside the simulation
-                                    || START_OF_COMBAT_MINION_EFFECT.Contains(GameState.CurrentEntities[(node.Object as Action).Entity].CardId)
-                                   )
+                && node.Type == typeof(Action);
+            if (!isAction)
+            {
+                return false;
+            }
+
+            var actionEntityId = (node.Object as Action).Entity;
+            var actionEntity = GameState.CurrentEntities[actionEntityId];
+            if (!GameState.CurrentEntities.ContainsKey(actionEntityId))
+            {
+                return false;
+            }
+
+            var isCorrectActionData = ((node.Object as Action).Type == (int)BlockType.ATTACK
+                // Why do we want deaths? Can there be a death without an attack or trigger first? AFAIK sacrifices like Tamsin's hero
+                // power is the only option?
+                //|| (node.Object as Action).Type == (int)BlockType.DEATHS
+                // Basically trigger as soon as we can, and just leave some room for the Lich King's hero power
+                // Here we assume that hero powers are triggered first, before Start of Combat events
+                // The issue is if two hero powers (including the Lich King) compete, which is the case when Al'Akir triggers first for instance
+                || ((node.Object as Action).Type == (int)BlockType.TRIGGER
+                        // Here we don't want to send the boards when the hero power is triggered, because we want the 
+                        // board state to include the effect of the hero power, since the simulator can't guess
+                        // what its outcome is (Embrace Your Rage) or what minion it targets (Reborn Rites)
+                        && !COMPETING_BATTLE_START_HERO_POWERS.Contains(actionEntity.CardId)
+                        && !IsTavishPreparation(node)
+                        && (
+                            // This was introduced to wait until the damage is done to each hero before sending the board state. However,
+                            // forcing the entity to be the root entity means that sometimes we send the info way too late.
+                            actionEntity.CardId == CardIds.Baconshop8playerenchantEnchantmentBattlegrounds
+                            // This condition has been introduced to solve an issue when the Wingmen hero power triggers. In that case, the parent action of attacks
+                            // is not a TB_BaconShop_8P_PlayerE, but the hero power action itself.
+                            || actionEntity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER
+                            // Here we want the boards to be send before the minions start of combat effects happen, because
+                            // we want the simulator to include their random effects inside the simulation
+                            || START_OF_COMBAT_MINION_EFFECT.Contains(actionEntity.CardId)
                             )
-                   );
+                    )
+            );
+            if (!isCorrectActionData)
+            {
+                return false;
+            }
+
+            // Check that we have enough information on the opponent to avoid sending the data too soon
+            var haveHeroesAllRequiredData = GameState.CurrentEntities.Values
+                .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                // Here we accept to face the ghost
+                .Where(entity => entity.CardId != BartenderBobBattlegrounds
+                    && entity.CardId != BaconphheroHeroicBattlegrounds
+                    && entity.CardId != BaconphheroHeroicBattlegrounds)
+                .All(entity => entity.GetTag(GameTag.PLAYER_TECH_LEVEL) > 0);
+            if (!haveHeroesAllRequiredData)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -166,17 +198,17 @@ namespace HearthstoneReplays.Events.Parsers
                    parentAction.TimeStamp,
                    "BATTLEGROUNDS_PLAYER_BOARD",
                    () => new GameEvent
-                        {
-                            Type = "BATTLEGROUNDS_PLAYER_BOARD",
-                            Value = new
-                            {
-                                PlayerBoard = playerBoard,
-                                OpponentBoard = opponentBoard,
-                            }
-                        },
+                   {
+                       Type = "BATTLEGROUNDS_PLAYER_BOARD",
+                       Value = new
+                       {
+                           PlayerBoard = playerBoard,
+                           OpponentBoard = opponentBoard,
+                       }
+                   },
                    true,
                    node
-               ) );
+               ));
             return result;
         }
 
@@ -188,10 +220,10 @@ namespace HearthstoneReplays.Events.Parsers
         private PlayerBoard CreateProviderFromAction(Player player, bool isOpponent, Player mainPlayer, Node node)
         {
             //var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
-            var heroes = GameState.CurrentEntities.Values
-                .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                .ToList();
+            //var heroes = GameState.CurrentEntities.Values
+            //    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+            //    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+            //    .ToList();
             var potentialHeroes = GameState.CurrentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
