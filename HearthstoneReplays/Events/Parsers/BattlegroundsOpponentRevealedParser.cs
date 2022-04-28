@@ -12,6 +12,11 @@ namespace HearthstoneReplays.Events.Parsers
 {
     public class BattlegroundsOpponentRevealedParser : ActionParser
     {
+        private static IList<int> EXCLUDED_HERO_CREATOR_DBFIDS = new List<int>()
+        {
+            63600 // TB_BaconShop_HP_081
+        };
+
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
         private StateFacade StateFacade { get; set; }
@@ -58,7 +63,8 @@ namespace HearthstoneReplays.Events.Parsers
                 false,
                 node)
             );
-            if (fullEntity.GetTag(GameTag.PLAYER_ID) == GameState.NextBgsOpponentPlayerId)
+            if (fullEntity.GetTag(GameTag.PLAYER_ID) == GameState.NextBgsOpponentPlayerId
+                && !EXCLUDED_HERO_CREATOR_DBFIDS.Contains(fullEntity.GetTag(GameTag.CREATOR_DBID)))
             {
                 result.Add(GameEventProvider.Create(
                         fullEntity.TimeStamp,
