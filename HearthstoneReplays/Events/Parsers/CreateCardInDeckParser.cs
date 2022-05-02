@@ -5,6 +5,7 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -107,6 +108,9 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
+            var parentAction = node.Parent?.Object as Action;
+            bool createdByJoust = parentAction?.Type == (int)BlockType.JOUST;
+
             var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node, fullEntity.CardId);
             var controllerId = fullEntity.GetEffectiveController();
@@ -124,6 +128,7 @@ namespace HearthstoneReplays.Events.Parsers
                     new {
                         CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show "created by ..."
                         CreatorEntityId = creator?.Item2 ?? -1,
+                        CreatedByJoust = createdByJoust,
                     }),
                 true,
                 node) };
