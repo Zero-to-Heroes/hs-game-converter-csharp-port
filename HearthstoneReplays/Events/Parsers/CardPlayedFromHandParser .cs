@@ -27,6 +27,9 @@ namespace HearthstoneReplays.Events.Parsers
             var isTriggerPhase = (node.Parent == null
                        || node.Parent.Type != typeof(Parser.ReplayData.GameActions.Action)
                        || (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER);
+            var isPowerPhase = (node.Parent == null
+                       || node.Parent.Type != typeof(Parser.ReplayData.GameActions.Action)
+                       || (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.POWER);
 
             var sigilPlayed = !isTriggerPhase && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
@@ -40,7 +43,7 @@ namespace HearthstoneReplays.Events.Parsers
                 && tagChange.Value == (int)Zone.PLAY
                 && (tagChangeEntity = GameState.CurrentEntities[(node.Object as TagChange).Entity]).GetTag(GameTag.ZONE) == (int)Zone.HAND
                 // The only case we actually consider the trigger phases is if we're handling a Cast When Drawn spell
-                && (!isTriggerPhase || tagChangeEntity.GetTag(GameTag.CASTSWHENDRAWN) == 1);
+                && ((!isTriggerPhase && !isPowerPhase )|| tagChangeEntity.GetTag(GameTag.CASTSWHENDRAWN) == 1);
             return stateType == StateType.PowerTaskList
                 && (sigilPlayed || cardPlayed);
         }

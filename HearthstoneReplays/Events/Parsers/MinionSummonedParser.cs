@@ -24,7 +24,10 @@ namespace HearthstoneReplays.Events.Parsers
             var isTriggerPhase = (node.Parent == null
                       || node.Parent.Type != typeof(Parser.ReplayData.GameActions.Action)
                       || (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER);
-            if (!isTriggerPhase)
+            var isPowerPhase = (node.Parent == null
+                       || node.Parent.Type != typeof(Parser.ReplayData.GameActions.Action)
+                       || (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.POWER);
+            if (!isTriggerPhase && !isPowerPhase)
             {
                 return false;
             }
