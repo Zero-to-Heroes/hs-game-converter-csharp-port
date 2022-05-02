@@ -6,6 +6,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using HearthstoneReplays.Enums;
+using HearthstoneReplays.Events;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 
 #endregion
@@ -15,6 +16,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 	[XmlRoot("FullEntity")]
 	public class FullEntity : BaseEntity, IEntityData
 	{
+        public static IList<string> MANUAL_DREDGE = new List<string>()
+        {
+            CardIds.FromTheDepths,
+        };
+
 		[XmlAttribute("cardID")]
 		public string CardId { get; set; }
 
@@ -96,6 +102,16 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         internal bool IsInPlay()
         {
             return GetZone() == (int)Zone.PLAY;
+        }
+
+        internal bool HasDredge()
+        {
+            return GetTag(GameTag.DREDGE) == 1 || IsManualDredge();
+        }
+
+        private bool IsManualDredge()
+        {
+            return MANUAL_DREDGE.Contains(this.CardId);
         }
     }
 }

@@ -83,7 +83,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Select(e => e.Entity)
                     .ToList()
                     .IndexOf(fullEntity.Id);
-                if (parentEntity?.GetTag(GameTag.DREDGE) == 1)
+                if (parentEntity?.HasDredge() ?? false)
                 {
                     revealedFromBlock = "DREDGE";
                 }

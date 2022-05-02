@@ -128,7 +128,7 @@ namespace HearthstoneReplays.Events.Parsers
 
                     var parentEntityId = parentAction.Entity;
                     var parentEntity = GameState.CurrentEntities[parentEntityId];
-                    if (parentEntity.GetTag(GameTag.DREDGE) == 1)
+                    if (parentEntity.HasDredge())
                     {
                         var lastAffectedByEntity = GameState.CurrentEntities.ContainsKey(parentEntityId)
                             ? GameState.CurrentEntities[parentEntityId]
