@@ -61,6 +61,16 @@ namespace HearthstoneReplays.Events.Parsers
                 cardId = "";
             }
 
+            var parentAction = node.Parent?.Object as Action;
+            int? influencedByEntityId = null;
+            string influencedByCardId = null;
+            if (parentAction != null && parentAction.Type == (int)BlockType.POWER)
+            {
+                var influenceEntity = GameState.CurrentEntities[parentAction.Entity];
+                influencedByEntityId = influenceEntity?.Entity;
+                influencedByCardId = influenceEntity?.CardId;
+            }
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 zoneInt == (int)Zone.SETASIDE ? "CREATE_CARD_IN_DECK" : "CARD_BACK_TO_DECK",
@@ -73,6 +83,8 @@ namespace HearthstoneReplays.Events.Parsers
                     gameState,
                     new {
                         InitialZone = initialZone,
+                        InfluencedByEntityId = influencedByEntityId,
+                        InfluencedByCardId = influencedByCardId,
                     }),
                 true,
                 node) };
