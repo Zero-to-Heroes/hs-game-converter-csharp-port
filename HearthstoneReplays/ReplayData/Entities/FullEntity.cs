@@ -42,6 +42,9 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public List<int> KnownEntityIds = new List<int>();
 
         [XmlIgnore]
+        public List<int> PlayedWhileInHand = new List<int>();
+
+        [XmlIgnore]
         public List<string> CardIdsToCreate = new List<string>();
 
         [XmlIgnore]

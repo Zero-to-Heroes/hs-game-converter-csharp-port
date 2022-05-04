@@ -55,6 +55,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             var creator = Oracle.FindCardCreator(GameState, entity, node);
+            entity.PlayedWhileInHand.Clear();
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
@@ -97,6 +98,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = showEntity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             var entity = GameState.CurrentEntities[showEntity.Entity];
+            entity.PlayedWhileInHand.Clear();
             // Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, showEntity.CardId);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,
@@ -124,6 +126,7 @@ namespace HearthstoneReplays.Events.Parsers
             if (GameState.CurrentEntities.ContainsKey(fullEntity.Id))
             {
                 previousZone = GameState.CurrentEntities[fullEntity.Id].GetTag(GameTag.ZONE);
+                GameState.CurrentEntities[fullEntity.Id].PlayedWhileInHand.Clear();
             }
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(

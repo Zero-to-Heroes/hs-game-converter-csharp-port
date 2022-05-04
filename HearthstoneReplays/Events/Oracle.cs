@@ -517,6 +517,7 @@ namespace HearthstoneReplays.Events
                             return cardId;
                         }
                         return null;
+
                 }
             }
 
@@ -614,9 +615,8 @@ namespace HearthstoneReplays.Events
                             return cardId;
                         }
                     }
-
                     // Second card for Archivist Elysiana
-                    if (actionEntity.CardId == ArchivistElysiana)
+                    else if (actionEntity.CardId == ArchivistElysiana)
                     {
                         // Now let's find the ID of the card that was created right before
                         var lastTagChange = action.Data
@@ -630,9 +630,8 @@ namespace HearthstoneReplays.Events
                             return GameState.CurrentEntities[lastEntityId]?.CardId;
                         }
                     }
-
                     // Second card for Kazakusan (to be tested)
-                    if (actionEntity.CardId == Kazakusan1)
+                    else if (actionEntity.CardId == Kazakusan1)
                     {
                         // Now let's find the ID of the card that was created right before
                         var lastTagChange = action.Data
@@ -646,9 +645,8 @@ namespace HearthstoneReplays.Events
                             return GameState.CurrentEntities[lastEntityId]?.CardId;
                         }
                     }
-
                     // Southsea Scoundrel
-                    if (actionEntity.CardId == SouthseaScoundrel)
+                    else if (actionEntity.CardId == SouthseaScoundrel)
                     {
                         // If we are the ones who draw it, it's all good, and if it's teh opponent, 
                         // then we know it's the same one
@@ -660,17 +658,16 @@ namespace HearthstoneReplays.Events
                             .FirstOrDefault();
                         return cardDrawn != null ? GameState.CurrentEntities[cardDrawn.Entity].CardId : null;
                     }
-
                     // Vanessa VanCleed
-                    if (actionEntity.CardId == VanessaVancleefCore)
+                    else if (actionEntity.CardId == VanessaVancleefCore)
                     {
                         var vanessaControllerId = GameState.CurrentEntities[actionEntity.Entity].GetController();
-                        var playerIds = GameState.CardsPlayedByPlayerEntityId.Keys;
+                        var playerIds = GameState.CardsPlayedByPlayerEntityIdByTurn.Keys;
                         foreach (var playerId in playerIds)
                         {
                             if (playerId != vanessaControllerId)
                             {
-                                var cardsPlayedByOpponentByTurn = GameState.CardsPlayedByPlayerEntityId[playerId];
+                                var cardsPlayedByOpponentByTurn = GameState.CardsPlayedByPlayerEntityIdByTurn[playerId];
                                 if (cardsPlayedByOpponentByTurn == null || cardsPlayedByOpponentByTurn.Count == 0)
                                 {
                                     return null;
@@ -686,14 +683,13 @@ namespace HearthstoneReplays.Events
                             }
                         }
                     }
-
                     // Ace in the Hole
-                    if (actionEntity.CardId == AceInTheHoleTavernBrawlToken)
+                    else if (actionEntity.CardId == AceInTheHoleTavernBrawlToken)
                     {
                         var actionControllerId = actionEntity.GetController();
                         if (actionEntity.KnownEntityIds.Count == 0)
                         {
-                            var cardsPlayedByPlayerByTurn = GameState.CardsPlayedByPlayerEntityId[actionControllerId];
+                            var cardsPlayedByPlayerByTurn = GameState.CardsPlayedByPlayerEntityIdByTurn[actionControllerId];
                             if (cardsPlayedByPlayerByTurn == null || cardsPlayedByPlayerByTurn.Count == 0)
                             {
                                 return null;
@@ -721,7 +717,16 @@ namespace HearthstoneReplays.Events
                             actionEntity.KnownEntityIds.Remove(entities[0].Entity);
                             return nextCard;
                         }
-
+                    }
+                    // Ace in the Hole
+                    else if (actionEntity.CardId == CommanderSivara)
+                    {
+                        if (actionEntity.PlayedWhileInHand.Count > 0)
+                        {
+                            var firstCardEntityId = actionEntity.PlayedWhileInHand[0];
+                            actionEntity.PlayedWhileInHand.RemoveAt(0);
+                            return GameState.CurrentEntities[firstCardEntityId].CardId;
+                        }
                     }
 
                     // Lady Liadrin

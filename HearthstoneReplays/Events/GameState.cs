@@ -28,7 +28,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public int LastCardPlayedEntityId;
         public int LastCardDrawnEntityId;
         // Most recent card is last, and grouped by turn
-        public Dictionary<int, Dictionary<int, List<int>>> CardsPlayedByPlayerEntityId = new Dictionary<int, Dictionary<int, List<int>>>();
+        public Dictionary<int, Dictionary<int, List<int>>> CardsPlayedByPlayerEntityIdByTurn = new Dictionary<int, Dictionary<int, List<int>>>();
+        //public Dictionary<int, List<Tuple<DateTime, int>>> CardsPlayedByPlayerEntityIdByTimestamp = new Dictionary<int, List<Tuple<DateTime, int>>>();
         public Dictionary<int, List<int>> SpellsPlayedByPlayerOnFriendlyEntityIds = new Dictionary<int, List<int>>();
         public string BgsCurrentBattleOpponent;
         public bool BgsHasSentNextOpponent;
@@ -49,7 +50,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             BattleResultSent = false;
             LastCardPlayedEntityId = -1;
             // Stored by turn as well
-            CardsPlayedByPlayerEntityId = new Dictionary<int, Dictionary<int, List<int>>>();
+            CardsPlayedByPlayerEntityIdByTurn = new Dictionary<int, Dictionary<int, List<int>>>();
             SpellsPlayedByPlayerOnFriendlyEntityIds = new Dictionary<int, List<int>>();
             LastCardDrawnEntityId = -1;
             BgsCurrentBattleOpponent = null;
@@ -352,20 +353,45 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             {
                 // Add it to each owner
                 var playedEntity = CurrentEntities[entityId];
-                var cardsForPlayer = !CardsPlayedByPlayerEntityId.ContainsKey(playedEntity.GetController()) ? null : CardsPlayedByPlayerEntityId[playedEntity.GetController()];
-                if (cardsForPlayer == null)
+
+                // Populate the list of each card played by each player, for each turn
+                var cardsForPlayerByTurn = !CardsPlayedByPlayerEntityIdByTurn.ContainsKey(playedEntity.GetController()) 
+                    ? null 
+                    : CardsPlayedByPlayerEntityIdByTurn[playedEntity.GetController()];
+                if (cardsForPlayerByTurn == null)
                 {
-                    cardsForPlayer = new Dictionary<int, List<int>>();
-                    CardsPlayedByPlayerEntityId[playedEntity.GetController()] = cardsForPlayer;
+                    cardsForPlayerByTurn = new Dictionary<int, List<int>>();
+                    CardsPlayedByPlayerEntityIdByTurn[playedEntity.GetController()] = cardsForPlayerByTurn;
                 }
                 var currentTurn = GetGameEntity().GetTag(GameTag.TURN);
-                var cardsForTurn = !cardsForPlayer.ContainsKey(currentTurn) ? null : cardsForPlayer[currentTurn];
+                var cardsForTurn = !cardsForPlayerByTurn.ContainsKey(currentTurn) ? null : cardsForPlayerByTurn[currentTurn];
                 if (cardsForTurn == null)
                 {
                     cardsForTurn = new List<int>();
-                    cardsForPlayer[currentTurn] = cardsForTurn;
+                    cardsForPlayerByTurn[currentTurn] = cardsForTurn;
                 }
                 cardsForTurn.Add(entityId);
+
+                // Build the list of cards played, for each player, by timestamp
+                //var cardsForPlayerByTimestamp = !CardsPlayedByPlayerEntityIdByTimestamp.ContainsKey(playedEntity.GetController()) 
+                //    ? null 
+                //    : CardsPlayedByPlayerEntityIdByTimestamp[playedEntity.GetController()];
+                //if (cardsForPlayerByTimestamp == null)
+                //{
+                //    cardsForPlayerByTimestamp = new List<Tuple<DateTime, int>>();
+                //    CardsPlayedByPlayerEntityIdByTimestamp[playedEntity.GetController()] = cardsForPlayerByTimestamp;
+                //}
+                //cardsForPlayerByTimestamp.Add(new Tuple<DateTime, int>(timestamp, entityId));
+
+                // For each card in the player's hand, add a note that the entity has been played while it was in hand
+                // For now, used only for Commander Sivara
+                var cardsInHandForController = CurrentEntities.Values
+                    .Where(e => e.GetZone() == (int)Zone.HAND)
+                    .Where(e => e.GetController() == playedEntity.GetController());
+                foreach (var cardInHand in cardsInHandForController) 
+                {
+                    cardInHand.PlayedWhileInHand.Add(playedEntity.Entity);
+                }
 
                 // Plagiarize
                 var plagiarizes = CurrentEntities.Values

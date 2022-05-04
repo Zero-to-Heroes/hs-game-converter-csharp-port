@@ -51,6 +51,7 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            entity.PlayedWhileInHand.Clear();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "END_OF_ECHO_IN_HAND",
