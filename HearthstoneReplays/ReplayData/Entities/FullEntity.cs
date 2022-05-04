@@ -113,5 +113,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         {
             return MANUAL_DREDGE.Contains(this.CardId);
         }
+
+        internal bool IsBaconGhost()
+        {
+            return GetTag(GameTag.BACON_IS_KEL_THUZAD) == 1;
+        }
     }
 }

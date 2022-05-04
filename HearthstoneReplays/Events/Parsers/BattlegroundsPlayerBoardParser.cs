@@ -102,15 +102,50 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 // Here we accept to face the ghost
                 .Where(entity => entity.CardId != BartenderBobBattlegrounds
-                    && entity.CardId != BaconphheroHeroicBattlegrounds
                     && entity.CardId != BaconphheroHeroicBattlegrounds)
-                .All(entity => entity.GetTag(GameTag.PLAYER_TECH_LEVEL) > 0);
+                //.Select(entity => entity.IsBaconGhost() 
+                //    ? GetGhostBaseEntity(entity)
+                //    : entity)
+                .All(entity => entity.IsBaconGhost() 
+                    ? (GetGhostBaseEntity(entity)?.GetTag(GameTag.COPIED_FROM_ENTITY_ID) ?? 0) > 0 
+                    : entity.GetTag(GameTag.PLAYER_TECH_LEVEL) > 0);
+            var debugList = GameState.CurrentEntities.Values
+                .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                // Here we accept to face the ghost
+                .Where(entity => entity.CardId != BartenderBobBattlegrounds
+                    && entity.CardId != BaconphheroHeroicBattlegrounds)
+                .ToList();
             if (!haveHeroesAllRequiredData)
             {
                 return false;
             }
 
             return true;
+        }
+
+        private FullEntity GetGhostBaseEntity(FullEntity ghostEntity)
+        {
+            var mainPlayer = StateFacade.LocalPlayer;
+            var playerEntity = GameState.CurrentEntities.Values
+                .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
+                .Where(entity => entity.CardId != BartenderBobBattlegrounds
+                    && entity.CardId != KelthuzadBattlegrounds
+                    && entity.CardId != BaconphheroHeroicBattlegrounds)
+                .OrderBy(entity => entity.Id)
+                .LastOrDefault();
+            var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
+            var nextOpponentCandidates = GameState.CurrentEntities.Values
+                .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
+                .Where(entity => entity.CardId != BartenderBobBattlegrounds
+                    && entity.CardId != KelthuzadBattlegrounds
+                    && entity.CardId != BaconphheroHeroicBattlegrounds)
+                .ToList();
+            var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
+            return nextOpponent ?? ghostEntity;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
