@@ -211,9 +211,9 @@ namespace HearthstoneReplays.Events
                     new ZonePositionChangedParser(ParserState, StateFacade),
                     new CostChangedParser(ParserState, StateFacade),
 
-
                     new CreateCardInGraveyardParser(ParserState, StateFacade),
                     new MindrenderIlluciaParser(ParserState, StateFacade),
+                    new SpecialCardPowerParser(ParserState, StateFacade),
                 };
             }
         }
