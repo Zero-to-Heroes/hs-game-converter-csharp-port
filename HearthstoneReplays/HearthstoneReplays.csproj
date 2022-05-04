@@ -142,6 +142,7 @@
     <Compile Include="Events\Parsers\ResourcesUsedThisTurnParser.cs" />
     <Compile Include="Events\Parsers\ResourcesThisTurnParser.cs" />
     <Compile Include="Events\Parsers\CounterTriggerParser.cs" />
+    <Compile Include="Events\Parsers\SpecialCardPowerParser.cs" />
     <Compile Include="Events\Parsers\SecretWillTriggerParser.cs" />
     <Compile Include="Events\Parsers\TurnCleanupParser.cs" />
     <Compile Include="Events\Parsers\ShuffleDeckParser.cs" />
