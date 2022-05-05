@@ -99,6 +99,7 @@ namespace HearthstoneReplays.Events
                     new BattlegroundsPlayerBoardParser(ParserState, StateFacade),
                     new SecretWillTriggeredParser(ParserState, StateFacade),
                     new CounterWillTriggerParser(ParserState, StateFacade),
+                    new MinionsWillDieParser(ParserState, StateFacade),
                 };
             }
             else

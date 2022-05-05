@@ -136,6 +136,7 @@
     <Compile Include="Events\Parsers\EntityUpdateParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsHeroKilledParser.cs" />
     <Compile Include="Events\Parsers\MercenariesAbilityCooldownUpdatedParser.cs" />
+    <Compile Include="Events\Parsers\MinionsWillDieParser.cs" />
     <Compile Include="Events\Parsers\MulliganDealingParser.cs" />
     <Compile Include="Events\Parsers\NumCardsDrawnThisTurnParser.cs" />
     <Compile Include="Events\Parsers\CreateCardInGraveyardParser.cs" />
