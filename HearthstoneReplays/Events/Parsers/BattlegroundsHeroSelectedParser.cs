@@ -30,6 +30,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             // Because choices are not handled properly in PTL
             return stateType == StateType.GameState
+                && StateFacade.IsBattlegrounds()
                 && node.Type == typeof(Choice)
                 && ParserState.CurrentChosenEntites != null;
         }
@@ -41,9 +42,10 @@ namespace HearthstoneReplays.Events.Parsers
             // However, in BG we should never have a FullEntity, whose controller is the player, 
             // unless it's a HERO_SELECTED event
             return stateType == StateType.PowerTaskList
+                && StateFacade.IsBattlegrounds()
                 && node.Type == typeof(FullEntity)
-                    && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.HERO
-                    && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY;
+                && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.HERO
+                && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)

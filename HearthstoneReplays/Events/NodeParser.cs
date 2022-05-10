@@ -100,6 +100,8 @@ namespace HearthstoneReplays.Events
                     new SecretWillTriggeredParser(ParserState, StateFacade),
                     new CounterWillTriggerParser(ParserState, StateFacade),
                     new MinionsWillDieParser(ParserState, StateFacade),
+                    // Will parse the GameState logs (because choices are logged only in GS), but uses the PTL states
+                    new EntityChosenParser(ParserState, StateFacade),
                 };
             }
             else

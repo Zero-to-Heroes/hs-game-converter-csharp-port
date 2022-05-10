@@ -113,6 +113,7 @@
     <Compile Include="Events\GameStateShort.cs" />
     <Compile Include="Events\Parsers\BattlegroundsBuddyGainedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsAfterPlayerBoardsRevealedParser.cs" />
+    <Compile Include="Events\Parsers\EntityChosenParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsTavernPrizesParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsFreezeParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsMinionsSoldParser.cs" />

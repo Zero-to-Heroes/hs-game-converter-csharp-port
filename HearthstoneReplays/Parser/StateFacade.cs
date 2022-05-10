@@ -68,6 +68,14 @@ namespace HearthstoneReplays.Parser
             }
         }
 
+        public ParserState PtlState
+        {
+            get
+            {
+                return State?.PTLState;
+            }
+        }
+
         internal bool HasMetaData()
         {
             return State.GSState.CurrentGame.FormatType != -1 && State.GSState.CurrentGame.GameType != -1 && LocalPlayer != null;
