@@ -217,6 +217,7 @@ namespace HearthstoneReplays.Events
                     case Doomcaller: return Cthun2;
                     case DraggedBelow: return SirakessCultist_AbyssalCurseToken;
                     case DragonbaneShot: return DragonbaneShot;
+                    case DrawOffensivePlayTavernBrawlEnchantment: return OffensivePlayTavernBrawl;
                     case DreadlichTamsin1: return DreadlichTamsin_FelRiftToken;
                     case DrygulchJailor: return SilverHandRecruitLegacyToken;
                     case EliseStarseeker1: return UnearthedRaptor_MapToTheGoldenMonkeyToken;
@@ -723,9 +724,13 @@ namespace HearthstoneReplays.Events
                     {
                         if (actionEntity.PlayedWhileInHand.Count > 0)
                         {
-                            var firstCardEntityId = actionEntity.PlayedWhileInHand[0];
-                            actionEntity.PlayedWhileInHand.RemoveAt(0);
-                            return GameState.CurrentEntities[firstCardEntityId].CardId;
+                            var minions = actionEntity.PlayedWhileInHand
+                                .Select(entityId => GameState.CurrentEntities[entityId])
+                                .Where(entity => entity.IsMinion())
+                                .ToList();
+                            var firstMinionEntity = minions[0];
+                            actionEntity.PlayedWhileInHand.Remove(firstMinionEntity.Entity);
+                            return firstMinionEntity.CardId;
                         }
                     }
 

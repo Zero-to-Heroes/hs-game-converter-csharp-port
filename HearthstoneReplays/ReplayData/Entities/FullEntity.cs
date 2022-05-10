@@ -121,5 +121,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         {
             return GetTag(GameTag.BACON_IS_KEL_THUZAD) == 1;
         }
+
+        internal bool IsMinion()
+        {
+            return GetTag(GameTag.CARDTYPE) == (int)CardType.MINION;
+        }
     }
 }
