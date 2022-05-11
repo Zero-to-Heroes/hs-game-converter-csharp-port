@@ -28,6 +28,10 @@ namespace HearthstoneReplays.Events.Parsers
             RedWhelpBattlegrounds,
             PrizedPromoDrake,
             PrizedPromoDrakeBattlegrounds,
+            CorruptedMyrmidon,
+            CorruptedMyrmidonBattlegrounds,
+            MantidQueen,
+            MantidQueenBattlegrounds,
         };
 
         private GameState GameState { get; set; }
