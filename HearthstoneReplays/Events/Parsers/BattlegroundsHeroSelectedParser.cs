@@ -45,7 +45,9 @@ namespace HearthstoneReplays.Events.Parsers
                 && StateFacade.IsBattlegrounds()
                 && node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.HERO
-                && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY;
+                && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY
+                // For Aranna / Azshara
+                && (node.Object as FullEntity).GetTag(GameTag.REPLACEMENT_ENTITY) != 1;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
