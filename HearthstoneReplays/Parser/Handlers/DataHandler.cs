@@ -108,6 +108,8 @@ namespace HearthstoneReplays.Parser.Handlers
                 else if (state.Node.Type == typeof(FullEntity))
                 {
                     ((FullEntity)state.Node.Object).Tags.Add(tag);
+                    // Push the changes as they occur, so that it's ok if we miss a block end because of malformed logs
+                    state.GameState.CurrentEntities[((FullEntity)state.Node.Object).Entity].Tags.Add(tag);
                 }
                 else if (state.Node.Type == typeof(ShowEntity))
                 {
@@ -248,6 +250,8 @@ namespace HearthstoneReplays.Parser.Handlers
 
                 var fullEntity = new FullEntity { CardId = cardId, Id = entity, Tags = new List<Tag>(), TimeStamp = timestamp };
                 fullEntity.SubSpellInEffect = this.currentSubSpell;
+                state.GameState.FullEntity(fullEntity, false);
+
                 state.UpdateCurrentNode(typeof(Game), typeof(Action));
 
                 var newNode = new Node(typeof(FullEntity), fullEntity, indentLevel, state.Node, data);

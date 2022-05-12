@@ -85,7 +85,7 @@ namespace HearthstoneReplays.Parser
                             //}
                             //else
                             //{
-                            GameState.FullEntity(_node.Object as FullEntity, false);
+                            //GameState.FullEntity(_node.Object as FullEntity, false);
                             //}
                         }
                         else if (_node.Type == typeof(ChangeEntity))

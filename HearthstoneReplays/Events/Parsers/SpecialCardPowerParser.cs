@@ -15,6 +15,7 @@ namespace HearthstoneReplays.Events.Parsers
         private static IList<string> SPECIAL_POWER_CARDS = new List<string>()
         {
             CardIds.LorekeeperPolkelt,
+            CardIds.SphereOfSapience,
         };
 
         private GameState GameState { get; set; }
@@ -30,26 +31,45 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            Action action = null;
-            return stateType == StateType.PowerTaskList
-                && node.Type == typeof(Action)
-                && (action = node.Object as Action).Type == (int)BlockType.POWER
-                && GameState.CurrentEntities.ContainsKey(action.Entity)
-                && SPECIAL_POWER_CARDS.Contains(GameState.CurrentEntities[action.Entity].CardId);
+            return false;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return false;
+            Action action = null;
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(Action)
+                && ((action = node.Object as Action).Type == (int)BlockType.POWER || action.Type == (int)BlockType.TRIGGER)
+                && GameState.CurrentEntities.ContainsKey(action.Entity)
+                && SPECIAL_POWER_CARDS.Contains(GameState.CurrentEntities[action.Entity].CardId);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
+        {
+            return null;
+        }
+
+        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var action = node.Object as Action;
             var entity = GameState.CurrentEntities[action.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            var relatedEntities = action.Data
+                .Where(data => data is FullEntity)
+                .Select(data => data as FullEntity)
+                // So that we have also the tag modifications
+                .Select(e => GameState.CurrentEntities[e.Entity])
+                .ToList();
+            var relatedCards = relatedEntities
+                .Select(e => new
+                {
+                    EntityId = e.Entity,
+                    CardId = e.CardId,
+                    OriginalEntityId = e.GetTag(GameTag.LINKED_ENTITY, -1),
+                })
+                .ToList();
             return new List<GameEventProvider> {
                 GameEventProvider.Create(
                     action.TimeStamp,
@@ -60,16 +80,14 @@ namespace HearthstoneReplays.Events.Parsers
                         controllerId,
                         entity.Id,
                         StateFacade,
-                        gameState),
+                        gameState,
+                        new {
+                            RelatedCards = relatedCards
+                        }
+                    ),
                     true,
-                    node) 
+                    node)
             };
-        }
-
-        // Typically the case when the opponent plays a quest or a secret
-        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
-        {
-            return null;
         }
     }
 }

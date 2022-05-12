@@ -56,7 +56,8 @@ namespace HearthstoneReplays.Parser.Handlers
 				var entity = helper.ParseEntity(rawEntity);
 				var choice = new Choice {Entity = entity, Index = index, TimeStamp = timestamp};
 				state.CurrentChosenEntites?.Choices?.Add(choice);
-
+				// If we're on a FullEntity node, move back up
+				state.UpdateCurrentNode(typeof(Game), typeof(Action));
 				state.CreateNewNode(new Node(typeof(Choice), choice, 0, null, data)); // It's not really a new node, but just a hack
 				return;
 			}

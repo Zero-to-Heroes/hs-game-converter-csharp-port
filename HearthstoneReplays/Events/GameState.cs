@@ -159,28 +159,28 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         }
 
         // Used in case of reconnt
-        public void UpdateTagsForFullEntity(FullEntity entity)
-        {
-            if (!CurrentEntities.ContainsKey(entity.Id))
-            {
-                Logger.Log("No entity in memory when calling UpdateTagsForFullEntity, creating it", entity.Id);
-                FullEntity(entity, false);
-            }
+        //public void UpdateTagsForFullEntity(FullEntity entity)
+        //{
+        //    if (!CurrentEntities.ContainsKey(entity.Id))
+        //    {
+        //        Logger.Log("No entity in memory when calling UpdateTagsForFullEntity, creating it", entity.Id);
+        //        FullEntity(entity, false);
+        //    }
 
-            CurrentEntities[entity.Id].CardId = entity.CardId;
-            List<int> newTagIds = entity.Tags.Select(tag => tag.Name).ToList();
-            List<Tag> oldTagsToKeep = CurrentEntities[entity.Id].Tags
-                .Where(tag => !newTagIds.Contains(tag.Name))
-                .Select(tag => new Tag { Name = tag.Name, Value = tag.Value })
-                .ToList();
-            var newTags = new List<Tag>();
-            foreach (var oldTag in entity.Tags)
-            {
-                newTags.Add(new Tag { Name = oldTag.Name, Value = oldTag.Value });
-            }
-            oldTagsToKeep.AddRange(newTags);
-            CurrentEntities[entity.Id].Tags = oldTagsToKeep;
-        }
+        //    CurrentEntities[entity.Id].CardId = entity.CardId;
+        //    List<int> newTagIds = entity.Tags.Select(tag => tag.Name).ToList();
+        //    List<Tag> oldTagsToKeep = CurrentEntities[entity.Id].Tags
+        //        .Where(tag => !newTagIds.Contains(tag.Name))
+        //        .Select(tag => new Tag { Name = tag.Name, Value = tag.Value })
+        //        .ToList();
+        //    var newTags = new List<Tag>();
+        //    foreach (var oldTag in entity.Tags)
+        //    {
+        //        newTags.Add(new Tag { Name = oldTag.Name, Value = oldTag.Value });
+        //    }
+        //    oldTagsToKeep.AddRange(newTags);
+        //    CurrentEntities[entity.Id].Tags = oldTagsToKeep;
+        //}
 
         public void ShowEntity(ShowEntity entity)
         {

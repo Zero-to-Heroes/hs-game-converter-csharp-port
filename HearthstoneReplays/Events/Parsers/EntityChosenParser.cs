@@ -34,6 +34,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var choice = node.Object as Choice;
             var ptlState = StateFacade.PtlState.GameState;
+            var other = GameState.CurrentEntities.ContainsKey(choice.Entity);
             if (!ptlState?.CurrentEntities?.ContainsKey(choice.Entity) ?? false)
             {
                 return null;
