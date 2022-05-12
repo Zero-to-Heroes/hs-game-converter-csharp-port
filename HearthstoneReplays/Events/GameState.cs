@@ -146,41 +146,14 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 return;
             }
 
-            var newTags = new List<Tag>();
-            foreach (var oldTag in entity.Tags)
-            {
-                newTags.Add(new Tag { Name = oldTag.Name, Value = oldTag.Value });
-            }
+
+            var newTags = entity.GetTagsCopy();
             // We need to do a copy because this otherwise we could mutate the entity from the log parser
-            // Why is this a problem again? Is there a disconnect between the time the entity is
-            // modified in the logs parser and when it's modified here?
+            // This would mean that when a TagChange event occurs in the log, we also mutate the data inside the Game.Data
+            // That data is supposed to be a snapshot of the current log lines, and should be immutable
             var fullEntity = new FullEntity { CardId = entity.CardId, Id = entity.Id, Tags = newTags, TimeStamp = entity.TimeStamp };
             CurrentEntities.Add(entity.Id, fullEntity);
         }
-
-        // Used in case of reconnt
-        //public void UpdateTagsForFullEntity(FullEntity entity)
-        //{
-        //    if (!CurrentEntities.ContainsKey(entity.Id))
-        //    {
-        //        Logger.Log("No entity in memory when calling UpdateTagsForFullEntity, creating it", entity.Id);
-        //        FullEntity(entity, false);
-        //    }
-
-        //    CurrentEntities[entity.Id].CardId = entity.CardId;
-        //    List<int> newTagIds = entity.Tags.Select(tag => tag.Name).ToList();
-        //    List<Tag> oldTagsToKeep = CurrentEntities[entity.Id].Tags
-        //        .Where(tag => !newTagIds.Contains(tag.Name))
-        //        .Select(tag => new Tag { Name = tag.Name, Value = tag.Value })
-        //        .ToList();
-        //    var newTags = new List<Tag>();
-        //    foreach (var oldTag in entity.Tags)
-        //    {
-        //        newTags.Add(new Tag { Name = oldTag.Name, Value = oldTag.Value });
-        //    }
-        //    oldTagsToKeep.AddRange(newTags);
-        //    CurrentEntities[entity.Id].Tags = oldTagsToKeep;
-        //}
 
         public void ShowEntity(ShowEntity entity)
         {
@@ -285,13 +258,16 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             {
                 return;
             }
-            var existingTag = CurrentEntities[tagChange.Entity].Tags.Find((tag) => tag.Name == tagChange.Name);
-            if (existingTag == null)
+            var fullEntity = CurrentEntities[tagChange.Entity];
+            var newTags = fullEntity.GetTagsCopy();
+            if (newTags.Find((tag) => tag.Name == tagChange.Name) == null)
             {
-                existingTag = new Tag { Name = tagChange.Name };
-                CurrentEntities[tagChange.Entity].Tags.Add(existingTag);
+                newTags.Add(new Tag() { Name = tagChange.Name });
             }
-            existingTag.Value = tagChange.Value;
+            var tagsAfterUpdate = newTags
+                .Select(tag => tag.Name == tagChange.Name ? new Tag() { Name = tag.Name, Value = tagChange.Value } : tag)
+                .ToList();
+            fullEntity.Tags = tagsAfterUpdate;
         }
 
         // Should only be used for ChangeEntity, and probably even this will be removed later on

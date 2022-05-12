@@ -190,6 +190,7 @@ namespace HearthstoneReplays.Parser.Handlers
                     ((Action)state.Node.Object).Data.Add(tagChange);
                 else
                     throw new Exception("Invalid node " + state.Node.Type);
+
                 state.GameState.TagChange(tagChange, defChange);
 
                 // In BG, it sometimes happen that the BLOCK_END element is missing. This typically happens after 

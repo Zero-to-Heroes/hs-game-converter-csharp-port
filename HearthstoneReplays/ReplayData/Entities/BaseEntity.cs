@@ -54,19 +54,21 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public List<Tag> GetTagsCopy(TagChange tagChange = null)
         {            
             var tagsCopy = this.Tags
-                .Select(tag => tagChange != null && tagChange.Name == tag.Name ? new Tag
-                {
-                    Name = tag.Name,
-                    Value = tagChange.Value,
-                } : new Tag
-                {
-                    Name = tag.Name,
-                    Value = tag.Value,
-                })
+                .Select(tag => tagChange != null && tagChange.Name == tag.Name 
+                ? new Tag()
+                    {
+                        Name = tag.Name,
+                        Value = tagChange.Value,
+                    } 
+                : new Tag()
+                    {
+                        Name = tag.Name,
+                        Value = tag.Value,
+                    })
                 .ToList();
             if (tagChange != null && !tagsCopy.Any(tag => tag.Name == tagChange.Name))
             {
-                tagsCopy.Add(new Tag
+                tagsCopy.Add(new Tag()
                 {
                     Name = tagChange.Name,
                     Value = tagChange.Value,
