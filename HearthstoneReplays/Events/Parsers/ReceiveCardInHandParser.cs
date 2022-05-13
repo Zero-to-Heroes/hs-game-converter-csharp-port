@@ -33,20 +33,17 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            var isReconnect = ParserState.ReconnectionOngoing;
             var appliesToShowEntity = node.Type == typeof(ShowEntity)
                 && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.HAND
                 && (!GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
                     || (GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) != (int)Zone.DECK
                         && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) != (int)Zone.HAND));
-            FullEntity fullEntity = null;
             var appliesToFullEntity = node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.HAND
                 && (!GameState.CurrentEntities.ContainsKey((node.Object as FullEntity).Id)
-                    || (fullEntity = GameState.CurrentEntities[(node.Object as FullEntity).Id]).GetTag(GameTag.ZONE) != (int)Zone.DECK
-                        // For reconnects
-                        && fullEntity.GetTag(GameTag.ZONE) != (int)Zone.HAND);
-            var debug = node.Type == typeof(FullEntity) && (node.Object as FullEntity).Entity == 68;
+                    || (GameState.CurrentEntities[(node.Object as FullEntity).Id].GetTag(GameTag.ZONE) != (int)Zone.DECK
+                        && GameState.CurrentEntities[(node.Object as FullEntity).Id].GetTag(GameTag.ZONE) != (int)Zone.HAND));
+            var debug = node.Type == typeof(FullEntity) && (node.Object as FullEntity).Id == 68;
             return stateType == StateType.PowerTaskList
                 && (appliesToShowEntity || appliesToFullEntity);
         }
@@ -143,7 +140,7 @@ namespace HearthstoneReplays.Events.Parsers
                         var creatorCardId = creator?.Item1;
                         //var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, fullEntity, node);
                         var cardId = Oracle.PredictCardId(GameState, creatorCardId, creator?.Item2 ?? -1, node, fullEntity.CardId);
-                        if (cardId == null && GameState.CurrentTurn == 1 && fullEntity.GetTag(GameTag.ZONE_POSITION) == 5)
+                        if (cardId == null && GameState.CurrentTurn <= 1 && fullEntity.GetTag(GameTag.ZONE_POSITION) == 5)
                         {
                             var controller = GameState.GetController(fullEntity.GetEffectiveController());
                             if (controller.GetTag(GameTag.CURRENT_PLAYER) != 1)

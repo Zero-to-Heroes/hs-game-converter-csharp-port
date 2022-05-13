@@ -13,6 +13,7 @@ namespace HearthstoneReplays.Parser
         private CombinedState State { get; set; }
 
         private string _lastProcessedGSLine;
+        private string _lastProcessedPTLLine;
         private string _updateToRootAfterLine;
 
         public StateFacade(CombinedState combined)
@@ -64,7 +65,24 @@ namespace HearthstoneReplays.Parser
         {
             set
             {
-                this._lastProcessedGSLine = value;
+                var isLastLineToBeConsidered = value != null
+                    && !Regexes.BuildNumber.Match(value).Success
+                    && !Regexes.GameType.Match(value).Success
+                    && !Regexes.FormatType.Match(value).Success
+                    && !Regexes.ScenarioID.Match(value).Success
+                    && !Regexes.PlayerNameAssignment.Match(value).Success;
+                if (isLastLineToBeConsidered)
+                {
+                    this._lastProcessedGSLine = value;
+                }
+            }
+        }
+
+        public string LastProcessedPTLLine
+        {
+            set
+            {
+                this._lastProcessedPTLLine = value;
             }
         }
 
@@ -104,7 +122,17 @@ namespace HearthstoneReplays.Parser
 
         internal void NotifyUpdateToRootNeeded()
         {
-            this._updateToRootAfterLine = this._lastProcessedGSLine?.Trim();
+            // Sometimes the situation is that the GS blocks are over, the PTL block is over BUT doesn't contain the BLOCK_END info, 
+            // and the GS.options lines arrive that trigger an update to root.
+            // In that case, 
+            if (this._lastProcessedPTLLine != null && this._lastProcessedPTLLine.Trim() == this._lastProcessedGSLine?.Trim())
+            {
+                UpdatePTLToRoot();
+            }
+            else
+            {
+                this._updateToRootAfterLine = this._lastProcessedGSLine?.Trim();
+            }
         }
 
         // TODO: handle the case of the format between GS and PTR being different (eg entity name, card id)

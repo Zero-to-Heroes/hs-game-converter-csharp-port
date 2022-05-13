@@ -180,6 +180,7 @@ namespace HearthstoneReplays.Parser
                         State.StateFacade.UpdatePTLToRoot();
                     }
                     previousTimestamp = normalizedTimestamp;
+                    State.StateFacade.LastProcessedPTLLine = data;
                     break;
                 //case "GameState.SendOption":
                 //	SendOptionHandler.Handle(timestamp, data, State);

@@ -43,10 +43,12 @@ namespace HearthstoneReplays.Parser.Handlers
                 // 3. In the PTL processing, after we encounter that log line, go back to root
                 if (stateType == StateType.GameState)
                 {
-                    if (state.Node.Type != typeof(Game) 
+                    if (
+                        // Even if we're at the root, we force the update, so that it can also handle the cases where root blocks are truncated
+                        //state.Node.Type != typeof(Game) 
                         // This doesn't have enough discriminating information to be used safely (ie it causes the root reset
                         // to happen on unwanted nodes
-                        && state.Node.Type != typeof(MetaData))
+                        state.Node.Type != typeof(MetaData))
                     {
                         stateFacade.NotifyUpdateToRootNeeded();
                         state.UpdateCurrentNode(typeof(Game));
