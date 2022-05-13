@@ -85,7 +85,7 @@ namespace HearthstoneReplays.Parser
                             //}
                             //else
                             //{
-                            //GameState.FullEntity(_node.Object as FullEntity, false);
+                            GameState.FullEntity(_node.Object as FullEntity, false);
                             //}
                         }
                         else if (_node.Type == typeof(ChangeEntity))
@@ -206,6 +206,7 @@ namespace HearthstoneReplays.Parser
 
         public void EndAction()
         {
+            var debug = Node.Type == typeof(FullEntity) && (Node.Object as FullEntity).Entity == 68;
             if (Node.Type != typeof(Game))
             {
                 NodeParser.CloseNode(Node, StateType);

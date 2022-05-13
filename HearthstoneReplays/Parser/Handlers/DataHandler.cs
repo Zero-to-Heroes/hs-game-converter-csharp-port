@@ -109,7 +109,10 @@ namespace HearthstoneReplays.Parser.Handlers
                 {
                     ((FullEntity)state.Node.Object).Tags.Add(tag);
                     // Push the changes as they occur, so that it's ok if we miss a block end because of malformed logs
-                    state.GameState.CurrentEntities[((FullEntity)state.Node.Object).Entity].Tags.Add(tag);
+                    // UPDATE: this is in fact not possible, because I need to have the FullEntities in the state with their previous
+                    // tags when applying CloseNode effects.
+                    // It might be possible to work around that, but it will require too much work and it too risky
+                    //state.GameState.CurrentEntities[((FullEntity)state.Node.Object).Entity].Tags.Add(tag);
                 }
                 else if (state.Node.Type == typeof(ShowEntity))
                 {
@@ -251,7 +254,7 @@ namespace HearthstoneReplays.Parser.Handlers
 
                 var fullEntity = new FullEntity { CardId = cardId, Id = entity, Tags = new List<Tag>(), TimeStamp = timestamp };
                 fullEntity.SubSpellInEffect = this.currentSubSpell;
-                state.GameState.FullEntity(fullEntity, false);
+                //state.GameState.FullEntity(fullEntity, false);
 
                 state.UpdateCurrentNode(typeof(Game), typeof(Action));
 
