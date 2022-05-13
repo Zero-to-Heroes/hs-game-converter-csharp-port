@@ -34,13 +34,18 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var choice = node.Object as Choice;
             var ptlState = StateFacade.PtlState.GameState;
-            var other = GameState.CurrentEntities.ContainsKey(choice.Entity);
-            if (!ptlState?.CurrentEntities?.ContainsKey(choice.Entity) ?? false)
+            var keyInGS = GameState.CurrentEntities.ContainsKey(choice.Entity);
+            // Special case for Sphere of Sapience, as the corresponding block is not properly closed
+            FullEntity chosenEntity = (ptlState?.CurrentEntities?.ContainsKey(choice.Entity) ?? false)
+                ? ptlState.CurrentEntities[choice.Entity]
+                : keyInGS
+                    ? GameState.CurrentEntities[choice.Entity]
+                    : null;
+            if (chosenEntity == null)
             {
                 return null;
             }
 
-            var chosenEntity = ptlState.CurrentEntities[choice.Entity];
             // Entities offered in chocies are often côpies
             var isCopy = ptlState.CurrentEntities.ContainsKey(chosenEntity.GetTag(GameTag.LINKED_ENTITY));
             var originalEntity = isCopy ? ptlState.CurrentEntities[chosenEntity.GetTag(GameTag.LINKED_ENTITY)] : null;
