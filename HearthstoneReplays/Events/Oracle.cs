@@ -184,6 +184,8 @@ namespace HearthstoneReplays.Events
                     case AzsharanTrident: return AzsharanTrident_SunkenTridentToken;
                     case AzsharanVessel: return AzsharanVessel_SunkenVesselToken;
                     case BadLuckAlbatross: return BadLuckAlbatross_AlbatrossToken;
+                    case BagOfCoins: return TheCoin1;
+                    case BagOfCoinsTavernBrawl: return TheCoin1;
                     case BananaBuffoon: return BananaBuffoon_BananasToken;
                     case BananaVendor: return BananaVendor_BananasToken;
                     case BeneathTheGrounds: return BeneathTheGrounds_NerubianAmbushToken;
@@ -213,6 +215,7 @@ namespace HearthstoneReplays.Events
                     case CurseOfRafaam: return CurseOfRafaam_CursedToken;
                     case DeadlyFork: return DeadlyFork_SharpFork;
                     case DeckOfWonders: return DeckOfWonders_ScrollOfWonderToken;
+                    case DefendTheDwarvenDistrict_KnockEmDownToken: return DefendTheDwarvenDistrict_TavishMasterMarksmanToken;
                     case DirehornHatchling: return DirehornHatchling_DirehornMatriarchToken;
                     case Doomcaller: return Cthun2;
                     case DraggedBelow: return SirakessCultist_AbyssalCurseToken;
@@ -518,13 +521,12 @@ namespace HearthstoneReplays.Events
                             return cardId;
                         }
                         return null;
-
                 }
             }
 
-            if (node.Parent != null && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+            if (node.Parent != null && node.Parent.Type == typeof(Action))
             {
-                var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                var action = node.Parent.Object as Action;
 
                 if (action.Type == (int)BlockType.TRIGGER)
                 {
@@ -582,6 +584,30 @@ namespace HearthstoneReplays.Events
                             ? GameState.CurrentEntities[GameState.LastCardPlayedEntityId]
                             : null;
                         return lastPlayedEntity?.CardId;
+                    }
+
+                    // Nellie
+                    if (actionEntity != null && actionEntity.CardId == NellieTheGreatThresher_NelliesPirateShipToken && action.TriggerKeyword == (int)GameTag.DEATHRATTLE)
+                    {
+                        var pirateShipEntity = GameState.CurrentEntities[creatorEntityId];
+                        var nellieEntity = GameState.CurrentEntities[pirateShipEntity.GetTag(GameTag.CREATOR)];
+                        if (pirateShipEntity.KnownEntityIds.Count == 0)
+                        {
+                            var crewmates = GameState.CurrentEntities.Values
+                                .Where(entity => entity.GetTag(GameTag.CREATOR) == nellieEntity.Entity)
+                                .Where(entity => entity.CardId != NellieTheGreatThresher_NelliesPirateShipToken)
+                                .ToList();
+                            var crewmatesEntityIds = crewmates.Select(entity => entity.Entity).ToList();
+                            pirateShipEntity.KnownEntityIds = crewmatesEntityIds;
+                        }
+                        if (pirateShipEntity.KnownEntityIds.Count > 0)
+                        {
+                            var entities = pirateShipEntity.KnownEntityIds.Select(entityId => GameState.CurrentEntities[entityId]).ToList();
+                            var nextCard = entities[0].CardId;
+                            pirateShipEntity.KnownEntityIds.RemoveAt(0);
+                            return nextCard;
+                        }
+                        return null;
                     }
                 }
 
