@@ -41,7 +41,9 @@ namespace HearthstoneReplays.Parser.Handlers
                 // 1. Check if a block is being interrupted
                 // 2. If it is, store the log line preceding the options block
                 // 3. In the PTL processing, after we encounter that log line, go back to root
-                if (stateType == StateType.GameState)
+                // UPDATE: this seems to be causing some issues in BG. So for now, I'm deactivating it.
+                // As far as I've seen, the main issues with incorrectly formed logs were in constructed, but this needs further testing.
+                if (stateType == StateType.GameState && !stateFacade.IsBattlegrounds())
                 {
                     if (
                         // Even if we're at the root, we force the update, so that it can also handle the cases where root blocks are truncated
