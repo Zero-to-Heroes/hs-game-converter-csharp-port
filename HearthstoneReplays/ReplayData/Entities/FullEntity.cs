@@ -126,5 +126,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         {
             return GetTag(GameTag.CARDTYPE) == (int)CardType.MINION;
         }
+
+        internal bool IsSpell()
+        {
+            return GetTag(GameTag.CARDTYPE) == (int)CardType.SPELL;
+        }
     }
 }

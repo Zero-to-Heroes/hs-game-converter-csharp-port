@@ -750,13 +750,13 @@ namespace HearthstoneReplays.Events
                     {
                         if (actionEntity.PlayedWhileInHand.Count > 0)
                         {
-                            var minions = actionEntity.PlayedWhileInHand
+                            var spells = actionEntity.PlayedWhileInHand
                                 .Select(entityId => GameState.CurrentEntities[entityId])
-                                .Where(entity => entity.IsMinion())
+                                .Where(entity => entity.IsSpell())
                                 .ToList();
-                            var firstMinionEntity = minions[0];
-                            actionEntity.PlayedWhileInHand.Remove(firstMinionEntity.Entity);
-                            return firstMinionEntity.CardId;
+                            var firstSpellEntity = spells[0];
+                            actionEntity.PlayedWhileInHand.Remove(firstSpellEntity.Entity);
+                            return firstSpellEntity.CardId;
                         }
                     }
 
