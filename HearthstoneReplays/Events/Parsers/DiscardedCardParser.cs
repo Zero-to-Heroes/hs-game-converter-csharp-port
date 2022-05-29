@@ -5,6 +5,7 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -71,6 +72,20 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity != null ? entity.GetEffectiveController() : -1;
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             entity.PlayedWhileInHand.Clear();
+
+            // Felsoul Jailer
+            if (node.Parent?.Object is Action)
+            {
+                var parentAction = node.Parent.Object as Action;
+                FullEntity parentEntity = null;
+                if (GameState.CurrentEntities.TryGetValue(parentAction.Entity, out parentEntity))
+                {
+                    if (parentEntity.CardId == CardIds.FelsoulJailerCore)
+                    {
+                        parentEntity.CardIdsToCreate.Add(cardId);
+                    }
+                }
+            }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "DISCARD_CARD",

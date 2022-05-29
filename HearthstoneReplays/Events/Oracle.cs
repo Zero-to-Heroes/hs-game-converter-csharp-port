@@ -588,6 +588,14 @@ namespace HearthstoneReplays.Events
                         return lastPlayedEntity?.CardId;
                     }
 
+                    // Felsoul Jailer
+                    if (actionEntity.CardId == FelsoulJailerCore && actionEntity.CardIdsToCreate.Count > 0)
+                    {
+                        var result = actionEntity.CardIdsToCreate[0];
+                        actionEntity.CardIdsToCreate.RemoveAt(0);
+                        return result;
+                    }
+
                     // Nellie
                     if (actionEntity != null && actionEntity.CardId == NellieTheGreatThresher_NelliesPirateShipToken && action.TriggerKeyword == (int)GameTag.DEATHRATTLE)
                     {
