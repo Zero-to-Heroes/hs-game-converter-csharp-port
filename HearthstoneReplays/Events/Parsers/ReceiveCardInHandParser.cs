@@ -129,6 +129,13 @@ namespace HearthstoneReplays.Events.Parsers
                 previousZone = GameState.CurrentEntities[fullEntity.Id].GetTag(GameTag.ZONE);
                 GameState.CurrentEntities[fullEntity.Id].PlayedWhileInHand.Clear();
             }
+
+            // For Nagaling
+            int? additionalPlayInfo = null;
+            if (fullEntity.GetTag(GameTag.ADDITIONAL_PLAY_REQS_1) != -1)
+            {
+                additionalPlayInfo = fullEntity.GetTag(GameTag.ADDITIONAL_PLAY_REQS_1);
+            }
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     fullEntity.TimeStamp,
@@ -170,6 +177,7 @@ namespace HearthstoneReplays.Events.Parsers
                                     IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1,
                                     BuffingEntityCardId = buffingCardEntityCardId,
                                     BuffCardId = buffCardId,
+                                    AdditionalPlayInfo = additionalPlayInfo,
                                 }
                             }
                         };
