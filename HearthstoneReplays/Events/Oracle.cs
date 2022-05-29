@@ -163,6 +163,7 @@ namespace HearthstoneReplays.Events
             {
                 switch (creatorCardId)
                 {
+                    case AbyssalWave: return SirakessCultist_AbyssalCurseToken;
                     case AdorableInfestation: return AdorableInfestation_MarsuulCubToken;
                     case Akama1: return Akama_AkamaPrimeToken;
                     case AncientShade: return AncientShade_AncientCurseToken;
@@ -355,6 +356,7 @@ namespace HearthstoneReplays.Events
                     case DragonBreeder:
                     case Sathrovarr:
                     case ZolaTheGorgon:
+                    case ZolaTheGorgonCore:
                     case Recycle:
                     case Splintergraft:
                     case MarkOfTheSpikeshell:
@@ -366,9 +368,9 @@ namespace HearthstoneReplays.Events
                     case LabRecruiter:
                     case Shadowcaster:
                     case TogwagglesScheme:
-                        if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+                        if (node.Parent.Type == typeof(Action))
                         {
-                            var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                            var act = node.Parent.Object as Action;
                             var target = GameState.CurrentEntities[act.Target];
                             if (target != null)
                             {
