@@ -129,7 +129,7 @@ namespace HearthstoneReplays.Parser
             {
                 UpdatePTLToRoot();
             }
-            else
+            else if (this._lastProcessedGSLine?.Trim() == "BLOCK_END")
             {
                 this._updateToRootAfterLine = this._lastProcessedGSLine?.Trim();
             }
@@ -138,6 +138,7 @@ namespace HearthstoneReplays.Parser
         // TODO: handle the case of the format between GS and PTR being different (eg entity name, card id)
         internal bool ShouldUpdateToRoot(string data)
         {
+            // TODO: maybe don't update to root after BLOCK_END? 
             return this._updateToRootAfterLine != null && this._updateToRootAfterLine.Equals(data?.Trim());
         }
 
