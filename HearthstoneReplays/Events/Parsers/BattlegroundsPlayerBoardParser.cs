@@ -14,6 +14,7 @@ namespace HearthstoneReplays.Events.Parsers
             RebornRitesBattlegrounds,
             SwattingInsectsBattlegrounds,
             EmbraceYourRageBattlegrounds,
+            Ozumat_Tentacular,
         };
 
         private static List<string> TAVISH_HERO_POWERS = new List<string>() {

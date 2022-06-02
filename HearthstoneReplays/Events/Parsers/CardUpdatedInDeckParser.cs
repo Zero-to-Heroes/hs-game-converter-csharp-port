@@ -13,6 +13,12 @@ namespace HearthstoneReplays.Events.Parsers
 {
     public class CardUpdatedInDeckParser : ActionParser
     {
+        private static List<string> SPECIAL_CASE_CARD_IDS = new List<string>()
+        {
+            CardIds.FindTheImposter_SpyOMaticToken,
+            CardIds.DisarmingElemental,
+        };
+
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
         private StateFacade StateFacade { get; set; }
@@ -37,7 +43,7 @@ namespace HearthstoneReplays.Events.Parsers
                 && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) == (int)Zone.DECK;
             var appliesForAction = node.Type == typeof(Action)
                 && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
-                && GameState.CurrentEntities[(node.Object as Action).Entity].CardId == CardIds.FindTheImposter_SpyOMaticToken;
+                && SPECIAL_CASE_CARD_IDS.Contains(GameState.CurrentEntities[(node.Object as Action).Entity].CardId);
             return stateType == StateType.PowerTaskList
                 && (appliesOnShow || appliesForAction);
         }
@@ -70,6 +76,16 @@ namespace HearthstoneReplays.Events.Parsers
                 .SelectMany(meta => meta.MetaInfo)
                 .ToList();
 
+            var eventName = "CARD_CHANGED_IN_DECK";
+            FullEntity parentEntity = null;
+            if (ParserState.GameState.CurrentEntities.TryGetValue(action.Entity, out parentEntity))
+            {
+                if (parentEntity.HasDredge())
+                {
+                    eventName = "CARD_DREDGED";
+                }
+            }
+
             return changedEntities
                 .Select(info =>
                 {
@@ -77,9 +93,9 @@ namespace HearthstoneReplays.Events.Parsers
                     var entity = GameState.CurrentEntities[entityId];
                     return GameEventProvider.Create(
                         info.TimeStamp,
-                        "CARD_CHANGED_IN_DECK",
+                        eventName,
                         GameEvent.CreateProvider(
-                            "CARD_CHANGED_IN_DECK",
+                            eventName,
                             entity.CardId,
                             entity.GetController(),
                             entity.Id,

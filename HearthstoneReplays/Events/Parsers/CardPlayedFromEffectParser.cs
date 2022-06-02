@@ -58,7 +58,8 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
-            var targetId = action.Target;
+            // Since 23.4, it can happen that these tags are directly at the root, and not below an action
+            var targetId = action?.Target ?? 0;
             string targetCardId = targetId > 0 ? GameState.CurrentEntities[targetId].CardId : null;
             var creator = entity.GetTag(GameTag.CREATOR);
             var creatorCardId = creator != -1 && GameState.CurrentEntities.ContainsKey(creator)

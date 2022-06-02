@@ -903,6 +903,7 @@ namespace HearthstoneReplays.Enums
         COIN_MANA_GEM_FOR_CHOICE_CARDS = 1643,
         METAMORPHOSIS = 1644,
         HERO_POWER_ENTITY = 1646,
+        BACON_PLAYER_RESULTS_HERO_OVERRIDE = 1649,
         DISCOVER_STUDIES_VISUAL = 1650,
         LETTUCE_CONTROLLER = 1653,
         LETTUCE_ABILITY_OWNER = 1654,
@@ -994,6 +995,7 @@ namespace HearthstoneReplays.Enums
         GOLDSPARKLES_HINT = 1984,
         //LETTUCE_USE_DETERMINISTIC_TEAM_ABILITY_QUEUEING = 1990,
         LETTUCE_USE_DETERMINISTIC_TEAM_ABILITY_QUEUING = 1990,
+        LETTUCE_SELECTED_ABILITY_QUEUE_ORDER = 1991,
         QUESTLINE_FINAL_REWARD_DATABASE_ID = 1992,
         QUESTLINE_PART = 1993,
         QUESTLINE_REQUIREMENT_MET_1 = 1994,
@@ -1074,9 +1076,13 @@ namespace HearthstoneReplays.Enums
         MERCS_SPELLWEAKNESS = 2464,
         MERCS_SPELLRESISTANCE = 2465,
         COLOSSAL_LIMB_ON_LEFT = 2469,
+        LETTUCE_ABILITY_TILE_VISUAL_PUBLIC_SPEED = 2470,
+        IMMOLATING = 2505,
         BACON_BUDDY_ENABLED = 2518,
         BACON_EVOLUTION_CARD_ID = 2519,
         SPELLCRAFT_HINT = 2557,
+        MERCS_BENCH = 2570,
+        IMMOLATESTAGE = 2600,
     }
 
     public enum GameType
@@ -1415,6 +1421,11 @@ namespace HearthstoneReplays.Enums
         TREANT = 84,
         OWLKIN = 85,
         HALFORC = 88,
+        LOCK = 89,
+        NAGA = 92,
+        OLDGOD = 93,
+        PANDAREN = 94,
+        GRONN = 95,
     }
 
     public enum Rarity
@@ -1849,6 +1860,7 @@ namespace HearthstoneReplays.Enums
         DRGA_EVIL_4_2 = 3499,
         DRGA_EVIL_4_3 = 3500,
         _164_ARENA_SEASON = 3502,
+        BATTLEGROUNDS_TUTORIAL_1P = 3539,
         RETURNINGPLAYER_CHALLENGE_1 = 3540,
         RETURNINGPLAYER_CHALLENGE_2 = 3541,
         RETURNINGPLAYER_CHALLENGE_3 = 3543,
