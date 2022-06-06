@@ -67,6 +67,10 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 cardId = "";
             }
+            if (showEntity.IsImmolateDiscard())
+            {
+                cardId = "";
+            }
 
             var controllerId = showEntity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);

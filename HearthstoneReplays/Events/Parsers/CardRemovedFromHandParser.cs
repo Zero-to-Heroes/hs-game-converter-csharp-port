@@ -55,6 +55,10 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             entity.PlayedWhileInHand.Clear();
+            if (entity.IsImmolateDiscard())
+            {
+                cardId = null;
+            }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "CARD_REMOVED_FROM_HAND",

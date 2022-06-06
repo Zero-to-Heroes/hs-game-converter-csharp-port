@@ -65,5 +65,10 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
         {
             return GetTag(GameTag.ZONE) == (int)Zone.PLAY;
         }
+
+        internal bool IsImmolateDiscard()
+        {
+            return GetTag(GameTag.IMMOLATING) == 1 && GetTag(GameTag.IMMOLATESTAGE) == 3;
+        }
     }
 }

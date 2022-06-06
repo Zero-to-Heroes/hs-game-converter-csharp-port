@@ -92,6 +92,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             return GetTag(GameTag.ZONE_POSITION);
         }
 
+        internal bool IsImmolateDiscard()
+        {
+            return GetTag(GameTag.IMMOLATING) == 1 && GetTag(GameTag.IMMOLATESTAGE) == 3;
+        }
+
         internal int GetCardType()
         {
             return GetTag(GameTag.CARDTYPE);
