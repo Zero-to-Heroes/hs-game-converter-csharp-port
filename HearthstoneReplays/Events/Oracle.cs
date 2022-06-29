@@ -296,6 +296,7 @@ namespace HearthstoneReplays.Events
                     case RazorpetalLasher: return RazorpetalVolley_RazorpetalToken;
                     case RazorpetalVolley: return RazorpetalVolley_RazorpetalToken;
                     case ReliquaryOfSouls: return ReliquaryOfSouls_ReliquaryPrimeToken;
+                    case RemoteControlledGolem1: return RemoteControlledGolem_GolemPartsToken;
                     case Rhonin: return ArcaneMissilesLegacy;
                     case RinTheFirstDisciple_TheFinalSealToken: return RinTheFirstDisciple_AzariTheDevourerToken;
                     case RinTheFirstDisciple_TheFirstSealToken: return RinTheFirstDisciple_TheSecondSealToken;
@@ -775,6 +776,42 @@ namespace HearthstoneReplays.Events
                             var firstSpellEntity = spells[0];
                             actionEntity.PlayedWhileInHand.Remove(firstSpellEntity.Entity);
                             return firstSpellEntity.CardId;
+                        }
+                    }
+                    // Horde Operative
+                    else if (actionEntity.CardId == HordeOperative)
+                    {
+                        var actionControllerId = actionEntity.GetController();
+                        if (actionEntity.KnownEntityIds.Count == 0)
+                        {
+                            // Find all secrets currently in play
+                            var allOpponentSecrets = GameState.CurrentEntities.Values
+                                .Where(e => e.GetController() != actionControllerId)
+                                .Where(e => e.GetZone() == (int)Zone.SECRET)
+                                .Where(e => e.GetTag(GameTag.SECRET) == 1)
+                                .OrderBy(e => e.GetTag(GameTag.ZONE_POSITION))
+                                .ToList();
+                            actionEntity.KnownEntityIds = allOpponentSecrets
+                                .Select(e => e.Entity)
+                                .ToList();
+                        }
+
+                        if (actionEntity.KnownEntityIds.Count > 0)
+                        {
+                            var currentSecretCardIds = GameState.CurrentEntities.Values
+                                .Where(e => e.GetController() == actionControllerId)
+                                .Where(e => e.GetZone() == (int)Zone.SECRET)
+                                .Where(e => e.GetTag(GameTag.SECRET) == 1)
+                                .OrderBy(e => e.GetTag(GameTag.ZONE_POSITION))
+                                .Select(e => e.CardId)
+                                .ToList();
+                            var entities = actionEntity.KnownEntityIds
+                                .Select(entityId => GameState.CurrentEntities[entityId])
+                                .Where(e => !currentSecretCardIds.Contains(e.CardId))
+                                .ToList();
+                            var nextCard = entities[0].CardId;
+                            actionEntity.KnownEntityIds.Remove(entities[0].Entity);
+                            return nextCard;
                         }
                     }
 

@@ -5,6 +5,7 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -100,7 +101,6 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromFullEntity(Node node)
         {
             var fullEntity = node.Object as FullEntity;
-            var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             var playerClass = fullEntity.GetPlayerClass();
@@ -111,6 +111,11 @@ namespace HearthstoneReplays.Events.Parsers
             var eventName = fullEntity.GetTag(GameTag.SECRET) == 1
                 ? "SECRET_CREATED_IN_GAME"
                 : "QUEST_CREATED_IN_GAME";
+            var cardId = fullEntity.CardId;
+            if (cardId.Length == 0 && fullEntity.GetTag(GameTag.SECRET) == 1)
+            {
+                cardId = Oracle.PredictCardId(GameState, creatorEntityCardId, creatorEntityId, node);
+            }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 eventName,
