@@ -1083,6 +1083,7 @@ namespace HearthstoneReplays.Enums
         SPELLCRAFT_HINT = 2557,
         MERCS_BENCH = 2570,
         IMMOLATESTAGE = 2600,
+        DONT_SUPPRESS_KEYWORD_VO = 2636,
     }
 
     public enum GameType

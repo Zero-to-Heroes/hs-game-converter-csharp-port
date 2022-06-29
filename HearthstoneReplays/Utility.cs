@@ -1,5 +1,6 @@
 ﻿#region
 
+using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -21,6 +22,13 @@ namespace HearthstoneReplays
 				objResult = bf.Deserialize(ms);
 			}
 			return objResult;
+		}
+
+		internal static long GetUtcTimestamp(DateTime time)
+        {
+			var currentTimeZone = TimeZone.CurrentTimeZone;
+			var offset = currentTimeZone.GetUtcOffset(time);
+			return (long)time.Subtract(offset).Subtract(new DateTime(1970, 1, 1)).TotalMilliseconds;
 		}
 	}
 }

@@ -5,26 +5,27 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HearthstoneReplays.Events.Parsers
 {
-    public class MainStepReadyParser : ActionParser
+    public class TurnDurationUpdateParser : ActionParser
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
+        private StateFacade StateFacade { get; set; }
 
-        public MainStepReadyParser(ParserState ParserState)
+        public TurnDurationUpdateParser(ParserState ParserState, StateFacade helper)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
+            this.StateFacade = helper;
         }
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return stateType == StateType.PowerTaskList
-                && node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.STEP
-                && (node.Object as TagChange).Value == (int)Step.MAIN_READY;
+            return node.Type == typeof(TagChange)
+                && (node.Object as TagChange).Name == (int)GameTag.TIMEOUT;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -35,20 +36,24 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
-            var timestamp = Utility.GetUtcTimestamp(tagChange.TimeStamp);
+            var entity = GameState.CurrentEntities[tagChange.Entity];
+            var timeout = tagChange.Value;
+            var controllerId = entity.GetEffectiveController();
             return new List<GameEventProvider> { GameEventProvider.Create(
-                   tagChange.TimeStamp,
-                    "MAIN_STEP_READY",
-                   () => new GameEvent
-                   {
-                       Type = "MAIN_STEP_READY",
-                       Value = new
-                       {
-                            Timestamp = timestamp,
-                       }
-                   },
-                   false,
-                   node) };
+                tagChange.TimeStamp,
+                "TURN_DURATION_UPDATED",
+                GameEvent.CreateProvider(
+                    "TURN_DURATION_UPDATED",
+                    null,
+                    controllerId,
+                    entity.Id,
+                    StateFacade,
+                    null,
+                    new {
+                        NewDuration = timeout,
+                    }),
+                true,
+                node) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)

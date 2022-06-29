@@ -90,6 +90,8 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                 }
             }
+
+            var timestamp = Utility.GetUtcTimestamp(tagChange.TimeStamp);
             result.Add(GameEventProvider.Create(
                    tagChange.TimeStamp,
                    "TURN_START",
@@ -104,6 +106,7 @@ namespace HearthstoneReplays.Events.Parsers
                                GameState = gameState,
                                LocalPlayer = StateFacade.LocalPlayer,
                                OpponentPlayer = StateFacade.OpponentPlayer,
+                               Timestamp = timestamp,
                            }
                        };
                    },
@@ -160,6 +163,7 @@ namespace HearthstoneReplays.Events.Parsers
             GameState.CurrentTurn = currentTurn;
 
             var result = new List<GameEventProvider>();
+            var timestamp = Utility.GetUtcTimestamp(gameEntity.TimeStamp);
             result.Add(GameEventProvider.Create(
                 gameEntity.TimeStamp,
                 "TURN_START",
@@ -173,6 +177,7 @@ namespace HearthstoneReplays.Events.Parsers
                             Turn = currentTurn,
                             LocalPlayer = StateFacade.LocalPlayer,
                             OpponentPlayer = StateFacade.OpponentPlayer,
+                            Timestamp = timestamp,
                         }
                     };
                 },

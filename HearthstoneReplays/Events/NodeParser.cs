@@ -213,6 +213,7 @@ namespace HearthstoneReplays.Events
                     new ZoneChangeParser(ParserState, StateFacade),
                     new ZonePositionChangedParser(ParserState, StateFacade),
                     new CostChangedParser(ParserState, StateFacade),
+                    new TurnDurationUpdateParser(ParserState, StateFacade),
 
                     new CreateCardInGraveyardParser(ParserState, StateFacade),
                     new MindrenderIlluciaParser(ParserState, StateFacade),

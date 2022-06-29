@@ -23,7 +23,8 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return stateType == StateType.GameState
-                && node.Type == typeof(Game);
+                && node.Type == typeof(Game)
+                && !ParserState.ReconnectionOngoing;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -42,6 +43,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Value = new
                     {
                         Spectating = StateFacade.Spectating,
+                        Timestamp = Utility.GetUtcTimestamp((node.Object as Game).TimeStamp)
                     },
                 },
                 false,

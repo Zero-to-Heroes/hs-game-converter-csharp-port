@@ -417,6 +417,11 @@ namespace HearthstoneReplays.Parser
             }.Contains(CurrentGame.GameType);
         }
 
+        internal bool IsReconnecting()
+        {
+            return !Ended && NumberOfCreates >= 1 && !Spectating;
+        }
+
         //private void HandleNodeUpdateEvent(Node oldNode, Node newNode)
         //{
         //	if (oldNode != null && oldNode.Type == typeof(FullEntity))

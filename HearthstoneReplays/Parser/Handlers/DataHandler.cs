@@ -34,8 +34,8 @@ namespace HearthstoneReplays.Parser.Handlers
             var trimmed = data.Trim();
             var indentLevel = data.Length - trimmed.Length;
             data = trimmed;
-            HandleNewGame(timestamp, data, state, previousTimestamp, stateType, stateFacade);
             bool isApplied = false;
+            isApplied = isApplied || HandleNewGame(timestamp, data, state, previousTimestamp, stateType, stateFacade);
             isApplied = isApplied || HandleSpectator(timestamp, data, state, stateFacade);
 
             // When catching up with some log lines, sometimes we get some leftover from a previous game.
@@ -46,7 +46,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 return;
             }
 
-            isApplied = isApplied || HandleCreateGame(data, state, indentLevel);
+            isApplied = isApplied || HandleCreateGame(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandlePlayerName(timestamp, data, state, stateType);
             isApplied = isApplied || HandleBlockStart(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleBlockEnd(data, state);
@@ -778,13 +778,13 @@ namespace HearthstoneReplays.Parser.Handlers
             return false;
         }
 
-        private static bool HandleCreateGame(string data, ParserState state, int indentLevel)
+        private static bool HandleCreateGame(DateTime timestamp, string data, ParserState state, int indentLevel)
         {
             var match = Regexes.ActionCreategameRegex.Match(data);
             if (match.Success)
             {
                 var id = match.Groups[1].Value;
-                var gEntity = new GameEntity { Id = int.Parse(id), Tags = new List<Tag>() };
+                var gEntity = new GameEntity { Id = int.Parse(id), Tags = new List<Tag>(), TimeStamp = timestamp };
                 state.CurrentGame.AddData(gEntity);
                 var newNode = new Node(typeof(GameEntity), gEntity, indentLevel, state.Node, data);
                 state.CreateNewNode(newNode);
@@ -877,7 +877,7 @@ namespace HearthstoneReplays.Parser.Handlers
             {
                 state.NodeParser.ClearQueue();
                 //Logger.Log("Handling create game", "");
-                var isReconnecting = !state.Ended && state.NumberOfCreates >= 1 && !state.Spectating;
+                var isReconnecting = state.IsReconnecting();
                 if (isReconnecting)
                 {
                     Logger.Log(

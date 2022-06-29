@@ -148,6 +148,7 @@
     <Compile Include="Events\Parsers\SecretWillTriggerParser.cs" />
     <Compile Include="Events\Parsers\TurnCleanupParser.cs" />
     <Compile Include="Events\Parsers\ShuffleDeckParser.cs" />
+    <Compile Include="Events\Parsers\TurnDurationUpdateParser.cs" />
     <Compile Include="Events\Parsers\WhizbangDeckParser.cs" />
     <Compile Include="Events\Parsers\ZoneChangeParser.cs" />
     <Compile Include="Events\Parsers\ZonePositionChangedParser.cs" />

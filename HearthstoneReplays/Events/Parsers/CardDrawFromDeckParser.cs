@@ -73,6 +73,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
+            var dataTag1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -101,6 +102,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
                                 CreatorCardId = creator?.Item1,
                                 LastInfluencedByCardId = lastInfluencedByCardId,
+                                DataTag1 = dataTag1,
                             }
                         }
                     };
@@ -131,6 +133,7 @@ namespace HearthstoneReplays.Events.Parsers
             var wasInDeck = entity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
             var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
 
+            var dataTag1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -160,7 +163,8 @@ namespace HearthstoneReplays.Events.Parsers
                             AdditionalProps = new {
                                 IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1,
                                 CreatorCardId = creatorCardId,
-                                LastInfluencedByCardId = lastInfluencedByCardId,
+                                LastInfluencedByCardId = lastInfluencedByCardId?.Item1,
+                                DataTag1 = dataTag1,
                             }
                         }
                     };
@@ -183,6 +187,7 @@ namespace HearthstoneReplays.Events.Parsers
                 cardId = "";
             }
 
+            var dataTag1 = fullEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -207,6 +212,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1 || fullEntity.GetTag(GameTag.PREMIUM) == 1,
                                 CreatorCardId = creator?.Item1,
                                 LastInfluencedByCardId = lastInfluencedByCardId,
+                                DataTag1 = dataTag1,
                             }
                         }
                     };
