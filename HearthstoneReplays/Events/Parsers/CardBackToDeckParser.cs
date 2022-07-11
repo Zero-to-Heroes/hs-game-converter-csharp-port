@@ -64,7 +64,10 @@ namespace HearthstoneReplays.Events.Parsers
             var parentAction = node.Parent?.Object as Action;
             int? influencedByEntityId = null;
             string influencedByCardId = null;
-            if (parentAction != null && parentAction.Type == (int)BlockType.POWER)
+            if (parentAction != null && 
+                (parentAction.Type == (int)BlockType.POWER 
+                // Bottomfeeder uses TRIGGER
+                || parentAction.Type == (int)BlockType.TRIGGER))
             {
                 var influenceEntity = GameState.CurrentEntities[parentAction.Entity];
                 influencedByEntityId = influenceEntity?.Entity;

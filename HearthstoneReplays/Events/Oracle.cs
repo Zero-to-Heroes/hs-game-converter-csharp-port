@@ -321,6 +321,7 @@ namespace HearthstoneReplays.Events
                     case SirakessCultist: return SirakessCultist_AbyssalCurseToken;
                     case Sleetbreaker: return Windchill1;
                     case SmugSenior: return SmugSenior_SpectralSeniorToken;
+                    case Sn1pSn4p: return Sn1pSn4p;
                     case SneakyDelinquent: return SneakyDelinquent_SpectralDelinquentToken;
                     case SoldierOfFortune: return TheCoinCore;
                     case SorcerersGambit_ReachThePortalRoomToken: return SorcerersGambit_ArcanistDawngraspToken;
