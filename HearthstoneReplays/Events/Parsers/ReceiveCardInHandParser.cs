@@ -100,6 +100,8 @@ namespace HearthstoneReplays.Events.Parsers
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             var entity = GameState.CurrentEntities[showEntity.Entity];
             entity.PlayedWhileInHand.Clear();
+            var dataNum1 = showEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1);
+            var dataNum2 = showEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2);
             // Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, showEntity.CardId);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,
@@ -113,7 +115,9 @@ namespace HearthstoneReplays.Events.Parsers
                         gameState,
                         new {
                             CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
-                            IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1
+                            IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1,
+                            DataNum1 = dataNum1,
+                            DataNum2 = dataNum2,
                         }),
                     true,
                     node) };
@@ -136,6 +140,8 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 additionalPlayInfo = fullEntity.GetTag(GameTag.ADDITIONAL_PLAY_REQS_1);
             }
+            var dataNum1 = fullEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1);
+            var dataNum2 = fullEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2);
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     fullEntity.TimeStamp,
@@ -178,6 +184,8 @@ namespace HearthstoneReplays.Events.Parsers
                                     BuffingEntityCardId = buffingCardEntityCardId,
                                     BuffCardId = buffCardId,
                                     AdditionalPlayInfo = additionalPlayInfo,
+                                    DataNum1 = dataNum1,
+                                    DataNum2 = dataNum2,
                                 }
                             }
                         };

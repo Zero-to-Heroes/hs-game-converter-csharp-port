@@ -80,6 +80,8 @@ namespace HearthstoneReplays.Events.Parsers
             var abilityCooldownConfig = showEntity.GetTag(GameTag.LETTUCE_COOLDOWN_CONFIG);
             var abilityCurrentCooldown = showEntity.GetTag(GameTag.LETTUCE_CURRENT_COOLDOWN);
             var abilitySpeed = showEntity.GetTag(GameTag.COST);
+            var dataNum1 = showEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1);
+            var dataNum2 = showEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2);
             var eventName = showEntity.GetTag(GameTag.ZONE) == (int)Zone.LETTUCE_ABILITY
                 ? showEntity.GetTag(GameTag.LETTUCE_IS_EQUPIMENT) == 1
                     ? "MERCENARIES_EQUIPMENT_UPDATE"
@@ -106,6 +108,8 @@ namespace HearthstoneReplays.Events.Parsers
                         AbilitySpeed = abilitySpeed == -1 ? (int?)null : abilitySpeed,
                         ZonePosition = zonePosition,
                         Zone = zone,
+                        DataNum1 = dataNum1,
+                        DataNum2 = dataNum2,
                     }),
                 true,
                 node,
