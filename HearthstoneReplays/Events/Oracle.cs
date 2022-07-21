@@ -629,6 +629,31 @@ namespace HearthstoneReplays.Events
                         }
                         return null;
                     }
+
+                    // Ice Trap
+                    if (actionEntity != null
+                        && (actionEntity.CardId == IceTrap || actionEntity.CardId == BeaststalkerTavish_ImprovedIceTrapToken)
+                        && action.TriggerKeyword == (int)GameTag.SECRET)
+                    {
+                        var candidateEntityIds = action.Data
+                            .Where(d => d is MetaData)
+                            .Select(d => d as MetaData)
+                            .Where(m => m.Meta == (int)MetaDataType.TARGET)
+                            .SelectMany(m => m.MetaInfo)
+                            .Select(info => info.Entity)
+                            .ToList();
+                        if (candidateEntityIds.Count != 1)
+                        {
+                            Logger.Log("WARN: could not determine with full accuracy Ice Trap's target", candidateEntityIds.Count);
+                        }
+                        if (candidateEntityIds.Count == 0)
+                        {
+                            return null;
+                        }
+                        return GameState.CurrentEntities.ContainsKey(candidateEntityIds[0])
+                            ? GameState.CurrentEntities[candidateEntityIds[0]]?.CardId
+                            : null;
+                    }
                 }
 
                 if (action.Type == (int)BlockType.POWER)
