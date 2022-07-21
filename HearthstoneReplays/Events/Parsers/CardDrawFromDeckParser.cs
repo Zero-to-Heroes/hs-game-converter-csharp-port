@@ -74,6 +74,8 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var dataTag1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
+            // Cost is needed for cards like Lady Prestor, which use the cost of the drawn card to remove the right card from the deck
+            var cost = entity.GetCost();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -103,6 +105,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 CreatorCardId = creator?.Item1,
                                 LastInfluencedByCardId = lastInfluencedByCardId,
                                 DataTag1 = dataTag1,
+                                Cost = cost,
                             }
                         }
                     };
@@ -134,6 +137,7 @@ namespace HearthstoneReplays.Events.Parsers
             var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
 
             var dataTag1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
+            var cost = showEntity.GetCost();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -165,6 +169,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 CreatorCardId = creatorCardId,
                                 LastInfluencedByCardId = lastInfluencedByCardId?.Item1,
                                 DataTag1 = dataTag1,
+                                Cost = cost,
                             }
                         }
                     };
@@ -188,6 +193,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var dataTag1 = fullEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
+            var cost = fullEntity.GetCost();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -213,6 +219,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 CreatorCardId = creator?.Item1,
                                 LastInfluencedByCardId = lastInfluencedByCardId,
                                 DataTag1 = dataTag1,
+                                Cost = cost,
                             }
                         }
                     };

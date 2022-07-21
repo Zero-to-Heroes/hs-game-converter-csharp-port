@@ -50,6 +50,10 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
         {
             return GetTag(GameTag.ZONE_POSITION);
         }
+        internal int GetCost()
+        {
+            return GetTag(GameTag.COST, 0);
+        }
 
         public int GetEffectiveController()
         {
