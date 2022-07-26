@@ -68,6 +68,7 @@ namespace HearthstoneReplays.Events.Parsers
                         LinkedEntityId = tagChange.Value,
                         LinkedEntityControllerId = linkedEntity.GetEffectiveController(),
                         LinkedEntityZone = linkedEntity.GetZone(),
+                        LinkedEntityCost = linkedEntity.GetCost(),
                     }),
                 true,
                 node) };
