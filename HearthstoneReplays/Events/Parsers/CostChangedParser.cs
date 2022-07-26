@@ -25,7 +25,8 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return stateType == StateType.PowerTaskList
                 // This is for now only useful to get the speed update in Mercenaries, so we try to restrict the number of events
-                && ParserState.IsMercenaries()
+                // Need it to properly support Lady Prestor + Dredge / discover in your own deck
+                //&& ParserState.IsMercenaries()
                 && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.COST;
         }
