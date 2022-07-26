@@ -230,7 +230,8 @@ namespace HearthstoneReplays.Events.Parsers
                 && isCorrectMeta
                 || (node.Type == typeof(SubSpell) && node.Object != null)
                 || (node.Type == typeof(Action) 
-                    && (node.Object as Action).Type == (int)BlockType.TRIGGER)
+                    && (node.Object as Action).Type == (int)BlockType.TRIGGER
+                    && (node.Object as Action).TriggerKeyword == (int)GameTag.TRIGGER_VISUAL)
                     && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
                     && validTriggerBuffers.Contains(GameState.CurrentEntities[(node.Object as Action).Entity].CardId);
         }
