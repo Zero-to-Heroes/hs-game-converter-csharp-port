@@ -23,10 +23,8 @@ namespace HearthstoneReplays.Events.Parsers
         {
             CardIds.FinalShowdown,
             CardIds.FinalShowdown_GainMomentumToken,
-            CardIds.SkullOfGuldan1,
-            CardIds.SkullOfGuldan2,
-            CardIds.SkullOfGuldan3,
-            CardIds.SkullOfGuldan4,
+            CardIds.SkullOfGuldan_BT_601,
+            CardIds.SkullOfGuldanTavernBrawl,
             //CardIds.DreampetalFlorist,
             //CardIds.ImprisonedSatyr, 
             CardIds.PredatoryInstincts,
@@ -80,8 +78,7 @@ namespace HearthstoneReplays.Events.Parsers
             //CardIds.ImprisonedScrapImp
             //CardIds.SoulInfusion, 
             //CardIds.SpiritOfTheBat, 
-            CardIds.TheDarkPortal1,
-            CardIds.TheDarkPortal2,
+            CardIds.TheDarkPortal_BT_302,
             CardIds.StealerOfSouls,
             CardIds.SupremeArchaeology_TomeOfOrigination,
             //CardIds.VoidAnalyst,
@@ -107,7 +104,7 @@ namespace HearthstoneReplays.Events.Parsers
             CardIds.DonHancho,  // not tested
             //CardIds.DeathaxePunisher,
             //CardIds.DragonqueenAlexstrasza,  // redundant with creator
-            CardIds.EmperorThaurissan1,
+            CardIds.EmperorThaurissan_BRM_028,
             CardIds.FarWatchPost, 
             //CardIds.EbonDragonsmith, 
             //CardIds.Galvanizer, 
@@ -125,10 +122,9 @@ namespace HearthstoneReplays.Events.Parsers
         {
             { CardIds.FinalShowdown, CardIds.FasterMovesEnchantment },
             { CardIds.FinalShowdown_GainMomentumToken, CardIds.FasterMovesEnchantment },
-            { CardIds.SkullOfGuldan1, CardIds.SkullOfGuldan_EmbracePowerEnchantment },
-            { CardIds.SkullOfGuldan2, CardIds.SkullOfGuldan_EmbracePowerEnchantment },
-            { CardIds.SkullOfGuldan3, CardIds.SkullOfGuldan_EmbracePowerEnchantment },
-            { CardIds.SkullOfGuldan4, CardIds.SkullOfGuldan_EmbracePowerEnchantment },
+            { CardIds.SkullOfGuldan_BT_601, CardIds.SkullOfGuldan_EmbracePowerEnchantment },
+            { CardIds.SkullOfGuldanTavernBrawl, CardIds.SkullOfGuldan_EmbracePowerEnchantment },
+            { CardIds.RelicOfDimensions, CardIds.RelicOfDimensions_DimensionalEnchantment },
             { CardIds.PredatoryInstincts, CardIds.PredatoryInstincts_PredatoryInstinctsEnchantment },
             { CardIds.FreezingTrapCore, CardIds.FreezingTrap_TrappedLegacyEnchantment},
             { CardIds.FreezingTrapLegacy, CardIds.FreezingTrap_TrappedLegacyEnchantment},
@@ -162,8 +158,7 @@ namespace HearthstoneReplays.Events.Parsers
             { CardIds.FarSightVanilla, CardIds.FarSight_FarSightLegacyEnchantment},
             { CardIds.GrumbleWorldshaker, CardIds.GrumbleWorldshaker_GrumblyTumblyEnchantment},
             { CardIds.ClutchmotherZavas, CardIds.ClutchmotherZavas_RemembranceEnchantment},
-            { CardIds.TheDarkPortal1, CardIds.TheDarkPortal_DarkPortalEnchantment},
-            { CardIds.TheDarkPortal2, CardIds.TheDarkPortal_DarkPortalEnchantment},
+            { CardIds.TheDarkPortal_BT_302, CardIds.TheDarkPortal_DarkPortalEnchantment},
             { CardIds.StealerOfSouls, CardIds.StealerOfSouls_StolenSoulEnchantment},
             { CardIds.SupremeArchaeology_TomeOfOrigination, CardIds.SupremeArchaeology_OriginationEnchantment},
             { CardIds.WilfredFizzlebang, CardIds.WilfredFizzlebang_MasterSummonerEnchantment},
@@ -171,14 +166,14 @@ namespace HearthstoneReplays.Events.Parsers
             { CardIds.AutoArmamentsTavernBrawlToken, CardIds.AutoArmaments_AutoArmedTavernBrawlEnchantment},
             { CardIds.BrassKnuckles, CardIds.BrassKnuckles_SmugglingEnchantment},
             { CardIds.CorsairCache, CardIds.CorsairCache_VoidSharpenedEnchantment},
-            { CardIds.GalakrondTheUnbreakable, CardIds.GalakrondTheUnbreakable_GalakrondsStrengthEnchantment1},
-            { CardIds.GalakrondTheUnbreakable_GalakrondTheApocalypseToken, CardIds.GalakrondTheUnbreakable_GalakrondsStrengthEnchantment2},
-            { CardIds.GalakrondTheUnbreakable_GalakrondAzerothsEndToken, CardIds.GalakrondTheUnbreakable_GalakrondsStrengthEnchantment3},
+            { CardIds.GalakrondTheUnbreakable, CardIds.GalakrondTheUnbreakable_GalakrondsStrengthEnchantment_DRG_650e},
+            { CardIds.GalakrondTheUnbreakable_GalakrondTheApocalypseToken, CardIds.GalakrondTheUnbreakable_GalakrondsStrengthEnchantment_DRG_650e2},
+            { CardIds.GalakrondTheUnbreakable_GalakrondAzerothsEndToken, CardIds.GalakrondTheUnbreakable_GalakrondsStrengthEnchantment_DRG_650e3},
             { CardIds.GrimestreetPawnbroker, CardIds.GrimestreetPawnbroker_SmugglingEnchantment},
             { CardIds.GrimyGadgeteer, CardIds.GrimyGadgeteer_SmugglingEnchantment},
             { CardIds.StolenGoods, CardIds.StolenGoods_SmugglingEnchantment},
             { CardIds.DonHancho, CardIds.DonHancho_SmugglingEnchantment },
-            { CardIds.EmperorThaurissan1, CardIds.EmperorThaurissan_ImperialFavorEnchantment },
+            { CardIds.EmperorThaurissan_BRM_028, CardIds.EmperorThaurissan_ImperialFavorEnchantment },
             { CardIds.FarWatchPost, CardIds.FarWatchPost_SpottedEnchantment },
             { CardIds.GrimestreetSmuggler, CardIds.GrimestreetSmuggler_SmugglingEnchantment},
             { CardIds.WaywardSage, CardIds.WaywardSage_FoundTheWrongWayEnchantment},
@@ -186,10 +181,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         private List<string> validHoldWhenDrawnBuffers = new List<string>()
         {
-            CardIds.SkullOfGuldan1,
-            CardIds.SkullOfGuldan2,
-            CardIds.SkullOfGuldan3,
-            CardIds.SkullOfGuldan4,
+            CardIds.SkullOfGuldan_BT_601,
+            CardIds.SkullOfGuldanTavernBrawl,
         };
 
         private List<string> validSubSpellBuffers = new List<string>()

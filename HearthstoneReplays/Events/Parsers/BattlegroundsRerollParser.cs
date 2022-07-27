@@ -37,8 +37,8 @@ namespace HearthstoneReplays.Events.Parsers
                 && (node.Object as Action).Type == (int)BlockType.POWER
                 && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
                 && (
-                    GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == RefreshBattlegrounds1
-                    || GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == RefreshBattlegrounds2);
+                    GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == RefreshBattlegrounds_TB_BaconShop_1p_Reroll_Button
+                    || GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == RefreshBattlegrounds_TB_BaconShop_8p_Reroll_Button);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
