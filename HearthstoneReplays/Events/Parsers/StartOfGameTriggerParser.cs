@@ -12,6 +12,8 @@ namespace HearthstoneReplays.Events.Parsers
 {
     public class StartOfGameTriggerParser : ActionParser
     {
+        private static List<string> FORCE_START_OF_GAME_POWERS = new List<string>() { CardIds.PrinceRenathal };
+
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
         private StateFacade StateFacade { get; set; }
@@ -25,10 +27,11 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
+            Action action = null;
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(Action)
-                && (node.Object as Action).Type == (int)BlockType.TRIGGER
-                && (node.Object as Action).TriggerKeyword == (int)GameTag.START_OF_GAME;
+                && (action = node.Object as Action).Type == (int)BlockType.TRIGGER
+                && (action.TriggerKeyword == (int)GameTag.START_OF_GAME || action.TriggerKeyword == (int)GameTag.TAG_NOT_SET);
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -40,6 +43,10 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var action = node.Object as Action;
             var actionEntity = GameState.CurrentEntities[action.Entity];
+            if (action.TriggerKeyword == (int)GameTag.TAG_NOT_SET && !FORCE_START_OF_GAME_POWERS.Contains(actionEntity?.CardId))
+            {
+                return null;
+            }
             var controllerId = actionEntity?.GetTag(GameTag.CONTROLLER) ?? -1;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 action.TimeStamp,
