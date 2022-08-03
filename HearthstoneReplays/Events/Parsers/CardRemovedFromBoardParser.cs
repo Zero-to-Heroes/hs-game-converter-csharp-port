@@ -48,7 +48,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return null;
             }
-            if (entity.GetTag(GameTag.CARDTYPE) != (int)CardType.MINION)
+            if (!entity.IsMinionLike())
             {
                 return null;
             }

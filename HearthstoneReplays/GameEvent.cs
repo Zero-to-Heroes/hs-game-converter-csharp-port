@@ -172,7 +172,7 @@ namespace HearthstoneReplays
                     .Where(entity => (entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY && !RemovedFromPlay(entity, tagChange, showEntity))
                         || PutInPlay(entity, tagChange, showEntity))
                     .Where(entity => entity.GetEffectiveController() == playerId)
-                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
+                    .Where(entity => entity.IsMinionLike())
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity, gameState.CurrentEntities.Values.ToList()))
                     .ToList();

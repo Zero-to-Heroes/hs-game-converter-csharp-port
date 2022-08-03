@@ -74,5 +74,10 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
         {
             return GetTag(GameTag.IMMOLATING) == 1 && GetTag(GameTag.IMMOLATESTAGE) == 3;
         }
+
+        internal bool IsMinionLike()
+        {
+            return GetTag(GameTag.CARDTYPE) == (int)CardType.MINION || GetTag(GameTag.CARDTYPE) == (int)CardType.LOCATION;
+        }
     }
 }

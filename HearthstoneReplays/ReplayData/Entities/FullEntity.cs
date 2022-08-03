@@ -83,6 +83,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             return GetTag(GameTag.ZONE);
         }
 
+        internal bool IsMinionLike()
+        {
+            return GetTag(GameTag.CARDTYPE) == (int)CardType.MINION || GetTag(GameTag.CARDTYPE) == (int)CardType.LOCATION;
+        }
+
         internal int GetZonePosition()
         {
             if (GetTag(GameTag.FAKE_ZONE_POSITION) != -1)

@@ -43,7 +43,7 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
-            if (entity.GetTag(GameTag.CARDTYPE) != (int)CardType.MINION)
+            if (!entity.IsMinionLike())
             {
                 return null;
             }

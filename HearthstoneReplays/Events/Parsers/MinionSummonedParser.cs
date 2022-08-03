@@ -36,17 +36,17 @@ namespace HearthstoneReplays.Events.Parsers
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.PLAY
                 && GameState.CurrentEntities.ContainsKey((node.Object as TagChange).Entity)
-                && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.CARDTYPE) == (int)CardType.MINION;
+                && GameState.CurrentEntities[(node.Object as TagChange).Entity].IsMinionLike();
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             var createFromFullEntity = node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY
-                && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.MINION;
+                && (node.Object as FullEntity).IsMinionLike();
             var createFromShowEntity = node.Type == typeof(ShowEntity)
                 && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY
-                && (node.Object as ShowEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.MINION
+                && (node.Object as ShowEntity).IsMinionLike()
                 && GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
                 && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) != (int)Zone.PLAY;
             return stateType == StateType.PowerTaskList

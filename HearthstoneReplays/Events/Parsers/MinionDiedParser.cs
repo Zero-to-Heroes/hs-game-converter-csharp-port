@@ -48,7 +48,7 @@ namespace HearthstoneReplays.Events.Parsers
                 // Checking the current zone doesn't work, because we work on a Close node. However, since 
                 // we are in the DEATHS block, we should be good
                 //.Where(tag => GameState.CurrentEntities[tag.Entity].GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                .Where(tag => GameState.CurrentEntities[tag.Entity].GetTag(GameTag.CARDTYPE) == (int)CardType.MINION);
+                .Where(tag => GameState.CurrentEntities[tag.Entity].IsMinionLike());
             var deadMinions = deathTags.Select(tag =>
             {
                 var entity = GameState.CurrentEntities[tag.Entity];

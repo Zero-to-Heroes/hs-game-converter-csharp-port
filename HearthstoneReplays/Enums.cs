@@ -255,6 +255,8 @@ namespace HearthstoneReplays.Enums
         GAME_MODE_BUTTON = 12,
         MOVE_MINION_HOVER_TARGET = 22,
         LETTUCE_ABILITY = 23,
+        BATTLEGROUND_HERO_BUDDY = 24,
+        LOCATION = 39,
     }
 
     public enum ChoiceType
