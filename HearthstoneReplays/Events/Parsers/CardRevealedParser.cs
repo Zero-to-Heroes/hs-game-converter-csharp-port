@@ -88,6 +88,7 @@ namespace HearthstoneReplays.Events.Parsers
                     revealedFromBlock = "DREDGE";
                 }
             }
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CARD_REVEALED",

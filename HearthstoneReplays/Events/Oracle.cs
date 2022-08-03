@@ -523,6 +523,18 @@ namespace HearthstoneReplays.Events
                             return cardId;
                         }
                         return null;
+
+                    case SuspiciousAlchemist_AMysteryEnchantment:
+                        var enchantmentEntity = GameState.CurrentEntities[creatorEntityId];
+                        var attachedToEntityId = enchantmentEntity.GetTag(GameTag.ATTACHED);
+                        var sourceEntity = GameState.CurrentEntities[attachedToEntityId];
+                        if (sourceEntity.KnownEntityIds.Count > 0)
+                        {
+                            var nextEntity = sourceEntity.KnownEntityIds[0];
+                            sourceEntity.KnownEntityIds.RemoveAt(0);
+                            return GameState.CurrentEntities[nextEntity]?.CardId;
+                        }
+                        return null;
                 }
             }
 
@@ -828,6 +840,36 @@ namespace HearthstoneReplays.Events
                             var nextCard = entities[0].CardId;
                             actionEntity.KnownEntityIds.Remove(entities[0].Entity);
                             return nextCard;
+                        }
+                    }
+                    // Conqueror's Banner
+                    else if (actionEntity.CardId == ConquerorsBanner && node.Type == typeof(TagChange))
+                    {
+                        var tagChange = node.Object as TagChange;
+                        // We need to use this trick because the creator is computed once the full block is completed
+                        // (see comment in CardDrawFromDeckParser)
+                        var nodeElement = action.Data
+                            .Where(d => d is TagChange)
+                            .Select(d => d as TagChange)
+                            .Where(t => t.Entity == tagChange.Entity && t.Name == tagChange.Name && t.Value == tagChange.Value)
+                            .FirstOrDefault();
+                        var nodeIndex = action.Data.IndexOf(nodeElement);
+                        var joustAction = action.Data
+                            .GetRange(0, nodeIndex)
+                            .Where(d => d is Action)
+                            .Select(d => d as Action)
+                            .Where(a => a.Index < node.Index)
+                            .Where(a => a.Type == (int)BlockType.JOUST)
+                            .LastOrDefault();
+                        var lastJoust = joustAction?.Data
+                            .Where(d => d is MetaData)
+                            .Select(d => d as MetaData)
+                            .Where(d => d.Meta == (int)MetaDataType.JOUST)
+                            .LastOrDefault();
+                        if (lastJoust != null && GameState.CurrentEntities.ContainsKey(lastJoust.Data))
+                        {
+                            var pickedEntity = GameState.CurrentEntities[lastJoust.Data];
+                            return pickedEntity.CardId;
                         }
                     }
 

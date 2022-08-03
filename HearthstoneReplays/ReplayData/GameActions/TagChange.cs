@@ -25,7 +25,7 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
 			var other = obj as TagChange;
 			if(other == null)
 				return false;
-			return other.Name == Name && other.Value == Value && other.DefChange == DefChange;
+			return other.Entity == Entity && other.Name == Name && other.Value == Value && other.DefChange == DefChange;
 		}
 	}
 }

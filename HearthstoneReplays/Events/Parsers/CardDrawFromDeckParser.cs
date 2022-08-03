@@ -83,10 +83,14 @@ namespace HearthstoneReplays.Events.Parsers
                     var entityId = tagChange.Entity;
                     // We do it here because of Keymaster Alabaster - we need to know the last card
                     // that has been drawn
+                    // TODO: this was true when relying on the GS logs. Now that we use PTL, maybe we can move this back? Or maybe we 
+                    // need the full BLOCK to be complete first?
                     var creator = wasInDeck ? null : Oracle.FindCardCreator(GameState, entity, node, false);
                     // Always return this info, and the client has a list of public card creators they are allowed to show
-                    var lastInfluencedByCardId = Oracle.FindCardCreator(GameState, entity, node)?.Item1;
+                    var lastInfluencedByCard = Oracle.FindCardCreator(GameState, entity, node);
+                    var lastInfluencedByCardId = lastInfluencedByCard?.Item1;
                     var predictedCardId = Oracle.PredictCardId(GameState, creator?.Item1, -1, node, cardId);
+                    predictedCardId = predictedCardId ?? Oracle.PredictCardId(GameState, lastInfluencedByCardId, lastInfluencedByCard?.Item2 ?? -1, node, cardId);
                     GameState.OnCardDrawn(entity.Entity);
                     var finalCardId = cardId != null && cardId.Length > 0 ? cardId : predictedCardId;
                     return new GameEvent
