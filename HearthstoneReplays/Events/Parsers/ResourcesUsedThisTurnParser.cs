@@ -38,7 +38,7 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var resources = tagChange.Value;
-            var resourcesLeft = entity.GetTag(GameTag.MAXRESOURCES, 0) - resources;
+            var resourcesLeft = entity.GetTag(GameTag.RESOURCES, 0) + entity.GetTag(GameTag.TEMP_RESOURCES) - resources;
             var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
