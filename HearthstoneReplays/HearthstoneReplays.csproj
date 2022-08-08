@@ -235,6 +235,7 @@
     <Compile Include="Events\Player.cs" />
     <Compile Include="GameEvent.cs" />
     <Compile Include="GameEventHandler.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Parser\CombinedState.cs" />
     <Compile Include="Parser\StateFacade.cs" />

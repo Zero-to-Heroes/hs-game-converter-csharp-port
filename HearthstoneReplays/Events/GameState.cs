@@ -83,11 +83,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public FullEntity GetGameEntity()
         {
-            if (CurrentEntities.ContainsKey(gameEntityId))
-            {
-                return CurrentEntities[gameEntityId];
-            }
-            return null;
+
+            return CurrentEntities.GetValueOrDefault(gameEntityId);
         }
 
         public void UpdateEntityName(string rawEntity)
@@ -135,7 +132,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public FullEntity GetController(int controllerId)
         {
-            return CurrentEntities[controllerEntity[controllerId]];
+            return CurrentEntities.GetValueOrDefault(controllerEntity[controllerId]);
         }
 
         public void FullEntity(FullEntity entity, bool updating, string initialLog = null)
@@ -180,7 +177,12 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public string GetCardIdForEntity(int id)
         {
-            var entity = CurrentEntities[id];
+            var entity = CurrentEntities.GetValueOrDefault(id);
+            if (entity == null)
+            {
+                return null;
+            }
+
             if (entity.CardId != null)
             {
                 return entity.CardId;
@@ -199,9 +201,14 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public FullEntity GetPlayerHeroEntity(int entityId)
         {
-            var entity = CurrentEntities[entityId];
+            var entity = CurrentEntities.GetValueOrDefault(entityId);
+            if (entity == null)
+            {
+                return null;
+            }
+
             // No cardID is assigned to the player in Mercenaries, since there is no hero
-            if (ParserState.IsMercenaries() && entity != null)
+            if (ParserState.IsMercenaries())
             {
                 return entity;
             }
@@ -331,8 +338,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 var playedEntity = CurrentEntities[entityId];
 
                 // Populate the list of each card played by each player, for each turn
-                var cardsForPlayerByTurn = !CardsPlayedByPlayerEntityIdByTurn.ContainsKey(playedEntity.GetController()) 
-                    ? null 
+                var cardsForPlayerByTurn = !CardsPlayedByPlayerEntityIdByTurn.ContainsKey(playedEntity.GetController())
+                    ? null
                     : CardsPlayedByPlayerEntityIdByTurn[playedEntity.GetController()];
                 if (cardsForPlayerByTurn == null)
                 {
@@ -364,7 +371,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 var cardsInHandForController = CurrentEntities.Values
                     .Where(e => e.GetZone() == (int)Zone.HAND)
                     .Where(e => e.GetController() == playedEntity.GetController());
-                foreach (var cardInHand in cardsInHandForController) 
+                foreach (var cardInHand in cardsInHandForController)
                 {
                     cardInHand.PlayedWhileInHand.Add(playedEntity.Entity);
                 }

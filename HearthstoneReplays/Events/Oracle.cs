@@ -238,6 +238,7 @@ namespace HearthstoneReplays.Events
                     case FishyFlyer: return FishyFlyer_SpectralFlyerToken;
                     case FlameGeyser: return FireFly_FlameElementalToken;
                     case ForgottenTorch: return ForgottenTorch_RoaringTorchToken;
+                    case FrozenTouch: return FrozenTouch;
                     case FullBlownEvil: return FullBlownEvil;
                     case GhastlyConjurer: return MirrorImageLegacy_CS2_027;
                     case GildedGargoyle: return TheCoinCore;
@@ -371,7 +372,7 @@ namespace HearthstoneReplays.Events
                         if (node.Parent.Type == typeof(Action))
                         {
                             var act = node.Parent.Object as Action;
-                            var target = GameState.CurrentEntities[act.Target];
+                            var target = GameState.CurrentEntities.GetValueOrDefault(act.Target);
                             if (target != null)
                             {
                                 return target.CardId;
@@ -434,8 +435,8 @@ namespace HearthstoneReplays.Events
                             && node.Parent.Parent?.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
                             var act = node.Parent.Parent.Object as Parser.ReplayData.GameActions.Action;
-                            var existingEntity = GameState.CurrentEntities[act.Entity];
-                            return existingEntity.CardId;
+                            var existingEntity = GameState.CurrentEntities.GetValueOrDefault(act.Entity);
+                            return existingEntity?.CardId;
                         }
                         return null;
 
@@ -449,7 +450,7 @@ namespace HearthstoneReplays.Events
                                 if (metaData != null && metaData.Meta == (int)MetaDataType.HISTORY_TARGET && metaData.MetaInfo != null && metaData.MetaInfo.Count > 0)
                                 {
                                     var entityId = metaData.MetaInfo[0].Entity;
-                                    var existingEntity = GameState.CurrentEntities[entityId];
+                                    var existingEntity = GameState.CurrentEntities.GetValueOrDefault(entityId);
                                     return existingEntity?.CardId;
                                 }
                             }
@@ -460,7 +461,12 @@ namespace HearthstoneReplays.Events
                         if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
                             var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
-                            var existingEntity = GameState.CurrentEntities[act.Entity];
+                            var existingEntity = GameState.CurrentEntities.GetValueOrDefault(act.Entity);
+                            if (existingEntity == null)
+                            {
+                                return null;
+                            }
+
                             var controllerId = existingEntity.GetController();
 
                             if (GameState.EntityIdsOnBoardWhenPlayingPotionOfIllusion != null)
@@ -480,7 +486,12 @@ namespace HearthstoneReplays.Events
                         if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
                             var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
-                            var existingEntity = GameState.CurrentEntities[act.Entity];
+                            var existingEntity = GameState.CurrentEntities.GetValueOrDefault(act.Entity);
+                            if (existingEntity == null)
+                            {
+                                return null;
+                            }
+
                             var dreamCardsLeft = existingEntity.CardIdsToCreate;
                             if (dreamCardsLeft.Count == 0)
                             {
@@ -504,7 +515,12 @@ namespace HearthstoneReplays.Events
                         if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
                             var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
-                            var existingEntity = GameState.CurrentEntities[act.Entity];
+                            var existingEntity = GameState.CurrentEntities.GetValueOrDefault(act.Entity);
+                            if (existingEntity == null)
+                            {
+                                return null;
+                            }
+
                             var gizmosLeft = existingEntity.CardIdsToCreate;
                             if (gizmosLeft.Count == 0)
                             {
@@ -525,14 +541,19 @@ namespace HearthstoneReplays.Events
                         return null;
 
                     case SuspiciousAlchemist_AMysteryEnchantment:
-                        var enchantmentEntity = GameState.CurrentEntities[creatorEntityId];
+                        var enchantmentEntity = GameState.CurrentEntities.GetValueOrDefault(creatorEntityId);
+                        if (enchantmentEntity == null)
+                        {
+                            return null;
+                        }
+
                         var attachedToEntityId = enchantmentEntity.GetTag(GameTag.ATTACHED);
-                        var sourceEntity = GameState.CurrentEntities[attachedToEntityId];
-                        if (sourceEntity.KnownEntityIds.Count > 0)
+                        var sourceEntity = GameState.CurrentEntities.GetValueOrDefault(attachedToEntityId);
+                        if (sourceEntity?.KnownEntityIds?.Count > 0)
                         {
                             var nextEntity = sourceEntity.KnownEntityIds[0];
                             sourceEntity.KnownEntityIds.RemoveAt(0);
-                            return GameState.CurrentEntities[nextEntity]?.CardId;
+                            return GameState.CurrentEntities.GetValueOrDefault(nextEntity)?.CardId;
                         }
                         return null;
                 }
@@ -579,8 +600,8 @@ namespace HearthstoneReplays.Events
                     {
                         var plagiarizeController = actionEntity.GetEffectiveController();
                         var entitiesPlayedByActivePlayer = actionEntity.KnownEntityIds
-                            .Select(entityId => GameState.CurrentEntities[entityId])
-                            .Where(card => card.GetEffectiveController() != -1 && card.GetEffectiveController() != plagiarizeController)
+                            .Select(entityId => GameState.CurrentEntities.GetValueOrDefault(entityId))
+                            .Where(card => card != null && card.GetEffectiveController() != -1 && card.GetEffectiveController() != plagiarizeController)
                             .ToList();
                         if (entitiesPlayedByActivePlayer.Count == 0)
                         {
@@ -611,21 +632,21 @@ namespace HearthstoneReplays.Events
                     // Nellie
                     if (actionEntity != null && actionEntity.CardId == NellieTheGreatThresher_NelliesPirateShipToken && action.TriggerKeyword == (int)GameTag.DEATHRATTLE)
                     {
-                        var pirateShipEntity = GameState.CurrentEntities[creatorEntityId];
-                        var nellieEntity = GameState.CurrentEntities[pirateShipEntity.GetTag(GameTag.CREATOR)];
-                        if (pirateShipEntity.KnownEntityIds.Count == 0)
+                        var pirateShipEntity = GameState.CurrentEntities.GetValueOrDefault(creatorEntityId);
+                        var nellieEntity = GameState.CurrentEntities.GetValueOrDefault(pirateShipEntity?.GetTag(GameTag.CREATOR) ?? -1);
+                        if (pirateShipEntity?.KnownEntityIds.Count == 0)
                         {
                             var crewmates = GameState.CurrentEntities.Values
-                                .Where(entity => entity.GetTag(GameTag.CREATOR) == nellieEntity.Entity)
+                                .Where(entity => entity.GetTag(GameTag.CREATOR) == nellieEntity?.Entity)
                                 .Where(entity => entity.CardId != NellieTheGreatThresher_NelliesPirateShipToken)
                                 .ToList();
                             var crewmatesEntityIds = crewmates.Select(entity => entity.Entity).ToList();
                             pirateShipEntity.KnownEntityIds = crewmatesEntityIds;
                         }
-                        if (pirateShipEntity.KnownEntityIds.Count > 0)
+                        if (pirateShipEntity?.KnownEntityIds.Count > 0)
                         {
-                            var entities = pirateShipEntity.KnownEntityIds.Select(entityId => GameState.CurrentEntities[entityId]).ToList();
-                            var nextCard = entities[0].CardId;
+                            var entities = pirateShipEntity.KnownEntityIds.Select(entityId => GameState.CurrentEntities.GetValueOrDefault(entityId)).ToList();
+                            var nextCard = entities[0]?.CardId;
                             pirateShipEntity.KnownEntityIds.RemoveAt(0);
                             return nextCard;
                         }
@@ -660,7 +681,12 @@ namespace HearthstoneReplays.Events
 
                 if (action.Type == (int)BlockType.POWER)
                 {
-                    var actionEntity = GameState.CurrentEntities[action.Entity];
+                    var actionEntity = GameState.CurrentEntities.GetValueOrDefault(action.Entity);
+                    if (actionEntity == null)
+                    {
+                        return null;
+                    }
+
                     if (actionEntity.CardId == DevouringSwarm)
                     {
                         if (actionEntity.CardIdsToCreate.Count == 0)
@@ -677,8 +703,8 @@ namespace HearthstoneReplays.Events
                                     .Where(data => data is TagChange)
                                     .Select(data => data as TagChange)
                                     .Where(tag => tag.Name == (int)GameTag.ZONE && tag.Value == (int)Zone.GRAVEYARD)
-                                    .Select(tag => GameState.CurrentEntities[tag.Entity])
-                                    .Where(entity => entity.GetController() == controller);
+                                    .Select(tag => GameState.CurrentEntities.GetValueOrDefault(tag.Entity))
+                                    .Where(entity => entity?.GetController() == controller);
                                 actionEntity.CardIdsToCreate = deadEntities.Select(entity => entity.CardId).ToList();
                             }
                         }
@@ -701,7 +727,7 @@ namespace HearthstoneReplays.Events
                         if (lastTagChange != null)
                         {
                             var lastEntityId = lastTagChange.Entity;
-                            return GameState.CurrentEntities[lastEntityId]?.CardId;
+                            return GameState.CurrentEntities.GetValueOrDefault(lastEntityId)?.CardId;
                         }
                     }
                     // Second card for Kazakusan
@@ -716,7 +742,7 @@ namespace HearthstoneReplays.Events
                         if (lastTagChange != null)
                         {
                             var lastEntityId = lastTagChange.Entity;
-                            return GameState.CurrentEntities[lastEntityId]?.CardId;
+                            return GameState.CurrentEntities.GetValueOrDefault(lastEntityId)?.CardId;
                         }
                     }
                     // Southsea Scoundrel
@@ -730,12 +756,12 @@ namespace HearthstoneReplays.Events
                             .Where(tag => tag.Name == (int)GameTag.ZONE && tag.Value == (int)Zone.HAND)
                             .Where(tag => GameState.CurrentEntities.ContainsKey(tag.Entity) && GameState.CurrentEntities[tag.Entity].CardId?.Count() > 0)
                             .FirstOrDefault();
-                        return cardDrawn != null ? GameState.CurrentEntities[cardDrawn.Entity].CardId : null;
+                        return cardDrawn != null ? GameState.CurrentEntities.GetValueOrDefault(cardDrawn.Entity)?.CardId : null;
                     }
                     // Vanessa VanCleed
                     else if (actionEntity.CardId == VanessaVancleefCore)
                     {
-                        var vanessaControllerId = GameState.CurrentEntities[actionEntity.Entity].GetController();
+                        var vanessaControllerId = GameState.CurrentEntities.GetValueOrDefault(actionEntity.Entity)?.GetController();
                         var playerIds = GameState.CardsPlayedByPlayerEntityIdByTurn.Keys;
                         foreach (var playerId in playerIds)
                         {
@@ -752,7 +778,7 @@ namespace HearthstoneReplays.Events
                                     return null;
                                 }
                                 var lastCardPlayedByOpponentEntityId = cardsPlayedByOpponent.Last();
-                                var lastCardPlayedByOpponent = GameState.CurrentEntities[lastCardPlayedByOpponentEntityId];
+                                var lastCardPlayedByOpponent = GameState.CurrentEntities.GetValueOrDefault(lastCardPlayedByOpponentEntityId);
                                 return lastCardPlayedByOpponent?.CardId;
                             }
                         }
@@ -786,8 +812,8 @@ namespace HearthstoneReplays.Events
 
                         if (actionEntity.KnownEntityIds.Count > 0)
                         {
-                            var entities = actionEntity.KnownEntityIds.Select(entityId => GameState.CurrentEntities[entityId]).ToList();
-                            var nextCard = entities[0].CardId;
+                            var entities = actionEntity.KnownEntityIds.Select(entityId => GameState.CurrentEntities.GetValueOrDefault(entityId)).ToList();
+                            var nextCard = entities[0]?.CardId;
                             actionEntity.KnownEntityIds.Remove(entities[0].Entity);
                             return nextCard;
                         }
@@ -798,7 +824,7 @@ namespace HearthstoneReplays.Events
                         if (actionEntity.PlayedWhileInHand.Count > 0)
                         {
                             var spells = actionEntity.PlayedWhileInHand
-                                .Select(entityId => GameState.CurrentEntities[entityId])
+                                .Select(entityId => GameState.CurrentEntities.GetValueOrDefault(entityId))
                                 .Where(entity => entity.IsSpell())
                                 .ToList();
                             var firstSpellEntity = spells[0];
@@ -834,8 +860,8 @@ namespace HearthstoneReplays.Events
                                 .Select(e => e.CardId)
                                 .ToList();
                             var entities = actionEntity.KnownEntityIds
-                                .Select(entityId => GameState.CurrentEntities[entityId])
-                                .Where(e => !currentSecretCardIds.Contains(e.CardId))
+                                .Select(entityId => GameState.CurrentEntities.GetValueOrDefault(entityId))
+                                .Where(e => e != null &&  !currentSecretCardIds.Contains(e.CardId))
                                 .ToList();
                             var nextCard = entities[0].CardId;
                             actionEntity.KnownEntityIds.Remove(entities[0].Entity);
@@ -868,8 +894,8 @@ namespace HearthstoneReplays.Events
                             .LastOrDefault();
                         if (lastJoust != null && GameState.CurrentEntities.ContainsKey(lastJoust.Data))
                         {
-                            var pickedEntity = GameState.CurrentEntities[lastJoust.Data];
-                            return pickedEntity.CardId;
+                            var pickedEntity = GameState.CurrentEntities.GetValueOrDefault(lastJoust.Data);
+                            return pickedEntity?.CardId;
                         }
                     }
 

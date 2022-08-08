@@ -36,7 +36,12 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
-            var entity = GameState.CurrentEntities[tagChange.Entity];
+            var entity = GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity);
+            if (entity == null)
+            {
+                return null;
+            }
+
             var initialArmor = entity.GetTag(GameTag.ARMOR, 0);
             var newArmor = tagChange.Value;
             var cardId = entity.CardId;

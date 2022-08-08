@@ -42,7 +42,7 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var action = node.Object as Action;
-            var actionEntity = GameState.CurrentEntities[action.Entity];
+            var actionEntity = GameState.CurrentEntities.GetValueOrDefault(action.Entity);
             if (action.TriggerKeyword == (int)GameTag.TAG_NOT_SET && !FORCE_START_OF_GAME_POWERS.Contains(actionEntity?.CardId))
             {
                 return null;
