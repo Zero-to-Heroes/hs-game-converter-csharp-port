@@ -40,7 +40,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            if (node.Parent?.Object == null)
+            // Cast is useful in case the parent is not an Action (can happen when log lines are truncated)
+            if ((node.Parent?.Object as Parser.ReplayData.GameActions.Action) == null)
             {
                 return null;
             }
