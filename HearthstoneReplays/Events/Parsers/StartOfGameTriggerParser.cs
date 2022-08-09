@@ -47,6 +47,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return null;
             }
+
             var controllerId = actionEntity?.GetTag(GameTag.CONTROLLER) ?? -1;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 action.TimeStamp,

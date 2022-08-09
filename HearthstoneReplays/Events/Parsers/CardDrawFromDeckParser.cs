@@ -10,6 +10,7 @@ namespace HearthstoneReplays.Events.Parsers
 {
     public class CardDrawFromDeckParser : ActionParser
     {
+        private static List<string> SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW = new List<string>() { CardIds.SuspiciousAlchemist_AMysteryEnchantment };
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
         private StateFacade StateFacade { get; set; }
@@ -90,7 +91,12 @@ namespace HearthstoneReplays.Events.Parsers
                     var lastInfluencedByCard = Oracle.FindCardCreator(GameState, entity, node);
                     var lastInfluencedByCardId = lastInfluencedByCard?.Item1;
                     var predictedCardId = Oracle.PredictCardId(GameState, creator?.Item1, -1, node, cardId);
-                    predictedCardId = predictedCardId ?? Oracle.PredictCardId(GameState, lastInfluencedByCardId, lastInfluencedByCard?.Item2 ?? -1, node, cardId);
+                    // Issue: if a card creates a card and draws one, this will flag them both (while the draw could be something else)
+                    // This was introduced to flag the cards created by the Suspicious* cards
+                    if (SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW.Contains(lastInfluencedByCardId))
+                    {
+                        predictedCardId = predictedCardId ?? Oracle.PredictCardId(GameState, lastInfluencedByCardId, lastInfluencedByCard?.Item2 ?? -1, node, cardId);
+                    }
                     GameState.OnCardDrawn(entity.Entity);
                     var finalCardId = cardId != null && cardId.Length > 0 ? cardId : predictedCardId;
                     return new GameEvent
