@@ -37,6 +37,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
+            Logger.Log("Parsing end game", node.CreationLogLine);
             var tagChange = node.Object as TagChange;
             var replayCopy = StateFacade.GSReplay;
             // Update the name info
@@ -45,8 +46,11 @@ namespace HearthstoneReplays.Events.Parsers
                 var gsPlayer = StateFacade.GetPlayers().Find(p => p.Id == player.Id);
                 player.Name = gsPlayer?.Name ?? player.Name;
             }
+            Logger.Log("Will convert to xml", "");
             var xmlReplay = new ReplayConverter().xmlFromReplay(replayCopy);
+            Logger.Log("XML converted", "");
             var gameStateReport = GameState.BuildGameStateReport(StateFacade);
+            Logger.Log("gameStateReport built", "");
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             Logger.Log("Enqueuing GAME_END event", "");
             ParserState.EndCurrentGame();

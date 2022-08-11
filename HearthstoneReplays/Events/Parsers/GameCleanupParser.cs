@@ -38,6 +38,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
+            Logger.Log("Ending current game in GS", node.CreationLogLine);
             ParserState.EndCurrentGame();
             return null;
         }
