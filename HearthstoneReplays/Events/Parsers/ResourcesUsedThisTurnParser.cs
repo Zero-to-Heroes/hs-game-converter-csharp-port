@@ -37,8 +37,8 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
-            var resources = tagChange.Value;
-            var resourcesLeft = entity.GetTag(GameTag.RESOURCES, 0) + entity.GetTag(GameTag.TEMP_RESOURCES) - resources;
+            var resourcesUsed = tagChange.Value;
+            var resourcesLeft = entity.GetTag(GameTag.RESOURCES, 0) + entity.GetTag(GameTag.TEMP_RESOURCES, 0) - resourcesUsed;
             var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
@@ -52,7 +52,7 @@ namespace HearthstoneReplays.Events.Parsers
                     StateFacade,
                     gameState,
                     new {
-                        Resources = resources,
+                        Resources = resourcesUsed,
                         ResourcesLeft = resourcesLeft,
                     }),
                 true,
