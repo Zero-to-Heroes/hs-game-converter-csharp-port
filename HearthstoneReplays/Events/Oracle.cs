@@ -237,6 +237,7 @@ namespace HearthstoneReplays.Events
                     case FaldoreiStrider: return FaldoreiStrider_SpiderAmbush;
                     case FeralGibberer: return FeralGibberer;
                     case FinalShowdown_CloseThePortalToken: return DemonslayerKurtrusToken;
+                    case FindTheImposter_MarkedATraitorToken: return FindTheImposter_SpymasterScabbsToken;
                     case FireFly: return FireFly_FlameElementalToken;
                     case FirePlumesHeart: return FirePlumesHeart_SulfurasToken;
                     case FirstFlame: return FirstFlame_SecondFlameToken;
@@ -244,7 +245,8 @@ namespace HearthstoneReplays.Events
                     case FlameGeyser: return FireFly_FlameElementalToken;
                     case ForgottenTorch: return ForgottenTorch_RoaringTorchToken;
                     case FreshScent_YOD_005: return FreshScent_YOD_005ts;
-                    case FrozenTouch: return FrozenTouch;
+                    case FrozenTouch: return FrozenTouch_FrozenTouchToken;
+                    case FrozenTouch_FrozenTouchToken: return FrozenTouch;
                     case FullBlownEvil: return FullBlownEvil;
                     case GhastlyConjurer: return MirrorImageLegacy_CS2_027;
                     case GildedGargoyle: return TheCoinCore;
@@ -345,6 +347,9 @@ namespace HearthstoneReplays.Events
                     case SurlyMob: return AngryMob;
                     case SurlyMobTavernBrawl: return SurlyMob_AngryMobTavernBrawl;
                     case TheCandle: return TheCandle;
+                    case TheCandlesquestion: return TheCandlesquestion_TheCandlesquestion_DALA_714a;
+                    case TheCandlesquestion_TheCandlesquestion_DALA_714a: return TheCandlesquestion_TheCandlesquestion_DALA_714b;
+                    case TheCandlesquestion_TheCandlesquestion_DALA_714b: return TheCandlesquestion_TheCandlesquestion_DALA_714c;
                     case TheCavernsBelow: return TheCavernsBelow_CrystalCoreToken;
                     case TheDarkness_LOOT_526: return TheDarkness_DarknessCandleToken;
                     case TheDemonSeed_CompleteTheRitualToken: return TheDemonSeed_BlightbornTamsinToken;
