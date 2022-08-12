@@ -165,6 +165,7 @@ namespace HearthstoneReplays.Events
                 {
                     case AbyssalWave: return SirakessCultist_AbyssalCurseToken;
                     case AdorableInfestation: return AdorableInfestation_MarsuulCubToken;
+                    case AirRaid_YOD_012: return AirRaid_YOD_012ts;
                     case Akama_BT_713: return Akama_AkamaPrimeToken;
                     case AncientShade: return AncientShade_AncientCurseToken;
                     case AngryMob: return CrazedMob;
@@ -189,7 +190,9 @@ namespace HearthstoneReplays.Events
                     case BagOfCoinsTavernBrawl: return TheCoinCore;
                     case BananaBuffoon: return BananaBuffoon_BananasToken;
                     case BananaVendor: return BananaVendor_BananasToken;
+                    case BaubleOfBeetles_ULDA_307: return BaubleOfBeetles_ULDA_307ts;
                     case BeneathTheGrounds: return BeneathTheGrounds_NerubianAmbushToken;
+                    case BlessingOfTheAncients_DAL_351: return BlessingOfTheAncients_DAL_351ts;
                     case BloodsailFlybooter: return BloodsailFlybooter_SkyPirateToken;
                     case BoneBaron: return GrimNecromancer_SkeletonToken;
                     case BootyBayBookie: return TheCoinCore;
@@ -208,6 +211,7 @@ namespace HearthstoneReplays.Events
                     case CommandTheElements_TameTheFlamesToken: return CommandTheElements_StormcallerBrukanToken;
                     case ConfectionCyclone: return ConfectionCyclone_SugarElementalToken;
                     case ConjureManaBiscuit: return ConjureManaBiscuit_ManaBiscuitToken;
+                    case ConjurersCalling_DAL_177: return ConjurersCalling_DAL_177ts;
                     case CreepyCurio_HauntedCurioTavernBrawl: return CreepyCurio_CursedCurioTavernBrawl;
                     case CreepyCurio: return HauntedCurio;
                     case CreepyCurioTavernBrawl: return CreepyCurio_HauntedCurioTavernBrawl;
@@ -215,6 +219,7 @@ namespace HearthstoneReplays.Events
                     case CurseOfRafaam: return CurseOfRafaam_CursedToken;
                     case DeadlyFork: return DeadlyFork_SharpFork;
                     case DeckOfWonders: return DeckOfWonders_ScrollOfWonderToken;
+                    case DesperateMeasures_DAL_141: return DesperateMeasures_DAL_141ts;
                     case DefendTheDwarvenDistrict_KnockEmDownToken: return DefendTheDwarvenDistrict_TavishMasterMarksmanToken;
                     case DirehornHatchling: return DirehornHatchling_DirehornMatriarchToken;
                     case Doomcaller: return Cthun_OG_280;
@@ -238,6 +243,7 @@ namespace HearthstoneReplays.Events
                     case FishyFlyer: return FishyFlyer_SpectralFlyerToken;
                     case FlameGeyser: return FireFly_FlameElementalToken;
                     case ForgottenTorch: return ForgottenTorch_RoaringTorchToken;
+                    case FreshScent_YOD_005: return FreshScent_YOD_005ts;
                     case FrozenTouch: return FrozenTouch;
                     case FullBlownEvil: return FullBlownEvil;
                     case GhastlyConjurer: return MirrorImageLegacy_CS2_027;
@@ -264,7 +270,11 @@ namespace HearthstoneReplays.Events
                     case LadyVashj_BT_109: return LadyVashj_VashjPrimeToken;
                     case LakkariSacrifice: return LakkariSacrifice_NetherPortalToken_UNG_829t1;
                     case LicensedAdventurer: return TheCoinCore;
+                    case LightforgedBlessing_DAL_568: return LightforgedBlessing_DAL_568ts;
                     case LoanShark: return TheCoinCore;
+                    case Locuuuusts_ULDA_036: return GiantLocust_Locuuuusts;
+                    case LocuuuustsTavernBrawl: return Locuuuusts_LocuuuustsTavernBrawl;
+                    case Locuuuusts_ONY_005tb3: return Locuuuusts_GiantLocustToken_ONY_005tb3t2;
                     case MailboxDancer: return TheCoinCore;
                     case Malorne: return Malorne;
                     case Mankrik: return Mankrik_OlgraMankriksWifeToken;
@@ -273,6 +283,7 @@ namespace HearthstoneReplays.Events
                     case MilitiaHorn: return VeteransMilitiaHorn;
                     case MuklaTyrantOfTheVale: return KingMukla_BananasLegacyToken;
                     case MurgurMurgurgle: return MurgurMurgurgle_MurgurglePrimeToken;
+                    case MysticalMirage_ULDA_035: return MysticalMirage_ULDA_035ts;
                     case OldMilitiaHorn_MilitiaHornTavernBrawl: return OldMilitiaHorn_VeteransMilitiaHornTavernBrawl;
                     case OldMilitiaHorn: return MilitiaHorn;
                     case OldMilitiaHornTavernBrawl: return OldMilitiaHorn_MilitiaHornTavernBrawl;
@@ -287,12 +298,15 @@ namespace HearthstoneReplays.Events
                     case Queldelar_ForgingQueldelarToken_ONY_005tc7t: return Queldelar_ForgingQueldelarToken_ONY_005tc7t;
                     case RaidTheDocks_SecureTheSuppliesToken: return RaidTheDocks_CapnRokaraToken;
                     case RamCommander: return RamCommander_BattleRamToken;
+                    case RapidFire_DAL_373: return RapidFire_DAL_373ts;
                     case RaptorHatchling: return RaptorHatchling_RaptorPatriarchToken;
+                    case RayOfFrost_DAL_577: return RayOfFrost_DAL_577ts;
                     case RazorpetalLasher: return RazorpetalVolley_RazorpetalToken;
                     case RazorpetalVolley: return RazorpetalVolley_RazorpetalToken;
                     case ReliquaryOfSouls: return ReliquaryOfSouls_ReliquaryPrimeToken;
                     case RemoteControlledGolem_SW_097: return RemoteControlledGolem_GolemPartsToken;
                     case Rhonin: return ArcaneMissilesLegacy;
+                    case RisingWinds: return Eagle_RisingWinds;
                     case RinTheFirstDisciple_TheFinalSealToken: return RinTheFirstDisciple_AzariTheDevourerToken;
                     case RinTheFirstDisciple_TheFirstSealToken: return RinTheFirstDisciple_TheSecondSealToken;
                     case RinTheFirstDisciple_TheFourthSealToken: return RinTheFirstDisciple_TheFinalSealToken;
@@ -324,6 +338,7 @@ namespace HearthstoneReplays.Events
                     case SparkEngine: return SparkDrill_SparkToken;
                     case SpiritJailer_SCH_700: return SchoolSpirits_SoulFragmentToken;
                     case Springpaw: return Springpaw_LynxToken;
+                    case StaffOfAmmunae_ULDA_041: return StaffOfAmmunae_ULDA_041ts;
                     case SteamSurger: return FlameGeyser;
                     case SunscaleRaptor: return SunscaleRaptor;
                     case SurlyMob_AngryMobTavernBrawl: return SurlyMob_CrazedMobTavernBrawl;
@@ -333,12 +348,14 @@ namespace HearthstoneReplays.Events
                     case TheCavernsBelow: return TheCavernsBelow_CrystalCoreToken;
                     case TheDarkness_LOOT_526: return TheDarkness_DarknessCandleToken;
                     case TheDemonSeed_CompleteTheRitualToken: return TheDemonSeed_BlightbornTamsinToken;
+                    case TheForestsAid_DAL_256: return TheForestsAid_DAL_256ts;
                     case TheLastKaleidosaur: return TheLastKaleidosaur_GalvadonToken;
                     case TheMarshQueen: return TheMarshQueen_QueenCarnassaToken;
                     case ThrowGlaive: return ThrowGlaive; // TO CHECK
                     case TwinSlice_BT_175: return TwinSlice_SecondSliceToken;
                     case UmbralSkulker: return TheCoinCore;
                     case UnearthedRaptor_MapToTheGoldenMonkeyToken: return UnearthedRaptor_GoldenMonkeyToken;
+                    case UnleashTheBeast_DAL_378: return UnleashTheBeast_DAL_378ts;
                     case UniteTheMurlocs: return UniteTheMurlocs_MegafinToken;
                     case UrzulHorror: return UrzulHorror_LostSoulToken;
                     case VioletSpellwing: return ArcaneMissilesLegacy;
