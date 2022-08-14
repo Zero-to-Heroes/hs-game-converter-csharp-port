@@ -328,6 +328,7 @@ namespace HearthstoneReplays.Events
                     case SeekGuidance_XyrellaTheSanctifiedToken: return XyrellaTheSanctified_PurifiedShard;
                     case SerpentWig_TSC_215: return SerpentWig_TSC_215;
                     case ShadowOfDeath_ULD_286: return ShadowOfDeath_ShadowToken;
+                    case SinfulSousChef: return SilverHandRecruitLegacyToken;
                     case SirakessCultist: return SirakessCultist_AbyssalCurseToken;
                     case Sleetbreaker: return Windchill_AV_266;
                     case SmugSenior: return SmugSenior_SpectralSeniorToken;
@@ -340,6 +341,7 @@ namespace HearthstoneReplays.Events
                     case SparkEngine: return SparkDrill_SparkToken;
                     case SpiritJailer_SCH_700: return SchoolSpirits_SoulFragmentToken;
                     case Springpaw: return Springpaw_LynxToken;
+                    case SpringpawCore: return Springpaw_LynxToken;
                     case StaffOfAmmunae_ULDA_041: return StaffOfAmmunae_ULDA_041ts;
                     case SteamSurger: return FlameGeyser;
                     case SunscaleRaptor: return SunscaleRaptor;
