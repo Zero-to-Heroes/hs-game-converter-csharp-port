@@ -10,7 +10,10 @@ namespace HearthstoneReplays.Events.Parsers
 {
     public class CardDrawFromDeckParser : ActionParser
     {
-        private static List<string> SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW = new List<string>() { CardIds.SuspiciousAlchemist_AMysteryEnchantment };
+        private static List<string> SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW = new List<string>() { 
+            CardIds.SuspiciousAlchemist_AMysteryEnchantment,
+            CardIds.DeathBlossomWhomper,
+        };
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
         private StateFacade StateFacade { get; set; }
@@ -86,6 +89,7 @@ namespace HearthstoneReplays.Events.Parsers
                     // that has been drawn
                     // TODO: this was true when relying on the GS logs. Now that we use PTL, maybe we can move this back? Or maybe we 
                     // need the full BLOCK to be complete first?
+                    // Reply: yes this is still important, as sometimes we need to have the full BLOCK info to figure out what the card id is
                     var creator = wasInDeck ? null : Oracle.FindCardCreator(GameState, entity, node, false);
                     // Always return this info, and the client has a list of public card creators they are allowed to show
                     var lastInfluencedByCard = Oracle.FindCardCreator(GameState, entity, node);
@@ -95,6 +99,7 @@ namespace HearthstoneReplays.Events.Parsers
                     // This was introduced to flag the cards created by the Suspicious* cards
                     if (SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW.Contains(lastInfluencedByCardId))
                     {
+
                         predictedCardId = predictedCardId ?? Oracle.PredictCardId(GameState, lastInfluencedByCardId, lastInfluencedByCard?.Item2 ?? -1, node, cardId);
                     }
                     GameState.OnCardDrawn(entity.Entity);

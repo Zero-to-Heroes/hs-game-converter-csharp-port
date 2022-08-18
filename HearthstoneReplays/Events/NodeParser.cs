@@ -109,9 +109,11 @@ namespace HearthstoneReplays.Events
                 return new List<ActionParser>()
                 {
                     // Ordering is important, as we want to have "ability revealed" before 
-                    // "ability updated" (done by the EntityUpdateParser)
+                    // "ability updated" (done by the EntityUpdateParser). Same with CardRevealed
                     // Also, MINION_SUMMONED need to happen before any Equipment / Ability revealed
                     new MinionSummonedParser(ParserState, StateFacade),
+
+                    new CardRevealedParser(ParserState, StateFacade),
 
                     new MercenariesHeroRevealed(ParserState, StateFacade),
                     new MercenariesAbilityRevealedParser(ParserState, StateFacade),
@@ -154,7 +156,6 @@ namespace HearthstoneReplays.Events
                     new RecruitParser(ParserState, StateFacade),
                     new MinionBackOnBoardParser(ParserState, StateFacade),
                     new HeroRevealedParser(ParserState, StateFacade),
-                    new CardRevealedParser(ParserState, StateFacade),
                     new InitialCardInDeckParser(ParserState, StateFacade),
                     new FatigueParser(ParserState, StateFacade),
                     new DamageParser(ParserState, StateFacade),
@@ -207,7 +208,6 @@ namespace HearthstoneReplays.Events
                     new ResourcesThisTurnParser(ParserState, StateFacade),
                     new ResourcesUsedThisTurnParser(ParserState, StateFacade),
                     new WhizbangDeckParser(ParserState, StateFacade),
-                    new CopiedFromEntityIdParser(ParserState, StateFacade),
                     new BattlegroundsTavernPrizesParser(ParserState),
                     new LinkedEntityParser(ParserState, StateFacade),
                     new ZoneChangeParser(ParserState, StateFacade),
@@ -219,6 +219,10 @@ namespace HearthstoneReplays.Events
                     new CreateCardInGraveyardParser(ParserState, StateFacade),
                     new MindrenderIlluciaParser(ParserState, StateFacade),
                     new SpecialCardPowerParser(ParserState, StateFacade),
+
+                    // Needs to happen after EntityUpdate, because somsetimes the event is sent from the 
+                    // SHOW_ENTITY block that triggers the ENTITY_UPDATE event
+                    new CopiedFromEntityIdParser(ParserState, StateFacade),
                 };
             }
         }

@@ -96,6 +96,7 @@ namespace HearthstoneReplays.Events.Parsers
                             Attack = entity.GetTag(GameTag.ATK),
                             Health = entity.GetTag(GameTag.HEALTH),
                             CreatorCardId = creatorCardId,
+                            Immune = entity.GetTag(GameTag.IMMUNE) == 1
                         },
                         preprocess
                     ),
@@ -154,6 +155,7 @@ namespace HearthstoneReplays.Events.Parsers
                             TargetCardId = targetCardId,
                             CreatorCardId = creatorCardId,
                             TransientCard = isOhMyYogg,
+                            Immune = showEntity.GetTag(GameTag.IMMUNE) == 1,
                         },
                         preprocess),
                     true,

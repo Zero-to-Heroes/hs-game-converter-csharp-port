@@ -195,6 +195,7 @@ namespace HearthstoneReplays.Events
                     case BlessingOfTheAncients_DAL_351: return BlessingOfTheAncients_DAL_351ts;
                     case BloodsailFlybooter: return BloodsailFlybooter_SkyPirateToken;
                     case BoneBaron: return GrimNecromancer_SkeletonToken;
+                    case BookOfWonders: return DeckOfWonders_ScrollOfWonderToken;
                     case BootyBayBookie: return TheCoinCore;
                     case Bottomfeeder: return Bottomfeeder;
                     case BringOnRecruitsTavernBrawl: return SilverHandRecruitLegacyToken;
@@ -245,6 +246,7 @@ namespace HearthstoneReplays.Events
                     case FlameGeyser: return FireFly_FlameElementalToken;
                     case ForgottenTorch: return ForgottenTorch_RoaringTorchToken;
                     case FreshScent_YOD_005: return FreshScent_YOD_005ts;
+                    case FrostShardsTavernBrawl: return FrostShards_IceShardTavernBrawl;
                     case FrozenTouch: return FrozenTouch_FrozenTouchToken;
                     case FrozenTouch_FrozenTouchToken: return FrozenTouch;
                     case FullBlownEvil: return FullBlownEvil;
@@ -281,6 +283,7 @@ namespace HearthstoneReplays.Events
                     case Malorne: return Malorne;
                     case Mankrik: return Mankrik_OlgraMankriksWifeToken;
                     case Marrowslicer: return SchoolSpirits_SoulFragmentToken;
+                    case MarvelousMyceliumTavernBrawlToken: return MarvelousMyceliumTavernBrawlToken;
                     case MidaPureLight_ONY_028: return MidaPureLight_FragmentOfMidaToken;
                     case MilitiaHorn: return VeteransMilitiaHorn;
                     case MuklaTyrantOfTheVale: return KingMukla_BananasLegacyToken;
@@ -920,6 +923,21 @@ namespace HearthstoneReplays.Events
                         {
                             var pickedEntity = GameState.CurrentEntities.GetValueOrDefault(lastJoust.Data);
                             return pickedEntity?.CardId;
+                        }
+                    }
+                    // Doesn't really work for now because of timing issues (only works in test when there are no pauses)
+                    else if (actionEntity.CardId == CardIds.DeathBlossomWhomper)
+                    {
+                        var enchantment = GameState.CurrentEntities.Values
+                            .Where(e => e.GetCardType() == (int)CardType.ENCHANTMENT)
+                            .Where(e => e.GetTag(GameTag.ATTACHED) == actionEntity.Entity)
+                            .Where(e => e.GetTag(GameTag.CREATOR) == actionEntity.Entity)
+                            .LastOrDefault();
+                        var referencedEntityId = enchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? -1;
+                        var linkedEntity = GameState.CurrentEntities.GetValueOrDefault(referencedEntityId);
+                        if (linkedEntity != null)
+                        {
+                            return linkedEntity.CardId;
                         }
                     }
 
