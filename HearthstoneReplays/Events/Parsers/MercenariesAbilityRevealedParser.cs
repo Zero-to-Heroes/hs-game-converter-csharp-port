@@ -57,6 +57,14 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
+            var creatorEntityId = fullEntity.GetTag(GameTag.CREATOR);
+            var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creatorEntityId);
+            // Don't include the abilities created by treasures like Frost Volley
+            if (creatorEntity?.GetCardType() == (int)CardType.ENCHANTMENT)
+            {
+                return null;
+            }
+
             var abilityOwner = fullEntity.GetTag(GameTag.LETTUCE_ABILITY_OWNER);
             var abilityCooldownConfig = fullEntity.GetTag(GameTag.LETTUCE_COOLDOWN_CONFIG);
             var abilityCurrentCooldown = fullEntity.GetTag(GameTag.LETTUCE_CURRENT_COOLDOWN);
