@@ -45,6 +45,13 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
+            // Equipment shouldn't have their cost changed
+            if (entity.GetTag(GameTag.LETTUCE_IS_EQUPIMENT) == 1)
+            {
+                return null;
+            }
+             
+
             var cardId = string.IsNullOrEmpty(entity.CardId) ? null : entity.CardId;
             var controllerId = entity.GetEffectiveController();
             var abilityOwner = entity.GetTag(GameTag.LETTUCE_ABILITY_OWNER);
