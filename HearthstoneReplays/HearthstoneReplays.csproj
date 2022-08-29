@@ -111,6 +111,7 @@
     <Compile Include="Events\GameMetaData.cs" />
     <Compile Include="Events\EventQueueHandler.cs" />
     <Compile Include="Events\GameStateShort.cs" />
+    <Compile Include="Events\Parsers\DataScriptChangedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsBuddyGainedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsAfterPlayerBoardsRevealedParser.cs" />
     <Compile Include="Events\Parsers\EntityChosenParser.cs" />

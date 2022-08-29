@@ -242,6 +242,9 @@ namespace HearthstoneReplays.Events
                     case FireFly: return FireFly_FlameElementalToken;
                     case FirePlumesHeart: return FirePlumesHeart_SulfurasToken;
                     case FirstFlame: return FirstFlame_SecondFlameToken;
+                    // Doesn't work that way. The card created in deck should be the wish, but we don't know about the card in hand
+                    //case FirstWishTavernBrawl: return SecondWishTavernBrawl;
+                    //case SecondWishTavernBrawl: return ThirdWishTavernBrawl;
                     case FishyFlyer: return FishyFlyer_SpectralFlyerToken;
                     case FlameGeyser: return FireFly_FlameElementalToken;
                     case ForgottenTorch: return ForgottenTorch_RoaringTorchToken;
@@ -255,6 +258,8 @@ namespace HearthstoneReplays.Events
                     case HakkarTheSoulflayer: return HakkarTheSoulflayer_CorruptedBloodToken;
                     case HalazziTheLynx: return Springpaw_LynxToken;
                     case HauntedCurio: return CursedCurio;
+                    case HeadcrackLegacy: return HeadcrackLegacy;
+                    case HeadcrackVanilla: return HeadcrackVanilla;
                     case HighPriestessJeklik: return HighPriestessJeklik;
                     case HoardingDragon_LOOT_144: return TheCoinCore;
                     case IgneousElemental: return FireFly_FlameElementalToken;
@@ -583,6 +588,13 @@ namespace HearthstoneReplays.Events
                             return GameState.CurrentEntities.GetValueOrDefault(nextEntity)?.CardId;
                         }
                         return null;
+                }
+
+                // Handle echo
+                var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creatorEntityId);
+                if (creatorEntity?.GetTag(GameTag.ECHO) == 1 || creatorEntity?.GetTag(GameTag.NON_KEYWORD_ECHO) == 1)
+                {
+                    return creatorCardId;
                 }
             }
 

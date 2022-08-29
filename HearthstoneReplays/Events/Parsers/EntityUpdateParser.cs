@@ -88,6 +88,10 @@ namespace HearthstoneReplays.Events.Parsers
                     : "MERCENARIES_ABILITY_UPDATE"
                 : "ENTITY_UPDATE";
             var zone = showEntity.GetZone();
+            if (zone == -1)
+            {
+                zone = GameState.CurrentEntities.GetValueOrDefault(showEntity.Entity)?.GetZone() ?? -1;
+            }
             var zonePosition = showEntity.GetZonePosition();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
