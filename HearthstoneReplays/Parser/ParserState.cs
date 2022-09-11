@@ -255,6 +255,9 @@ namespace HearthstoneReplays.Parser
                     .Select(d => d as FullEntity)
                     // On PvE we know the CardId
                     .Where(d => d.GetTag(GameTag.LETTUCE_MERCENARY) == 1 && (d.CardId?.Length == 0 || d.GetZone() == (int)Zone.PLAY))
+                    // When reconnecting, our own mercs can already be in play, so we need to make sure
+                    // we're picking a different controller
+                    .Where(d => d.GetEffectiveController() != localPlayerPlayerId)
                     .FirstOrDefault()
                     ?.GetEffectiveController();
 

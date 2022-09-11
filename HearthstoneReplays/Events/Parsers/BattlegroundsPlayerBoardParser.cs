@@ -35,6 +35,13 @@ namespace HearthstoneReplays.Events.Parsers
             MantidQueenBattlegrounds,
         };
 
+        static List<string> START_OF_COMBAT_QUEST_REWARD_EFFECT = new List<string>() {
+            EvilTwin,
+            StaffOfOrigination_BG24_Reward_312,
+            TheSmokingGun,
+            StolenGold,
+        };
+
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
         private StateFacade StateFacade { get; set; }
@@ -93,6 +100,7 @@ namespace HearthstoneReplays.Events.Parsers
                             // Here we want the boards to be send before the minions start of combat effects happen, because
                             // we want the simulator to include their random effects inside the simulation
                             || START_OF_COMBAT_MINION_EFFECT.Contains(actionEntity.CardId)
+                            || START_OF_COMBAT_QUEST_REWARD_EFFECT.Contains(actionEntity.CardId)
                             )
                     )
             );
@@ -332,6 +340,9 @@ namespace HearthstoneReplays.Events.Parsers
                 var secrets = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
+                    .Where(entity => entity.GetTag(GameTag.BACON_IS_BOB_QUEST) != 1)
+                    .Where(entity => entity.GetTag(GameTag.QUEST) != 1)
+                    .Where(entity => entity.GetTag(GameTag.SIDEQUEST) != 1)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
                     .ToList();
@@ -365,6 +376,14 @@ namespace HearthstoneReplays.Events.Parsers
                     Logger.Log("Too many entities on board", "");
                 }
 
+                var questRewards = GameState.CurrentEntities.Values
+                    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.BATTLEGROUND_QUEST_REWARD)
+                    .Select(entity => entity.Clone())
+                    .Select(entity => entity.CardId)
+                    .ToList();
+
                 return new PlayerBoard()
                 {
                     Hero = hero,
@@ -373,6 +392,7 @@ namespace HearthstoneReplays.Events.Parsers
                     HeroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0,
                     CardId = cardId,
                     Board = result,
+                    QuestRewards = questRewards,
                     Secrets = secrets,
                 };
             }
@@ -414,6 +434,8 @@ namespace HearthstoneReplays.Events.Parsers
             public int HeroPowerInfo { get; set; }
 
             public string CardId { get; set; }
+
+            public List<string> QuestRewards { get; set; }
 
             public List<object> Board { get; set; }
 

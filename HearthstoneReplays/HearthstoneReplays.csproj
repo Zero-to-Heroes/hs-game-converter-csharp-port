@@ -111,6 +111,8 @@
     <Compile Include="Events\GameMetaData.cs" />
     <Compile Include="Events\EventQueueHandler.cs" />
     <Compile Include="Events\GameStateShort.cs" />
+    <Compile Include="Events\Parsers\BattlegroundsQuestCompletedParser .cs" />
+    <Compile Include="Events\Parsers\BattlegroundsQuestRevealedParser.cs" />
     <Compile Include="Events\Parsers\DataScriptChangedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsBuddyGainedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsAfterPlayerBoardsRevealedParser.cs" />
@@ -151,6 +153,8 @@
     <Compile Include="Events\Parsers\TurnCleanupParser.cs" />
     <Compile Include="Events\Parsers\ShuffleDeckParser.cs" />
     <Compile Include="Events\Parsers\TurnDurationUpdateParser.cs" />
+    <Compile Include="Events\Parsers\BattlegroundsQuestRewardEquippedParser.cs" />
+    <Compile Include="Events\Parsers\BattlegroundsQuestRewardDestroyedParser.cs" />
     <Compile Include="Events\Parsers\WhizbangDeckParser.cs" />
     <Compile Include="Events\Parsers\ZoneChangeParser.cs" />
     <Compile Include="Events\Parsers\ZonePositionChangedParser.cs" />

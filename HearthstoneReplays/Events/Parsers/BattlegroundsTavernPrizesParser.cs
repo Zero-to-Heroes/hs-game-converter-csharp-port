@@ -48,6 +48,7 @@ namespace HearthstoneReplays.Events.Parsers
                         Type = "GAME_SETTINGS",
                         Value = new {
                              BattlegroundsPrizes = (node.Object as GameEntity).GetTag(GameTag.DARKMOON_FAIRE_PRIZES_ACTIVE) == 1,
+                             BattlegroundsQuests = (node.Object as GameEntity).GetTag(GameTag.BACON_QUESTS_ACTIVE) == 1,
                         },
                     },
                     false,
