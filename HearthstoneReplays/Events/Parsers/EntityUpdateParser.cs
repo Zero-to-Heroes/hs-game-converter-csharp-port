@@ -80,6 +80,7 @@ namespace HearthstoneReplays.Events.Parsers
             var abilityCooldownConfig = showEntity.GetTag(GameTag.LETTUCE_COOLDOWN_CONFIG);
             var abilityCurrentCooldown = showEntity.GetTag(GameTag.LETTUCE_CURRENT_COOLDOWN);
             var abilitySpeed = showEntity.GetTag(GameTag.COST);
+            var zonePosition = showEntity.GetZonePosition();
             var dataNum1 = showEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1);
             var dataNum2 = showEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2);
             var eventName = showEntity.GetTag(GameTag.ZONE) == (int)Zone.LETTUCE_ABILITY
@@ -88,11 +89,11 @@ namespace HearthstoneReplays.Events.Parsers
                     : "MERCENARIES_ABILITY_UPDATE"
                 : "ENTITY_UPDATE";
             var zone = showEntity.GetZone();
+            var revealed = showEntity.GetTag(GameTag.REVEALED) == 1;
             if (zone == -1)
             {
                 zone = GameState.CurrentEntities.GetValueOrDefault(showEntity.Entity)?.GetZone() ?? -1;
             }
-            var zonePosition = showEntity.GetZonePosition();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 eventName,
@@ -112,6 +113,7 @@ namespace HearthstoneReplays.Events.Parsers
                         AbilitySpeed = abilitySpeed == -1 ? (int?)null : abilitySpeed,
                         ZonePosition = zonePosition,
                         Zone = zone,
+                        Reveaked = revealed,
                         DataNum1 = dataNum1,
                         DataNum2 = dataNum2,
                     }),
