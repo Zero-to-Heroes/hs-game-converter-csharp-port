@@ -49,7 +49,7 @@ namespace HearthstoneReplays.Parser
         public HearthstoneReplay FromString(IEnumerable<string> lines, params GameType[] gameTypes)
         {
             Read(lines.ToArray());
-            var finalState = State.PTLState;
+            var finalState = State.GSState;
             for (var i = 0; i < finalState.Replay.Games.Count; i++)
             {
                 if (gameTypes == null || gameTypes.Length == 1)

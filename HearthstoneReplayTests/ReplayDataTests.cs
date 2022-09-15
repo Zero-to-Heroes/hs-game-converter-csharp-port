@@ -14,6 +14,8 @@ using Newtonsoft.Json.Linq;
 using System.Linq;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
+using HearthstoneReplays.Parser.ReplayData.GameActions;
 
 #endregion
 
@@ -81,6 +83,10 @@ namespace HearthstoneReplayTests
             Thread.Sleep(3000);
             GC.Collect();
             Thread.Sleep(3000);
+            var testList = replay.Games.SelectMany(g => g.Data).Where(d => d is Action && (d as Action).Data.Count > 60).ToList()
+                .SelectMany(a => (a as Action).GetDataRecursive())
+                .Where(d => d is ChosenEntities)
+                .ToList();
             string xml = new ReplayConverter().xmlFromReplay(replay);
             //Console.Write(xml);
         }

@@ -169,6 +169,7 @@ namespace HearthstoneReplays.Events
                     new CardStolenParser(ParserState, StateFacade),
                     new SecretTriggeredParser(ParserState, StateFacade),
                     new CounterTriggerParser(ParserState, StateFacade),
+                    new QuestCompletedParser(ParserState, StateFacade),
                     new DeathrattleTriggeredParser(ParserState, StateFacade),
                     new HealthDefChangeParser(ParserState, StateFacade),
                     new ChangeCardCreatorParser(ParserState, StateFacade),

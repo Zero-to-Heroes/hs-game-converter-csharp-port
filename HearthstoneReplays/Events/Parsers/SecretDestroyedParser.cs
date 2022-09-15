@@ -27,7 +27,9 @@ namespace HearthstoneReplays.Events.Parsers
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
-                && (node.Object as TagChange).Value == (int)Zone.GRAVEYARD
+                && ((node.Object as TagChange).Value == (int)Zone.GRAVEYARD
+                    // For BG quests
+                    || (node.Object as TagChange).Value == (int)Zone.REMOVEDFROMGAME)
                 && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.SECRET;
         }
 
@@ -35,7 +37,9 @@ namespace HearthstoneReplays.Events.Parsers
         {
             // When the active player destroys a secret, it is fully revealed
             var appliesToShowEntity = node.Type == typeof(ShowEntity)
-                && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD
+                && ((node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD
+                    // BG quests
+                    || (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.REMOVEDFROMGAME)
                 && GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
                 && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) == (int)Zone.SECRET;
             return stateType == StateType.PowerTaskList
