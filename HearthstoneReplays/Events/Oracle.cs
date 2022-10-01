@@ -248,6 +248,7 @@ namespace HearthstoneReplays.Events
                     case FishyFlyer: return FishyFlyer_SpectralFlyerToken;
                     case FlameGeyser: return FireFly_FlameElementalToken;
                     case ForgottenTorch: return ForgottenTorch_RoaringTorchToken;
+                    case Framester: return Framester_FramedToken;
                     case FreshScent_YOD_005: return FreshScent_YOD_005ts;
                     case FrostShardsTavernBrawl: return FrostShards_IceShardTavernBrawl;
                     case FrozenTouch: return FrozenTouch_FrozenTouchToken;
@@ -257,6 +258,7 @@ namespace HearthstoneReplays.Events
                     case GildedGargoyle: return TheCoinCore;
                     case HakkarTheSoulflayer: return HakkarTheSoulflayer_CorruptedBloodToken;
                     case HalazziTheLynx: return Springpaw_LynxToken;
+                    case Harpoon: return ArcaneShot;
                     case HauntedCurio: return CursedCurio;
                     case HeadcrackLegacy: return HeadcrackLegacy;
                     case HeadcrackVanilla: return HeadcrackVanilla;
@@ -311,6 +313,7 @@ namespace HearthstoneReplays.Events
                     case RamCommander: return RamCommander_BattleRamToken;
                     case RapidFire_DAL_373: return RapidFire_DAL_373ts;
                     case RaptorHatchling: return RaptorHatchling_RaptorPatriarchToken;
+                    case RatsOfExtraordinarySize: return RodentNest_RatToken;
                     case RayOfFrost_DAL_577: return RayOfFrost_DAL_577ts;
                     case RazorpetalLasher: return RazorpetalVolley_RazorpetalToken;
                     case RazorpetalVolley: return RazorpetalVolley_RazorpetalToken;
@@ -352,6 +355,7 @@ namespace HearthstoneReplays.Events
                     case Springpaw: return Springpaw_LynxToken;
                     case SpringpawCore: return Springpaw_LynxToken;
                     case StaffOfAmmunae_ULDA_041: return StaffOfAmmunae_ULDA_041ts;
+                    case Starseeker: return MoonfireLegacy;
                     case SteamSurger: return FlameGeyser;
                     case SunscaleRaptor: return SunscaleRaptor;
                     case SurlyMob_AngryMobTavernBrawl: return SurlyMob_CrazedMobTavernBrawl;
@@ -362,6 +366,7 @@ namespace HearthstoneReplays.Events
                     case TheCandlesquestion_TheCandlesquestion_DALA_714a: return TheCandlesquestion_TheCandlesquestion_DALA_714b;
                     case TheCandlesquestion_TheCandlesquestion_DALA_714b: return TheCandlesquestion_TheCandlesquestion_DALA_714c;
                     case TheCavernsBelow: return TheCavernsBelow_CrystalCoreToken;
+                    case TheCountess: return TheCountess_LegendaryInvitationToken;
                     case TheDarkness_LOOT_526: return TheDarkness_DarknessCandleToken;
                     case TheDemonSeed_CompleteTheRitualToken: return TheDemonSeed_BlightbornTamsinToken;
                     case TheForestsAid_DAL_256: return TheForestsAid_DAL_256ts;
