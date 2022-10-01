@@ -21,6 +21,7 @@ namespace HearthstoneReplays.Parser
 			new Regex(string.Format(@"id=(\d+) Player={0} TaskList=(\d+)? ChoiceType=(\w+) CountMin=(\d+) CountMax=(\d+)$", Entity));
 		public static readonly Regex ChoicesSourceRegex = new Regex(string.Format(@"Source={0}$", Entity));
 		public static readonly Regex ChoicesEntitiesRegex = new Regex(@"Entities\[(\d+)\]=(\[.+\])$");
+		public static readonly Regex ChoicesWaitingForInput = new Regex(@"id=(\d+) BEGIN$");
 
 		public static readonly Regex ActionCreategameRegex = new Regex(@"GameEntity EntityID=(\d+)");
 		public static readonly Regex ActionCreategamePlayerRegex =

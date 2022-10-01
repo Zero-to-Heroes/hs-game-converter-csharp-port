@@ -188,9 +188,10 @@ namespace HearthstoneReplays.Parser
                 //case "GameState.OnEntityChoices":
                 //	// Spectator mode noise
                 //	break;
-                //case "ChoiceCardMgr.WaitThenShowChoices":
-                //	// Not needed for replays
-                //	break;
+                case "ChoiceCardMgr.WaitThenShowChoices":
+                    choicesHandler.Handle(normalizedTimestamp, data, State.GSState);
+                    previousTimestamp = normalizedTimestamp;
+                    break;
                 //case "GameState.DebugPrintChoice":
                 //	Console.WriteLine("Warning: DebugPrintChoice was removed in 10357. Ignoring.");
                 //                break;

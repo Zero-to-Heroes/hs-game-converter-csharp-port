@@ -10,8 +10,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Meta
 	[XmlRoot("Choices")]
 	public class Choices : GameData
 	{
-		[XmlAttribute("entity")]
-		public int Entity { get; set; }
+		[XmlAttribute("id")]
+		public int Id { get; set; }
 
 		[XmlAttribute("max")]
 		public int Max { get; set; }

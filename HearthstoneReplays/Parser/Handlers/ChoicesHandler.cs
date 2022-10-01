@@ -51,13 +51,15 @@ namespace HearthstoneReplays.Parser.Handlers
 				as an entity ID, resulting in "Player=GameEntity"
 				For our own sanity we keep the old playerID logic from the
 				previous builds, we'll change to "player" when it's fixed.*/
-				var rawEntity = match.Groups[1].Value;
+				var rawId = match.Groups[1].Value;
+                int id;
+                int.TryParse(data, out id);
 				var rawPlayer = match.Groups[2].Value;
 				var rawTaskList = match.Groups[3].Value;
 				var rawType = match.Groups[4].Value;
 				var min = match.Groups[5].Value;
 				var max = match.Groups[6].Value;
-				var entity = helper.ParseEntity(rawEntity);
+				//var entity = helper.ParseEntity(rawEntity);
 				var player = helper.ParseEntity(rawPlayer);
 				var type = helper.ParseEnum<ChoiceType>(rawType);
 				int taskList = -1;
@@ -65,7 +67,7 @@ namespace HearthstoneReplays.Parser.Handlers
 				state.Choices = new Choices
 				{
 					ChoiceList = new List<Choice>(),
-					Entity = entity,
+					Id = id,
 					Max = int.Parse(max),
 					Min = int.Parse(min),
 					PlayerId = player,
@@ -101,6 +103,15 @@ namespace HearthstoneReplays.Parser.Handlers
 				var entity = helper.ParseEntity(rawEntity);
 				var choice = new Choice { Entity = entity, Index = int.Parse(index) };
 				state.Choices.ChoiceList.Add(choice);
+			}
+
+
+			match = Regexes.ChoicesWaitingForInput.Match(data);
+			if (match.Success)
+			{
+				int id;
+				int.TryParse(data, out id);
+				state.CreateNewNode(new Node(typeof(Choices), state.Choices, 0, null, data)); // It's not really a new node, but just a hack
 			}
 		}
 	}

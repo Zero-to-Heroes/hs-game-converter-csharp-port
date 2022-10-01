@@ -116,6 +116,7 @@
     <Compile Include="Events\Parsers\DataScriptChangedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsBuddyGainedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsAfterPlayerBoardsRevealedParser.cs" />
+    <Compile Include="Events\Parsers\ChoosingOptionsParser.cs" />
     <Compile Include="Events\Parsers\EntityChosenParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsTavernPrizesParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsFreezeParser.cs" />
