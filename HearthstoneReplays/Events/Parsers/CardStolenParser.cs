@@ -43,7 +43,6 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
-            var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
             var lettuceControllerId = entity.GetTag(GameTag.LETTUCE_CONTROLLER);
             if (tagChange.Value == lettuceControllerId)
@@ -54,19 +53,42 @@ namespace HearthstoneReplays.Events.Parsers
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
                 var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+                var zone = entity.GetZone();
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "CARD_STOLEN",
-                    GameEvent.CreateProvider(
-                        "CARD_STOLEN",
-                        cardId,
-                        controllerId,
-                        entity.Id,
-                        StateFacade,
-                        gameState,
-                        new {
-                            newControllerId = tagChange.Value
-                        }),
+                    () => {
+                        // In case the cardId is only revealed later in the block, like with Soul Seeker (the tag change doesn't know
+                        // the card ID yet)
+                        var cardId = entity.CardId;
+                        return new GameEvent
+                        {
+                            Type =  "CARD_STOLEN",
+                            Value = new
+                            {
+                                CardId = cardId,
+                                ControllerId = controllerId,
+                                LocalPlayer = StateFacade.LocalPlayer,
+                                OpponentPlayer = StateFacade.OpponentPlayer,
+                                EntityId = entity.Id,
+                                GameState = gameState,
+                                AdditionalProps = new {
+                                    newControllerId = tagChange.Value,
+                                    zone = zone,
+                                }
+                            }
+                        };
+                    },
+                    //GameEvent.CreateProvider(
+                    //    "CARD_STOLEN",
+                    //    cardId,
+                    //    controllerId,
+                    //    entity.Id,
+                    //    StateFacade,
+                    //    gameState,
+                    //    new {
+                    //        newControllerId = tagChange.Value
+                    //    }),
                     true,
                     node) };
             }
@@ -87,6 +109,7 @@ namespace HearthstoneReplays.Events.Parsers
             if (GameState.CurrentEntities[showEntity.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
                 var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
+                var zone = showEntity.GetZone();
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,
                     "CARD_STOLEN",
@@ -98,7 +121,8 @@ namespace HearthstoneReplays.Events.Parsers
                         StateFacade,
                         gameState,
                         new {
-                            newControllerId = showEntity.GetEffectiveController()
+                            newControllerId = showEntity.GetEffectiveController(),
+                            zone = zone,
                         }),
                     true,
                     node) };
