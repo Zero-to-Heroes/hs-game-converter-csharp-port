@@ -479,13 +479,20 @@ namespace HearthstoneReplays.Events
                         return null;
 
                     case Duplicate:
+                    case CheatDeath:
                         if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
                             var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
                             if (act.Type == (int)BlockType.TRIGGER)
                             {
-                                var metaData = act.Data.Where(data => data is MetaData).Select(data => data as MetaData).FirstOrDefault();
-                                if (metaData != null && metaData.Meta == (int)MetaDataType.HISTORY_TARGET && metaData.MetaInfo != null && metaData.MetaInfo.Count > 0)
+                                var metaData = act.Data
+                                    .Where(data => data is MetaData)
+                                    .Select(data => data as MetaData)
+                                    .Where(data => data.Meta == (int)MetaDataType.HISTORY_TARGET)
+                                    .Where(data => data.MetaInfo != null)
+                                    .Where(data => data.MetaInfo.Count > 0)
+                                    .FirstOrDefault();
+                                if (metaData != null)
                                 {
                                     var entityId = metaData.MetaInfo[0].Entity;
                                     var existingEntity = GameState.CurrentEntities.GetValueOrDefault(entityId);
