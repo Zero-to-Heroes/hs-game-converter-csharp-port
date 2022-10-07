@@ -223,7 +223,7 @@ namespace HearthstoneReplays.Events
                     case DesperateMeasures_DAL_141: return DesperateMeasures_DAL_141ts;
                     case DefendTheDwarvenDistrict_KnockEmDownToken: return DefendTheDwarvenDistrict_TavishMasterMarksmanToken;
                     case DirehornHatchling: return DirehornHatchling_DirehornMatriarchToken;
-                    case Doomcaller: return Cthun_OG_280;
+                    case Doomcaller: return Cthun_OG_279;
                     case DraggedBelow: return SirakessCultist_AbyssalCurseToken;
                     case DragonbaneShot: return DragonbaneShot;
                     case DrawOffensivePlayTavernBrawlEnchantment: return OffensivePlayTavernBrawl;
