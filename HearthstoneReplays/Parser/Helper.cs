@@ -20,9 +20,12 @@ namespace HearthstoneReplays.Parser
         public static readonly List<string> bobTavernNames = new List<string>() { "Bartender Bob", "Bob's Tavern", "Bobs Gasthaus", "Taberna de Bob",
             "Taverne de Bob", "Locanda di Bob", "ボブの酒場", "밥의 선술집", "Karczma Boba", "Taverna do Bob", "Таверна Боба",
             "โรงเตี๊ยมของบ็อบ", "鲍勃的酒馆", "鮑伯的旅店"};
+		public static readonly List<string> mercBotNames = new List<string>() { "QuirkyTurtle" };
 
 
-        private readonly Dictionary<GameTag, Type> TagTypes = new Dictionary<GameTag, Type>
+
+
+		private readonly Dictionary<GameTag, Type> TagTypes = new Dictionary<GameTag, Type>
 		{
 			{GameTag.CARDTYPE, typeof(CardType)},
 			{GameTag.CLASS, typeof(CardClass)},
@@ -79,7 +82,13 @@ namespace HearthstoneReplays.Parser
                 {
 					firstPlayer.Name = data;
                 }
-                firstPlayer.InitialName = innkeeperNames.Contains(data) ? innkeeperNames[0] : bobTavernNames.Contains(data) ? bobTavernNames[0] : data;
+                firstPlayer.InitialName = innkeeperNames.Contains(data) 
+					? innkeeperNames[0] 
+					: bobTavernNames.Contains(data) 
+					? bobTavernNames[0] 
+					: mercBotNames.Contains(data) 
+					? mercBotNames[0] 
+					: data;
                 return firstPlayer.Id;
             }
             // Sometimes we register the player name with the full battletag, 
@@ -89,7 +98,13 @@ namespace HearthstoneReplays.Parser
             if (string.IsNullOrEmpty(secondPlayer.Name))
 		    {
 		        secondPlayer.Name = data;
-                secondPlayer.InitialName = innkeeperNames.Contains(data) ? innkeeperNames[0] : bobTavernNames.Contains(data) ? bobTavernNames[0] : data;
+                secondPlayer.InitialName = innkeeperNames.Contains(data) 
+					? innkeeperNames[0] 
+					: bobTavernNames.Contains(data) 
+					? bobTavernNames[0]
+					: mercBotNames.Contains(data)
+					? mercBotNames[0]
+					: data;
 				return secondPlayer.Id;
             }
             // And the opposite
@@ -105,7 +120,9 @@ namespace HearthstoneReplays.Parser
                 || innkeeperNames.Select(x => x.ToLower()).Contains(firstPlayer.Name.ToLower())
                 || innkeeperNames.Select(x => x.ToLower()).Contains(firstPlayer.InitialName.ToLower())
                 || bobTavernNames.Select(x => x.ToLower()).Contains(firstPlayer.Name.ToLower())
-                || bobTavernNames.Select(x => x.ToLower()).Contains(firstPlayer.InitialName.ToLower())))
+                || bobTavernNames.Select(x => x.ToLower()).Contains(firstPlayer.InitialName.ToLower()))
+                || mercBotNames.Select(x => x.ToLower()).Contains(firstPlayer.Name.ToLower())
+                || mercBotNames.Select(x => x.ToLower()).Contains(firstPlayer.InitialName.ToLower()))
 			{
 				firstPlayer.Name = data;
 				return firstPlayer.Id;
@@ -114,7 +131,9 @@ namespace HearthstoneReplays.Parser
                 || innkeeperNames.Select(x => x.ToLower()).Contains(secondPlayer.Name.ToLower())
                 || innkeeperNames.Select(x => x.ToLower()).Contains(secondPlayer.InitialName.ToLower())
                 || bobTavernNames.Select(x => x.ToLower()).Contains(secondPlayer.Name.ToLower())
-                || bobTavernNames.Select(x => x.ToLower()).Contains(secondPlayer.InitialName.ToLower())))
+                || bobTavernNames.Select(x => x.ToLower()).Contains(secondPlayer.InitialName.ToLower()))
+				|| mercBotNames.Select(x => x.ToLower()).Contains(secondPlayer.Name.ToLower())
+				|| mercBotNames.Select(x => x.ToLower()).Contains(secondPlayer.InitialName.ToLower()))
 			{
 				secondPlayer.Name = data;
 				return secondPlayer.Id;
