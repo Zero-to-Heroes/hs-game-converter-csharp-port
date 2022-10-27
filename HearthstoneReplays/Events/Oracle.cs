@@ -204,6 +204,7 @@ namespace HearthstoneReplays.Events
                     case BuildASnowman: return BuildASnowman_BuildASnowbruteToken;
                     case BumperCar: return BumperCar_DarkmoonRiderToken;
                     case BurglyBully: return TheCoinCore;
+                    case TwistTheCoffers_CacheOfCashToken: return TheCoinCore;
                     case ChainsOfDread_AV_316hp: return DreadlichTamsin_FelRiftToken;
                     case ClockworkGoblin_DAL_060: return SeaforiumBomber_BombToken;
                     case CoinPouch_SackOfCoinsTavernBrawl: return CoinPouch_HeftySackOfCoinsTavernBrawl;
@@ -384,6 +385,9 @@ namespace HearthstoneReplays.Events
                     case Waxadred: return Waxadred_WaxadredsCandleToken;
                     case WeaselTunneler: return WeaselTunneler;
                     case WhiteEyes: return WhiteEyes_TheStormGuardianToken;
+                    case WildGrowthCore: return WildGrowth_ExcessManaLegacyToken;
+                    case WildGrowthLegacy: return WildGrowth_ExcessManaLegacyToken;
+                    case WildGrowthVanilla: return WildGrowth_ExcessManaLegacyToken;
                     case WitchwoodApple: return WitchwoodApple_TreantToken;
                     case Wrenchcalibur: return SeaforiumBomber_BombToken;
                     case YseraUnleashed: return YseraUnleashed_DreamPortalToken;
