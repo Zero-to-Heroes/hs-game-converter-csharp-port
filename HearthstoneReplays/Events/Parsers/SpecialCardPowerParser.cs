@@ -17,6 +17,7 @@ namespace HearthstoneReplays.Events.Parsers
             CardIds.LorekeeperPolkelt,
             CardIds.OrderInTheCourt,
             CardIds.SphereOfSapience,
+            CardIds.DewProcess,
         };
 
         private GameState GameState { get; set; }
