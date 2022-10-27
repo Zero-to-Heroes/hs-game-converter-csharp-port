@@ -5,6 +5,7 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -65,6 +66,14 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
                 ? GameState.CurrentEntities[creatorEntityId].CardId
                 : null;
+            int? lastInfluencedByEntityId = null;
+            string lastAffectedByCardId = null;
+            if (node.Parent != null && node.Parent.Type == typeof(Action))
+            {
+                var parent = node.Parent.Object as Action;
+                lastInfluencedByEntityId = parent?.Entity;
+                lastAffectedByCardId = GameState.CurrentEntities.GetValueOrDefault(lastInfluencedByEntityId ?? 0)?.CardId;
+            }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 changeEntity.TimeStamp,
                 eventName,
@@ -77,6 +86,8 @@ namespace HearthstoneReplays.Events.Parsers
                     gameState,
                     new {
                         CreatorCardId = creatorEntityCardId,
+                        LastAffectedByEntityId = lastInfluencedByEntityId,
+                        LastAffectedByCardId = lastAffectedByCardId,
                     }),
                 true,
                 node) };
