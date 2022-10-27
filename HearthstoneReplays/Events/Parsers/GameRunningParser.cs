@@ -49,6 +49,9 @@ namespace HearthstoneReplays.Events.Parsers
                 tagChange.TimeStamp,
                 "GAME_RUNNING",
                 () => {
+                    // LocalPlayer can be empty when handled in the Chinese official replay viewer?
+                    // Not sure exactly how it works, but it looks like the "spectator end/start" events
+                    // 
                     var playerDeckCount = stateCopy
                             .Where(entity => entity == Helper.LocalPlayer.PlayerId)
                             .ToList()

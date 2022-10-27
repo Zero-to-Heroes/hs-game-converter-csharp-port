@@ -386,7 +386,7 @@ namespace HearthstoneReplays.Parser
             // Could not assign any player
             if (_localPlayer == null && _opponentPlayer == null)
             {
-                Logger.Log("ERROR TO LOG: Could not assign local player " + data, getPlayers()?.Select(player => player.Name));
+                Logger.Log("ERROR TO LOG: Could not assign local player " + data, getPlayers()?.Select(player => player.Name).ToList());
             }
         }
 
