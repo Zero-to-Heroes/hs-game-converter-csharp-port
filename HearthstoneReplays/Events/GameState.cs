@@ -370,7 +370,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 // For now, used only for Commander Sivara
                 var cardsInHandForController = CurrentEntities.Values
                     .Where(e => e.GetZone() == (int)Zone.HAND)
-                    .Where(e => e.GetController() == playedEntity.GetController());
+                    .Where(e => e.GetController() == playedEntity.GetController())
+                    .ToList();
                 foreach (var cardInHand in cardsInHandForController)
                 {
                     cardInHand.PlayedWhileInHand.Add(playedEntity.Entity);
