@@ -39,6 +39,11 @@ namespace HearthstoneReplays.Events.Parsers
             if (tagChange.Value == (int)PlayState.WON)
             {
                 var winner = (PlayerEntity)ParserState.GetEntity(tagChange.Entity);
+                if (winner == null)
+                {
+                    return null;
+                }
+
                 //Logger.Log("Creating event provider for WinnerParser", node.CreationLogLine);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                        tagChange.TimeStamp,

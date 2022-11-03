@@ -28,7 +28,9 @@ namespace HearthstoneReplays.Events.Parsers
                 && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Value == (int)Zone.SECRET
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
-                && GameState.CurrentEntities[(node.Object as TagChange).Entity]?.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE;
+                && (GameState.CurrentEntities[(node.Object as TagChange).Entity]?.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE
+                    // Nagaling creates the secret in the REMOVEDFROMGAME zone first
+                    || GameState.CurrentEntities[(node.Object as TagChange).Entity]?.GetTag(GameTag.ZONE) == (int)Zone.REMOVEDFROMGAME);
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)

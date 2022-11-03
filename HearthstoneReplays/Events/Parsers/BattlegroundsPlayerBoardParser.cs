@@ -33,6 +33,8 @@ namespace HearthstoneReplays.Events.Parsers
             CorruptedMyrmidonBattlegrounds,
             MantidQueen,
             MantidQueenBattlegrounds,
+            InterrogatorWhitemane,
+            InterrogatorWhitemaneBattlegrounds,
         };
 
         static List<string> START_OF_COMBAT_QUEST_REWARD_EFFECT = new List<string>() {

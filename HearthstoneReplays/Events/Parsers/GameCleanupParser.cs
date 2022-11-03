@@ -26,8 +26,7 @@ namespace HearthstoneReplays.Events.Parsers
             // Simply to be able to mark the game as ended
             return stateType == StateType.GameState
                 && node.Type == typeof(TagChange)
-                && ((node.Object as TagChange).Name == (int)GameTag.GOLD_REWARD_STATE
-                        || ((node.Object as TagChange).Name == (int)GameTag.STATE
+                && (((node.Object as TagChange).Name == (int)GameTag.STATE
                                 && (node.Object as TagChange).Value == (int)State.COMPLETE));
         }
 

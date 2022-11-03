@@ -36,7 +36,11 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
-            var entity = GameState.CurrentEntities[tagChange.Entity];
+            var entity = GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity);
+            if (entity == null)
+            {
+                return null;
+            }
             var timeout = tagChange.Value;
             var controllerId = entity.GetEffectiveController();
             return new List<GameEventProvider> { GameEventProvider.Create(

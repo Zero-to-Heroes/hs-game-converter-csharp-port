@@ -25,8 +25,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(TagChange)
-                && ((node.Object as TagChange).Name == (int)GameTag.GOLD_REWARD_STATE
-                        || ((node.Object as TagChange).Name == (int)GameTag.STATE
+                && (((node.Object as TagChange).Name == (int)GameTag.STATE
                                 && (node.Object as TagChange).Value == (int)State.COMPLETE));
         }
 

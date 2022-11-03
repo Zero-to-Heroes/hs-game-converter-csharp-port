@@ -401,7 +401,7 @@ namespace HearthstoneReplays.Parser
             return CurrentGame.FilterGameData(typeof(FullEntity), typeof(PlayerEntity))
                 .Select(data => (BaseEntity)data).ToList()
                 .Where(e => e.Id == id)
-                .First();
+                .FirstOrDefault();
         }
 
         public bool IsBattlegrounds()
