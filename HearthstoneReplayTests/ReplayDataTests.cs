@@ -88,7 +88,7 @@ namespace HearthstoneReplayTests
                 .Where(d => d is ChosenEntities)
                 .ToList();
             string xml = new ReplayConverter().xmlFromReplay(replay);
-            Console.Write(xml);
+            //Console.Write(xml);
         }
 
         [TestMethod]

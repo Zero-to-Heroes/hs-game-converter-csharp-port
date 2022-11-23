@@ -278,6 +278,7 @@ namespace HearthstoneReplays.Events
                     case KingMukla_CORE_EX1_014: return KingMukla_BananasLegacyToken;
                     case KingMuklaLegacy: return KingMukla_BananasLegacyToken;
                     case KingMuklaVanilla: return KingMukla_BananasLegacyToken;
+                    case Kingsbane_LOOT_542: return Kingsbane_LOOT_542;
                     case KoboldTaskmaster: return KoboldTaskmaster_ArmorScrapToken;
                     case LadyVashj_BT_109: return LadyVashj_VashjPrimeToken;
                     case LakkariSacrifice: return LakkariSacrifice_NetherPortalToken_UNG_829t1;
