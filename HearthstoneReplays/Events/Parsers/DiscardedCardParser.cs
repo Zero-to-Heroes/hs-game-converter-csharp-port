@@ -74,13 +74,13 @@ namespace HearthstoneReplays.Events.Parsers
             entity.PlayedWhileInHand.Clear();
 
             // Felsoul Jailer
+            FullEntity parentEntity = null;
             if (node.Parent?.Object is Action)
             {
                 var parentAction = node.Parent.Object as Action;
-                FullEntity parentEntity = null;
                 if (GameState.CurrentEntities.TryGetValue(parentAction.Entity, out parentEntity))
                 {
-                    if (parentEntity.CardId == CardIds.FelsoulJailerCore)
+                    if (parentEntity.CardId == CardIds.FelsoulJailerCore || parentEntity.CardId == CardIds.AmorphousSlime)
                     {
                         parentEntity.CardIdsToCreate.Add(cardId);
                     }
@@ -95,7 +95,10 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     showEntity.Entity,
                     StateFacade,
-                    gameState),
+                    gameState,
+                    new {
+                        OriginEntityId = parentEntity?.Id,
+                    }),
                 true,
                 node) };
         }
