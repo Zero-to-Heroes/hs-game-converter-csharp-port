@@ -195,6 +195,7 @@ namespace HearthstoneReplays.Events
                     case BananaBuffoon: return BananaBuffoon_BananasToken;
                     case BananaVendor: return BananaVendor_BananasToken;
                     case BaubleOfBeetles_ULDA_307: return BaubleOfBeetles_ULDA_307ts;
+                    case BeOurGuestTavernBrawl: return TheCountess_LegendaryInvitationToken;
                     case BeneathTheGrounds: return BeneathTheGrounds_NerubianAmbushToken;
                     case BlessingOfTheAncients_DAL_351: return BlessingOfTheAncients_DAL_351ts;
                     case BloodsailFlybooter: return BloodsailFlybooter_SkyPirateToken;
