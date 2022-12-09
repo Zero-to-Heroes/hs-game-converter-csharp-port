@@ -385,6 +385,7 @@ namespace HearthstoneReplays.Events
                     case TheLastKaleidosaur: return TheLastKaleidosaur_GalvadonToken;
                     case TheMarshQueen: return TheMarshQueen_QueenCarnassaToken;
                     case ThrowGlaive: return ThrowGlaive; // TO CHECK
+                    case TinyThimbleTavernBrawl: return TinyThimble_RegularSizeThimbleTavernBrawl;
                     case TombPillager: return TheCoinCore;
                     case TombPillagerCore: return TheCoinCore;
                     case TwinSlice_BT_175: return TwinSlice_SecondSliceToken;
