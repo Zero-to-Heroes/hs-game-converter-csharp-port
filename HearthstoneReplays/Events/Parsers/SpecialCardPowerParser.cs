@@ -14,10 +14,10 @@ namespace HearthstoneReplays.Events.Parsers
     {
         private static IList<string> SPECIAL_POWER_CARDS = new List<string>()
         {
+            CardIds.DewProcess,
             CardIds.LorekeeperPolkelt,
             CardIds.OrderInTheCourt,
             CardIds.SphereOfSapience,
-            CardIds.DewProcess,
         };
 
         private GameState GameState { get; set; }

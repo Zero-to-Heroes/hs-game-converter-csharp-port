@@ -295,6 +295,7 @@ namespace HearthstoneReplays.Events
                     case Locuuuusts_ULDA_036: return GiantLocust_Locuuuusts;
                     case LocuuuustsTavernBrawl: return Locuuuusts_LocuuuustsTavernBrawl;
                     case Locuuuusts_ONY_005tb3: return Locuuuusts_GiantLocustToken_ONY_005tb3t2;
+                    case LostInThePark_FeralFriendsyToken: return LostInThePark_GuffTheToughToken;
                     case MagneticMinesTavernBrawl: return SeaforiumBomber_BombToken;
                     case MailboxDancer: return TheCoinCore;
                     case Malorne: return Malorne;
@@ -736,6 +737,30 @@ namespace HearthstoneReplays.Events
                         if (candidateEntityIds.Count != 1)
                         {
                             Logger.Log("WARN: could not determine with full accuracy Ice Trap's target", candidateEntityIds.Count);
+                        }
+                        if (candidateEntityIds.Count == 0)
+                        {
+                            return null;
+                        }
+                        return GameState.CurrentEntities.ContainsKey(candidateEntityIds[0])
+                            ? GameState.CurrentEntities[candidateEntityIds[0]]?.CardId
+                            : null;
+                    }
+
+
+                    // Flesh Behemoth
+                    if (actionEntity != null
+                        && (actionEntity.CardId == IceTrap || actionEntity.CardId == FleshBehemoth_RLK_830)
+                        && action.TriggerKeyword == (int)GameTag.DEATHRATTLE)
+                    {
+                        var candidateEntityIds = action.Data
+                            .Where(d => d is ShowEntity)
+                            .Select(d => d as ShowEntity)
+                            .Select(e => e.Entity)
+                            .ToList();
+                        if (candidateEntityIds.Count != 1)
+                        {
+                            Logger.Log("WARN: could not determine with full accuracy Flesh Behemoth's target", candidateEntityIds.Count);
                         }
                         if (candidateEntityIds.Count == 0)
                         {

@@ -93,6 +93,8 @@ namespace HearthstoneReplays.Events.Parsers
                     new {
                         CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
                         CreatorEntityId = creator?.Item2 ?? -1,
+                        // Used by Souleater's Scythe's Bound Souls to refer to the bound minion
+                        FxDataNum1 = showEntity.GetTag(GameTag.FX_DATANUM_1),
                     }),
                 true,
                 node) };
@@ -129,6 +131,8 @@ namespace HearthstoneReplays.Events.Parsers
                         CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show "created by ..."
                         CreatorEntityId = creator?.Item2 ?? -1,
                         CreatedByJoust = createdByJoust,
+                        // Used by Souleater's Scythe's Bound Souls to refer to the bound minion
+                        FxDataNum1 = fullEntity.GetTag(GameTag.FX_DATANUM_1),
                     }),
                 true,
                 node) };

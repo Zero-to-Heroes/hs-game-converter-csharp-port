@@ -99,7 +99,6 @@ namespace HearthstoneReplays.Events.Parsers
                     // This was introduced to flag the cards created by the Suspicious* cards
                     if (SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW.Contains(lastInfluencedByCardId))
                     {
-
                         predictedCardId = predictedCardId ?? Oracle.PredictCardId(GameState, lastInfluencedByCardId, lastInfluencedByCard?.Item2 ?? -1, node, cardId);
                     }
                     GameState.OnCardDrawn(entity.Entity);

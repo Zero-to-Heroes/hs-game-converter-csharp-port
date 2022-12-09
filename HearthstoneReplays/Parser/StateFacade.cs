@@ -93,6 +93,13 @@ namespace HearthstoneReplays.Parser
                 return State?.PTLState;
             }
         }
+        public ParserState GsState
+        {
+            get
+            {
+                return State?.GSState;
+            }
+        }
 
         internal bool HasMetaData()
         {

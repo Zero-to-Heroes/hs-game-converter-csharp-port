@@ -25,10 +25,13 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
+            TagChange tagChange = null;
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.ZONE
-                && (node.Object as TagChange).Value == (int)Zone.SETASIDE
+                && (tagChange = node.Object as TagChange).Name == (int)GameTag.ZONE
+                // Patchwerk puts the destroyed minion in the Graveyard. I think this is a bug, 
+                // but for now that's how it is
+                && (tagChange.Value == (int)Zone.SETASIDE || tagChange.Value == (int)Zone.GRAVEYARD)
                 && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.DECK;
         }
 

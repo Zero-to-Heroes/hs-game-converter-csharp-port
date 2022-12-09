@@ -96,10 +96,20 @@ namespace HearthstoneReplays.Events.Parsers
             FullEntity fullEntity = node.Object as FullEntity;
             var controllerId = fullEntity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                     fullEntity.TimeStamp,
                     "CREATE_CARD_IN_GRAVEYARD",
                     () => {
+                        
+                        // Because Souleater's Scythe creates the cards in the graveyard at the start of the game, 
+                        // we add this condition, so that we only keep cards created by effects
+                        if (StateFacade.LocalPlayer.PlayerId != fullEntity.GetController() && (node.Parent == null || node.Parent.Object is Game))
+                        {
+                            return null;
+                        }
+
                         // We do it here because of Diligent Notetaker - we have to know the last
                         // card played before assigning anything
                         var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
@@ -115,9 +125,20 @@ namespace HearthstoneReplays.Events.Parsers
                                 creatorCardId = "GAME_005";
                             }
                         }
-                        //var a = "t";
-                        //Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
-                        //Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, fullEntity.CardId);
+
+                        // Because Souleater's Scythe behaves weirdly in the logs, and creates the cards in the graveyard right at the start
+                        // before even the Scythe has been revealed
+                        // This is a hack and probably won't work in the future though, as it could apply to a variety of things
+                        bool shouldRemoveFromInitialDeck = false;
+                        FullEntity lastAffectedByEntity = null;
+                        if (fullEntity.GetTag(GameTag.LAST_AFFECTED_BY) > 0
+                            && StateFacade.GsState.GameState.CurrentEntities.ContainsKey(fullEntity.GetTag(GameTag.LAST_AFFECTED_BY)))
+                        {
+                            lastAffectedByEntity = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(fullEntity.GetTag(GameTag.LAST_AFFECTED_BY));
+                            shouldRemoveFromInitialDeck = true;
+                        }
+
+
                         return new GameEvent
                         {
                             Type =  "CREATE_CARD_IN_GRAVEYARD",
@@ -131,7 +152,9 @@ namespace HearthstoneReplays.Events.Parsers
                                 GameState = gameState,
                                 AdditionalProps = new {
                                     CreatorCardId = creatorCardId,
+                                    ShouldRemoveFromInitialDeck = shouldRemoveFromInitialDeck,
                                     IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1,
+                                    LastAffectedByEntityId = lastAffectedByEntity?.Id,
                                 }
                             }
                         };
