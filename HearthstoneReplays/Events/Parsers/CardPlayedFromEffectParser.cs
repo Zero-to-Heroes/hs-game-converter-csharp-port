@@ -43,7 +43,17 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return false;
+            // Rune of the Archmage playing spells creates them as FULL_ENTITIES in PLAY, not going through a TAG_CHANGE
+            var isPowerPhase = (node.Parent == null
+                       || node.Parent.Type != typeof(Parser.ReplayData.GameActions.Action)
+                       || (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.POWER);
+
+            ShowEntity fullEntity = null;
+            bool cardPlayed = node.Type == typeof(ShowEntity)
+                && (fullEntity = node.Object as ShowEntity).GetZone() == (int)Zone.PLAY;
+            return stateType == StateType.PowerTaskList
+                && isPowerPhase
+                && cardPlayed;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -89,7 +99,42 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
-            return null;
+            var entity = node.Object as ShowEntity;
+            var cardId = entity.CardId;
+            var controllerId = entity.GetEffectiveController();
+            if (cardId.Length == 0 || GameState.CurrentEntities[entity.Entity].GetTag(GameTag.CARDTYPE) == (int)CardType.ENCHANTMENT)
+            {
+                return null;
+            }
+
+            var action = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+            // Since 23.4, it can happen that these tags are directly at the root, and not below an action
+            var targetId = action?.Target ?? 0;
+            string targetCardId = targetId > 0 ? GameState.CurrentEntities[targetId].CardId : null;
+            var creator = entity.GetTag(GameTag.CREATOR);
+            var creatorCardId = creator != -1 && GameState.CurrentEntities.ContainsKey(creator)
+                ? GameState.CurrentEntities[creator].CardId
+                : null;
+            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, entity);
+
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                    entity.TimeStamp,
+                    "CARD_PLAYED_BY_EFFECT",
+                    GameEvent.CreateProvider(
+                        "CARD_PLAYED_BY_EFFECT",
+                        cardId,
+                        controllerId,
+                        entity.Entity,
+                        StateFacade,
+                        gameState,
+                        new {
+                            TargetEntityId = targetId,
+                            TargetCardId = targetCardId,
+                            CreatorCardId = creatorCardId,
+                        }
+                    ),
+                    true,
+                    node) };
         }
     }
 }
