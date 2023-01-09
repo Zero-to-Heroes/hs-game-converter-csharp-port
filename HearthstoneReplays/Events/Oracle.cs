@@ -750,6 +750,28 @@ namespace HearthstoneReplays.Events
                             : null;
                     }
 
+                    // Getaway Kodo
+                    if (actionEntity != null && actionEntity.CardId == GetawayKodo && action.TriggerKeyword == (int)GameTag.SECRET)
+                    {
+                        var candidateEntityIds = action.Data
+                            .Where(d => d is MetaData)
+                            .Select(d => d as MetaData)
+                            .Where(m => m.Meta == (int)MetaDataType.HISTORY_TARGET)
+                            .SelectMany(m => m.MetaInfo)
+                            .Select(info => info.Entity)
+                            .ToList();
+                        if (candidateEntityIds.Count != 1)
+                        {
+                            Logger.Log("WARN: could not determine with full accuracy Getaway Kodo's target", candidateEntityIds.Count);
+                        }
+                        if (candidateEntityIds.Count == 0)
+                        {
+                            return null;
+                        }
+                        return GameState.CurrentEntities.ContainsKey(candidateEntityIds[0])
+                            ? GameState.CurrentEntities[candidateEntityIds[0]]?.CardId
+                            : null;
+                    }
 
                     // Flesh Behemoth
                     if (actionEntity != null
