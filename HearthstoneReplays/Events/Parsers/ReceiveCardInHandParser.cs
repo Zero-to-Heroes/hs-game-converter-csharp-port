@@ -62,6 +62,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             entity.PlayedWhileInHand.Clear();
+            var position = entity.GetZonePosition();
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
@@ -76,6 +77,7 @@ namespace HearthstoneReplays.Events.Parsers
                         new {
                             CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
+                            Position = position,
                         }),
                     true,
                     node) };
@@ -107,6 +109,7 @@ namespace HearthstoneReplays.Events.Parsers
             entity.PlayedWhileInHand.Clear();
             var dataNum1 = showEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1);
             var dataNum2 = showEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2);
+            var position = showEntity.GetZonePosition();
             // Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, showEntity.CardId);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,
@@ -123,6 +126,7 @@ namespace HearthstoneReplays.Events.Parsers
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1,
                             DataNum1 = dataNum1,
                             DataNum2 = dataNum2,
+                            Position = position,
                         }),
                     true,
                     node) };
@@ -147,6 +151,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
             var dataNum1 = fullEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1);
             var dataNum2 = fullEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2);
+            var position = fullEntity.GetZonePosition();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     fullEntity.TimeStamp,
@@ -191,6 +196,7 @@ namespace HearthstoneReplays.Events.Parsers
                                     AdditionalPlayInfo = additionalPlayInfo,
                                     DataNum1 = dataNum1,
                                     DataNum2 = dataNum2,
+                                    Position = position,
                                 }
                             }
                         };
