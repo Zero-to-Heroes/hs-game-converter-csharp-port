@@ -127,7 +127,11 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     showEntity.Entity,
                     StateFacade,
-                    gameState),
+                    gameState,
+                    new {
+                        // Needed to properly remove the Dragons created by Prestor when we play Kazalusan afterwards
+                        Cost = showEntity.GetCost()
+                    }),
                 true,
                 node) };
         }
