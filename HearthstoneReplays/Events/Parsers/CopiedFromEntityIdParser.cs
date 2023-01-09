@@ -69,6 +69,9 @@ namespace HearthstoneReplays.Events.Parsers
                         CopiedCardControllerId = copiedCardControllerId,
                         CopiedCardEntityId = copiedCardEntityId,
                         CopiedCardZone = copiedEntity.GetZone(),
+                        CopiedCardCost = copiedEntity.GetTag(GameTag.COST),
+                        CopiedCardAttack = copiedEntity.GetTag(GameTag.ATK),
+                        CopiedCardHealth = copiedEntity.GetTag(GameTag.HEALTH),
                     }),
                 true,
                 node) };
@@ -107,6 +110,9 @@ namespace HearthstoneReplays.Events.Parsers
                         CopiedCardControllerId = copiedCardControllerId,
                         CopiedCardEntityId = copiedCardEntityId,
                         CopiedCardZone = copiedEntity.GetZone(),
+                        CopiedCardCost = copiedEntity.GetTag(GameTag.COST),
+                        CopiedCardAttack = copiedEntity.GetTag(GameTag.ATK),
+                        CopiedCardHealth = copiedEntity.GetTag(GameTag.HEALTH),
                     }),
                 true,
                 node) };
