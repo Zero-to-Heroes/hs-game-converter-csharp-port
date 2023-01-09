@@ -227,6 +227,7 @@ namespace HearthstoneReplays.Events
                     case CurseOfRafaam: return CurseOfRafaam_CursedToken;
                     case Cutpurse: return TheCoinCore;
                     case DeadlyFork: return DeadlyFork_SharpFork;
+                    case DeathbringerSaurfangCore_RLK_082: return DeathbringerSaurfangCore_RLK_082;
                     case DeckOfWonders: return DeckOfWonders_ScrollOfWonderToken;
                     case DesperateMeasures_DAL_141: return DesperateMeasures_DAL_141ts;
                     case DefendTheDwarvenDistrict_KnockEmDownToken: return DefendTheDwarvenDistrict_TavishMasterMarksmanToken;
