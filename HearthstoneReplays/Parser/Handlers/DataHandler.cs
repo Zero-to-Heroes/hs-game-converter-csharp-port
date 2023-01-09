@@ -374,26 +374,26 @@ namespace HearthstoneReplays.Parser.Handlers
                 if (stateType == StateType.PowerTaskList)
                 {
                     state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
-                    timestamp,
-                    "SUB_SPELL_START",
-                    () => new GameEvent
-                    {
-                        Type = "SUB_SPELL_START",
-                        Value = new
+                        timestamp,
+                        "SUB_SPELL_START",
+                        () => new GameEvent
                         {
-                            PrefabId = subSpellPrefab,
-                            EntityId = sourceEntityId,
-                            CardId = sourceEntity?.CardId,
-                            ParentEntityId = parentAction?.Entity,
-                            ParentCardId = state.GameState.CurrentEntities.ContainsKey(parentAction?.Entity ?? -1) ? state.GameState.CurrentEntities[parentAction.Entity].CardId : null,
-                            LocalPlayer = stateFacade.LocalPlayer,
-                            OpponentPlayer = stateFacade.OpponentPlayer,
-                            ControllerId = sourceEntity?.GetController(),
-                        }
-                    },
-                    false,
-                    new Node(null, null, 0, null, data)
-                )});
+                            Type = "SUB_SPELL_START",
+                            Value = new
+                            {
+                                PrefabId = subSpellPrefab,
+                                EntityId = sourceEntityId,
+                                CardId = sourceEntity?.CardId,
+                                ParentEntityId = parentAction?.Entity,
+                                ParentCardId = state.GameState.CurrentEntities.ContainsKey(parentAction?.Entity ?? -1) ? state.GameState.CurrentEntities[parentAction.Entity].CardId : null,
+                                LocalPlayer = stateFacade.LocalPlayer,
+                                OpponentPlayer = stateFacade.OpponentPlayer,
+                                ControllerId = sourceEntity?.GetController(),
+                            }
+                        },
+                        false,
+                        new Node(null, null, 0, null, data)
+                    )});
                 }
                 return true;
             }
@@ -424,6 +424,41 @@ namespace HearthstoneReplays.Parser.Handlers
             {
                 //Logger.Log("Sub spell end", this.currentSubSpell);
                 state.NodeParser.CloseNode(new Node(typeof(SubSpell), this.currentSubSpell, 0, state.Node, data), stateType);
+                if (this.currentSubSpell != null)
+                {
+                    var subSpell = this.currentSubSpell;
+                    Action parentAction = null;
+                    if (state.Node?.Type == typeof(Action))
+                    {
+                        parentAction = state.Node.Object as Action;
+                    }
+                    var sourceEntityId = subSpell.Source;
+                    if (sourceEntityId == 0)
+                    {
+                        sourceEntityId = parentAction?.Entity ?? -1;
+                    }
+                    var sourceEntity = state.GameState.CurrentEntities.ContainsKey(sourceEntityId) ? state.GameState.CurrentEntities[sourceEntityId] : null;
+                    state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
+                        timestamp,
+                        "SUB_SPELL_END",
+                        () => new GameEvent
+                        {
+                            Type = "SUB_SPELL_END",
+                            Value = new
+                            {
+                                PrefabId = subSpell.Prefab,
+                                SourceEntityId = sourceEntityId,
+                                SourceCardId = sourceEntity?.CardId,
+                                TargetEntityIds = subSpell.Targets,
+                                LocalPlayer = stateFacade.LocalPlayer,
+                                OpponentPlayer = stateFacade.OpponentPlayer,
+                                ControllerId = sourceEntity?.GetController(),
+                            }
+                        },
+                        false,
+                        new Node(null, null, 0, null, data)
+                    )});
+                }
                 this.currentSubSpell = null;
                 return true;
             }
@@ -881,7 +916,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 if (isReconnecting)
                 {
                     Logger.Log(
-                        $"Probable reconnect detected {timestamp} // {previousTimestamp} // {state.Ended} // {state.NumberOfCreates} // {state.Spectating} // {stateType} // {data}", 
+                        $"Probable reconnect detected {timestamp} // {previousTimestamp} // {state.Ended} // {state.NumberOfCreates} // {state.Spectating} // {stateType} // {data}",
                         "" + (timestamp - previousTimestamp));
                     if (stateType == StateType.GameState)
                     {
@@ -898,20 +933,21 @@ namespace HearthstoneReplays.Parser.Handlers
                         new Node(null, null, 0, null, data)) });
                     }
                 }
-                this.metadata = stateType == StateType.GameState 
+                this.metadata = stateType == StateType.GameState
                     ? new GameMetaData()
-                        {
-                            BuildNumber = -1,
-                            FormatType = -1,
-                            GameType = -1,
-                            ScenarioID = -1,
-                        } 
+                    {
+                        BuildNumber = -1,
+                        FormatType = -1,
+                        GameType = -1,
+                        ScenarioID = -1,
+                    }
                     : gameInfoHelper.GetMetaData();
                 state.Reset(gameInfoHelper);
                 state.NumberOfCreates++;
                 state.ReconnectionOngoing = isReconnecting;
-                state.CurrentGame = new Game { 
-                    TimeStamp = timestamp, 
+                state.CurrentGame = new Game
+                {
+                    TimeStamp = timestamp,
                     BuildNumber = this.metadata.BuildNumber,
                     ScenarioID = this.metadata.ScenarioID,
                     FormatType = this.metadata.FormatType,
