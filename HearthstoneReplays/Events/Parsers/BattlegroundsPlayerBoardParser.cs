@@ -33,8 +33,10 @@ namespace HearthstoneReplays.Events.Parsers
             CorruptedMyrmidonBattlegrounds,
             MantidQueen,
             MantidQueenBattlegrounds,
-            InterrogatorWhitemane,
-            InterrogatorWhitemaneBattlegrounds,
+            InterrogatorWhitemane_BG24_704,
+            InterrogatorWhitemane_BG24_704_G,
+            Soulsplitter,
+            SoulsplitterBattlegrounds,
         };
 
         static List<string> START_OF_COMBAT_QUEST_REWARD_EFFECT = new List<string>() {
@@ -124,13 +126,13 @@ namespace HearthstoneReplays.Events.Parsers
                 .All(entity => entity.IsBaconGhost() 
                     ? (GetGhostBaseEntity(entity)?.GetTag(GameTag.COPIED_FROM_ENTITY_ID) ?? 0) > 0 
                     : entity.GetTag(GameTag.PLAYER_TECH_LEVEL) > 0);
-            var debugList = GameState.CurrentEntities.Values
-                .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                // Here we accept to face the ghost
-                .Where(entity => entity.CardId != BartenderBobBattlegrounds
-                    && entity.CardId != BaconphheroHeroicBattlegrounds)
-                .ToList();
+            //var debugList = GameState.CurrentEntities.Values
+            //    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+            //    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+            //    // Here we accept to face the ghost
+            //    .Where(entity => entity.CardId != BartenderBobBattlegrounds
+            //        && entity.CardId != BaconphheroHeroicBattlegrounds)
+            //    .ToList();
             if (!haveHeroesAllRequiredData)
             {
                 return false;
@@ -386,6 +388,20 @@ namespace HearthstoneReplays.Events.Parsers
                     .Select(entity => entity.CardId)
                     .ToList();
 
+                var eternalKnightBonus = GameState.CurrentEntities.Values
+                    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .Where(entity => entity.CardId == CardIds.EternalKnightPlayerEnchantEnchantment)
+                    .FirstOrDefault()
+                    ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
+                // Includes Anub'arak, Nerubian Deathswarmer
+                var undeadAttackBonus = GameState.CurrentEntities.Values
+                    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .Where(entity => entity.CardId == CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment)
+                    .FirstOrDefault()
+                    ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
+
                 return new PlayerBoard()
                 {
                     Hero = hero,
@@ -396,6 +412,11 @@ namespace HearthstoneReplays.Events.Parsers
                     Board = result,
                     QuestRewards = questRewards,
                     Secrets = secrets,
+                    GlobalInfo = new BgsPlayerGlobalInfo()
+                    {
+                        EternalKnightsDeadThisGame = eternalKnightBonus,
+                        UndeadAttackBonus = undeadAttackBonus,
+                    }
                 };
             }
             return null;
@@ -442,6 +463,14 @@ namespace HearthstoneReplays.Events.Parsers
             public List<object> Board { get; set; }
 
             public List<FullEntity> Secrets { get; set; }
+
+            public BgsPlayerGlobalInfo GlobalInfo { get; set; }
+        }
+
+        internal class BgsPlayerGlobalInfo
+        {
+            public int EternalKnightsDeadThisGame { get; set; }
+            public int UndeadAttackBonus { get; set; }
         }
     }
 }

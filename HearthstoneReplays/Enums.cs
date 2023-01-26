@@ -1161,6 +1161,10 @@ namespace HearthstoneReplays.Enums
         BACON_DOUBLE_QUEST_HERO_POWER = 2803,
         CARD_COSTS_ARMOR = 2811,
         HAS_ACTIVATE_POWER = 2840,
+        MAGNETIC_TO_RACE = 2859,
+        BACON_MAX_LEADERBOARD_ARMOR = 2867,
+        BACON_REBORN_TOOLTIP = 2870,
+        BACON_PUTRICIDESCREATION_TOOLTIP = 2875,
     }
 
     public enum GameType

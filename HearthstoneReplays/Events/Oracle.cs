@@ -265,7 +265,7 @@ namespace HearthstoneReplays.Events
                     case FullBlownEvil: return FullBlownEvil;
                     case GhastlyConjurer_CORE_ICC_069: return MirrorImageLegacy_CS2_027;
                     case GhastlyConjurer_ICC_069: return MirrorImageLegacy_CS2_027;
-                    case GildedGargoyle: return TheCoinCore;
+                    case GildedGargoyle_LOOT_534: return TheCoinCore;
                     case HakkarTheSoulflayer: return HakkarTheSoulflayer_CorruptedBloodToken;
                     case HalazziTheLynx: return Springpaw_LynxToken;
                     case Harpoon: return ArcaneShot;
@@ -388,7 +388,7 @@ namespace HearthstoneReplays.Events
                     case TheMarshQueen_QueenCarnassaToken: return TheMarshQueen_CarnassasBroodToken;
                     case ThrowGlaive: return ThrowGlaive; // TO CHECK
                     case TinyThimbleTavernBrawl: return TinyThimble_RegularSizeThimbleTavernBrawl;
-                    case TombPillager: return TheCoinCore;
+                    case TombPillager_LOE_012: return TheCoinCore;
                     case TombPillagerCore: return TheCoinCore;
                     case TwinSlice_BT_175: return TwinSlice_SecondSliceToken;
                     case UmbralSkulker: return TheCoinCore;
