@@ -116,10 +116,10 @@ namespace HearthstoneReplayTests
                 Thread.Sleep(3000);
                 string xml = new ReplayConverter().xmlFromReplay(replay);
                 GC.Collect();
-                Thread.Sleep(3000); //140, 156, 161, 163
+                Thread.Sleep(3000); // 135, 153, 158, 158, 165
             }
 
-            Thread.Sleep(3000);
+            Thread.Sleep(3000); //168
         }
 
         private void ProcessPlugin(ReplayConverterPlugin plugin, List<string> logsForGame)

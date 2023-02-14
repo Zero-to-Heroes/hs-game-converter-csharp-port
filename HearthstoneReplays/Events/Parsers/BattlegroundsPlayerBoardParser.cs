@@ -15,6 +15,7 @@ namespace HearthstoneReplays.Events.Parsers
             SwattingInsectsBattlegrounds,
             EmbraceYourRageBattlegrounds,
             Ozumat_Tentacular,
+            TeronGorefiend_RapidReanimation,
         };
 
         private static List<string> TAVISH_HERO_POWERS = new List<string>() {
@@ -402,6 +403,53 @@ namespace HearthstoneReplays.Events.Parsers
                     .FirstOrDefault()
                     ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
 
+                FullEntity rapidReanimationTarget = null;
+                if (heroPower?.CardId == CardIds.TeronGorefiend_RapidReanimation)
+                {
+                    var parentAction = (node.Parent.Object as Action);
+                    var triggerBlock = parentAction.Data
+                        .Where(data => data is Action)
+                        .Select(data => data as Action)
+                        .Where(action => action.Type == (int)BlockType.TRIGGER)
+                        .Where(action => GameState.CurrentEntities.ContainsKey(action.Entity)
+                            && GameState.CurrentEntities[action.Entity]?.CardId == CardIds.TeronGorefiend_RapidReanimation)
+                        .FirstOrDefault();
+                    if (triggerBlock != null)
+                    {
+                        var destroyingChange = triggerBlock.Data
+                            .Where(data => data is TagChange)
+                            .Select(data => data as TagChange)
+                            .Where(tag => tag.Name == (int)GameTag.TO_BE_DESTROYED)
+                            .FirstOrDefault();
+                        if (destroyingChange != null)
+                        {
+                            var destroyedEntityId = destroyingChange.Entity;
+                            var destroyedEntity = GameState.CurrentEntities.Values
+                                .Where(e => e.Entity == destroyedEntityId)
+                                .FirstOrDefault();
+                            if (destroyedEntity != null)
+                            {
+                                rapidReanimationTarget = destroyedEntity.Clone();
+                                if (rapidReanimationTarget.GetTag(GameTag.REBORN) != -1)
+                                {
+                                    var newTags = rapidReanimationTarget.GetTagsCopy();
+                                    var tagsAfterUpdate = newTags
+                                        .Select(tag => tag.Name == (int)GameTag.REBORN ? new Tag() { Name = tag.Name, Value = 1 } : tag)
+                                        .ToList();
+                                    rapidReanimationTarget.Tags = tagsAfterUpdate;
+                                }
+                            }
+                        }
+                    }
+
+                    var minionKilledByRapidReanimation = GameState.CurrentEntities.Values
+                        .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                        .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                        .Where(entity => entity.CardId == CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment)
+                        .FirstOrDefault()
+                        ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
+                }
+
                 return new PlayerBoard()
                 {
                     Hero = hero,
@@ -416,6 +464,7 @@ namespace HearthstoneReplays.Events.Parsers
                     {
                         EternalKnightsDeadThisGame = eternalKnightBonus,
                         UndeadAttackBonus = undeadAttackBonus,
+                        RapidReanimationTarget = rapidReanimationTarget,
                     }
                 };
             }
@@ -471,6 +520,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             public int EternalKnightsDeadThisGame { get; set; }
             public int UndeadAttackBonus { get; set; }
+            public FullEntity RapidReanimationTarget { get; set; }
         }
     }
 }
