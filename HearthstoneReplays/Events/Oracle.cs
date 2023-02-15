@@ -577,6 +577,33 @@ namespace HearthstoneReplays.Events
                         }
                         return null;
 
+                    case RivendareWarrider:
+                        if (node.Parent.Type == typeof(Action))
+                        {
+                            var act = node.Parent.Object as Action;
+                            var existingEntity = GameState.CurrentEntities.GetValueOrDefault(act.Entity);
+                            if (existingEntity == null)
+                            {
+                                return null;
+                            }
+
+                            var ridersLeft = existingEntity.CardIdsToCreate;
+                            if (ridersLeft.Count == 0)
+                            {
+                                ridersLeft = new List<string>()
+                                {
+                                    RivendareWarrider_BlaumeauxFamineriderToken,
+                                    RivendareWarrider_KorthazzDeathriderToken,
+                                    RivendareWarrider_ZeliekConquestriderToken
+                                };
+                                existingEntity.CardIdsToCreate = ridersLeft;
+                            }
+                            var cardId = ridersLeft[0];
+                            ridersLeft.RemoveAt(0);
+                            return cardId;
+                        }
+                        return null;
+
                     case FindTheImposter_SpymasterScabbsToken:
                         if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
@@ -605,6 +632,7 @@ namespace HearthstoneReplays.Events
                             return cardId;
                         }
                         return null;
+
 
                     case SuspiciousAlchemist_AMysteryEnchantment:
                         var enchantmentEntity = GameState.CurrentEntities.GetValueOrDefault(creatorEntityId);
@@ -950,6 +978,18 @@ namespace HearthstoneReplays.Events
                             actionEntity.PlayedWhileInHand.Remove(firstSpellEntity.Entity);
                             return firstSpellEntity.CardId;
                         }
+                    }
+                    else if (actionEntity.CardId == ColdStorage)
+                    {
+                        var targetEntityId = action.Data
+                            .Where(data => data is MetaData)
+                            .Select(data => data as MetaData)
+                            .Where(meta => meta.Meta == (int)MetaDataType.TARGET)
+                            .SelectMany(meta => meta.MetaInfo)
+                            .Where(info => info != null)
+                            .FirstOrDefault()
+                            ?.Entity;
+                        return targetEntityId != null ? GameState.CurrentEntities.GetValueOrDefault(targetEntityId.Value)?.CardId : null;
                     }
                     // Horde Operative
                     else if (actionEntity.CardId == HordeOperative)

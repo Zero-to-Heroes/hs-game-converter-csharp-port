@@ -15,7 +15,12 @@ namespace HearthstoneReplays.Events.Parsers
             SwattingInsectsBattlegrounds,
             EmbraceYourRageBattlegrounds,
             Ozumat_Tentacular,
-            TeronGorefiend_RapidReanimation,
+        };
+
+        // We want to send the board states before these hero powers trigger
+        private static List<string> START_OF_COMBAT_HERO_POWER = new List<string>() {
+            //TeronGorefiend_RapidReanimation
+            RapidReanimation_ImpendingDeathEnchantment
         };
 
         private static List<string> TAVISH_HERO_POWERS = new List<string>() {
@@ -105,6 +110,7 @@ namespace HearthstoneReplays.Events.Parsers
                             // Here we want the boards to be send before the minions start of combat effects happen, because
                             // we want the simulator to include their random effects inside the simulation
                             || START_OF_COMBAT_MINION_EFFECT.Contains(actionEntity.CardId)
+                            || START_OF_COMBAT_HERO_POWER.Contains(actionEntity.CardId)
                             || START_OF_COMBAT_QUEST_REWARD_EFFECT.Contains(actionEntity.CardId)
                             )
                     )
@@ -124,8 +130,8 @@ namespace HearthstoneReplays.Events.Parsers
                 //.Select(entity => entity.IsBaconGhost() 
                 //    ? GetGhostBaseEntity(entity)
                 //    : entity)
-                .All(entity => entity.IsBaconGhost() 
-                    ? (GetGhostBaseEntity(entity)?.GetTag(GameTag.COPIED_FROM_ENTITY_ID) ?? 0) > 0 
+                .All(entity => entity.IsBaconGhost()
+                    ? (GetGhostBaseEntity(entity)?.GetTag(GameTag.COPIED_FROM_ENTITY_ID) ?? 0) > 0
                     : entity.GetTag(GameTag.PLAYER_TECH_LEVEL) > 0);
             //var debugList = GameState.CurrentEntities.Values
             //    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
@@ -403,51 +409,33 @@ namespace HearthstoneReplays.Events.Parsers
                     .FirstOrDefault()
                     ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
 
-                FullEntity rapidReanimationTarget = null;
+                var heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
                 if (heroPower?.CardId == CardIds.TeronGorefiend_RapidReanimation)
                 {
-                    var parentAction = (node.Parent.Object as Action);
-                    var triggerBlock = parentAction.Data
-                        .Where(data => data is Action)
-                        .Select(data => data as Action)
-                        .Where(action => action.Type == (int)BlockType.TRIGGER)
-                        .Where(action => GameState.CurrentEntities.ContainsKey(action.Entity)
-                            && GameState.CurrentEntities[action.Entity]?.CardId == CardIds.TeronGorefiend_RapidReanimation)
-                        .FirstOrDefault();
-                    if (triggerBlock != null)
-                    {
-                        var destroyingChange = triggerBlock.Data
-                            .Where(data => data is TagChange)
-                            .Select(data => data as TagChange)
-                            .Where(tag => tag.Name == (int)GameTag.TO_BE_DESTROYED)
-                            .FirstOrDefault();
-                        if (destroyingChange != null)
-                        {
-                            var destroyedEntityId = destroyingChange.Entity;
-                            var destroyedEntity = GameState.CurrentEntities.Values
-                                .Where(e => e.Entity == destroyedEntityId)
-                                .FirstOrDefault();
-                            if (destroyedEntity != null)
-                            {
-                                rapidReanimationTarget = destroyedEntity.Clone();
-                                if (rapidReanimationTarget.GetTag(GameTag.REBORN) != -1)
-                                {
-                                    var newTags = rapidReanimationTarget.GetTagsCopy();
-                                    var tagsAfterUpdate = newTags
-                                        .Select(tag => tag.Name == (int)GameTag.REBORN ? new Tag() { Name = tag.Name, Value = 1 } : tag)
-                                        .ToList();
-                                    rapidReanimationTarget.Tags = tagsAfterUpdate;
-                                }
-                            }
-                        }
-                    }
-
-                    var minionKilledByRapidReanimation = GameState.CurrentEntities.Values
+                    var impendingDeath = GameState.CurrentEntities.Values
                         .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                        .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                        .Where(entity => entity.CardId == CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment)
-                        .FirstOrDefault()
-                        ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
+                        .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
+                        .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
+                        .Where(entity => entity.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == -1)
+                        .FirstOrDefault();
+                    if (impendingDeath == null)
+                    {
+                        impendingDeath = GameState.CurrentEntities.Values
+                            .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                            .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
+                            .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
+                            .FirstOrDefault();
+                    }
+                    var test = GameState.CurrentEntities.Values
+                        .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                        .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
+                        .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
+                        .ToList();
+                    // Can be null if the player didn't use the hero power
+                    if (impendingDeath != null)
+                    {
+                        heroPowerInfo = impendingDeath.GetTag(GameTag.ATTACHED);
+                    }
                 }
 
                 return new PlayerBoard()
@@ -455,7 +443,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Hero = hero,
                     HeroPowerCardId = heroPower?.CardId,
                     HeroPowerUsed = heroPowerUsed,
-                    HeroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0,
+                    HeroPowerInfo = heroPowerInfo,
                     CardId = cardId,
                     Board = result,
                     QuestRewards = questRewards,
@@ -464,7 +452,6 @@ namespace HearthstoneReplays.Events.Parsers
                     {
                         EternalKnightsDeadThisGame = eternalKnightBonus,
                         UndeadAttackBonus = undeadAttackBonus,
-                        RapidReanimationTarget = rapidReanimationTarget,
                     }
                 };
             }

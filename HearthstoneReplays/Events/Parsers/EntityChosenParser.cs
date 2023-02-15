@@ -55,7 +55,10 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorEntity = ptlState.CurrentEntities.ContainsKey(creatorEntityId) ? ptlState.CurrentEntities[creatorEntityId] : null;
             var creatorCardId = creatorEntity?.CardId;
 
-            if (creatorCardId == CardIds.SuspiciousPirate || creatorCardId == CardIds.SuspiciousAlchemist || creatorCardId == CardIds.SuspiciousUsher)
+            if (creatorCardId == CardIds.SuspiciousPirate 
+                || creatorCardId == CardIds.SuspiciousAlchemist 
+                || creatorCardId == CardIds.SuspiciousUsher 
+                || creatorCardId == CardIds.SuspiciousPeddler)
             {
                 creatorEntity.KnownEntityIds.Add(chosenEntity.Id);
             }
