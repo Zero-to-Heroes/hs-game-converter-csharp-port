@@ -241,39 +241,53 @@ namespace HearthstoneReplays.Parser
             // no heroes.
             if (IsMercenaries())
             {
-                // We assume that our heroes are always the first ones revealed
-                var localPlayerPlayerId = CurrentGame
-                    .FilterGameData(typeof(FullEntity))
-                    .Where(d => d is FullEntity)
-                    .Select(d => d as FullEntity)
-                    .Where(d => d.GetTag(GameTag.LETTUCE_MERCENARY) == 1 && d.CardId?.Length > 0)
-                    .FirstOrDefault()
-                    ?.GetEffectiveController();
-                var opponentPlayerPlayerId = CurrentGame
-                    .FilterGameData(typeof(FullEntity))
-                    .Where(d => d is FullEntity)
-                    .Select(d => d as FullEntity)
-                    // On PvE we know the CardId
-                    .Where(d => d.GetTag(GameTag.LETTUCE_MERCENARY) == 1 && (d.CardId?.Length == 0 || d.GetZone() == (int)Zone.PLAY))
-                    // When reconnecting, our own mercs can already be in play, so we need to make sure
-                    // we're picking a different controller
-                    .Where(d => d.GetEffectiveController() != localPlayerPlayerId)
-                    .FirstOrDefault()
-                    ?.GetEffectiveController();
-
                 if (getPlayers().Count == 3 && CurrentGame.ScenarioID == (int)ScenarioId.LETTUCE_PVP)
                 {
                     CurrentGame.ScenarioID = (int)ScenarioId.LETTUCE_PVP_VS_AI;
+
                 }
-                // Mercenaries has 3 players. From what I've seen:
+                
+                var localPlayerPlayerId = -1;
+                var opponentPlayerPlayerId = -1;
+
+                // Doing things intelligently is very difficult, because of the "3-players" approach they have in the logs.
+                // The way players are assigned seem to be consistent across games though, so it's in fact probably easier
+                // to hard-code the mapping
+                // Mercenaries PvE has 3 players. From what I've seen:
                 // - The first player is the main player, but a "dummy" account? Maybe used to store mercs in some circumstances?
                 // - The second player is the AI
                 // - The third player is the "real" player account
+                if (IsMercenariesPvE() && getPlayers().Count == 3)
+                {
+                    localPlayerPlayerId = getPlayers()[2].PlayerId;
+                    opponentPlayerPlayerId = getPlayers()[1].PlayerId;
+                }
+                else
+                {
+                    // We assume that our heroes are always the first ones revealed
+                    localPlayerPlayerId = CurrentGame
+                        .FilterGameData(typeof(FullEntity))
+                        .Where(d => d is FullEntity)
+                        .Select(d => d as FullEntity)
+                        .Where(d => d.GetTag(GameTag.LETTUCE_MERCENARY) == 1 && d.CardId?.Length > 0)
+                        .FirstOrDefault()
+                        ?.GetEffectiveController() ?? -1;
+                    opponentPlayerPlayerId = CurrentGame
+                        .FilterGameData(typeof(FullEntity))
+                        .Where(d => d is FullEntity)
+                        .Select(d => d as FullEntity)
+                        // On PvE we know the CardId
+                        .Where(d => d.GetTag(GameTag.LETTUCE_MERCENARY) == 1 && (d.CardId?.Length == 0 || d.GetZone() == (int)Zone.PLAY))
+                        // When reconnecting, our own mercs can already be in play, so we need to make sure
+                        // we're picking a different controller
+                        .Where(d => d.GetEffectiveController() != localPlayerPlayerId)
+                        .FirstOrDefault()
+                        ?.GetEffectiveController() ?? -1;
+                }
+
                 foreach (PlayerEntity player in getPlayers())
                 {
-                    if (player.PlayerId == opponentPlayerPlayerId && data.Contains("PlayerID=" + opponentPlayerPlayerId)
-                        // For PvE
-                        || player.AccountHi == "0" && player.PlayerId == 2 && data.Contains("PlayerID=2"))
+                    if (player.PlayerId == opponentPlayerPlayerId && data.Contains("PlayerID=" + opponentPlayerPlayerId))
                     {
                         var newPlayer = Player.from(player);
                         SetOpponentPlayer(newPlayer, timestamp, data, StateType == StateType.GameState);
@@ -411,12 +425,17 @@ namespace HearthstoneReplays.Parser
 
         public bool IsMercenaries()
         {
+            return IsMercenariesPvE() || new List<int>() {
+                (int)GameType.GT_MERCENARIES_PVP,
+            }.Contains(CurrentGame.GameType);
+        }
+        public bool IsMercenariesPvE()
+        {
             return new List<int>() {
                 (int)GameType.GT_MERCENARIES_AI_VS_AI,
                 (int)GameType.GT_MERCENARIES_FRIENDLY,
                 (int)GameType.GT_MERCENARIES_PVE,
                 (int)GameType.GT_MERCENARIES_PVE_COOP,
-                (int)GameType.GT_MERCENARIES_PVP
             }.Contains(CurrentGame.GameType);
         }
 
