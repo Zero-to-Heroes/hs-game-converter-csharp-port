@@ -89,6 +89,7 @@ namespace HearthstoneReplays.Events.Parsers
                         AbilityCurrentCooldown = abilityCurrentCooldown == -1 ? (int?)null : abilityCurrentCooldown,
                         AbilitySpeed = abilitySpeed == -1 ? (int?)null : abilitySpeed,
                         IsTreasure = isTreasure,
+                        AbilityNameData1 = fullEntity.GetTag(GameTag.CARD_NAME_DATA_1),
                     }
                 ),
                 true,
