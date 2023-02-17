@@ -5,6 +5,7 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -80,6 +81,16 @@ namespace HearthstoneReplays.Events.Parsers
             var dataTag1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
             // Cost is needed for cards like Lady Prestor, which use the cost of the drawn card to remove the right card from the deck
             var cost = entity.GetCost();
+
+            var parentAction = node.Parent.Object.GetType() == typeof(Action) ? node.Parent.Object as Action : null;
+            // Useful for Finley
+            string drawnByCardId = null;
+            if (parentAction != null)
+            {
+                var drawerEntityId = parentAction.Entity;
+                var drawerEntity = GameState.CurrentEntities.GetValueOrDefault(drawerEntityId);
+                drawnByCardId = drawerEntity?.CardId;
+            }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -120,6 +131,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 LastInfluencedByCardId = lastInfluencedByCardId,
                                 DataTag1 = dataTag1,
                                 Cost = cost,
+                                DrawnByCardId = drawnByCardId
                             }
                         }
                     };
