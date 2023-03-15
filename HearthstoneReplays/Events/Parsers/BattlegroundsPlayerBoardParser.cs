@@ -14,13 +14,16 @@ namespace HearthstoneReplays.Events.Parsers
             RebornRitesBattlegrounds,
             SwattingInsectsBattlegrounds,
             EmbraceYourRageBattlegrounds,
-            Ozumat_Tentacular,
         };
 
         // We want to send the board states before these hero powers trigger
         private static List<string> START_OF_COMBAT_HERO_POWER = new List<string>() {
             //TeronGorefiend_RapidReanimation
-            RapidReanimation_ImpendingDeathEnchantment
+            RapidReanimation_ImpendingDeathEnchantment,
+            WaxWarbandBattlegrounds,
+            // We need to send the board state before it triggers, because the simulator needs to handle it, so that
+            // it is not broken if Ozumat + Tavish (or other hero power that is managed by the simulator) happen
+            Ozumat_Tentacular, 
         };
 
         private static List<string> TAVISH_HERO_POWERS = new List<string>() {
@@ -43,6 +46,8 @@ namespace HearthstoneReplays.Events.Parsers
             InterrogatorWhitemane_BG24_704_G,
             Soulsplitter,
             SoulsplitterBattlegrounds,
+            AmberGuardian,
+            AmberGuardianBattlegrounds,
         };
 
         static List<string> START_OF_COMBAT_QUEST_REWARD_EFFECT = new List<string>() {
