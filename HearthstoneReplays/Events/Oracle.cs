@@ -593,7 +593,7 @@ namespace HearthstoneReplays.Events
                             {
                                 ridersLeft = new List<string>()
                                 {
-                                    RivendareWarrider_BlaumeauxFamineriderToken,
+                                    RivendareWarrider_BlaumeuxFamineriderToken,
                                     RivendareWarrider_KorthazzDeathriderToken,
                                     RivendareWarrider_ZeliekConquestriderToken
                                 };
