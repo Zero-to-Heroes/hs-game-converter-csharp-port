@@ -164,6 +164,7 @@ namespace HearthstoneReplays.Events
                 switch (creatorCardId)
                 {
                     case AbyssalWave: return SirakessCultist_AbyssalCurseToken;
+                    case Acornbearer: return Acornbearer_SquirrelToken;
                     case AdorableInfestation: return AdorableInfestation_MarsuulCubToken;
                     case AirRaid_YOD_012: return AirRaid_YOD_012ts;
                     case Akama_BT_713: return Akama_AkamaPrimeToken;
