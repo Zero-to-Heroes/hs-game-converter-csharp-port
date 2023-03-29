@@ -431,11 +431,11 @@ namespace HearthstoneReplays.Events.Parsers
                             .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
                             .FirstOrDefault();
                     }
-                    var test = GameState.CurrentEntities.Values
-                        .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                        .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
-                        .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
-                        .ToList();
+                    //var test = GameState.CurrentEntities.Values
+                    //    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                    //    .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
+                    //    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
+                    //    .ToList();
                     // Can be null if the player didn't use the hero power
                     if (impendingDeath != null)
                     {
