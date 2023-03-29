@@ -222,6 +222,7 @@ namespace HearthstoneReplays.Events
                     new TurnDurationUpdateParser(ParserState, StateFacade),
                     new StartOfGameTriggerParser(ParserState, StateFacade),
                     new DataScriptChangedParser(ParserState, StateFacade),
+                    new OverloadedCrystalsParser(ParserState, StateFacade),
 
                     new CreateCardInGraveyardParser(ParserState, StateFacade),
                     new MindrenderIlluciaParser(ParserState, StateFacade),
