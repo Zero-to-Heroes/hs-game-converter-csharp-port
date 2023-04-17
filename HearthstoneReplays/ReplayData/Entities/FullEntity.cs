@@ -78,6 +78,15 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             return GetTag(GameTag.CONTROLLER);
         }
 
+        internal bool InHand()
+        {
+            return GetZone() == (int)Zone.HAND;
+        }
+        internal bool InGraveyard()
+        {
+            return GetZone() == (int)Zone.GRAVEYARD;
+        }
+
         internal int GetZone()
         {
             return GetTag(GameTag.ZONE);

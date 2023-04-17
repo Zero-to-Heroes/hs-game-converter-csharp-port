@@ -256,7 +256,8 @@ namespace HearthstoneReplays.Events
                     //case FirstWishTavernBrawl: return SecondWishTavernBrawl;
                     //case SecondWishTavernBrawl: return ThirdWishTavernBrawl;
                     case FishyFlyer: return FishyFlyer_SpectralFlyerToken;
-                    case FlameGeyser: return FireFly_FlameElementalToken;
+                    case FlameGeyser_CORE_UNG_018: return FireFly_FlameElementalToken;
+                    case FlameGeyser_UNG_018: return FireFly_FlameElementalToken;
                     case ForgottenTorch: return ForgottenTorch_RoaringTorchToken;
                     case Framester: return Framester_FramedToken;
                     case FreshScent_YOD_005: return FreshScent_YOD_005ts;
@@ -280,9 +281,11 @@ namespace HearthstoneReplays.Events
                     case Impbalming: return Impbalming_WorthlessImpToken;
                     case InfernalStrikeTavernBrawl: return TwinSlice_SecondSliceToken;
                     case InfestedGoblin: return WrappedGolem_ScarabToken;
+                    case InfinitizeTheMaxitude_InfinitizeTheMaxitudeEnchantment: return InfinitizeTheMaxitude;
                     case IronJuggernaut: return IronJuggernaut_BurrowingMineToken;
                     case JadeIdol: return JadeIdol;
                     case JungleGiants: return JungleGiants_BarnabusTheStomperToken;
+                    case KangorDancingKing: return KangorDancingKing;
                     case KanrethadEbonlocke: return KanrethadEbonlocke_KanrethadPrimeToken;
                     case KargathBladefist_BT_123: return KargathBladefist_KargathPrimeToken;
                     case KingMukla_CORE_EX1_014: return KingMukla_BananasLegacyToken;
@@ -307,6 +310,7 @@ namespace HearthstoneReplays.Events
                     case MarvelousMyceliumTavernBrawlToken: return MarvelousMyceliumTavernBrawlToken;
                     case MidaPureLight_ONY_028: return MidaPureLight_FragmentOfMidaToken;
                     case MilitiaHorn: return VeteransMilitiaHorn;
+                    case MisterMukla: return KingMukla_BananasLegacyToken;
                     case MuklaTyrantOfTheVale: return KingMukla_BananasLegacyToken;
                     case MurgurMurgurgle: return MurgurMurgurgle_MurgurglePrimeToken;
                     case MysticalMirage_ULDA_035: return MysticalMirage_ULDA_035ts;
@@ -315,9 +319,11 @@ namespace HearthstoneReplays.Events
                     case OldMilitiaHornTavernBrawl: return OldMilitiaHorn_MilitiaHornTavernBrawl;
                     case OpenTheWaygate: return OpenTheWaygate_TimeWarpToken;
                     case Parrrley_DED_005: return Parrrley_DED_005;
+                    case PhotographerFizzle: return PhotographerFizzle_FizzlesSnapshotToken;
                     case PlagueOfMurlocs: return TwistPlagueOfMurlocs_SurpriseMurlocsToken;
                     case PortalKeeper: return PortalKeeper_FelhoundPortalToken;
                     case PortalOverfiend: return PortalKeeper_FelhoundPortalToken;
+                    case PozzikAudioEngineer: return PozzikAudioEngineer_AudioBotToken;
                     case Pyros_PyrosToken_UNG_027t2: return Pyros_PyrosToken_UNG_027t4;
                     case Pyros: return Pyros_PyrosToken_UNG_027t2;
                     case Queldelar_ForgingQueldelarToken_LOOTA_842t: return QueldelarTavernBrawl;
@@ -338,10 +344,12 @@ namespace HearthstoneReplays.Events
                     case RinTheFirstDisciple_TheFirstSealToken: return RinTheFirstDisciple_TheSecondSealToken;
                     case RinTheFirstDisciple_TheFourthSealToken: return RinTheFirstDisciple_TheFinalSealToken;
                     case RinTheFirstDisciple_TheSecondSealToken: return RinTheFirstDisciple_TheThirdSealToken;
+                    case RiseToTheOccasion_AvengeTheFallenToken: return RiseToTheOccasion_LightbornCarielToken;
                     case RinTheFirstDisciple: return RinTheFirstDisciple_TheFirstSealToken;
                     case RunawayGyrocopter: return RunawayGyrocopter;
                     case SackOfCoins: return HeftySackOfCoins;
                     case SandwaspQueen: return SandwaspQueen_SandwaspToken;
+                    case SaxophoneSoloist: return SaxophoneSoloist;
                     case Schooling: return PiranhaSwarmer_PiranhaSwarmerToken_TSC_638t;
                     case SchoolSpirits_SCH_307: return SchoolSpirits_SoulFragmentToken;
                     case SchoolTeacher: return SchoolTeacher_NagalingToken;
@@ -370,7 +378,7 @@ namespace HearthstoneReplays.Events
                     case SpringpawCore: return Springpaw_LynxToken;
                     case StaffOfAmmunae_ULDA_041: return StaffOfAmmunae_ULDA_041ts;
                     case Starseeker: return MoonfireLegacy;
-                    case SteamSurger: return FlameGeyser;
+                    case SteamSurger: return FlameGeyser_UNG_018;
                     case SunscaleRaptor: return SunscaleRaptor;
                     case SurlyMob_AngryMobTavernBrawl: return SurlyMob_CrazedMobTavernBrawl;
                     case SurlyMob: return AngryMob;
@@ -390,7 +398,7 @@ namespace HearthstoneReplays.Events
                     case ThrowGlaive: return ThrowGlaive; // TO CHECK
                     case TinyThimbleTavernBrawl: return TinyThimble_RegularSizeThimbleTavernBrawl;
                     case TombPillager_LOE_012: return TheCoinCore;
-                    case TombPillagerCore: return TheCoinCore;
+                    case TombPillager_CORE_LOE_012: return TheCoinCore;
                     case TwinSlice_BT_175: return TwinSlice_SecondSliceToken;
                     case UmbralSkulker: return TheCoinCore;
                     case UnearthedRaptor_MapToTheGoldenMonkeyToken: return UnearthedRaptor_GoldenMonkeyToken;
@@ -405,29 +413,33 @@ namespace HearthstoneReplays.Events
                     case WildGrowthCore: return WildGrowth_ExcessManaLegacyToken;
                     case WildGrowthLegacy: return WildGrowth_ExcessManaLegacyToken;
                     case WildGrowthVanilla: return WildGrowth_ExcessManaLegacyToken;
-                    case WitchwoodApple: return WitchwoodApple_TreantToken;
+                    case WitchwoodApple_CORE_GIL_663: return WitchwoodApple_TreantToken;
+                    case WitchwoodApple_GIL_663: return WitchwoodApple_TreantToken;
                     case Wrenchcalibur: return SeaforiumBomber_BombToken;
                     case YseraUnleashed: return YseraUnleashed_DreamPortalToken;
                     case Zaqul_TSC_959: return SirakessCultist_AbyssalCurseToken;
                     case ZixorApexPredator: return ZixorApexPredator_ZixorPrimeToken;
 
+                        // Action targets
                     case BalefulBanker:
+                    case DireFrenzy_CORE_GIL_828:
+                    case DireFrenzy_GIL_828:
                     case DollmasterDorian:
                     case DragonBreeder:
+                    case GangUp:
+                    case HolyWater:
+                    case LabRecruiter:
+                    case ManicSoulcaster:
+                    case MarkOfTheSpikeshell:
+                    case PowerChordSynchronize:
+                    case Recycle:
                     case Sathrovarr:
+                    case Seance:
+                    case Shadowcaster:
+                    case Splintergraft:
+                    case TogwagglesScheme:
                     case ZolaTheGorgon:
                     case ZolaTheGorgonCore:
-                    case Recycle:
-                    case Splintergraft:
-                    case MarkOfTheSpikeshell:
-                    case DireFrenzy:
-                    case ManicSoulcaster:
-                    case HolyWater:
-                    case Seance:
-                    case GangUp:
-                    case LabRecruiter:
-                    case Shadowcaster:
-                    case TogwagglesScheme:
                         if (node.Parent.Type == typeof(Action))
                         {
                             var act = node.Parent.Object as Action;
@@ -469,6 +481,37 @@ namespace HearthstoneReplays.Events
                         Console.WriteLine("TODO! Implement ExpiredMerchant card guess");
                         return null;
 
+                    case FightOverMe:
+                        if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+                        {
+                            var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                            var actionEntity = GameState.CurrentEntities.GetValueOrDefault(act.Entity);
+                            if (actionEntity != null)
+                            {
+                                if (actionEntity.KnownEntityIds.Count == 0)
+                                {
+                                    // This is a hack, because the DEATHS block is processed after the entities are added to
+                                    // hand. I suspect 
+                                    actionEntity.KnownEntityIds = act.Data
+                                        .Where(d => d is TagChange)
+                                        .Select(d => d as TagChange)
+                                        // Not sure what this is
+                                        .Where(d => d.Name == 1715)
+                                        // This works because the check is done asynchronously, so the DEATHS block should have been processed at this point
+                                        .Where(d => GameState.CurrentEntities.GetValueOrDefault(d.Entity)?.InGraveyard() ?? false)
+                                        .Select(d => d.Entity)
+                                        .ToList();
+                                }
+                                if (actionEntity?.KnownEntityIds?.Count > 0)
+                                {
+                                    var nextEntity = actionEntity.KnownEntityIds[0];
+                                    actionEntity.KnownEntityIds.RemoveAt(0);
+                                    return GameState.CurrentEntities.GetValueOrDefault(nextEntity)?.CardId;
+                                }
+                            }
+                        }
+                        return null;
+
                     case SpiritOfTheDead:
                         if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
@@ -491,17 +534,17 @@ namespace HearthstoneReplays.Events
                     case ManaBind:
                     case FrozenClone_CORE_ICC_082:
                     case FrozenClone_ICC_082:
-                        if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action)
-                            && node.Parent.Parent?.Type == typeof(Parser.ReplayData.GameActions.Action))
+                        if (node.Parent.Type == typeof(Action) && node.Parent.Parent?.Type == typeof(Action))
                         {
-                            var act = node.Parent.Parent.Object as Parser.ReplayData.GameActions.Action;
+                            var act = node.Parent.Parent.Object as Action;
                             var existingEntity = GameState.CurrentEntities.GetValueOrDefault(act.Entity);
                             return existingEntity?.CardId;
                         }
                         return null;
 
                     case Duplicate:
-                    case CheatDeath:
+                    case CheatDeath_CORE_LOOT_204:
+                    case CheatDeath_LOOT_204:
                         if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
                             var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
@@ -698,7 +741,8 @@ namespace HearthstoneReplays.Events
                     }
 
                     // Plagiarize
-                    if (action.TriggerKeyword == (int)GameTag.SECRET && actionEntity != null && actionEntity.KnownEntityIds.Count > 0 && actionEntity.CardId == Plagiarize)
+                    if (action.TriggerKeyword == (int)GameTag.SECRET && actionEntity != null && actionEntity.KnownEntityIds.Count > 0 
+                        && (actionEntity.CardId == Plagiarize_CORE_SCH_706 || actionEntity.CardId == Plagiarize_SCH_706))
                     {
                         var plagiarizeController = actionEntity.GetEffectiveController();
                         var entitiesPlayedByActivePlayer = actionEntity.KnownEntityIds
@@ -724,7 +768,7 @@ namespace HearthstoneReplays.Events
                     }
 
                     // Felsoul Jailer
-                    if (actionEntity.CardId == FelsoulJailerCore && actionEntity.CardIdsToCreate.Count > 0)
+                    if ((actionEntity.CardId == FelsoulJailer || actionEntity.CardId == FelsoulJailerLegacy) && actionEntity.CardIdsToCreate.Count > 0)
                     {
                         var result = actionEntity.CardIdsToCreate[0];
                         actionEntity.CardIdsToCreate.RemoveAt(0);
@@ -907,7 +951,7 @@ namespace HearthstoneReplays.Events
                         return cardDrawn != null ? GameState.CurrentEntities.GetValueOrDefault(cardDrawn.Entity)?.CardId : null;
                     }
                     // Vanessa VanCleed
-                    else if (actionEntity.CardId == VanessaVancleefCore)
+                    else if (actionEntity.CardId == VanessaVancleef_CORE_CS3_005 || actionEntity.CardId == VanessaVancleefLegacy)
                     {
                         var vanessaControllerId = GameState.CurrentEntities.GetValueOrDefault(actionEntity.Entity)?.GetController();
                         var playerIds = GameState.CardsPlayedByPlayerEntityIdByTurn.Keys;
@@ -966,7 +1010,17 @@ namespace HearthstoneReplays.Events
                             return nextCard;
                         }
                     }
-                    // Ace in the Hole
+                    else if (actionEntity.CardId == PhotographerFizzle_FizzlesSnapshotToken)
+                    {
+                        if (actionEntity?.KnownEntityIds?.Count > 0)
+                        {
+                            var nextEntity = actionEntity.KnownEntityIds[0];
+                            actionEntity.KnownEntityIds.RemoveAt(0);
+                            return GameState.CurrentEntities.GetValueOrDefault(nextEntity)?.CardId;
+                        }
+                        return null;
+                    }
+                    // Sivara
                     else if (actionEntity.CardId == CommanderSivara_TSC_087)
                     {
                         if (actionEntity.PlayedWhileInHand.Count > 0)
@@ -980,6 +1034,7 @@ namespace HearthstoneReplays.Events
                             return firstSpellEntity.CardId;
                         }
                     }
+                    // TODO: move this to the more simple "action target" case?
                     else if (actionEntity.CardId == ColdStorage)
                     {
                         var targetEntityId = action.Data

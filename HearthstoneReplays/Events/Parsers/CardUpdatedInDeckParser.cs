@@ -173,6 +173,15 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
                 ? GameState.CurrentEntities[creatorEntityId].CardId
                 : null;
+
+            if (cardId == CardIds.PhotographerFizzle_FizzlesSnapshotToken && entity != null && entity.KnownEntityIds.Count == 0)
+            {
+                entity.KnownEntityIds = GameState.CurrentEntities.Values
+                    .Where(e => e.GetController() == entity.GetController())
+                    .Where(e => e.InHand())
+                    .Select(e => e.Entity)
+                    .ToList();
+            }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "CARD_CHANGED_IN_DECK",

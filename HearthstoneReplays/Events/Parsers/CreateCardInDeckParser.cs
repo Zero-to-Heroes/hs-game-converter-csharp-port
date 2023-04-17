@@ -6,6 +6,7 @@ using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
+using System.Linq;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -80,6 +81,7 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = Oracle.PredictCardId(GameState, creator.Item1, creator.Item2, node, showEntity.CardId);
             var controllerId = showEntity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "CREATE_CARD_IN_DECK",
@@ -117,6 +119,7 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node, fullEntity.CardId);
             var controllerId = fullEntity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CREATE_CARD_IN_DECK",

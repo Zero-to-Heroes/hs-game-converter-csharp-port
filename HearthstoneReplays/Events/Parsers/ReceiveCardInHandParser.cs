@@ -162,6 +162,8 @@ namespace HearthstoneReplays.Events.Parsers
                         var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
                         var creatorCardId = creator?.Item1;
                         //var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, fullEntity, node);
+                        // The delay is also needed for Fight Over Me, because the DEATHS block is processed after the entities
+                        // are actually added to hand (which I think is a bug on HS)
                         var cardId = Oracle.PredictCardId(GameState, creatorCardId, creator?.Item2 ?? -1, node, fullEntity.CardId);
                         if (cardId == null && GameState.CurrentTurn <= 1 && fullEntity.GetTag(GameTag.ZONE_POSITION) == 5)
                         {

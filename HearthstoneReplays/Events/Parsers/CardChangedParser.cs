@@ -6,6 +6,7 @@ using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
+using System.Linq;
 
 namespace HearthstoneReplays.Events.Parsers
 {

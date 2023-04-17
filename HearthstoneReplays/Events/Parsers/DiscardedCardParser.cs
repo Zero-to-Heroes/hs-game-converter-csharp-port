@@ -80,7 +80,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var parentAction = node.Parent.Object as Action;
                 if (GameState.CurrentEntities.TryGetValue(parentAction.Entity, out parentEntity))
                 {
-                    if (parentEntity.CardId == CardIds.FelsoulJailerCore || parentEntity.CardId == CardIds.AmorphousSlime)
+                    if (parentEntity.CardId == CardIds.FelsoulJailer || parentEntity.CardId == CardIds.FelsoulJailerLegacy || parentEntity.CardId == CardIds.AmorphousSlime)
                     {
                         parentEntity.CardIdsToCreate.Add(cardId);
                     }
