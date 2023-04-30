@@ -31,11 +31,12 @@ namespace HearthstoneReplays.Events.Parsers
             // While the TURN tag is present in mercenaries, it is incremented on the Innkeeper entity,
             // and the logs don't let us easily disambiguate between the AI Innkeeper and the player's
             // Innkeeper, so we rely on the turn structure tags instead
-            var isMercenariesTurnChange = ParserState.IsMercenaries() 
+            var isMercenariesTurnChange = ParserState.IsMercenaries()
                 && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.STEP
                 && (node.Object as TagChange).Value == (int)Step.MAIN_PRE_ACTION
-                && GameState.GetGameEntity()?.Entity == (node.Object as TagChange).Entity;
+                && GameState.GetGameEntity()?.Entity == (node.Object as TagChange).Entity
+                && !IsSelectingMercs();
             return stateType == StateType.PowerTaskList
                 && (isNormalTurnChange || isMercenariesTurnChange);
         }
@@ -203,6 +204,15 @@ namespace HearthstoneReplays.Events.Parsers
                 })
                 .ToList();
 
+        }
+
+        private bool IsSelectingMercs()
+        {
+            var playerEntityIds = ParserState.getPlayers().Select(e => e.Id).ToList();
+            var playerEntities = GameState.CurrentEntities.Values
+                .Where(e => playerEntityIds.Contains(e.Id))
+                .ToList();
+            return playerEntities.Any(p => p.GetTag(GameTag.LETTUCE_MERCENARIES_TO_NOMINATE) == 1);
         }
     }
 
