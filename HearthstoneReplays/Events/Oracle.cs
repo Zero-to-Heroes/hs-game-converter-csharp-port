@@ -195,6 +195,8 @@ namespace HearthstoneReplays.Events
                     case BagOfCoinsTavernBrawl: return TheCoinCore;
                     case BananaBuffoon: return BananaBuffoon_BananasToken;
                     case BananaVendor: return BananaVendor_BananasToken;
+                    case BarrelOfMonkeys: return BarrelOfMonkeys_BarrelOfMonkeysToken_ETC_207t;
+                    case BarrelOfMonkeys_BarrelOfMonkeysToken_ETC_207t: return BarrelOfMonkeys_BarrelOfMonkeysToken_ETC_207t2;
                     case BaubleOfBeetles_ULDA_307: return BaubleOfBeetles_ULDA_307ts;
                     case BeOurGuestTavernBrawl: return TheCountess_LegendaryInvitationToken;
                     case BeneathTheGrounds: return BeneathTheGrounds_NerubianAmbushToken;
@@ -210,6 +212,8 @@ namespace HearthstoneReplays.Events
                     case BuildASnowman_BuildASnowbruteToken: return BuildASnowman_BuildASnowgreToken;
                     case BuildASnowman: return BuildASnowman_BuildASnowbruteToken;
                     case BumperCar: return BumperCar_DarkmoonRiderToken;
+                    case BunchOfBananas: return BunchOfBananas_BunchOfBananasToken_ETC_201t;
+                    case BunchOfBananas_BunchOfBananasToken_ETC_201t: return BunchOfBananas_BunchOfBananasToken_ETC_201t2;
                     case BurglyBully: return TheCoinCore;
                     case TwistTheCoffers_CacheOfCashToken: return TheCoinCore;
                     case ChainsOfDread_AV_316hp: return DreadlichTamsin_FelRiftToken;
