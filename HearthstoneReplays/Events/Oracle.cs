@@ -495,14 +495,15 @@ namespace HearthstoneReplays.Events
                                 if (actionEntity.KnownEntityIds.Count == 0)
                                 {
                                     // This is a hack, because the DEATHS block is processed after the entities are added to
-                                    // hand. I suspect 
+                                    // hand
                                     actionEntity.KnownEntityIds = act.Data
                                         .Where(d => d is TagChange)
                                         .Select(d => d as TagChange)
                                         // Not sure what this is
                                         .Where(d => d.Name == 1715)
                                         // This works because the check is done asynchronously, so the DEATHS block should have been processed at this point
-                                        .Where(d => GameState.CurrentEntities.GetValueOrDefault(d.Entity)?.InGraveyard() ?? false)
+                                        // Actually, it doesn't work, as the deaths are processed too long after
+                                        //.Where(d => GameState.CurrentEntities.GetValueOrDefault(d.Entity)?.InGraveyard() ?? false)
                                         .Select(d => d.Entity)
                                         .ToList();
                                 }
