@@ -355,10 +355,16 @@ namespace HearthstoneReplays.Parser.Handlers
             {
                 var subSpellPrefab = match.Groups[1].Value;
                 var sourceEntityId = int.Parse(match.Groups[2].Value);
-                Action parentAction = null;
-                if (state.Node?.Type == typeof(Action))
+                Node parentActionNode = state.Node;
+                while (parentActionNode.Type != typeof(Action))
                 {
-                    parentAction = state.Node.Object as Action;
+                    parentActionNode = parentActionNode?.Parent;
+                }
+
+                Action parentAction = null;
+                if (parentActionNode != null)
+                {
+                    parentAction = parentActionNode.Object as Action;
                 }
                 if (sourceEntityId == 0)
                 {
