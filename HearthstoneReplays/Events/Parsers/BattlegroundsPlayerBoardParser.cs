@@ -414,7 +414,13 @@ namespace HearthstoneReplays.Events.Parsers
                 // Includes Anub'arak, Nerubian Deathswarmer
                 var undeadAttackBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment);
                 var frostlingBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.FlourishingFrostlingPlayerEnchantDntEnchantment);
-
+                var bloodGemEnchant = GameState.CurrentEntities.Values
+                    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .Where(entity => entity.CardId == CardIds.BloodGemPlayerEnchantEnchantment)
+                    .FirstOrDefault();
+                var bloodGemAttackBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0;
+                var bloodGemHealthBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0;
 
                 var heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
                 if (heroPower?.CardId == CardIds.TeronGorefiend_RapidReanimation)
@@ -461,6 +467,8 @@ namespace HearthstoneReplays.Events.Parsers
                         EternalKnightsDeadThisGame = eternalKnightBonus,
                         UndeadAttackBonus = undeadAttackBonus,
                         FrostlingBonus = frostlingBonus,
+                        BloodGemAttackBonus = bloodGemAttackBonus,
+                        BloodGemHealthBonus = bloodGemHealthBonus,
                     }
                 };
             }
@@ -529,6 +537,8 @@ namespace HearthstoneReplays.Events.Parsers
             public int EternalKnightsDeadThisGame { get; set; }
             public int UndeadAttackBonus { get; set; }
             public int FrostlingBonus { get; set; }
+            public int BloodGemAttackBonus { get; set; }
+            public int BloodGemHealthBonus { get; set; }
             //public FullEntity RapidReanimationTarget { get; set; }
         }
     }

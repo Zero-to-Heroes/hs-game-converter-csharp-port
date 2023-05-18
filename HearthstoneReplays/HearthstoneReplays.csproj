@@ -108,10 +108,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enums.cs" />
+    <Compile Include="Events\AbstractActionParser.cs" />
     <Compile Include="Events\GameMetaData.cs" />
     <Compile Include="Events\EventQueueHandler.cs" />
     <Compile Include="Events\GameStateShort.cs" />
     <Compile Include="Events\Parsers\AbstractBasicTagChangeParser.cs" />
+    <Compile Include="Events\Parsers\Controls\BattlegroundsControls.cs" />
+    <Compile Include="Events\Parsers\Controls\ControlsManager.cs" />
     <Compile Include="Events\Parsers\CorpsesSpentThisGameParser.cs" />
     <Compile Include="Events\Parsers\OverloadedCrystalsParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsQuestCompletedParser .cs" />

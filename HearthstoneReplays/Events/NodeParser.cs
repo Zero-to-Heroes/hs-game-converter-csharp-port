@@ -9,6 +9,7 @@ using HearthstoneReplays.Parser.ReplayData.Entities;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Parser;
 using HearthstoneReplays.Events.Parsers;
+using HearthstoneReplays.Events.Parsers.Controls;
 #endregion
 
 namespace HearthstoneReplays.Events
@@ -19,6 +20,7 @@ namespace HearthstoneReplays.Events
         private StateFacade StateFacade { get; set; }
         private StateType StateType { get; set; }
 
+        private ControlsManager Controller { get; set; }
         private List<ActionParser> parsers;
 
         // Feed it the PTL parser, as it's the latest one to get the meta data
@@ -27,6 +29,7 @@ namespace HearthstoneReplays.Events
             QueueHandler = queueHandler;
             StateFacade = stateFacade;
             StateType = stateType;
+            Controller = new ControlsManager(stateFacade, stateType);
         }
 
         public void Reset(ParserState ParserState, StateFacade helper)
@@ -44,7 +47,7 @@ namespace HearthstoneReplays.Events
             }
             foreach (ActionParser parser in parsers)
             {
-                if (parser.AppliesOnNewNode(node, stateType))
+                if (Controller.Applies(parser) && parser.AppliesOnNewNode(node, stateType))
                 {
                     List<GameEventProvider> providers = parser.CreateGameEventProviderFromNew(node);
                     if (providers != null)
@@ -63,7 +66,7 @@ namespace HearthstoneReplays.Events
             }
             foreach (ActionParser parser in parsers)
             {
-                if (!node.Closed && parser.AppliesOnCloseNode(node, stateType))
+                if (!node.Closed && Controller.Applies(parser) && parser.AppliesOnCloseNode(node, stateType))
                 {
                     List<GameEventProvider> providers = parser.CreateGameEventProviderFromClose(node);
                     if (providers != null && providers.Count > 0)

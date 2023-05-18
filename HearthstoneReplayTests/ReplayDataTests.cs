@@ -16,6 +16,7 @@ using Newtonsoft.Json.Serialization;
 using System.Reflection;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
+using System.IO;
 
 #endregion
 
@@ -27,6 +28,11 @@ namespace HearthstoneReplayTests
         [TestMethod]
         public void Test()
         {
+            // 90s to read the file without any events, so just for parsing
+            // 210s after filtering some events
+            //var outputLogFile = "E:\\test_log.txt";
+            //File.Delete(outputLogFile);
+
             //NodeParser.DevMode = true;
             var serializerSettings = new JsonSerializerSettings()
             {
@@ -51,6 +57,7 @@ namespace HearthstoneReplayTests
                     {
                         //var serialized = JsonConvert.SerializeObject(gameEvent);
                         var serialized = JsonConvert.SerializeObject(gameEvent, serializerSettings);
+                        //File.AppendAllText(outputLogFile, serialized + ",\n");
                         Console.WriteLine(serialized + ",");
                     }
                 }
@@ -71,6 +78,7 @@ namespace HearthstoneReplayTests
                     var serialized = JsonConvert.SerializeObject(gameEvent, serializerSettings);
                     //if (serialized.Contains("\"TargetCardId\":\"TB_BaconShop_HERO_53\""))
                     //{
+                    //File.AppendAllText(outputLogFile, serialized + ",\n");
                     Console.WriteLine(serialized + ",");
                     //}
                 }
@@ -80,14 +88,14 @@ namespace HearthstoneReplayTests
             logFile.Add("END_CATCHING_UP");
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile);
-            Thread.Sleep(3000);
-            GC.Collect();
-            Thread.Sleep(3000);
-            var testList = replay.Games.SelectMany(g => g.Data).Where(d => d is Action && (d as Action).Data.Count > 60).ToList()
-                .SelectMany(a => (a as Action).GetDataRecursive())
-                .Where(d => d is ChosenEntities)
-                .ToList();
-            string xml = new ReplayConverter().xmlFromReplay(replay);
+            //Thread.Sleep(3000);
+            //GC.Collect();
+            //Thread.Sleep(3000);
+            //var testList = replay.Games.SelectMany(g => g.Data).Where(d => d is Action && (d as Action).Data.Count > 60).ToList()
+            //    .SelectMany(a => (a as Action).GetDataRecursive())
+            //    .Where(d => d is ChosenEntities)
+            //    .ToList();
+            //string xml = new ReplayConverter().xmlFromReplay(replay);
             //Console.Write(xml);
         }
 
