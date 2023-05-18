@@ -48,6 +48,10 @@ namespace HearthstoneReplays.Events.Parsers
             SoulsplitterBattlegrounds,
             AmberGuardian,
             AmberGuardianBattlegrounds,
+            ChoralMrrrglr,
+            ChoralMrrrglrBattlegrounds,
+            SanctumRester,
+            SanctumResterBattlegrounds,
         };
 
         static List<string> START_OF_COMBAT_QUEST_REWARD_EFFECT = new List<string>() {
@@ -362,6 +366,12 @@ namespace HearthstoneReplays.Events.Parsers
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
                     .ToList();
+                var hand = GameState.CurrentEntities.Values
+                    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.HAND)
+                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
+                    .Select(entity => entity.Clone())
+                    .ToList();
                 var heroPower = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
@@ -400,19 +410,11 @@ namespace HearthstoneReplays.Events.Parsers
                     .Select(entity => entity.CardId)
                     .ToList();
 
-                var eternalKnightBonus = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.CardId == CardIds.EternalKnightPlayerEnchantEnchantment)
-                    .FirstOrDefault()
-                    ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
+                var eternalKnightBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.EternalKnightPlayerEnchantEnchantment);
                 // Includes Anub'arak, Nerubian Deathswarmer
-                var undeadAttackBonus = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.CardId == CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment)
-                    .FirstOrDefault()
-                    ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
+                var undeadAttackBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment);
+                var frostlingBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.FlourishingFrostlingPlayerEnchantDntEnchantment);
+
 
                 var heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
                 if (heroPower?.CardId == CardIds.TeronGorefiend_RapidReanimation)
@@ -453,14 +455,26 @@ namespace HearthstoneReplays.Events.Parsers
                     Board = result,
                     QuestRewards = questRewards,
                     Secrets = secrets,
+                    Hand = hand,
                     GlobalInfo = new BgsPlayerGlobalInfo()
                     {
                         EternalKnightsDeadThisGame = eternalKnightBonus,
                         UndeadAttackBonus = undeadAttackBonus,
+                        FrostlingBonus = frostlingBonus,
                     }
                 };
             }
             return null;
+        }
+
+        private int GetPlayerEnchantmentValue(int playerId, string enchantment)
+        {
+            return GameState.CurrentEntities.Values
+                .Where(entity => entity.GetEffectiveController() == playerId)
+                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                .Where(entity => entity.CardId == enchantment)
+                .FirstOrDefault()
+                ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
         }
 
         private object AddEchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
@@ -505,6 +519,8 @@ namespace HearthstoneReplays.Events.Parsers
 
             public List<FullEntity> Secrets { get; set; }
 
+            public List<FullEntity> Hand { get; set; }
+
             public BgsPlayerGlobalInfo GlobalInfo { get; set; }
         }
 
@@ -512,7 +528,8 @@ namespace HearthstoneReplays.Events.Parsers
         {
             public int EternalKnightsDeadThisGame { get; set; }
             public int UndeadAttackBonus { get; set; }
-            public FullEntity RapidReanimationTarget { get; set; }
+            public int FrostlingBonus { get; set; }
+            //public FullEntity RapidReanimationTarget { get; set; }
         }
     }
 }

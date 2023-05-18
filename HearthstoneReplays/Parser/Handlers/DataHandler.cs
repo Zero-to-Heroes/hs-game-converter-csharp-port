@@ -356,7 +356,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 var subSpellPrefab = match.Groups[1].Value;
                 var sourceEntityId = int.Parse(match.Groups[2].Value);
                 Node parentActionNode = state.Node;
-                while (parentActionNode.Type != typeof(Action))
+                while (parentActionNode != null && parentActionNode.Type != typeof(Action))
                 {
                     parentActionNode = parentActionNode?.Parent;
                 }

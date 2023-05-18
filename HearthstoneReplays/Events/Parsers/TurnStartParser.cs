@@ -72,7 +72,7 @@ namespace HearthstoneReplays.Events.Parsers
                     // Do it first so that it happens before the TURN_START event
                     if (!GameState.BgsHasSentNextOpponent)
                     {
-                        Logger.Log("Has not sent next opponent", "");
+                        //Logger.Log("Has not sent next opponent", "");
                         result.Add(GameEventProvider.Create(
                             tagChange.TimeStamp,
                             "BATTLEGROUNDS_NEXT_OPPONENT",
@@ -212,7 +212,7 @@ namespace HearthstoneReplays.Events.Parsers
             var playerEntities = GameState.CurrentEntities.Values
                 .Where(e => playerEntityIds.Contains(e.Id))
                 .ToList();
-            return playerEntities.Any(p => p.GetTag(GameTag.LETTUCE_MERCENARIES_TO_NOMINATE) == 1);
+            return playerEntities.Any(p => p.GetTag(GameTag.LETTUCE_MERCENARIES_TO_NOMINATE) >= 1);
         }
     }
 

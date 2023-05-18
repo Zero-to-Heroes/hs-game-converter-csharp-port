@@ -243,7 +243,8 @@ namespace HearthstoneReplays.Events
                     case DrawOffensivePlayTavernBrawlEnchantment: return OffensivePlayTavernBrawl;
                     case DreadlichTamsin_AV_316: return DreadlichTamsin_FelRiftToken;
                     case DrygulchJailor: return SilverHandRecruitLegacyToken;
-                    case EliseStarseekerCore: return UnearthedRaptor_MapToTheGoldenMonkeyToken;
+                    case EliseStarseeker_CORE_LOE_079: return UnearthedRaptor_MapToTheGoldenMonkeyToken;
+                    case EliseStarseeker_LOE_079: return UnearthedRaptor_MapToTheGoldenMonkeyToken;
                     case EliseTheTrailblazer: return EliseTheTrailblazer_UngoroPackToken;
                     case EncumberedPackMule: return EncumberedPackMule;
                     case ExcavatedEvil: return ExcavatedEvil;
@@ -260,8 +261,8 @@ namespace HearthstoneReplays.Events
                     //case FirstWishTavernBrawl: return SecondWishTavernBrawl;
                     //case SecondWishTavernBrawl: return ThirdWishTavernBrawl;
                     case FishyFlyer: return FishyFlyer_SpectralFlyerToken;
-                    case FlameGeyser_CORE_UNG_018: return FireFly_FlameElementalToken;
-                    case FlameGeyser_UNG_018: return FireFly_FlameElementalToken;
+                    case FlameGeyserCore: return FireFly_FlameElementalToken;
+                    case FlameGeyser: return FireFly_FlameElementalToken;
                     case ForgottenTorch: return ForgottenTorch_RoaringTorchToken;
                     case Framester: return Framester_FramedToken;
                     case FreshScent_YOD_005: return FreshScent_YOD_005ts;
@@ -278,7 +279,8 @@ namespace HearthstoneReplays.Events
                     case HauntedCurio: return CursedCurio;
                     case HeadcrackLegacy: return HeadcrackLegacy;
                     case HeadcrackVanilla: return HeadcrackVanilla;
-                    case HighPriestessJeklik: return HighPriestessJeklik;
+                    case HighPriestessJeklik_CORE_TRL_252: return HighPriestessJeklik_CORE_TRL_252;
+                    case HighPriestessJeklik_TRL_252: return HighPriestessJeklik_TRL_252;
                     case HoardingDragon_LOOT_144: return TheCoinCore;
                     case IgneousElemental: return FireFly_FlameElementalToken;
                     case Ignite: return Ignite;
@@ -378,11 +380,11 @@ namespace HearthstoneReplays.Events
                     case SparkDrill_BOT_102: return SparkDrill_SparkToken;
                     case SparkEngine: return SparkDrill_SparkToken;
                     case SpiritJailer_SCH_700: return SchoolSpirits_SoulFragmentToken;
-                    case Springpaw: return Springpaw_LynxToken;
-                    case SpringpawCore: return Springpaw_LynxToken;
+                    case Springpaw_TRL_348: return Springpaw_LynxToken;
+                    case Springpaw_CORE_TRL_348: return Springpaw_LynxToken;
                     case StaffOfAmmunae_ULDA_041: return StaffOfAmmunae_ULDA_041ts;
                     case Starseeker: return MoonfireLegacy;
-                    case SteamSurger: return FlameGeyser_UNG_018;
+                    case SteamSurger: return FlameGeyser;
                     case SunscaleRaptor: return SunscaleRaptor;
                     case SurlyMob_AngryMobTavernBrawl: return SurlyMob_CrazedMobTavernBrawl;
                     case SurlyMob: return AngryMob;
@@ -417,8 +419,8 @@ namespace HearthstoneReplays.Events
                     case WildGrowthCore: return WildGrowth_ExcessManaLegacyToken;
                     case WildGrowthLegacy: return WildGrowth_ExcessManaLegacyToken;
                     case WildGrowthVanilla: return WildGrowth_ExcessManaLegacyToken;
-                    case WitchwoodApple_CORE_GIL_663: return WitchwoodApple_TreantToken;
-                    case WitchwoodApple_GIL_663: return WitchwoodApple_TreantToken;
+                    case WitchwoodAppleCore: return WitchwoodApple_TreantToken;
+                    case WitchwoodApple: return WitchwoodApple_TreantToken;
                     case Wrenchcalibur: return SeaforiumBomber_BombToken;
                     case YseraUnleashed: return YseraUnleashed_DreamPortalToken;
                     case Zaqul_TSC_959: return SirakessCultist_AbyssalCurseToken;
@@ -482,12 +484,12 @@ namespace HearthstoneReplays.Events
                                     FindTheImposter_NoggenFogGeneratorToken,
                             });
                     case MoonbeastTavernBrawlToken:
-                    case KiriChosenOfElune_DMF_733:
-                    case KiriChosenOfElune_CORE_DMF_733:
+                    case KiriChosenOfElune:
+                    case KiriChosenOfEluneCore:
                         return AddMultipleKnownCards(gameState, node, new List<string>()
                             {
-                                    SolarEclipse_DMF_058,
-                                    LunarEclipse_DMF_057,
+                                    SolarEclipse,
+                                    LunarEclipse,
                             });
 
                     case AugmentedElekk:
@@ -583,8 +585,8 @@ namespace HearthstoneReplays.Events
                         return null;
 
                     case Duplicate:
-                    case CheatDeath_CORE_LOOT_204:
-                    case CheatDeath_LOOT_204:
+                    case CheatDeathCore:
+                    case CheatDeath:
                         if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
                         {
                             var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
@@ -697,7 +699,7 @@ namespace HearthstoneReplays.Events
 
                     // Plagiarize
                     if (action.TriggerKeyword == (int)GameTag.SECRET && actionEntity != null && actionEntity.KnownEntityIds.Count > 0 
-                        && (actionEntity.CardId == Plagiarize_CORE_SCH_706 || actionEntity.CardId == Plagiarize_SCH_706))
+                        && (actionEntity.CardId == PlagiarizeCore || actionEntity.CardId == Plagiarize))
                     {
                         var plagiarizeController = actionEntity.GetEffectiveController();
                         var entitiesPlayedByActivePlayer = actionEntity.KnownEntityIds
