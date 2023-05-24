@@ -399,6 +399,7 @@ namespace HearthstoneReplays.Events
                     case TheDemonSeed_CompleteTheRitualToken: return TheDemonSeed_BlightbornTamsinToken;
                     case TheForestsAid_DAL_256: return TheForestsAid_DAL_256ts;
                     case TheLastKaleidosaur: return TheLastKaleidosaur_GalvadonToken;
+                    case TheHandOfRafaam: return CurseOfRafaam_CursedToken;
                     case TheMarshQueen: return TheMarshQueen_QueenCarnassaToken;
                     case TheMarshQueen_QueenCarnassaToken: return TheMarshQueen_CarnassasBroodToken;
                     case ThrowGlaive: return ThrowGlaive; // TO CHECK
