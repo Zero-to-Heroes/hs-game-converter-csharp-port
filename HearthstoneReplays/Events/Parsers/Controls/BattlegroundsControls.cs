@@ -16,7 +16,7 @@ namespace HearthstoneReplays.Events.Parsers.Controls
             typeof(DataScriptChangedParser),
             typeof(CostChangedParser),
             typeof(MinionOnBoardAttackUpdatedParser),
-            typeof(MinionSummonedParser),
+            //typeof(MinionSummonedParser), // Needed for minions highlights
             typeof(LinkedEntityParser),
             typeof(CopiedFromEntityIdParser),
         };

@@ -6,6 +6,7 @@ using System.Xml.Serialization;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Enums;
 using System;
+using Newtonsoft.Json;
 
 #endregion
 
@@ -21,6 +22,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         [XmlElement("Tag", typeof(Tag))]
         public List<Tag> Tags { get; set; }
+
+        [XmlIgnore]
+        [JsonIgnore]
+        public List<Tag> AllPreviousTags { get; set; } = new List<Tag>();
 
         public override bool Equals(object obj)
         {
@@ -39,6 +44,16 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         {
             var match = Tags.FirstOrDefault(t => t.Name == (int)tag);
             return match == null ? defaultValue : match.Value;
+        }
+
+        public BaseEntity SetTag(GameTag tag, int value)
+        {
+            if (Tags.FirstOrDefault(t => t.Name == (int)tag) == null)
+            {
+                Tags.Add(new Tag() { Name = (int)tag, Value = value });
+            }
+            Tags.FirstOrDefault(t => t.Name == (int)tag).Value = value;
+            return this;
         }
 
         public int GetCost()

@@ -99,7 +99,6 @@ namespace HearthstoneReplays.Events
                     new TurnCleanupParser(ParserState, StateFacade),
                     new GameCleanupParser(ParserState, StateFacade),
                     new BattlegroundsHeroSelectedParser(ParserState, StateFacade),
-                    new BattlegroundsPlayerBoardParser(ParserState, StateFacade),
                     new SecretWillTriggeredParser(ParserState, StateFacade),
                     new CounterWillTriggerParser(ParserState, StateFacade),
                     new MinionsWillDieParser(ParserState, StateFacade),
@@ -126,6 +125,7 @@ namespace HearthstoneReplays.Events
                     new MercenariesQueuedAbilityParser(ParserState, StateFacade),
                     new MercenariesSelectedTargetParser(ParserState, StateFacade),
 
+                    new BattlegroundsPlayerBoardParser(ParserState, StateFacade),
                     new ShuffleDeckParser(ParserState, StateFacade),
 
                     new WinnerParser(ParserState, StateFacade),
@@ -214,7 +214,7 @@ namespace HearthstoneReplays.Events
                     new JadeGolemParser(ParserState, StateFacade),
                     new CthunParser(ParserState, StateFacade),
                     new EntityUpdateParser(ParserState, StateFacade),
-                    new ResourcesThisTurnParser(ParserState, StateFacade),
+                    //new ResourcesThisTurnParser(ParserState, StateFacade),
                     new ResourcesUsedThisTurnParser(ParserState, StateFacade),
                     new WhizbangDeckParser(ParserState, StateFacade),
                     new BattlegroundsTavernPrizesParser(ParserState),

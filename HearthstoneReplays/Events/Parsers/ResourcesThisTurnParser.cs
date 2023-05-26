@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 namespace HearthstoneReplays.Events.Parsers
 {
+    // Unused
     public class ResourcesThisTurnParser : ActionParser
     {
         private GameState GameState { get; set; }

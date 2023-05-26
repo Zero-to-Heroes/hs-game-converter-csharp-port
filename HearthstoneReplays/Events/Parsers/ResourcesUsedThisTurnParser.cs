@@ -23,9 +23,12 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
+            TagChange tagChange = null;
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.RESOURCES_USED;
+                && ((tagChange = node.Object as TagChange).Name == (int)GameTag.RESOURCES_USED
+                    || tagChange.Name == (int)GameTag.TEMP_RESOURCES
+                    || tagChange.Name == (int)GameTag.RESOURCES);
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -37,22 +40,25 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
-            var resourcesUsed = tagChange.Value;
-            var resourcesLeft = entity.GetTag(GameTag.RESOURCES, 0) + entity.GetTag(GameTag.TEMP_RESOURCES, 0) - resourcesUsed;
+            var resourcesUsed = tagChange.Name == (int)GameTag.RESOURCES_USED ? tagChange.Value : entity.GetTag(GameTag.RESOURCES_USED, 0);
+            var tempResources = tagChange.Name == (int)GameTag.TEMP_RESOURCES ? tagChange.Value : entity.GetTag(GameTag.TEMP_RESOURCES, 0);
+            var totalResources = tagChange.Name == (int)GameTag.RESOURCES ? tagChange.Value : entity.GetTag(GameTag.RESOURCES, 0);
+            var resourcesLeft = totalResources + tempResources - resourcesUsed;
             var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
-                "RESOURCES_USED_THIS_TURN",
+                "RESOURCES_UPDATED",
                 GameEvent.CreateProvider(
-                    "RESOURCES_USED_THIS_TURN",
+                    "RESOURCES_UPDATED",
                     null,
                     controllerId,
                     entity.Id,
                     StateFacade,
                     gameState,
                     new {
-                        Resources = resourcesUsed,
+                        ResourcesTotal = totalResources + tempResources,
+                        ResourcesUsed = resourcesUsed,
                         ResourcesLeft = resourcesLeft,
                     }),
                 true,

@@ -74,13 +74,16 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return stateType == StateType.GameState
+            // Use PTL to be able to "see the future", even if it means the info will be delayed
+            // Using PTL instead of GS will add a few seconds delay, but it shouldn't be too much
+            return stateType == StateType.PowerTaskList
                 && IsApplyOnNewNode(node);
         }
 
         public bool IsApplyOnNewNode(Node node)
         {
             var isAction = StateFacade.IsBattlegrounds()
+                && GameState.GetGameEntity() != null
                 && GameState.GetGameEntity().GetTag(GameTag.TURN) % 2 == 0
                 && GameState.BgsCurrentBattleOpponent == null
                 && node.Type == typeof(Action);
@@ -372,6 +375,23 @@ namespace HearthstoneReplays.Events.Parsers
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
                     .ToList();
+                if (isOpponent)
+                {
+                    // Look for all the cards that are in hand at the start of the fight, and that are "copied" by bassgil
+                    // We can't use the final stats as they are, as it would include damage + stats change over the course of
+                    // the fight
+                    // We might be able to simply remove the damage, and use the buffed stats as the base stats. It won't be 
+                    // perfect, but probably good enough
+                    var boardCardIds = board.Select(e => e.CardId).ToList();
+                    
+                    var handEntityIds = hand.Select(e => e.Id).ToList();
+                    var revealedHand = hand
+                        .Select(e => GetEntitySpawnedFromHand(e.Id) ?? e)
+                        .Select(entity => entity.Clone())
+                        .Select(e => e.SetTag(GameTag.DAMAGE, 0).SetTag(GameTag.ZONE, (int)Zone.HAND) as FullEntity)
+                        .ToList();
+                    hand = revealedHand;
+                }
                 var heroPower = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
@@ -425,25 +445,19 @@ namespace HearthstoneReplays.Events.Parsers
                 var heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
                 if (heroPower?.CardId == CardIds.TeronGorefiend_RapidReanimation)
                 {
-                    var impendingDeath = GameState.CurrentEntities.Values
+                    var impendingDeathEnchantments = GameState.CurrentEntities.Values
                         .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                        .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
+                        .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment);
+                    var impendingDeath = impendingDeathEnchantments
                         .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
                         .Where(entity => entity.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == -1)
-                        .FirstOrDefault();
-                    if (impendingDeath == null)
-                    {
-                        impendingDeath = GameState.CurrentEntities.Values
-                            .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                            .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
+                        .FirstOrDefault()
+                        ?? impendingDeathEnchantments
                             .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
+                            .FirstOrDefault()
+                        ?? impendingDeathEnchantments
+                            .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD)
                             .FirstOrDefault();
-                    }
-                    //var test = GameState.CurrentEntities.Values
-                    //    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                    //    .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
-                    //    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
-                    //    .ToList();
                     // Can be null if the player didn't use the hero power
                     if (impendingDeath != null)
                     {
@@ -473,6 +487,22 @@ namespace HearthstoneReplays.Events.Parsers
                 };
             }
             return null;
+        }
+
+        private FullEntity GetEntitySpawnedFromHand(int id)
+        {
+            var tmp = StateFacade.GsState.GameState.CurrentEntities.Values
+                .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id);
+            var tmp2 = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(15571);
+            var tmp3 = StateFacade.GsState.GameState.CurrentEntities.Values
+                .Select(e => e.Entity);
+            var tmp4 = StateFacade.GsState.GameState.CurrentEntities.Values
+                .Select(e => e.Id);
+            var result = StateFacade.GsState.GameState.CurrentEntities.Values
+                .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id 
+                    || e.AllPreviousTags.Any(t => t.Name == (int)GameTag.COPIED_FROM_ENTITY_ID && t.Value == id))
+                .FirstOrDefault();
+            return result;
         }
 
         private int GetPlayerEnchantmentValue(int playerId, string enchantment)
@@ -539,7 +569,6 @@ namespace HearthstoneReplays.Events.Parsers
             public int FrostlingBonus { get; set; }
             public int BloodGemAttackBonus { get; set; }
             public int BloodGemHealthBonus { get; set; }
-            //public FullEntity RapidReanimationTarget { get; set; }
         }
     }
 }

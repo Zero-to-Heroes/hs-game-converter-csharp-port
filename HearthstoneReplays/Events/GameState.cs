@@ -267,7 +267,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
             var fullEntity = CurrentEntities[tagChange.Entity];
             var newTags = fullEntity.GetTagsCopy();
-            if (newTags.Find((tag) => tag.Name == tagChange.Name) == null)
+            var existingTag = newTags.Find((tag) => tag.Name == tagChange.Name);
+            if (existingTag == null)
             {
                 newTags.Add(new Tag() { Name = tagChange.Name });
             }
@@ -275,6 +276,12 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 .Select(tag => tag.Name == tagChange.Name ? new Tag() { Name = tag.Name, Value = tagChange.Value } : tag)
                 .ToList();
             fullEntity.Tags = tagsAfterUpdate;
+            // Keep a history of things. This is useful when we use the "future game state" to know some information, but 
+            // by the time we process it the informtion has already been reset in the real tags
+            if (existingTag != null)
+            { 
+                fullEntity.AllPreviousTags.Add(new Tag() { Name = existingTag.Name, Value = existingTag.Value });
+            }
         }
 
         // Should only be used for ChangeEntity, and probably even this will be removed later on
@@ -334,6 +341,9 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             LastCardPlayedEntityId = entityId;
             if (CurrentEntities.ContainsKey(entityId))
             {
+                // Avoid concurrent modifications
+                var currentEntitiesCopy = new List<FullEntity>(CurrentEntities.Values);
+
                 // Add it to each owner
                 var playedEntity = CurrentEntities[entityId];
 
@@ -368,7 +378,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
                 // For each card in the player's hand, add a note that the entity has been played while it was in hand
                 // For now, used only for Commander Sivara
-                var cardsInHandForController = CurrentEntities.Values
+                var cardsInHandForController = currentEntitiesCopy
                     .Where(e => e.GetZone() == (int)Zone.HAND)
                     .Where(e => e.GetController() == playedEntity.GetController())
                     .ToList();
@@ -378,7 +388,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 }
 
                 // Plagiarize
-                var plagiarizes = CurrentEntities.Values
+                var plagiarizes = currentEntitiesCopy
                     //.Where(e => e.CardId == CardIds.Collectible.Rogue.Plagiarize) // We don't know it's plagiarize, so add it to all secrets
                     .Where(e => e.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
                     .ToList();
@@ -390,7 +400,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 // Potion of Illusion
                 if (playedEntity.CardId == CardIds.PotionOfIllusion)
                 {
-                    this.EntityIdsOnBoardWhenPlayingPotionOfIllusion = CurrentEntities.Values
+                    this.EntityIdsOnBoardWhenPlayingPotionOfIllusion = currentEntitiesCopy
                         .Where(entity => (entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY))
                         .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
                         .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
