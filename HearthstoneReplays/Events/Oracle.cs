@@ -9,6 +9,7 @@ using static HearthstoneReplays.Events.CardIds;
 using HearthstoneReplays.Parser.ReplayData.Meta;
 using System.Linq;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
+using Newtonsoft.Json.Linq;
 
 namespace HearthstoneReplays.Events
 {
@@ -534,7 +535,7 @@ namespace HearthstoneReplays.Events
                                 {
                                     // This is a hack, because the DEATHS block is processed after the entities are added to
                                     // hand
-                                    actionEntity.KnownEntityIds = act.Data
+                                    var fightingEntities = act.Data
                                         .Where(d => d is TagChange)
                                         .Select(d => d as TagChange)
                                         // Not sure what this is
@@ -542,6 +543,12 @@ namespace HearthstoneReplays.Events
                                         // This works because the check is done asynchronously, so the DEATHS block should have been processed at this point
                                         // Actually, it doesn't work, as the deaths are processed too long after
                                         //.Where(d => GameState.CurrentEntities.GetValueOrDefault(d.Entity)?.InGraveyard() ?? false)
+                                        .Select(d => d.Entity)
+                                        .Select(d => gameState.CurrentEntities.GetValueOrDefault(d, default(FullEntity)))
+                                        .Where(d => d != null)
+                                        .Where(d => d.IsInGraveyard())
+                                        .ToList();
+                                    actionEntity.KnownEntityIds = fightingEntities
                                         .Select(d => d.Entity)
                                         .ToList();
                                 }
