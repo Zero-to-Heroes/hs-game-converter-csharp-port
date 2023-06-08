@@ -93,11 +93,12 @@ namespace HearthstoneReplays.Events.Parsers
                         new {
                             TargetEntityId = targetId,
                             TargetCardId = targetCardId,
-                            Attack = entity.GetTag(GameTag.ATK),
-                            Health = entity.GetTag(GameTag.HEALTH),
+                            Attack = entity.GetTag(GameTag.ATK, 0),
+                            Health = entity.GetTag(GameTag.HEALTH, 0),
                             CreatorCardId = creatorCardId,
                             Immune = entity.GetTag(GameTag.IMMUNE) == 1,
                             Dormant = entity.GetTag(GameTag.DORMANT) == 1,
+                            Cost = entity.GetTag(GameTag.COST, 0),
                         },
                         preprocess
                     ),
