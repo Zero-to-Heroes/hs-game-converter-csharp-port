@@ -126,6 +126,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             return GetZone() == (int)Zone.PLAY;
         }
 
+        internal bool IsInGraveyard()
+        {
+            return GetZone() == (int)Zone.GRAVEYARD;
+        }
+
         internal bool HasDredge()
         {
             return GetTag(GameTag.DREDGE) == 1 || IsManualDredge();
