@@ -8,6 +8,7 @@ using HearthstoneReplays.Parser.ReplayData.GameActions;
 
 namespace HearthstoneReplays.Events.Parsers
 {
+    // Unused
     public class BattlegroundsAfterPlayerBoardsRevealedParser : ActionParser
     {
         private BattlegroundsPlayerBoardParser Parser { get; set; }
@@ -35,6 +36,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return false;
         }
+
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var boards = Parser.CreateGameEventProviderFromNew(node);

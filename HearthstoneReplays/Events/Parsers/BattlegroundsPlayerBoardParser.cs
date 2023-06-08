@@ -262,7 +262,8 @@ namespace HearthstoneReplays.Events.Parsers
             var opponentBoard = CreateProviderFromAction(opponent, true, player, node);
             var playerBoard = CreateProviderFromAction(player, false, player, node);
 
-            //GameState.BgsHasSentNextOpponent = false;
+            // If we move back to GS logs, this probably needs to be in another parser
+            GameState.BgsHasSentNextOpponent = false;
 
             var result = new List<GameEventProvider>();
             result.Add(GameEventProvider.Create(
