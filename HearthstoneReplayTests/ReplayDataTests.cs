@@ -88,7 +88,7 @@ namespace HearthstoneReplayTests
             logFile.Add("END_CATCHING_UP");
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile);
-            //Thread.Sleep(3000);
+            Thread.Sleep(1000);
             //GC.Collect();
             //Thread.Sleep(3000);
             //var testList = replay.Games.SelectMany(g => g.Data).Where(d => d is Action && (d as Action).Data.Count > 60).ToList()
