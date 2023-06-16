@@ -23,7 +23,7 @@ namespace HearthstoneReplays.Events.Parsers
             WaxWarbandBattlegrounds,
             // We need to send the board state before it triggers, because the simulator needs to handle it, so that
             // it is not broken if Ozumat + Tavish (or other hero power that is managed by the simulator) happen
-            Ozumat_Tentacular, 
+            Ozumat_Tentacular,
         };
 
         private static List<string> TAVISH_HERO_POWERS = new List<string>() {
@@ -384,7 +384,7 @@ namespace HearthstoneReplays.Events.Parsers
                     // We might be able to simply remove the damage, and use the buffed stats as the base stats. It won't be 
                     // perfect, but probably good enough
                     var boardCardIds = board.Select(e => e.CardId).ToList();
-                    
+
                     var handEntityIds = hand.Select(e => e.Id).ToList();
                     var revealedHand = hand
                         .Select(e => GetEntitySpawnedFromHand(e.Id) ?? e)
@@ -442,6 +442,10 @@ namespace HearthstoneReplays.Events.Parsers
                     .FirstOrDefault();
                 var bloodGemAttackBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0;
                 var bloodGemHealthBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0;
+                var choralEnchantments = StateFacade.GsState.GameState.CurrentEntities.Values
+                    .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
+                    .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)));
+                var choralEnchantment = choralEnchantments.FirstOrDefault();
 
                 var heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
                 if (heroPower?.CardId == CardIds.TeronGorefiend_RapidReanimation)
@@ -484,6 +488,9 @@ namespace HearthstoneReplays.Events.Parsers
                         FrostlingBonus = frostlingBonus,
                         BloodGemAttackBonus = bloodGemAttackBonus,
                         BloodGemHealthBonus = bloodGemHealthBonus,
+                        // TODO: always show the base version, even for golden
+                        ChoralAttackBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0,
+                        ChoralHealthBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0,
                     }
                 };
             }
@@ -500,7 +507,7 @@ namespace HearthstoneReplays.Events.Parsers
             var tmp4 = StateFacade.GsState.GameState.CurrentEntities.Values
                 .Select(e => e.Id);
             var result = StateFacade.GsState.GameState.CurrentEntities.Values
-                .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id 
+                .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id
                     || e.AllPreviousTags.Any(t => t.Name == (int)GameTag.COPIED_FROM_ENTITY_ID && t.Value == id))
                 .FirstOrDefault();
             return result;
@@ -570,6 +577,8 @@ namespace HearthstoneReplays.Events.Parsers
             public int FrostlingBonus { get; set; }
             public int BloodGemAttackBonus { get; set; }
             public int BloodGemHealthBonus { get; set; }
+            public int ChoralHealthBuff { get; set; }
+            public int ChoralAttackBuff { get; set; }
         }
     }
 }
