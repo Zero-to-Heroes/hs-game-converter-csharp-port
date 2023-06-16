@@ -43,7 +43,9 @@ namespace HearthstoneReplays.Parser.Handlers
                 // 3. In the PTL processing, after we encounter that log line, go back to root
                 // UPDATE: this seems to be causing some issues in BG. So for now, I'm deactivating it.
                 // As far as I've seen, the main issues with incorrectly formed logs were in constructed, but this needs further testing.
-                if (stateType == StateType.GameState && !stateFacade.IsBattlegrounds())
+                // UPDATE 06/13/2023: In Duels, a DEATHS block got interrupted by some GameState entries. Let's try to deactivate it
+                // completely, and see if it still causes some issues
+                if (false && stateType == StateType.GameState && !stateFacade.IsBattlegrounds())
                 {
                     if (
                         // Even if we're at the root, we force the update, so that it can also handle the cases where root blocks are truncated
