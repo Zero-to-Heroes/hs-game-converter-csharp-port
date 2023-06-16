@@ -247,6 +247,8 @@ namespace HearthstoneReplays.Events
                     case EliseStarseeker_CORE_LOE_079: return UnearthedRaptor_MapToTheGoldenMonkeyToken;
                     case EliseStarseeker_LOE_079: return UnearthedRaptor_MapToTheGoldenMonkeyToken;
                     case EliseTheTrailblazer: return EliseTheTrailblazer_UngoroPackToken;
+                    case EliteTaurenChampion: return EliteTaurenChampion_MoltenPickOfRockToken;
+                    case EliteTaurenChampion_MoltenPickOfRockToken: return EliteTaurenChampion_MoltenPickOfRockToken;
                     case EncumberedPackMule: return EncumberedPackMule;
                     case ExcavatedEvil: return ExcavatedEvil;
                     case ExploreUngoro: return ExploreUngoro_ChooseYourPathToken;
@@ -291,6 +293,7 @@ namespace HearthstoneReplays.Events
                     case InfinitizeTheMaxitude_InfinitizeTheMaxitudeEnchantment: return InfinitizeTheMaxitude;
                     case IronJuggernaut: return IronJuggernaut_BurrowingMineToken;
                     case JadeIdol: return JadeIdol;
+                    case JadeIdol_JadeStash: return JadeIdol;
                     case JungleGiants: return JungleGiants_BarnabusTheStomperToken;
                     case KangorDancingKing: return KangorDancingKing;
                     case KanrethadEbonlocke: return KanrethadEbonlocke_KanrethadPrimeToken;
