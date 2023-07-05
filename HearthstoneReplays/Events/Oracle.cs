@@ -847,6 +847,29 @@ namespace HearthstoneReplays.Events
                         return null;
                     }
 
+                    if (actionEntity.CardId == Griftah)
+                    {
+                        var candidates = action.Data
+                            .Where(d => d is FullEntity)
+                            .Select(d => d as FullEntity)
+                            .Select(d => d.Entity)
+                            .Select(d => gameState.CurrentEntities.GetValueOrDefault(d))
+                            // Don't know what this tag means, but it's set for cards picked when playing Griftah
+                            .Where(e => e != null && e.Tags.FirstOrDefault(t => t.Name == 2509)?.Value != 1)
+                            .ToList();
+                        var candidateCardIds = candidates.Select(e => e.CardId);
+                        foreach (var cardId in candidateCardIds)
+                        {
+                            var totalCardIds = candidateCardIds.Where(c => c == cardId).Count();
+                            // The card received by the opponent has not been revealed
+                            if (totalCardIds == 1)
+                            {
+                                return cardId;
+                            }
+                        }
+                        return null;
+                    }
+
                     if (actionEntity.CardId == DevouringSwarm)
                     {
                         if (actionEntity.CardIdsToCreate.Count == 0)
