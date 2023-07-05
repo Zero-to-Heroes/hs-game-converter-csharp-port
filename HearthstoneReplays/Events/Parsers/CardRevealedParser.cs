@@ -53,7 +53,14 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorEntity = GameState.CurrentEntities.ContainsKey(creatorEntityId)
                 ? GameState.CurrentEntities[creatorEntityId]
                 : null;
+            FullEntity originEntity = null;
+            if (node.Parent?.Object is Action)
+            {
+                var influencerEntityId = (node.Parent.Object as Action).Entity;
+                originEntity = GameState.CurrentEntities.GetValueOrDefault(influencerEntityId);
+            }
             var creatorEntityCardId = creatorEntity?.CardId;
+            var originEntityCardId = originEntity?.CardId;
             // For now the only case where the card is created in the REMOVEDFROMGAME zone instead of SETASIDE is 
             // Nagaling. This might change in the future, but to avoid sending unwanted events, we add this guard 
             // clause for now
@@ -101,6 +108,7 @@ namespace HearthstoneReplays.Events.Parsers
                     gameState,
                     new {
                         CreatorCardId = creatorEntityCardId,
+                        OriginEntityCardId = originEntityCardId,
                         MercenariesExperience = mercXp,
                         MercenariesEquipmentId = mercEquipmentId,
                         RevealedFromBlock = revealedFromBlock,
