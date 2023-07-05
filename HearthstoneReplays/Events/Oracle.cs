@@ -850,6 +850,18 @@ namespace HearthstoneReplays.Events
                         return null;
                     }
 
+                    if (actionEntity.CardId == SymphonyOfSins)
+                    {
+                        // The original card is updated right before this one is updated. Not really robust, 
+                        // but there are no clear links between the new card and the one being replaced
+                        var previousChange = action.Data
+                            .Where(d => d is TagChange)
+                            .Select(d => d as TagChange)
+                            .Where(t => t.Name == (int)GameTag.ZONE && t.Value == (int)Zone.SETASIDE)
+                            .LastOrDefault();
+                        return gameState.CurrentEntities.GetValueOrDefault(previousChange?.Entity ?? -1)?.CardId;
+                    }
+
                     if (actionEntity.CardId == Griftah)
                     {
                         var candidates = action.Data

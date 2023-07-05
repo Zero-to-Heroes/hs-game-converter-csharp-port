@@ -45,6 +45,20 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+
+            var parentAction = node.Parent?.Object as Action;
+            int? influencedByEntityId = null;
+            string influencedByCardId = null;
+            if (parentAction != null && 
+                (parentAction.Type == (int)BlockType.POWER 
+                // Bottomfeeder uses TRIGGER
+                || parentAction.Type == (int)BlockType.TRIGGER))
+            {
+                var influenceEntity = GameState.CurrentEntities[parentAction.Entity];
+                influencedByEntityId = influenceEntity?.Entity;
+                influencedByCardId = influenceEntity?.CardId;
+            }
+
             if (cardId == null || cardId.Length == 0)
             {
                 var creator = Oracle.FindCardCreator(GameState, entity, node);
@@ -59,19 +73,6 @@ namespace HearthstoneReplays.Events.Parsers
             if ((isOpponentMulligan || isBeforeMulligan) && cardId == CardIds.EncumberedPackMule)
             {
                 cardId = "";
-            }
-
-            var parentAction = node.Parent?.Object as Action;
-            int? influencedByEntityId = null;
-            string influencedByCardId = null;
-            if (parentAction != null && 
-                (parentAction.Type == (int)BlockType.POWER 
-                // Bottomfeeder uses TRIGGER
-                || parentAction.Type == (int)BlockType.TRIGGER))
-            {
-                var influenceEntity = GameState.CurrentEntities[parentAction.Entity];
-                influencedByEntityId = influenceEntity?.Entity;
-                influencedByCardId = influenceEntity?.CardId;
             }
 
             return new List<GameEventProvider> { GameEventProvider.Create(
