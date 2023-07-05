@@ -820,9 +820,12 @@ namespace HearthstoneReplays.Events
                         && (actionEntity.CardId == IceTrap || actionEntity.CardId == FleshBehemoth_RLK_830)
                         && action.TriggerKeyword == (int)GameTag.DEATHRATTLE)
                     {
-                        var candidateEntityIds = action.Data
-                            .Where(d => d is ShowEntity)
-                            .Select(d => d as ShowEntity)
+                        var candidateEntityIds = stateFacade.GsState.GameState.CurrentEntities.Values
+                            .Where(d => d is FullEntity)
+                            .Select(d => d as FullEntity)
+                            .Where(e => e.GetTag(GameTag.CREATOR) == actionEntity.Entity)
+                            .Where(e => e.IsInPlay())
+                            .Where(e => e.IsMinionLike())
                             .Select(e => e.Entity)
                             .ToList();
                         if (candidateEntityIds.Count != 1)
@@ -833,8 +836,8 @@ namespace HearthstoneReplays.Events
                         {
                             return null;
                         }
-                        return gameState.CurrentEntities.ContainsKey(candidateEntityIds[0])
-                            ? gameState.CurrentEntities[candidateEntityIds[0]]?.CardId
+                        return stateFacade.GsState.GameState.CurrentEntities.ContainsKey(candidateEntityIds[0])
+                            ? stateFacade.GsState.GameState.CurrentEntities[candidateEntityIds[0]]?.CardId
                             : null;
                     }
                 }

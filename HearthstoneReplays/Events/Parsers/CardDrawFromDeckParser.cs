@@ -105,7 +105,7 @@ namespace HearthstoneReplays.Events.Parsers
                     // Always return this info, and the client has a list of public card creators they are allowed to show
                     var lastInfluencedByCard = Oracle.FindCardCreator(GameState, entity, node);
                     var lastInfluencedByCardId = lastInfluencedByCard?.Item1;
-                    var predictedCardId = Oracle.PredictCardId(GameState, creator?.Item1, -1, node, cardId);
+                    var predictedCardId = Oracle.PredictCardId(GameState, creator?.Item1, -1, node, cardId, StateFacade);
                     // Issue: if a card creates a card and draws one, this will flag them both (while the draw could be something else)
                     // This was introduced to flag the cards created by the Suspicious* cards
                     if (SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW.Contains(lastInfluencedByCardId))
