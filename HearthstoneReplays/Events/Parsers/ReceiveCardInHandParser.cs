@@ -58,7 +58,7 @@ namespace HearthstoneReplays.Events.Parsers
             var creator = Oracle.FindCardCreator(GameState, entity, node);
             if (creator?.Item2 != null && (cardId == null || cardId == ""))
             {
-                cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node);
+                cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node, null, StateFacade);
             }
 
             entity.PlayedWhileInHand.Clear();

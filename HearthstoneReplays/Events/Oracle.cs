@@ -142,7 +142,7 @@ namespace HearthstoneReplays.Events
             return null;
         }
 
-        public static string PredictCardId(GameState gameState, string creatorCardId, int creatorEntityId, Node node, string inputCardId = null)
+        public static string PredictCardId(GameState gameState, string creatorCardId, int creatorEntityId, Node node, string inputCardId = null, StateFacade stateFacade = null)
         {
             if (inputCardId != null && inputCardId.Length > 0)
             {
@@ -866,6 +866,20 @@ namespace HearthstoneReplays.Events
                             {
                                 return cardId;
                             }
+                        }
+                        return null;
+                    }
+
+                    if (actionEntity.CardId == PowerOfCreation)
+                    {
+                        // At this point, the summoned cards have not yet been revealed, so we look for the GS logs for insight
+                        if (stateFacade != null)
+                        {
+                            return stateFacade.GsState.GameState.CurrentEntities.Values
+                                .Where(d => d.GetTag(GameTag.CREATOR) == actionEntity.Entity)
+                                .Where(d => d.IsInPlay())
+                                .FirstOrDefault()
+                                ?.CardId;
                         }
                         return null;
                     }
