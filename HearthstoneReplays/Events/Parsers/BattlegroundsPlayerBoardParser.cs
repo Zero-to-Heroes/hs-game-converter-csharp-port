@@ -499,18 +499,40 @@ namespace HearthstoneReplays.Events.Parsers
 
         private FullEntity GetEntitySpawnedFromHand(int id)
         {
-            var tmp = StateFacade.GsState.GameState.CurrentEntities.Values
-                .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id);
-            var tmp2 = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(15571);
-            var tmp3 = StateFacade.GsState.GameState.CurrentEntities.Values
-                .Select(e => e.Entity);
-            var tmp4 = StateFacade.GsState.GameState.CurrentEntities.Values
-                .Select(e => e.Id);
-            var result = StateFacade.GsState.GameState.CurrentEntities.Values
-                .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id
-                    || e.AllPreviousTags.Any(t => t.Name == (int)GameTag.COPIED_FROM_ENTITY_ID && t.Value == id))
-                .FirstOrDefault();
-            return result;
+            //var tmp = StateFacade.GsState.GameState.CurrentEntities.Values
+            //    .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id);
+            //var tmp2 = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(15571);
+            //var tmp3 = StateFacade.GsState.GameState.CurrentEntities.Values
+            //    .Select(e => e.Entity);
+            //var tmp4 = StateFacade.GsState.GameState.CurrentEntities.Values
+            //    .Select(e => e.Id);
+            var showEntity = StateFacade.GsState.Replay.Games[StateFacade.GsState.Replay.Games.Count - 1]
+                .FilterGameData(typeof(ShowEntity))
+                .Select(d => d as ShowEntity)
+                .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id)
+                .LastOrDefault();
+            //var result = StateFacade.GsState.GameState.CurrentEntities.Values
+            //    .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id
+            //        || e.AllPreviousTags.Any(t => t.Name == (int)GameTag.COPIED_FROM_ENTITY_ID && t.Value == id))
+            //    .FirstOrDefault();
+            if (showEntity == null)
+            {
+                var result = StateFacade.GsState.GameState.CurrentEntities.Values
+                    .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id
+                        || e.AllPreviousTags.Any(t => t.Name == (int)GameTag.COPIED_FROM_ENTITY_ID && t.Value == id))
+                    .FirstOrDefault();
+                return result;
+            }
+            return new FullEntity()
+            {
+                Entity = showEntity.Entity,
+                Id = showEntity.Entity,
+                CardId = showEntity.CardId,
+                Tags = showEntity.Tags,
+                TimeStamp = showEntity.TimeStamp,
+                TsForXml = showEntity.TsForXml,
+            };
+            //return result;
         }
 
         private int GetPlayerEnchantmentValue(int playerId, string enchantment)
