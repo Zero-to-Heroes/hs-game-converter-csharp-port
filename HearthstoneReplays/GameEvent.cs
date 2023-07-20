@@ -233,6 +233,7 @@ namespace HearthstoneReplays
                     ? tagChange.Value
                     : entity.GetTag(GameTag.ATK),
                 health = entity.GetTag(GameTag.HEALTH),
+                durability = entity.GetTag(GameTag.DURABILITY),
                 // Doesn't work because we get the options after the game state
                 //validOption = options != null && options.OptionList != null 
                 //    ? options.OptionList

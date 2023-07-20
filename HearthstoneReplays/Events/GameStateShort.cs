@@ -30,6 +30,7 @@ namespace HearthstoneReplays.Events
         public string cardId { get; set; }
         public int attack { get; set; }
         public int health { get; set; }
+        public int durability { get; set; }
         public List<Tag> tags { get; set; }
         public List<GameStateShortEnchantment> enchantments { get; set; }
     }
