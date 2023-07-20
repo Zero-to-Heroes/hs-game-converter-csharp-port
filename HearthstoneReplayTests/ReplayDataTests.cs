@@ -89,12 +89,6 @@ namespace HearthstoneReplayTests
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile);
             Thread.Sleep(1000);
-            //GC.Collect();
-            //Thread.Sleep(3000);
-            //var testList = replay.Games.SelectMany(g => g.Data).Where(d => d is Action && (d as Action).Data.Count > 60).ToList()
-            //    .SelectMany(a => (a as Action).GetDataRecursive())
-            //    .Where(d => d is ChosenEntities)
-            //    .ToList();
             //string xml = new ReplayConverter().xmlFromReplay(replay);
             //Console.Write(xml);
         }

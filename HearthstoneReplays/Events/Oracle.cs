@@ -277,6 +277,7 @@ namespace HearthstoneReplays.Events
                     case GhastlyConjurer_ICC_069: return MirrorImageLegacy_CS2_027;
                     case GildedGargoyle_LOOT_534: return TheCoinCore;
                     case HakkarTheSoulflayer: return HakkarTheSoulflayer_CorruptedBloodToken;
+                    case HakkarTheSoulflayer_CorruptedBloodToken: return HakkarTheSoulflayer_CorruptedBloodToken;
                     case HalazziTheLynx: return Springpaw_LynxToken;
                     case Harpoon: return ArcaneShot;
                     case HauntedCurio: return CursedCurio;
