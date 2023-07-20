@@ -42,10 +42,12 @@ namespace HearthstoneReplays.Events.Parsers
 
             var controllerId = sourceEntity.GetEffectiveController();
             var options = choices.ChoiceList?.Select(c => {
+                var optionEntity = GameState.CurrentEntities.GetValueOrDefault(c.Entity);
                 return new
                 {
                     EntityId = c.Entity,
-                    CardId = GameState.CurrentEntities.GetValueOrDefault(c.Entity)?.CardId,
+                    CardId = optionEntity?.CardId,
+                    QuestDifficulty = optionEntity?.GetTag(GameTag.QUEST_PROGRESS_TOTAL, 0),
                 };
             })?.ToList();
             if (options == null || options.Count == 0) { 
@@ -68,7 +70,7 @@ namespace HearthstoneReplays.Events.Parsers
                         Context = new
                         {
                             // The current step for Murloc Holmes
-                            DataNum1 = sourceEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1)
+                            DataNum1 = sourceEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1),
                         }
                     }),
                 true,
