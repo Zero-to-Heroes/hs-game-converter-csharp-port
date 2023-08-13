@@ -226,6 +226,7 @@ namespace HearthstoneReplays.Events
                     case ConfectionCyclone: return ConfectionCyclone_SugarElementalToken;
                     case ConjureManaBiscuit: return ConjureManaBiscuit_ManaBiscuitToken;
                     case ConjurersCalling_DAL_177: return ConjurersCalling_DAL_177ts;
+                    case CoppertailSnoop: return TheCoinCore;
                     case CreepyCurio_HauntedCurioTavernBrawl: return CreepyCurio_CursedCurioTavernBrawl;
                     case CreepyCurio: return HauntedCurio;
                     case CreepyCurioTavernBrawl: return CreepyCurio_HauntedCurioTavernBrawl;
@@ -321,7 +322,7 @@ namespace HearthstoneReplays.Events
                     case MarvelousMyceliumTavernBrawlToken: return MarvelousMyceliumTavernBrawlToken;
                     case MidaPureLight_ONY_028: return MidaPureLight_FragmentOfMidaToken;
                     case MilitiaHorn: return VeteransMilitiaHorn;
-                    case MisterMukla: return KingMukla_BananasLegacyToken;
+                    case MisterMukla_ETC_836: return KingMukla_BananasLegacyToken;
                     case MuklaTyrantOfTheVale: return KingMukla_BananasLegacyToken;
                     case MurgurMurgurgle: return MurgurMurgurgle_MurgurglePrimeToken;
                     case MysticalMirage_ULDA_035: return MysticalMirage_ULDA_035ts;
@@ -380,6 +381,7 @@ namespace HearthstoneReplays.Events
                     case Sn1pSn4p: return Sn1pSn4p;
                     case SneakyDelinquent: return SneakyDelinquent_SpectralDelinquentToken;
                     case SoldierOfFortune: return TheCoinCore;
+                    case SonOfHodir: return SonOfHodir_FrostTyrantToken;
                     case SorcerersGambit_ReachThePortalRoomToken: return SorcerersGambit_ArcanistDawngraspToken;
                     case SoulShear_SCH_701: return SchoolSpirits_SoulFragmentToken;
                     case SparkDrill_BOT_102: return SparkDrill_SparkToken;
@@ -388,7 +390,7 @@ namespace HearthstoneReplays.Events
                     case Springpaw_TRL_348: return Springpaw_LynxToken;
                     case Springpaw_CORE_TRL_348: return Springpaw_LynxToken;
                     case StaffOfAmmunae_ULDA_041: return StaffOfAmmunae_ULDA_041ts;
-                    case Starseeker: return MoonfireLegacy;
+                    case Starseeker_ULDA_Elise_HP3: return MoonfireLegacy;
                     case SteamSurger: return FlameGeyser;
                     case SunscaleRaptor: return SunscaleRaptor;
                     case SurlyMob_AngryMobTavernBrawl: return SurlyMob_CrazedMobTavernBrawl;
@@ -434,6 +436,7 @@ namespace HearthstoneReplays.Events
 
                         // Action targets
                     case BalefulBanker:
+                    case CelestialProjectionist:
                     case DireFrenzy_CORE_GIL_828:
                     case DireFrenzy_GIL_828:
                     case DollmasterDorian:
@@ -494,8 +497,8 @@ namespace HearthstoneReplays.Events
                     case KiriChosenOfEluneCore:
                         return AddMultipleKnownCards(gameState, node, new List<string>()
                             {
-                                    SolarEclipse,
                                     LunarEclipse,
+                                    SolarEclipse,
                             });
 
                     case AugmentedElekk:
@@ -682,6 +685,24 @@ namespace HearthstoneReplays.Events
                     var actionEntity = gameState.CurrentEntities.ContainsKey(action.Entity)
                             ? gameState.CurrentEntities[action.Entity]
                             : null;
+
+                    if (actionEntity?.CardId == FateSplitter)
+                    {
+                        var killerEntityId = actionEntity.GetTag(GameTag.LAST_AFFECTED_BY);
+                        var killerEntity = gameState.CurrentEntities.GetValueOrDefault(killerEntityId);
+                        return killerEntity?.CardId;
+                    }
+                    else if (actionEntity?.CardId == Helya_PlightOfTheDeadEnchantment)
+                    {
+                        var actions = gameState.ParserState.CurrentGame.FilterGameData(typeof(Action))
+                            .Select(d => d as Action)
+                            .Where(d => d.Type == (int)BlockType.TRIGGER)
+                            .Where(d => d.Entity != actionEntity.Entity)
+                            .ToList();
+                        var plagueAction = actions.LastOrDefault();
+                        return gameState.CurrentEntities.GetValueOrDefault(plagueAction?.Entity ?? -1)?.CardId;
+                    }
+
                     // Tamsin Roana
                     if (actionEntity != null && actionEntity.CardId == TamsinRoame_BAR_918)
                     {
