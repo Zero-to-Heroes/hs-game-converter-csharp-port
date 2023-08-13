@@ -114,23 +114,24 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                     GameState.OnCardDrawn(entity.Entity);
                     var finalCardId = cardId != null && cardId.Length > 0 ? cardId : predictedCardId;
+                    var shouldObfuscate = Obfuscator.shouldObfuscateCardDraw(cardId, GameState, node);
                     return new GameEvent
                     {
                         Type =  "CARD_DRAW_FROM_DECK",
                         Value = new
                         {
-                            CardId = finalCardId,
+                            CardId = shouldObfuscate ? null : finalCardId,
                             ControllerId = controllerId,
                             LocalPlayer = StateFacade.LocalPlayer,
                             OpponentPlayer = StateFacade.OpponentPlayer,
                             EntityId = entity.Id,
                             GameState = gameState,
                             AdditionalProps = new {
-                                IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
-                                CreatorCardId = creator?.Item1,
-                                LastInfluencedByCardId = lastInfluencedByCardId,
-                                DataTag1 = dataTag1,
-                                Cost = cost,
+                                IsPremium = shouldObfuscate ? false : entity.GetTag(GameTag.PREMIUM) == 1,
+                                CreatorCardId = shouldObfuscate ? null : creator?.Item1,
+                                LastInfluencedByCardId = shouldObfuscate ? null : lastInfluencedByCardId,
+                                DataTag1 = shouldObfuscate ? 0 : dataTag1,
+                                Cost = shouldObfuscate ? 0 : cost,
                                 DrawnByCardId = drawnByCardId
                             }
                         }
