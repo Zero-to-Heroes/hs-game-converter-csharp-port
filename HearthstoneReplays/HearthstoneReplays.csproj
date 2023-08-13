@@ -112,6 +112,7 @@
     <Compile Include="Events\GameMetaData.cs" />
     <Compile Include="Events\EventQueueHandler.cs" />
     <Compile Include="Events\GameStateShort.cs" />
+    <Compile Include="Events\Obfuscator.cs" />
     <Compile Include="Events\Parsers\AbstractBasicTagChangeParser.cs" />
     <Compile Include="Events\Parsers\Controls\BattlegroundsControls.cs" />
     <Compile Include="Events\Parsers\Controls\ControlsManager.cs" />

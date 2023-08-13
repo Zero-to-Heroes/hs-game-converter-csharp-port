@@ -194,6 +194,7 @@ namespace HearthstoneReplays.Events.Parsers
                     gameState,
                     new {
                         CreatorCardId = creatorEntityCardId,
+                        SubSpell = showEntity.SubSpellInEffect?.Prefab,
                     }),
                 true,
                 node) };

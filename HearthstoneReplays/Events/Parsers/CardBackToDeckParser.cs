@@ -102,7 +102,7 @@ namespace HearthstoneReplays.Events.Parsers
         private bool IsTrade(Node node)
         {
             return node?.Type == typeof(Action)
-                && (node.Object as Action).Type == (int)BlockType.TRADE;
+                && (node.Object as Action).Type == (int)BlockType.DECK_ACTION;
         }
     }
 }

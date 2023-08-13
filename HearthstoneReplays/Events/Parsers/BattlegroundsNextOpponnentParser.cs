@@ -52,9 +52,9 @@ namespace HearthstoneReplays.Events.Parsers
             var heroes = GameState.CurrentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == tagChange.Value)
-                .Where(entity => entity.CardId != BartenderBobBattlegrounds
-                    && entity.CardId != KelthuzadBattlegrounds
-                    && entity.CardId != BaconphheroHeroicBattlegrounds)
+                .Where(entity => entity.CardId != BartenderBob
+                    && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                    && entity.CardId != BaconphheroHeroic)
                 .ToList();
             var hero = heroes == null || heroes.Count == 0 ? null : heroes[0];
             // Happens in some circumstances, though it's not clear for me which ones. Maybe
@@ -64,7 +64,7 @@ namespace HearthstoneReplays.Events.Parsers
                 GameState.NextBgsOpponentPlayerId = tagChange.Value;
             }
             //Logger.Log("Next opponent player id", hero?.CardId);
-            if (hero?.CardId != null && hero.CardId != BartenderBobBattlegrounds)
+            if (hero?.CardId != null && hero.CardId != BartenderBob)
             {
                 GameState.BgsHasSentNextOpponent = true;
                 return new List<GameEventProvider> {

@@ -50,7 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var fullEntity = node.Object as FullEntity;
             var cardId = fullEntity.CardId;
-            if (cardId == CardIds.BaconphheroHeroicBattlegrounds)
+            if (cardId == CardIds.BaconphheroHeroic)
             {
                 return null;
             }

@@ -937,6 +937,7 @@ namespace HearthstoneReplays.Parser.Handlers
                         },
                         false,
                         new Node(null, null, 0, null, data)) });
+                        return true;
                     }
                 }
                 this.metadata = stateType == StateType.GameState

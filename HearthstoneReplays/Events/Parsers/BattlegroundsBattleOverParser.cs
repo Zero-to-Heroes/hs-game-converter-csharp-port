@@ -53,16 +53,16 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             string opponentCardId = GameState.BgsCurrentBattleOpponent;
             var mainPlayer = StateFacade.LocalPlayer;
-            if (opponentCardId == null || opponentCardId == KelthuzadBattlegrounds)
+            if (opponentCardId == null || opponentCardId == Kelthuzad_TB_BaconShop_HERO_KelThuzad)
             {
                 // Finding the one that is flagged as the player's NEXT_OPPONENT
                 var playerEntity = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
-                    .Where(entity => entity.CardId != BartenderBobBattlegrounds
-                        && entity.CardId != KelthuzadBattlegrounds
-                        && entity.CardId != BaconphheroHeroicBattlegrounds)
+                    .Where(entity => entity.CardId != BartenderBob
+                        && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                        && entity.CardId != BaconphheroHeroic)
                     .OrderBy(entity => entity.Id)
                     .LastOrDefault();
                 var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
@@ -70,9 +70,9 @@ namespace HearthstoneReplays.Events.Parsers
                 var nextOpponentCandidates = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
-                    .Where(entity => entity.CardId != BartenderBobBattlegrounds
-                        && entity.CardId != KelthuzadBattlegrounds
-                        && entity.CardId != BaconphheroHeroicBattlegrounds)
+                    .Where(entity => entity.CardId != BartenderBob
+                        && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                        && entity.CardId != BaconphheroHeroic)
                     .ToList();
                 var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
 
@@ -131,16 +131,16 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(data => data.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .FirstOrDefault();
                 var cardId = opponentHero?.CardId;
-                if (cardId == KelthuzadBattlegrounds)
+                if (cardId == Kelthuzad_TB_BaconShop_HERO_KelThuzad)
                 {
                     // Find the nexwt_opponent_id
                     var player = GameState.CurrentEntities[StateFacade.LocalPlayer.Id];
                     opponentPlayerId = player.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
                     opponentHero = GameState.CurrentEntities.Values
                         .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == opponentPlayerId)
-                        .Where(entity => entity.CardId != BartenderBobBattlegrounds
-                            && entity.CardId != KelthuzadBattlegrounds
-                            && entity.CardId != BaconphheroHeroicBattlegrounds)
+                        .Where(entity => entity.CardId != BartenderBob
+                            && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                            && entity.CardId != BaconphheroHeroic)
                         .FirstOrDefault();
                     cardId = opponentHero?.CardId;
                 }
@@ -185,16 +185,16 @@ namespace HearthstoneReplays.Events.Parsers
                 : attackerEntityId;
             var opponentCardId = GameState.CurrentEntities[opponentEntityId].CardId;
             var mainPlayer = StateFacade.LocalPlayer;
-            if (opponentCardId == KelthuzadBattlegrounds)
+            if (opponentCardId == Kelthuzad_TB_BaconShop_HERO_KelThuzad)
             {
                 // Finding the one that is flagged as the player's NEXT_OPPONENT
                 var playerEntity = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
-                    .Where(entity => entity.CardId != BartenderBobBattlegrounds
-                        && entity.CardId != KelthuzadBattlegrounds
-                        && entity.CardId != BaconphheroHeroicBattlegrounds)
+                    .Where(entity => entity.CardId != BartenderBob
+                        && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                        && entity.CardId != BaconphheroHeroic)
                     .OrderBy(entity => entity.Id)
                     .LastOrDefault();
                 // Sometimes there is no player entity, but I don't know why
@@ -203,9 +203,9 @@ namespace HearthstoneReplays.Events.Parsers
                 var nextOpponentCandidates = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
-                    .Where(entity => entity.CardId != BartenderBobBattlegrounds
-                        && entity.CardId != KelthuzadBattlegrounds
-                        && entity.CardId != BaconphheroHeroicBattlegrounds)
+                    .Where(entity => entity.CardId != BartenderBob
+                        && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                        && entity.CardId != BaconphheroHeroic)
                     .ToList();
                 var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
 

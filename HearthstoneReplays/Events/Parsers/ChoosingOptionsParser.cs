@@ -43,11 +43,18 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = sourceEntity.GetEffectiveController();
             var options = choices.ChoiceList?.Select(c => {
                 var optionEntity = GameState.CurrentEntities.GetValueOrDefault(c.Entity);
+                var rewardEntityId = optionEntity.GetTag(GameTag.TAG_SCRIPT_DATA_ENT_1);
+                var rewardEntity = GameState.CurrentEntities.GetValueOrDefault(rewardEntityId);
+                var rewardCardId = rewardEntity?.CardId;
                 return new
                 {
                     EntityId = c.Entity,
                     CardId = optionEntity?.CardId,
                     QuestDifficulty = optionEntity?.GetTag(GameTag.QUEST_PROGRESS_TOTAL, 0),
+                    QuestReward = new {
+                        EntityId = rewardEntityId,
+                        CardId = rewardCardId,
+                    }
                 };
             })?.ToList();
             if (options == null || options.Count == 0) { 

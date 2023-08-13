@@ -11,16 +11,16 @@ namespace HearthstoneReplays.Events.Parsers
     public class BattlegroundsPlayerBoardParser : ActionParser
     {
         private static List<string> COMPETING_BATTLE_START_HERO_POWERS = new List<string>() {
-            RebornRitesBattlegrounds,
-            SwattingInsectsBattlegrounds,
-            EmbraceYourRageBattlegrounds,
+            RebornRites,
+            SwattingInsects,
+            EmbraceYourRage,
         };
 
         // We want to send the board states before these hero powers trigger
         private static List<string> START_OF_COMBAT_HERO_POWER = new List<string>() {
             //TeronGorefiend_RapidReanimation
             RapidReanimation_ImpendingDeathEnchantment,
-            WaxWarbandBattlegrounds,
+            WaxWarband,
             // We need to send the board state before it triggers, because the simulator needs to handle it, so that
             // it is not broken if Ozumat + Tavish (or other hero power that is managed by the simulator) happen
             Ozumat_Tentacular,
@@ -34,24 +34,24 @@ namespace HearthstoneReplays.Events.Parsers
         };
 
         static List<string> START_OF_COMBAT_MINION_EFFECT = new List<string>() {
-            RedWhelp,
-            RedWhelpBattlegrounds,
-            PrizedPromoDrake,
-            PrizedPromoDrakeBattlegrounds,
-            CorruptedMyrmidon,
-            CorruptedMyrmidonBattlegrounds,
-            MantidQueen,
-            MantidQueenBattlegrounds,
+            RedWhelp_BGS_019,
+            RedWhelp_TB_BaconUps_102,
+            PrizedPromoDrake_BG21_014,
+            PrizedPromoDrake_BG21_014_G,
+            CorruptedMyrmidon_BG23_012,
+            CorruptedMyrmidon_BG23_012_G,
+            MantidQueen_BG22_402,
+            MantidQueen_BG22_402_G,
             InterrogatorWhitemane_BG24_704,
             InterrogatorWhitemane_BG24_704_G,
-            Soulsplitter,
-            SoulsplitterBattlegrounds,
-            AmberGuardian,
-            AmberGuardianBattlegrounds,
-            ChoralMrrrglr,
-            ChoralMrrrglrBattlegrounds,
-            SanctumRester,
-            SanctumResterBattlegrounds,
+            Soulsplitter_BG25_023,
+            Soulsplitter_BG25_023_G,
+            AmberGuardian_BG24_500,
+            AmberGuardian_BG24_500_G,
+            ChoralMrrrglr_BG26_354,
+            ChoralMrrrglr_BG26_354_G,
+            SanctumRester_BG26_356,
+            SanctumRester_BG26_356_G,
         };
 
         static List<string> START_OF_COMBAT_QUEST_REWARD_EFFECT = new List<string>() {
@@ -115,7 +115,7 @@ namespace HearthstoneReplays.Events.Parsers
                         && (
                             // This was introduced to wait until the damage is done to each hero before sending the board state. However,
                             // forcing the entity to be the root entity means that sometimes we send the info way too late.
-                            actionEntity.CardId == CardIds.Baconshop8playerenchantEnchantmentBattlegrounds
+                            actionEntity.CardId == CardIds.Baconshop8playerenchantEnchantment
                             // This condition has been introduced to solve an issue when the Wingmen hero power triggers. In that case, the parent action of attacks
                             // is not a TB_BaconShop_8P_PlayerE, but the hero power action itself.
                             || actionEntity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER
@@ -137,8 +137,8 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 // Here we accept to face the ghost
-                .Where(entity => entity.CardId != BartenderBobBattlegrounds
-                    && entity.CardId != BaconphheroHeroicBattlegrounds)
+                .Where(entity => entity.CardId != BartenderBob
+                    && entity.CardId != BaconphheroHeroic)
                 //.Select(entity => entity.IsBaconGhost() 
                 //    ? GetGhostBaseEntity(entity)
                 //    : entity)
@@ -149,8 +149,8 @@ namespace HearthstoneReplays.Events.Parsers
             //    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
             //    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
             //    // Here we accept to face the ghost
-            //    .Where(entity => entity.CardId != BartenderBobBattlegrounds
-            //        && entity.CardId != BaconphheroHeroicBattlegrounds)
+            //    .Where(entity => entity.CardId != BartenderBob
+            //        && entity.CardId != BaconphheroHeroic)
             //    .ToList();
             if (!haveHeroesAllRequiredData)
             {
@@ -167,18 +167,18 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
-                .Where(entity => entity.CardId != BartenderBobBattlegrounds
-                    && entity.CardId != KelthuzadBattlegrounds
-                    && entity.CardId != BaconphheroHeroicBattlegrounds)
+                .Where(entity => entity.CardId != BartenderBob
+                    && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                    && entity.CardId != BaconphheroHeroic)
                 .OrderBy(entity => entity.Id)
                 .LastOrDefault();
             var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
             var nextOpponentCandidates = GameState.CurrentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
-                .Where(entity => entity.CardId != BartenderBobBattlegrounds
-                    && entity.CardId != KelthuzadBattlegrounds
-                    && entity.CardId != BaconphheroHeroicBattlegrounds)
+                .Where(entity => entity.CardId != BartenderBob
+                    && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                    && entity.CardId != BaconphheroHeroic)
                 .ToList();
             var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
             return nextOpponent ?? ghostEntity;
@@ -301,12 +301,11 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                 // Here we accept to face the ghost
-                .Where(entity => entity.CardId != BartenderBobBattlegrounds
-                    && entity.CardId != BaconphheroHeroicBattlegrounds
-                    && entity.CardId != BaconphheroHeroicBattlegrounds)
+                .Where(entity => entity.CardId != BartenderBob
+                    && entity.CardId != BaconphheroHeroic)
                 .ToList();
             var hero = potentialHeroes
-                //.Where(entity => entity.CardId != KelthuzadBattlegrounds)
+                //.Where(entity => entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad)
                 .FirstOrDefault()
                 ?.Clone();
             var cardId = hero?.CardId;
@@ -315,16 +314,16 @@ namespace HearthstoneReplays.Events.Parsers
                 GameState.BgsCurrentBattleOpponent = cardId;
             }
 
-            if (cardId == KelthuzadBattlegrounds)
+            if (cardId == Kelthuzad_TB_BaconShop_HERO_KelThuzad)
             {
                 // Finding the one that is flagged as the player's NEXT_OPPONENT
                 var playerEntity = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
-                    .Where(entity => entity.CardId != BartenderBobBattlegrounds
-                        && entity.CardId != KelthuzadBattlegrounds
-                        && entity.CardId != BaconphheroHeroicBattlegrounds)
+                    .Where(entity => entity.CardId != BartenderBob
+                        && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                        && entity.CardId != BaconphheroHeroic)
                     .OrderBy(entity => entity.Id)
                     .LastOrDefault();
                 var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
@@ -332,9 +331,9 @@ namespace HearthstoneReplays.Events.Parsers
                 var nextOpponentCandidates = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
-                    .Where(entity => entity.CardId != BartenderBobBattlegrounds
-                        && entity.CardId != KelthuzadBattlegrounds
-                        && entity.CardId != BaconphheroHeroicBattlegrounds)
+                    .Where(entity => entity.CardId != BartenderBob
+                        && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                        && entity.CardId != BaconphheroHeroic)
                     .ToList();
                 var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
 
@@ -404,7 +403,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Logger.Log("WARNING: could not find hero power", "");
                 }
                 var heroPowerUsed = heroPower?.GetTag(GameTag.BACON_HERO_POWER_ACTIVATED) == 1;
-                if (heroPower?.CardId == CardIds.EmbraceYourRageBattlegrounds)
+                if (heroPower?.CardId == CardIds.EmbraceYourRage)
                 {
                     var parentAction = (node.Parent.Object as Parser.ReplayData.GameActions.Action);
                     var hasTriggerBlock = parentAction.Data
@@ -412,7 +411,7 @@ namespace HearthstoneReplays.Events.Parsers
                         .Select(data => data as Parser.ReplayData.GameActions.Action)
                         .Where(action => action.Type == (int)BlockType.TRIGGER)
                         .Where(action => GameState.CurrentEntities.ContainsKey(action.Entity)
-                            && GameState.CurrentEntities[action.Entity]?.CardId == CardIds.EmbraceYourRageBattlegrounds)
+                            && GameState.CurrentEntities[action.Entity]?.CardId == CardIds.EmbraceYourRage)
                         .Count() > 0;
                     heroPowerUsed = heroPowerUsed || hasTriggerBlock;
                 }

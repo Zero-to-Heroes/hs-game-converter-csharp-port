@@ -36,7 +36,7 @@ namespace HearthstoneReplays.Events.Parsers
                 && node.Type == typeof(Action)
                 && (node.Object as Action).Type == (int)BlockType.POWER
                 && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
-                && GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == CardIds.FreezeBattlegrounds;
+                && GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == CardIds.Freeze_TB_BaconShopLockAll_Button;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)

@@ -195,8 +195,8 @@ namespace HearthstoneReplays.Events.Parsers
             var action = node.Parent.Object as Action;
             return action.Type == (int)BlockType.POWER
                 && GameState.CurrentEntities.ContainsKey(action.Entity)
-                && (GameState.CurrentEntities[action.Entity].CardId == CardIds.RefreshBattlegrounds_TB_BaconShop_8p_Reroll_Button
-                    || GameState.CurrentEntities[action.Entity].CardId == CardIds.RefreshBattlegrounds_TB_BaconShop_1p_Reroll_Button);
+                && (GameState.CurrentEntities[action.Entity].CardId == CardIds.Refresh_TB_BaconShop_8p_Reroll_Button
+                    || GameState.CurrentEntities[action.Entity].CardId == CardIds.Refresh_TB_BaconShop_1p_Reroll_Button);
         }
     }
 }

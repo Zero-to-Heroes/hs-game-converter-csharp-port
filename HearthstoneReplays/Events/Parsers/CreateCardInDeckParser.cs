@@ -117,6 +117,12 @@ namespace HearthstoneReplays.Events.Parsers
 
             var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node, fullEntity.CardId);
+            if (cardId == null)
+            {
+                // Check the GameState in case we know the id, which is typically useful when the card is created empty, then 
+                // a CHANGE_ENTITY block is used to set the data
+                cardId = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(fullEntity.Id)?.CardId;
+            }
             var controllerId = fullEntity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
 
