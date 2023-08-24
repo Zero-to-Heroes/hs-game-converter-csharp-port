@@ -60,6 +60,7 @@ namespace HearthstoneReplays.Events.Parsers
                     StateFacade,
                     null,
                     new {
+                        PlayerId = entity.GetTag(GameTag.PLAYER_ID),
                         IsHeroPowerReward = isHeroPowerReward,
                     }
                 ),
@@ -84,6 +85,7 @@ namespace HearthstoneReplays.Events.Parsers
                     StateFacade,
                     null,
                     new {
+                        PlayerId = fullEntity.GetTag(GameTag.PLAYER_ID),
                         IsHeroPowerReward = isHeroPowerReward,
                     }
                 ),

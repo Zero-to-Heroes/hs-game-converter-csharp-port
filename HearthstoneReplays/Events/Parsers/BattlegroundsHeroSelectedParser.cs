@@ -163,6 +163,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Damage = fullEntity.GetTag(GameTag.DAMAGE),
                     TavernLevel = fullEntity.GetTag(GameTag.PLAYER_TECH_LEVEL),
                     NextOpponentCardId = hero.CardId,
+                    NextOpponentPlayerId = nextOpponentPlayerId,
                 },
             };
         }

@@ -52,6 +52,7 @@ namespace HearthstoneReplays.Events.Parsers
             GameState.BattleResultSent = true;
             var tagChange = node.Object as TagChange;
             string opponentCardId = GameState.BgsCurrentBattleOpponent;
+            int opponentPlayerId = GameState.BgsCurrentBattleOpponentPlayerId;
             var mainPlayer = StateFacade.LocalPlayer;
             if (opponentCardId == null || opponentCardId == Kelthuzad_TB_BaconShop_HERO_KelThuzad)
             {
@@ -77,6 +78,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
 
                 opponentCardId = nextOpponent?.CardId;
+                opponentPlayerId = nextOpponent?.GetTag(GameTag.PLAYER_ID) ?? 0;
             }
 
             return new List<GameEventProvider> { GameEventProvider.Create(
@@ -88,6 +90,7 @@ namespace HearthstoneReplays.Events.Parsers
                         Value = new
                         {
                             Opponent = opponentCardId,
+                            OpponentPlayerId = opponentPlayerId,
                             Result = "tied"
                         }
                     },
@@ -122,9 +125,9 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(act => act.Type == (int)BlockType.ATTACK)
                 .FirstOrDefault();
 
+            var opponentPlayerId = StateFacade.OpponentPlayer.PlayerId;
             if (attackAction == null)
             {
-                var opponentPlayerId = StateFacade.OpponentPlayer.PlayerId;
                 var opponentHero = GameState.CurrentEntities.Values
                     .Where(data => data.GetEffectiveController() == opponentPlayerId)
                     .Where(data => data.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
@@ -153,6 +156,7 @@ namespace HearthstoneReplays.Events.Parsers
                         Value = new
                         {
                             Opponent = cardId,
+                            OpponentPlayerId = opponentPlayerId,
                             Result = "tied"
                         }
                     },
@@ -184,6 +188,7 @@ namespace HearthstoneReplays.Events.Parsers
                 ? defenderEntityId
                 : attackerEntityId;
             var opponentCardId = GameState.CurrentEntities[opponentEntityId].CardId;
+            opponentPlayerId = GameState.CurrentEntities[opponentEntityId].GetTag(GameTag.PLAYER_ID);
             var mainPlayer = StateFacade.LocalPlayer;
             if (opponentCardId == Kelthuzad_TB_BaconShop_HERO_KelThuzad)
             {
@@ -210,6 +215,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
 
                 opponentCardId = nextOpponent?.CardId;
+                opponentPlayerId = nextOpponentPlayerId ?? 0;
             }
             var damage = damageTag != null ? damageTag.Value : 0;
 
@@ -222,6 +228,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Value = new
                     {
                         Opponent = opponentCardId,
+                        OpponentPlayerId = opponentPlayerId,
                         Result = result,
                         Damage = damage,
                     }

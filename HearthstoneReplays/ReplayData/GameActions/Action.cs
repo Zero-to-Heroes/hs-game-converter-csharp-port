@@ -48,7 +48,11 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
 		[XmlElement("ShuffleDeck", typeof(ShuffleDeck))]
 		public List<GameData> Data { get; set; }
 
-		public List<GameData> GetDataRecursive()
+		[XmlIgnore]
+		public string DebugCreationLine { get; set; }
+
+
+        public List<GameData> GetDataRecursive()
 		{
 			var result = new List<GameData>();
 			foreach (var data in Data)

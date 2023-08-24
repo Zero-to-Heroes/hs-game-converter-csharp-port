@@ -50,6 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
                              BattlegroundsPrizes = (node.Object as GameEntity).GetTag(GameTag.DARKMOON_FAIRE_PRIZES_ACTIVE) == 1,
                              BattlegroundsQuests = (node.Object as GameEntity).GetTag(GameTag.BACON_QUESTS_ACTIVE) == 1,
                              BattlegroundsBuddies = (node.Object as GameEntity).GetTag(GameTag.BACON_BUDDY_ENABLED) == 1,
+                             BattlegroundsAnomalies = new List<int>() { (node.Object as GameEntity).GetTag(GameTag.BACON_GLOBAL_ANOMALY_DBID) },
                         },
                     },
                     false,

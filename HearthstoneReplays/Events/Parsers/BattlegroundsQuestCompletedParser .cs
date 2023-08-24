@@ -62,6 +62,7 @@ namespace HearthstoneReplays.Events.Parsers
                     StateFacade,
                     null,
                     new {
+                        PlayerId = hero.GetTag(GameTag.PLAYER_ID),
                         QuestRewardDbfId = questRewardDbfId,
                         IsHeroPowerReward = isHeroPowerReward,
                     }),

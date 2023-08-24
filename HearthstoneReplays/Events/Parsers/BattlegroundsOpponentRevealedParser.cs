@@ -81,6 +81,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 Value = new
                                 {
                                     CardId = cardId,
+                                    PlayerId = fullEntity.GetTag(GameTag.PLAYER_ID),
                                     LeaderboardPlace = fullEntity.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE),
                                 }
                             };
@@ -113,6 +114,7 @@ namespace HearthstoneReplays.Events.Parsers
                 Value = new
                 {
                     CardId = cardId,
+                    PlayerId = fullEntity.GetTag(GameTag.PLAYER_ID),
                     LeaderboardPlace = fullEntity.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE),
                     Health = fullEntity.GetTag(GameTag.HEALTH),
                     Armor = fullEntity.GetTag(GameTag.ARMOR),

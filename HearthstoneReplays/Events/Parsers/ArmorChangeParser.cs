@@ -57,6 +57,7 @@ namespace HearthstoneReplays.Events.Parsers
                     StateFacade,
                     null,
                     new {
+                        PlayerId = entity.GetTag(GameTag.PLAYER_ID),
                         ArmorChange = newArmor - initialArmor,
                         TotalArmor = newArmor,
                     }),

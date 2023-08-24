@@ -67,6 +67,7 @@ namespace HearthstoneReplays.Events.Parsers
                         Value = new
                         {
                             CardId = hero.CardId,
+                            PlayerId = hero.GetTag(GameTag.PLAYER_ID, 0),
                             TotalBuddies = tagChange.Value,
                         }
                     },

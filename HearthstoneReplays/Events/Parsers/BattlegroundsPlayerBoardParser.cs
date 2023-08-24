@@ -52,6 +52,8 @@ namespace HearthstoneReplays.Events.Parsers
             ChoralMrrrglr_BG26_354_G,
             SanctumRester_BG26_356,
             SanctumRester_BG26_356_G,
+            CarbonicCopy_BG27_503,
+            CarbonicCopy_BG27_503_G,
         };
 
         static List<string> START_OF_COMBAT_QUEST_REWARD_EFFECT = new List<string>() {
@@ -309,9 +311,11 @@ namespace HearthstoneReplays.Events.Parsers
                 .FirstOrDefault()
                 ?.Clone();
             var cardId = hero?.CardId;
+            var playerId = hero?.GetTag(GameTag.PLAYER_ID);
             if (isOpponent)
             {
                 GameState.BgsCurrentBattleOpponent = cardId;
+                GameState.BgsCurrentBattleOpponentPlayerId = playerId ?? 0;
             }
 
             if (cardId == Kelthuzad_TB_BaconShop_HERO_KelThuzad)
@@ -338,6 +342,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
 
                 cardId = nextOpponent?.CardId;
+                playerId = nextOpponent?.GetTag(GameTag.PLAYER_ID);
             }
             // Happens in the first encounter
             if (cardId == null)
@@ -349,6 +354,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .FirstOrDefault()
                     ?.Clone();
                 cardId = hero?.CardId;
+                playerId = hero?.GetTag(GameTag.PLAYER_ID);
             }
             if (cardId != null)
             {
@@ -476,6 +482,7 @@ namespace HearthstoneReplays.Events.Parsers
                     HeroPowerUsed = heroPowerUsed,
                     HeroPowerInfo = heroPowerInfo,
                     CardId = cardId,
+                    PlayerId = playerId ?? 0,
                     Board = result,
                     QuestRewards = questRewards,
                     Secrets = secrets,
@@ -579,6 +586,8 @@ namespace HearthstoneReplays.Events.Parsers
             public int HeroPowerInfo { get; set; }
 
             public string CardId { get; set; }
+            
+            public int PlayerId { get; set; }
 
             public List<string> QuestRewards { get; set; }
 

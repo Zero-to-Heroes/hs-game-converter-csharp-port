@@ -55,6 +55,7 @@ namespace HearthstoneReplays.Events.Parsers
                         Value = new
                         {
                             CardId = hero.CardId,
+                            PlayerId = hero.GetTag(GameTag.PLAYER_ID),
                             LeaderboardPlace = tagChange.Value,
                         }
                     };

@@ -12,7 +12,6 @@ namespace HearthstoneReplays.Enums
         DEATHS = 6,
         PLAY = 7,
         FATIGUE = 8,
-        RITUAL = 9,
         REVEAL_CARD = 10,
         GAME_RESET = 11,
         MOVE_MINION = 12,
@@ -75,46 +74,6 @@ namespace HearthstoneReplays.Enums
         REGION_PTR = 98,
     }
 
-    public enum Booster
-    {
-        INVALID = 0,
-        CLASSIC = 1,
-        GOBLINS_VS_GNOMES = 9,
-        THE_GRAND_TOURNAMENT = 10,
-        OLD_GODS = 11,
-        FIRST_PURCHASE_OLD = 17,
-        SIGNUP_INCENTIVE = 18,
-        MEAN_STREETS = 19,
-        UNGORO = 20,
-        FROZEN_THRONE = 21,
-        GOLDEN_CLASSIC_PACK = 23,
-        KOBOLDS_AND_CATACOMBS = 30,
-        KOBOLDS_CATACOMBS = 30,
-        WITCHWOOD = 31,
-        THE_BOOMSDAY_PROJECT = 38,
-        RASTAKHANS_RUMBLE = 40,
-        MAMMOTH_BUNDLE = 41,
-        DALARAN = 49,
-        ULDUM = 128,
-        FIRST_PURCHASE = 181,
-        DRAGONS = 347,
-        BLACK_TEMPLE = 423,
-        SCHOLOMANCE = 468,
-        STANDARD_HUNTER = 470,
-        YEAR_OF_DRAGON = 498,
-        STANDARD_MAGE = 545,
-        THE_BARRENS = 553,
-        WAILING_CAVERNS = 583,
-        DARKMOON_FAIRE = 616,
-    }
-
-    public enum BrawlType
-    {
-        BRAWL_TYPE_UNKNOWN = 0,
-        BRAWL_TYPE_TAVERN_BRAWL = 1,
-        BRAWL_TYPE_FIRESIDE_GATHERING = 2,
-        BRAWL_TYPE_COUNT = 3,
-    }
 
     public enum CardClass
     {
@@ -258,6 +217,7 @@ namespace HearthstoneReplays.Enums
         BATTLEGROUND_HERO_BUDDY = 24,
         LOCATION = 39,
         BATTLEGROUND_QUEST_REWARD = 40,
+        BATTLEGROUND_ANOMALY = 43,
     }
 
     public enum ChoiceType
@@ -586,14 +546,14 @@ namespace HearthstoneReplays.Enums
         ELECTRIC_CHARGE_LEVEL = 420,
         HEAVILY_ARMORED = 421,
         DONT_SHOW_IMMUNE = 422,
-        RITUAL = 424,
+        //RITUAL = 424,
         PREHEALING = 425,
         APPEAR_FUNCTIONALLY_DEAD = 426,
         OVERLOAD_THIS_GAME = 427,
         SPELLS_COST_HEALTH = 431,
         HISTORY_PROXY_NO_BIG_CARD = 432,
         IGNORE_TAUNT = 433,
-        PROXY_CTHUN = 434,
+        //PROXY_CTHUN = 434,
         TRANSFORMED_FROM_CARD = 435,
         CTHUN = 436,
         CAST_RANDOM_SPELLS = 437,
@@ -879,7 +839,7 @@ namespace HearthstoneReplays.Enums
         MOVE_MINION_HOVER_TARGET_SLOT = 1464,
         BACON_COIN_ON_ENEMY_MINIONS = 1467,
         ALWAYS_USE_FAST_ACTOR_TRIGGERS = 1473,
-        PIECE_OF_CTHUN = 1477,
+        //PIECE_OF_CTHUN = 1477,
         BACON_HERO_CAN_BE_DRAFTED = 1491,
         TRANSIENT_ENTITY = 1493,
         DISABLE_NONHERO_GOLDEN_ANIMATIONS = 1514,
@@ -1191,6 +1151,7 @@ namespace HearthstoneReplays.Enums
         BACON_PUTRICIDESCREATION_TOOLTIP = 2875,
         TAG_SCRIPT_DATA_NUM_3 = 2889,
         CARD_NAME_DATA_1 = 2890,
+        BACON_GLOBAL_ANOMALY_DBID = 2897,
         BACON_COSTS_HEALTH_TO_BUY = 2911,
         TAG_SCRIPT_DATA_NUM_4 = 2919,
         TAG_SCRIPT_DATA_NUM_5 = 2920,
@@ -1206,16 +1167,23 @@ namespace HearthstoneReplays.Enums
         FORGED = 3011,
         BUILDING_UP = 3016,
         BACON_PAIR_CANDIDATE = 3031,
+        CTHUN_TAUNT_BUFF = 3034,
         BACON_TRIGGER_UPBEAT = 3046,
         BACON_TRIGGER_XY = 3047,
         FAN_LINK = 3052,
+        CTHUN_HEALTH_BUFF = 3053,
+        CTHUN_ATTACK_BUFF = 3054,
         FORGE_REVEALED = 3070,
         FORGES_INTO = 3074,
+        FX_DATANUM_2 = 3077,
+        RITUALIST_MINION = 3078,
+        FX_DATANUM_3 = 3109,
         SUMMONED_WHEN_DRAWN = 3128,
         IS_ALTERNATE_HEROPOWER = 3130,
         TITAN_ABILITY_USED_1 = 3140,
         TITAN_ABILITY_USED_2 = 3141,
         TITAN_ABILITY_USED_3 = 3142,
+        SUPPRESS_EVIL_TWIN_MUSTACHE_SOUND = 3198,
     }
 
     public enum GameType

@@ -197,6 +197,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .Select(entity => new Hero()
                 {
                     CardId = entity.CardId,
+                    PlayerId = entity.GetTag(GameTag.PLAYER_ID, 0),
                     EntityId = entity.Id,
                     Health = entity.GetTag(GameTag.HEALTH, 0) - entity.GetTag(GameTag.DAMAGE, 0),
                     Armor = entity.GetTag(GameTag.ARMOR, 0),
@@ -219,6 +220,7 @@ namespace HearthstoneReplays.Events.Parsers
     internal class Hero
     {
         public string CardId;
+        public int PlayerId;
         public int EntityId;
         public int Health;
         public int Armor;

@@ -19,6 +19,7 @@ namespace HearthstoneReplays.Events.Parsers.Controls
             //typeof(MinionSummonedParser), // Needed for minions highlights
             typeof(LinkedEntityParser),
             typeof(CopiedFromEntityIdParser),
+            // SubSpell is hard-coded in DataHandler
         };
     }
 }

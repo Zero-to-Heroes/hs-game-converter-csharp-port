@@ -116,7 +116,7 @@ namespace HearthstoneReplays.Events.Parsers
             bool createdByJoust = parentAction?.Type == (int)BlockType.JOUST;
 
             var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
-            var cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node, fullEntity.CardId);
+            var cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node, fullEntity.CardId, null, fullEntity.Entity);
             if (cardId == null)
             {
                 // Check the GameState in case we know the id, which is typically useful when the card is created empty, then 
