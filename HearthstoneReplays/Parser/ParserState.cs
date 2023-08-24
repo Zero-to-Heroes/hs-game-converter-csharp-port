@@ -45,7 +45,7 @@ namespace HearthstoneReplays.Parser
         public Options Options { get; set; }
         public Option CurrentOption { get; set; }
         public object LastOption { get; set; }
-        public int FirstPlayerId { get; set; }
+        public int FirstPlayerEntityId { get; set; }
         public int CurrentPlayerId { get; set; }
         public ChosenEntities CurrentChosenEntites { get; set; }
         public bool Ended { get; set; }
@@ -189,7 +189,7 @@ namespace HearthstoneReplays.Parser
             Options = null;
             CurrentOption = null;
             LastOption = null;
-            FirstPlayerId = -1;
+            FirstPlayerEntityId = -1;
             CurrentPlayerId = -1;
             CurrentChosenEntites = null;
             Ended = false;
@@ -296,7 +296,7 @@ namespace HearthstoneReplays.Parser
                     else if (player.PlayerId == localPlayerPlayerId && data.Contains("PlayerID=" + localPlayerPlayerId))
                     {
                         var newPlayer = Player.from(player);
-                        FirstPlayerId = player.Id;
+                        FirstPlayerEntityId = player.Id;
                         SetLocalPlayer(newPlayer, timestamp, data, StateType == StateType.GameState);
                         return;
                     }

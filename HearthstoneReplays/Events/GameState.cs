@@ -74,7 +74,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         {
             if (CurrentEntities.ContainsKey(entity.Id))
             {
-                Logger.Log("error while parsing GameEntity, playerEntity already present in memory", "" + entity.Id);
+                if (!this.ParserState.ReconnectionOngoing)
+                {
+                    Logger.Log("error while parsing GameEntity, playerEntity already present in memory", "" + entity.Id);
+                }
                 return;
             }
             var newTags = new List<Tag>();
@@ -119,7 +122,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         {
             if (CurrentEntities.ContainsKey(entity.Id))
             {
-                Logger.Log("error while parsing, playerEntity already present in memory", "" + entity.Id);
+                if (!this.ParserState.ReconnectionOngoing)
+                {
+                    Logger.Log("error while parsing, playerEntity already present in memory", "" + entity.Id);
+                }
                 return;
             }
             var newTags = new List<Tag>();

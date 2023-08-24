@@ -78,7 +78,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 // When in reconnect, we don't parse the GameEntity and 
                 // PlayerEntity nodes, so the tags think they are parsed while 
                 // under the Game root node
-                if (state.Node.Type == typeof(Game))
+                if (state.Node.Type == typeof(Game) || state.Node.Type == typeof(GameEntity))
                 {
                     return false;
                 }
@@ -98,7 +98,7 @@ namespace HearthstoneReplays.Parser.Handlers
 
                 if (tag.Name == (int)GameTag.CURRENT_PLAYER)
                 {
-                    state.FirstPlayerId = ((PlayerEntity)state.Node.Object).Id;
+                    state.FirstPlayerEntityId = ((PlayerEntity)state.Node.Object).Id;
                 }
 
                 if (state.Node.Type == typeof(GameEntity))
@@ -155,7 +155,7 @@ namespace HearthstoneReplays.Parser.Handlers
 
                 if (tag.Name == (int)GameTag.CURRENT_PLAYER)
                 {
-                    if (state.FirstPlayerId == -1)
+                    if (state.FirstPlayerEntityId == -1)
                     {
                         // If GameState logs, this is an int, in PowerTaskList, this is the player's BTag
                         int entityId = -1;
@@ -164,7 +164,7 @@ namespace HearthstoneReplays.Parser.Handlers
                         {
                             entityId = helper.GetPlayerIdFromName(rawEntity);
                         }
-                        state.FirstPlayerId = entityId;
+                        state.FirstPlayerEntityId = entityId;
                     }
                     UpdateCurrentPlayer(state, rawEntity, tag);
                 }
@@ -672,7 +672,8 @@ namespace HearthstoneReplays.Parser.Handlers
         private static bool HandleCreatePlayer(string data, ParserState state, StateFacade stateFacade, int indentLevel)
         {
             var match = Regexes.ActionCreategamePlayerRegex.Match(data);
-            if (match.Success)
+            // We already have the player entities while reconnecting, so we don't re-parse them
+            if (!state.ReconnectionOngoing && match.Success)
             {
                 var id = match.Groups[1].Value;
                 var playerId = match.Groups[2].Value;
@@ -918,29 +919,35 @@ namespace HearthstoneReplays.Parser.Handlers
             if (data == "CREATE_GAME")
             {
                 state.NodeParser.ClearQueue();
-                //Logger.Log("Handling create game", "");
+
+                Logger.Log("Handling create game", "");
                 var isReconnecting = state.IsReconnecting();
                 if (isReconnecting)
                 {
                     Logger.Log(
-                        $"Probable reconnect detected {timestamp} // {previousTimestamp} // {state.Ended} // {state.NumberOfCreates} // {state.Spectating} // {stateType} // {data}",
+                        $"Probable reconnect detected {stateType} {timestamp} // {previousTimestamp} // {state.Ended} // {state.NumberOfCreates} // {state.Spectating} // {stateType} // {data}",
                         "" + (timestamp - previousTimestamp));
                     if (stateType == StateType.GameState)
                     {
                         state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
-                        timestamp,
-                        "RECONNECT_START",
-                        () => {
-                            return new GameEvent
-                            {
-                                Type = "RECONNECT_START",
-                            };
-                        },
-                        false,
-                        new Node(null, null, 0, null, data)) });
-                        return true;
+                            timestamp,
+                            "RECONNECT_START",
+                            () => {
+                                return new GameEvent
+                                {
+                                    Type = "RECONNECT_START",
+                                };
+                            },
+                            false,
+                            new Node(null, null, 0, null, data)) 
+                        });
                     }
+                    state.ReconnectionOngoing = true;
+                    state.UpdateCurrentNode(typeof(Game));
+                    // Don't reset anything
+                    return true;
                 }
+
                 this.metadata = stateType == StateType.GameState
                     ? new GameMetaData()
                     {
@@ -950,9 +957,9 @@ namespace HearthstoneReplays.Parser.Handlers
                         ScenarioID = -1,
                     }
                     : gameInfoHelper.GetMetaData();
+
                 state.Reset(gameInfoHelper);
                 state.NumberOfCreates++;
-                state.ReconnectionOngoing = isReconnecting;
                 state.CurrentGame = new Game
                 {
                     TimeStamp = timestamp,
@@ -965,7 +972,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 var newNode = new Node(typeof(Game), state.CurrentGame, 0, null, data);
                 state.CreateNewNode(newNode);
                 state.Node = newNode;
-                Logger.Log("Created a new game", "" + timestamp + "," + previousTimestamp);
+                Logger.Log("Created a new game", stateType + " " + timestamp + "," + previousTimestamp);
                 return true;
             }
             return false;

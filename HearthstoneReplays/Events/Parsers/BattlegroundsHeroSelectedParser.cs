@@ -162,7 +162,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Armor = fullEntity.GetTag(GameTag.ARMOR, 0),
                     Damage = fullEntity.GetTag(GameTag.DAMAGE),
                     TavernLevel = fullEntity.GetTag(GameTag.PLAYER_TECH_LEVEL),
-                    NextOpponentCardId = hero.CardId,
+                    NextOpponentCardId = hero?.CardId,
                     NextOpponentPlayerId = nextOpponentPlayerId,
                 },
             };

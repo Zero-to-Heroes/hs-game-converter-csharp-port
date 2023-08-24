@@ -90,10 +90,10 @@ namespace HearthstoneReplays.Parser
             }
 
 
-            var firstPlayer = validPlayers.FirstOrDefault(x => x.Id == state.FirstPlayerId);
+            var firstPlayer = validPlayers.FirstOrDefault(x => x.Id == state.FirstPlayerEntityId);
             if (firstPlayer == null) throw new Exception("Could not find first player " + data);
 
-            var secondPlayer = validPlayers.FirstOrDefault(x => x.Id != state.FirstPlayerId);
+            var secondPlayer = validPlayers.FirstOrDefault(x => x.Id != state.FirstPlayerEntityId);
             if (secondPlayer == null) throw new Exception("Could not find second player " + data);
 
             if (firstPlayer.Name == data) return firstPlayer.Id;
