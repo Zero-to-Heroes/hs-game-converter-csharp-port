@@ -15,6 +15,13 @@ namespace HearthstoneReplays.Events
 {
     public class Oracle
     {
+        private static List<string> PLAGUES = new List<string>()
+        {
+            CardIds.DistressedKvaldir_UnholyPlagueToken,
+            CardIds.DistressedKvaldir_FrostPlagueToken,
+            CardIds.DistressedKvaldir_BloodPlagueToken,
+        };
+
         public static string GetCreatorFromTags(GameState gameState, FullEntity entity, Node node)
         {
             var creatorCardId = Oracle.GetCreatorCardIdFromTag(gameState, entity.GetTag(GameTag.CREATOR), entity);
@@ -142,7 +149,14 @@ namespace HearthstoneReplays.Events
             return null;
         }
 
-        public static string PredictCardId(GameState gameState, string creatorCardId, int creatorEntityId, Node node, string inputCardId = null, StateFacade stateFacade = null)
+        public static string PredictCardId(
+            GameState gameState, 
+            string creatorCardId, 
+            int creatorEntityId, 
+            Node node, 
+            string inputCardId = null, 
+            StateFacade stateFacade = null,
+            int? createdEntityId = null)
         {
             if (inputCardId != null && inputCardId.Length > 0)
             {
@@ -180,6 +194,7 @@ namespace HearthstoneReplays.Events
                     case AstralTiger: return AstralTiger;
                     case AstromancerSolarian: return AstromancerSolarian_SolarianPrimeToken;
                     case AwakenTheMakers: return AwakenTheMakers_AmaraWardenOfHopeToken;
+                    case AwakeningTremors: return AwakeningTremors_BurstingJormungarToken;
                     case AzsharanDefector: return AzsharanDefector_SunkenDefectorToken;
                     case AzsharanGardens: return AzsharanGardens_SunkenGardensToken;
                     case AzsharanMooncatcher_TSC_644: return AzsharanMooncatcher_SunkenMooncatcherToken;
@@ -692,15 +707,27 @@ namespace HearthstoneReplays.Events
                         var killerEntity = gameState.CurrentEntities.GetValueOrDefault(killerEntityId);
                         return killerEntity?.CardId;
                     }
-                    else if (actionEntity?.CardId == Helya_PlightOfTheDeadEnchantment)
+                    else if (actionEntity?.CardId == Helya_PlightOfTheDeadEnchantment && createdEntityId != null && createdEntityId.HasValue)
                     {
                         var actions = gameState.ParserState.CurrentGame.FilterGameData(typeof(Action))
                             .Select(d => d as Action)
                             .Where(d => d.Type == (int)BlockType.TRIGGER)
-                            .Where(d => d.Entity != actionEntity.Entity)
+                            // Chained draws use the same action entity id
+                            //.Where(d => d.Entity != actionEntity.Entity)
                             .ToList();
-                        var plagueAction = actions.LastOrDefault();
-                        return gameState.CurrentEntities.GetValueOrDefault(plagueAction?.Entity ?? -1)?.CardId;
+                        actions.Reverse();
+                        var debugActions = actions.ToList();
+                        var plagueActions = actions
+                            .SkipWhile(a => IsPlightOfTheDeadAction(a, gameState))
+                            .TakeWhile(a => IsPlagueAction(a, gameState))
+                            .Reverse()
+                            .ToList();
+                        var plightOfTheDeadActions = actions.TakeWhile(a => IsPlightOfTheDeadAction(a, gameState)).Reverse().ToList();
+                        var currentPlightOfTheDeadAction = plightOfTheDeadActions.Find(a => ContainsFullEntityCreation(a, createdEntityId.Value));
+                        var currentPlagueIndex = plightOfTheDeadActions.IndexOf(currentPlightOfTheDeadAction);
+                        var plagueAction = plagueActions[currentPlagueIndex];
+                        var result = gameState.CurrentEntities.GetValueOrDefault(plagueAction?.Entity ?? -1)?.CardId;
+                        return result;
                     }
 
                     // Tamsin Roana
@@ -1226,6 +1253,29 @@ namespace HearthstoneReplays.Events
                 case TamsinRoame_BAR_918: return creatorCardId;
                 default: return null;
             }
+        }
+
+        private static bool IsPlagueAction(Action action, GameState gameState)
+        {
+            int entity = action.Entity;
+            var cardId = gameState.CurrentEntities.GetValueOrDefault(entity)?.CardId;
+            return PLAGUES.Contains(cardId);
+        }
+
+        private static bool IsPlightOfTheDeadAction(Action action, GameState gameState)
+        {
+            int entity = action.Entity;
+            var cardId = gameState.CurrentEntities.GetValueOrDefault(entity)?.CardId;
+            return cardId == CardIds.Helya_PlightOfTheDeadEnchantment;
+        }
+
+        private static bool ContainsFullEntityCreation(Action action, int entityId)
+        {
+            return action.Data
+                .Where(d => d is FullEntity)
+                .Select(d => d as FullEntity)
+                .Select(f => f.Entity)
+                .Contains(entityId);
         }
     }
 }
