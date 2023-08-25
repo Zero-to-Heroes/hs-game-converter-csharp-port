@@ -78,7 +78,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 // When in reconnect, we don't parse the GameEntity and 
                 // PlayerEntity nodes, so the tags think they are parsed while 
                 // under the Game root node
-                if (state.Node.Type == typeof(Game) || state.Node.Type == typeof(GameEntity))
+                if (state.Node.Type == typeof(Game))
                 {
                     return false;
                 }
@@ -96,7 +96,8 @@ namespace HearthstoneReplays.Parser.Handlers
                     return false;
                 }
 
-                if (tag.Name == (int)GameTag.CURRENT_PLAYER)
+                // To handle reconnects
+                if (tag.Name == (int)GameTag.CURRENT_PLAYER && state.Node.Object is PlayerEntity)
                 {
                     state.FirstPlayerEntityId = ((PlayerEntity)state.Node.Object).Id;
                 }
