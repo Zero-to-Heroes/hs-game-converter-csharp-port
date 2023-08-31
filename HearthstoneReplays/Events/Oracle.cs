@@ -719,6 +719,7 @@ namespace HearthstoneReplays.Events
                         var debugActions = actions.ToList();
                         var plagueActions = actions
                             .SkipWhile(a => IsPlightOfTheDeadAction(a, gameState))
+                            .SkipWhile(a => a.TriggerKeyword != (int)GameTag.TOPDECK)
                             .TakeWhile(a => IsPlagueAction(a, gameState))
                             .Reverse()
                             .ToList();
