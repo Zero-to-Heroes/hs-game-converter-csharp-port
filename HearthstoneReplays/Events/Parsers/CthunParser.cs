@@ -24,12 +24,11 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
+            TagChange tagChange = null;
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.ATK
-                && GameState.CurrentEntities.ContainsKey((node.Object as TagChange).Entity)
-                && (GameState.CurrentEntities[((node.Object as TagChange).Entity)].CardId == Cthun_OG_280 
-                    || GameState.CurrentEntities[((node.Object as TagChange).Entity)].CardId == Cthun_OG_279);
+                && ((tagChange = node.Object as TagChange).Name == (int)GameTag.CTHUN_ATTACK_BUFF
+                    || tagChange.Name == (int)GameTag.CTHUN_HEALTH_BUFF);
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -55,7 +54,6 @@ namespace HearthstoneReplays.Events.Parsers
 
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
-            var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
@@ -63,13 +61,14 @@ namespace HearthstoneReplays.Events.Parsers
                 "CTHUN",
                 GameEvent.CreateProvider(
                     "CTHUN",
-                    cardId,
+                    null,
                     controllerId,
                     entity.Id,
                     StateFacade,
                     gameState,
                     new {
-                        CthunSize = tagChange.Value,
+                        CthuAtk = tagChange.Name == (int)GameTag.CTHUN_ATTACK_BUFF ? tagChange.Value as int? : null,
+                        CthuHealth = tagChange.Name == (int)GameTag.CTHUN_HEALTH_BUFF ? tagChange.Value as int? : null,
                     }),
                 true,
                 node) };
