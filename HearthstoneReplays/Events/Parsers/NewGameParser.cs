@@ -34,6 +34,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
+            Logger.Log("will emit NEW_GAME event", node.CreationLogLine);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 (node.Object as Game).TimeStamp,
                 "NEW_GAME",

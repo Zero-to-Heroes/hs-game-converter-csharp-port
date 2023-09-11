@@ -940,10 +940,26 @@ namespace HearthstoneReplays.Parser.Handlers
                                 };
                             },
                             false,
-                            new Node(null, null, 0, null, data)) 
+                            new Node(null, null, 0, null, data))
                         });
                     }
                     state.ReconnectionOngoing = true;
+                    state.Spectating = false;
+                    // Because when reconnecting a BG game (during a zone transition), we don't have the "entities removed" events
+                    // so we have no idea if the entities that were previously on board are still there. However, because of how
+                    // BG works, all minions (along with their enchantments) are removed and recreated; so we can use the latest
+                    // state without fear of losing anything
+                    if (state.IsBattlegrounds())
+                    {
+                        var minionIds = state.GameState.CurrentEntities.Values
+                            .Where(e => e.GetCardType() == (int)CardType.MINION)
+                            .Select(e => e.Id)
+                            .ToList();
+                        foreach (var minionId in minionIds)
+                        {
+                            state.GameState.CurrentEntities.Remove(minionId);
+                        }
+                    }
                     state.UpdateCurrentNode(typeof(Game));
                     // Don't reset anything
                     return true;

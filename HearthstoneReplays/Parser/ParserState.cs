@@ -441,6 +441,7 @@ namespace HearthstoneReplays.Parser
 
         internal bool IsReconnecting()
         {
+            Logger.Log("Is reconnecting?", $"ended={Ended}, creates={NumberOfCreates}, spectating={Spectating}");
             return !Ended && NumberOfCreates >= 1 && !Spectating;
         }
 

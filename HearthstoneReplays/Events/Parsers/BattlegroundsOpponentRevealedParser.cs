@@ -63,7 +63,8 @@ namespace HearthstoneReplays.Events.Parsers
                 false,
                 node)
             );
-            if (fullEntity.GetTag(GameTag.PLAYER_ID) == GameState.NextBgsOpponentPlayerId
+            if (GameState.NextBgsOpponentPlayerId > 0 
+                && fullEntity.GetTag(GameTag.PLAYER_ID) == GameState.NextBgsOpponentPlayerId
                 && !EXCLUDED_HERO_CREATOR_DBFIDS.Contains(fullEntity.GetTag(GameTag.CREATOR_DBID)))
             {
                 result.Add(GameEventProvider.Create(
@@ -81,7 +82,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 Value = new
                                 {
                                     CardId = cardId,
-                                    PlayerId = fullEntity.GetTag(GameTag.PLAYER_ID),
+                                    OpponentPlayerId = fullEntity.GetTag(GameTag.PLAYER_ID),
                                     LeaderboardPlace = fullEntity.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE),
                                 }
                             };
@@ -104,6 +105,13 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             if (StateFacade.OpponentPlayer?.PlayerId != fullEntity.GetEffectiveController())
+            {
+                return null;
+            }
+
+            // Having the ghost as a new opponent doesn't tell us anything useful, as there is no
+            // link between the ghost and the dead player
+            if (fullEntity.GetTag(GameTag.BACON_IS_KEL_THUZAD) == 1)
             {
                 return null;
             }

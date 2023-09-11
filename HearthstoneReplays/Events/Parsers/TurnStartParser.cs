@@ -203,6 +203,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Armor = entity.GetTag(GameTag.ARMOR, 0),
                     debugTags = entity.Tags,
                 })
+                .Where(hero => hero.PlayerId > 0)
                 .ToList();
 
         }

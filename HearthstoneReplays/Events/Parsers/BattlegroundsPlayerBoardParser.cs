@@ -312,11 +312,6 @@ namespace HearthstoneReplays.Events.Parsers
                 ?.Clone();
             var cardId = hero?.CardId;
             var playerId = hero?.GetTag(GameTag.PLAYER_ID);
-            if (isOpponent)
-            {
-                GameState.BgsCurrentBattleOpponent = cardId;
-                GameState.BgsCurrentBattleOpponentPlayerId = playerId ?? 0;
-            }
 
             if (cardId == Kelthuzad_TB_BaconShop_HERO_KelThuzad)
             {
@@ -344,6 +339,7 @@ namespace HearthstoneReplays.Events.Parsers
                 cardId = nextOpponent?.CardId;
                 playerId = nextOpponent?.GetTag(GameTag.PLAYER_ID);
             }
+
             // Happens in the first encounter
             if (cardId == null)
             {
@@ -356,16 +352,35 @@ namespace HearthstoneReplays.Events.Parsers
                 cardId = hero?.CardId;
                 playerId = hero?.GetTag(GameTag.PLAYER_ID);
             }
+
+            if (isOpponent)
+            {
+                GameState.BgsCurrentBattleOpponent = cardId;
+                GameState.BgsCurrentBattleOpponentPlayerId = playerId ?? 0;
+            }
+
             if (cardId != null)
             {
                 // We don't use the game state builder here because we really need the full entities
                 var board = GameState.CurrentEntities.Values
+                    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                    // Because when the opponent is the ghost, we don't always know which ones are actually attached to it
+                    // Also, when reconnecting, we sometimes get artifacts for the opponent's board, so restricting the list
+                    // to the ones who only just appeared removes a lot of issues
+                    .Where(entity => isOpponent ? entity.GetTag(GameTag.NUM_TURNS_IN_PLAY) <= 1 : true)
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
+                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
+                    .Select(entity => entity.Clone())
+                    .ToList();
+                var board2 = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
                     .ToList();
+
                 var secrets = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
@@ -453,6 +468,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var choralEnchantment = choralEnchantments.FirstOrDefault();
 
                 var heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
+                var heroPowerInfo2 = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2) ?? 0;
                 if (heroPower?.CardId == CardIds.TeronGorefiend_RapidReanimation)
                 {
                     var impendingDeathEnchantments = GameState.CurrentEntities.Values
@@ -481,6 +497,7 @@ namespace HearthstoneReplays.Events.Parsers
                     HeroPowerCardId = heroPower?.CardId,
                     HeroPowerUsed = heroPowerUsed,
                     HeroPowerInfo = heroPowerInfo,
+                    HeroPowerInfo2 = heroPowerInfo2,
                     CardId = cardId,
                     PlayerId = playerId ?? 0,
                     Board = result,
@@ -578,25 +595,17 @@ namespace HearthstoneReplays.Events.Parsers
         internal class PlayerBoard
         {
             public FullEntity Hero { get; set; }
-
             public string HeroPowerCardId { get; set; }
-
             public bool HeroPowerUsed { get; set; }
-
             public int HeroPowerInfo { get; set; }
-
+            // Used for Tavish damage for instance
+            public int HeroPowerInfo2 { get; set; }
             public string CardId { get; set; }
-            
             public int PlayerId { get; set; }
-
             public List<string> QuestRewards { get; set; }
-
             public List<object> Board { get; set; }
-
             public List<FullEntity> Secrets { get; set; }
-
             public List<FullEntity> Hand { get; set; }
-
             public BgsPlayerGlobalInfo GlobalInfo { get; set; }
         }
 
