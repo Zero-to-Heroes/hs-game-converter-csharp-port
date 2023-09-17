@@ -187,6 +187,8 @@ namespace HearthstoneReplays.Events
                     case AngryMob: return CrazedMob;
                     case ArcaneWyrm: return ArcaneBolt;
                     case ArchmageAntonidas: return FireballCore_CORE_CS2_029;
+                    case ArchmageAntonidasVanilla: return FireballCore_CORE_CS2_029;
+                    case ArchmageAntonidasLegacy: return FireballCore_CORE_CS2_029;
                     case ArchsporeMsshifn: return ArchsporeMsshifn_MsshifnPrimeToken;
                     case Arcsplitter: return ArcaneBolt;
                     case AstalorBloodsworn: return AstalorBloodsworn_AstalorTheProtectorToken;
@@ -360,6 +362,12 @@ namespace HearthstoneReplays.Events
                     case RapidFire_DAL_373: return RapidFire_DAL_373ts;
                     case RaptorHatchling: return RaptorHatchling_RaptorPatriarchToken;
                     case RatsOfExtraordinarySize: return RodentNest_RatToken;
+                    case RatSensei_WON_013: return new[] { 
+                        RatSensei_MonkTurtleToken_WON_013t,
+                        RatSensei_MonkTurtleToken_WON_013t2,
+                        RatSensei_MonkTurtleToken_WON_013t3,
+                        RatSensei_MonkTurtleToken_WON_013t4,
+                    }.OrderBy(n => Guid.NewGuid()).ToArray()[0] ;
                     case RayOfFrost_DAL_577: return RayOfFrost_DAL_577ts;
                     case RazorpetalLasher: return RazorpetalVolley_RazorpetalToken;
                     case RazorpetalVolley: return RazorpetalVolley_RazorpetalToken;
@@ -428,6 +436,7 @@ namespace HearthstoneReplays.Events
                     case TinyThimbleTavernBrawl: return TinyThimble_RegularSizeThimbleTavernBrawl;
                     case TombPillager_LOE_012: return TheCoinCore;
                     case TombPillager_CORE_LOE_012: return TheCoinCore;
+                    case TombPillager_WON_340: return TheCoinCore;
                     case TwinSlice_BT_175: return TwinSlice_SecondSliceToken;
                     case UmbralSkulker: return TheCoinCore;
                     case UnearthedRaptor_MapToTheGoldenMonkeyToken: return UnearthedRaptor_GoldenMonkeyToken;

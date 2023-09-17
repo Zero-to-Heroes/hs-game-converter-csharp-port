@@ -146,7 +146,6 @@ namespace HearthstoneReplays.Events.Parsers
             { CardIds.SmugglersRun, CardIds.SmugglersRun_SmugglingEnchantment},
             { CardIds.Valanyr, CardIds.Valanyr_ValanyrReequipEffectDummy},
             { CardIds.FateWeaver, CardIds.FateWeaver_DraconicFateEnchantment},
-            { CardIds.Shadowfiend, CardIds.Shadowfiend_ShadowfiendedEnchantment},
             { CardIds.BlackjackStunner, CardIds.BlackjackStunner_StunnedEnchantment},
             { CardIds.CheatDeathCore, CardIds.CheatDeath_CloseCallEnchantment},
             { CardIds.CheatDeath, CardIds.CheatDeath_CloseCallEnchantment},
@@ -181,6 +180,8 @@ namespace HearthstoneReplays.Events.Parsers
             { CardIds.FarWatchPost, CardIds.FarWatchPost_SpottedEnchantment },
             { CardIds.GrimestreetSmuggler, CardIds.GrimestreetSmuggler_SmugglingEnchantment},
             { CardIds.WaywardSage, CardIds.WaywardSage_FoundTheWrongWayEnchantment},
+            { CardIds.Shadowfiend, CardIds.Shadowfiend_ShadowfiendedEnchantment},
+            { CardIds.Shadowfiend_WON_061, CardIds.Shadowfiend_ShadowfiendedEnchantment_WON_061e},
         };
 
         private List<string> validHoldWhenDrawnBuffers = new List<string>()
