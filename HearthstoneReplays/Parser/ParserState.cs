@@ -196,7 +196,7 @@ namespace HearthstoneReplays.Parser
             ReconnectionOngoing = false;
             //FullLog = "";
             NumberOfCreates = 0;
-            Logger.Log("resetting game state", this.StateType);
+            Logger.Log($"resetting game state, ended is now Ended={Ended}", this.StateType);
         }
 
         public void CreateNewNode(Node newNode)
@@ -216,6 +216,7 @@ namespace HearthstoneReplays.Parser
         public void EndCurrentGame()
         {
             Ended = true;
+            Logger.Log($"Game Ended in type={StateType}", $"Ended={Ended}");
         }
 
         public void UpdateCurrentNode(params System.Type[] types)
@@ -441,7 +442,7 @@ namespace HearthstoneReplays.Parser
 
         internal bool IsReconnecting()
         {
-            Logger.Log("Is reconnecting?", $"ended={Ended}, creates={NumberOfCreates}, spectating={Spectating}");
+            Logger.Log("Is reconnecting?", $"statType={StateType}, ended={Ended}, creates={NumberOfCreates}, spectating={Spectating}");
             return !Ended && NumberOfCreates >= 1 && !Spectating;
         }
 
