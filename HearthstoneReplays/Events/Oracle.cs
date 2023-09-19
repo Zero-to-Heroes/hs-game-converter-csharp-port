@@ -271,6 +271,7 @@ namespace HearthstoneReplays.Events
                     case ExcavatedEvil: return ExcavatedEvil;
                     case ExploreUngoro: return ExploreUngoro_ChooseYourPathToken;
                     case ExtraArms: return ExtraArms_MoreArmsToken;
+                    case EyeOfChaos_YOG_515: return ChaoticTendril_YOG_514;
                     case FaldoreiStrider: return FaldoreiStrider_SpiderAmbush;
                     case FeralGibberer: return FeralGibberer;
                     case FinalShowdown_CloseThePortalToken: return DemonslayerKurtrusToken;
@@ -309,6 +310,7 @@ namespace HearthstoneReplays.Events
                     case Impbalming: return Impbalming_WorthlessImpToken;
                     case InfernalStrikeTavernBrawl: return TwinSlice_SecondSliceToken;
                     case InfestedGoblin: return WrappedGolem_ScarabToken;
+                    case InfestedWatcher_YOG_523: return ChaoticTendril_YOG_514;
                     case InfinitizeTheMaxitude_InfinitizeTheMaxitudeEnchantment: return InfinitizeTheMaxitude;
                     case IronJuggernaut: return IronJuggernaut_BurrowingMineToken;
                     case JadeIdol: return JadeIdol;
@@ -419,6 +421,8 @@ namespace HearthstoneReplays.Events
                     case SurlyMob_AngryMobTavernBrawl: return SurlyMob_CrazedMobTavernBrawl;
                     case SurlyMob: return AngryMob;
                     case SurlyMobTavernBrawl: return SurlyMob_AngryMobTavernBrawl;
+                    case TentacleGrip_YOG_526: return ChaoticTendril_YOG_514;
+                    case TentacleTender_YOG_517: return ChaoticTendril_YOG_514;
                     case TheCandle: return TheCandle;
                     case TheCandlesquestion: return TheCandlesquestion_TheCandlesquestion_DALA_714a;
                     case TheCandlesquestion_TheCandlesquestion_DALA_714a: return TheCandlesquestion_TheCandlesquestion_DALA_714b;

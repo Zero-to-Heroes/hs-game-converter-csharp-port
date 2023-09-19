@@ -59,7 +59,7 @@ namespace HearthstoneReplays.Parser.Handlers
             isApplied = isApplied || HandleChangeEntity(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleHideEntity(timestamp, data, state);
             isApplied = isApplied || HandleFullEntity(timestamp, data, state, indentLevel);
-            isApplied = isApplied || HandleTagChange(timestamp, data, state, indentLevel);
+            isApplied = isApplied || HandleTagChange(timestamp, data, state, stateType, stateFacade, indentLevel);
             isApplied = isApplied || HandleTag(timestamp, data, state);
             isApplied = isApplied || HandleShuffleDeck(timestamp, data, state, indentLevel);
         }
@@ -133,7 +133,7 @@ namespace HearthstoneReplays.Parser.Handlers
             return false;
         }
 
-        private bool HandleTagChange(DateTime timestamp, string data, ParserState state, int indentLevel)
+        private bool HandleTagChange(DateTime timestamp, string data, ParserState state, StateType stateType, StateFacade gameHelper, int indentLevel)
         {
             var match = Regexes.ActionTagChangeRegex.Match(data);
             if (match.Success)
@@ -168,6 +168,26 @@ namespace HearthstoneReplays.Parser.Handlers
                         state.FirstPlayerEntityId = entityId;
                     }
                     UpdateCurrentPlayer(state, rawEntity, tag);
+                }
+
+                if (stateType == StateType.PowerTaskList && tag.Name == (int)GameTag.PLAYSTATE && tag.Value == (int)PlayState.PLAYING)
+                {
+                    if (state.ReconnectionOngoing)
+                    {
+                        state.ReconnectionOngoing = false;
+                        gameHelper.GsState.ReconnectionOngoing = false;
+                        state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
+                            timestamp,
+                            "RECONNECT_OVER",
+                            () => {
+                                return new GameEvent
+                                {
+                                    Type = "RECONNECT_OVER",
+                                };
+                            },
+                            false,
+                            new Node(null, null, 0, null, data)) });
+                    }
                 }
 
                 var entity = helper.ParseEntity(rawEntity);
@@ -767,25 +787,6 @@ namespace HearthstoneReplays.Parser.Handlers
                     new Node(null, null, 0, null, data)) });
                 }
 
-
-                if (state.ReconnectionOngoing)
-                {
-                    state.ReconnectionOngoing = false;
-                    if (stateType == StateType.GameState)
-                    {
-                        state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
-                        timestamp,
-                        "RECONNECT_OVER",
-                        () => {
-                            return new GameEvent
-                            {
-                                Type = "RECONNECT_OVER",
-                            };
-                        },
-                        false,
-                        new Node(null, null, 0, null, data)) });
-                    }
-                }
                 return true;
             }
             return false;
@@ -922,7 +923,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 state.NodeParser.ClearQueue();
 
                 Logger.Log("Handling create game", "");
-                var isReconnecting = state.IsReconnecting();
+                var isReconnecting = stateType == StateType.GameState ? state.IsReconnecting() : gameInfoHelper.GsState.ReconnectionOngoing;
                 if (isReconnecting)
                 {
                     Logger.Log(

@@ -54,7 +54,7 @@ namespace HearthstoneReplays.Parser
         public bool Spectating { get; set; }
         //public string FullLog { get; set; } = "";
 
-        private StateType StateType { get; set; }
+        public StateType StateType { get; private set; }
 
         private Node _node;
         public Node Node
@@ -123,6 +123,7 @@ namespace HearthstoneReplays.Parser
         {
             _localPlayer = value;
             value.IsMainPlayer = true;
+            var players = getPlayers();
             var playerEntity = getPlayers().Find(player => player.PlayerId == value.PlayerId);
             playerEntity.IsMainPlayer = value.IsMainPlayer;
             if (sendEvent)
@@ -330,7 +331,12 @@ namespace HearthstoneReplays.Parser
             }
 
             //Console.WriteLine("Trying to assign local player");
-            List<IEntityData> showEntities = CurrentGame.FilterGameData(typeof(ShowEntity)).Select(d => (IEntityData)d).ToList();
+            List<IEntityData> showEntities = CurrentGame.FilterGameData(typeof(ShowEntity))
+                // Anomalies mess this up, as they trigger before mulligan, and are assigned first to a player
+                // at random (apparenlty)
+                .Where(d => (d as ShowEntity).GetTag(GameTag.CREATOR) != GameState.GetGameEntity()?.Id)
+                .Select(d => (IEntityData)d)
+                .ToList();
             // Happens when facing Bob, or when reconnecting
             if (showEntities.Count == 0)
             {
@@ -340,6 +346,9 @@ namespace HearthstoneReplays.Parser
                     .Where(d => d is FullEntity)
                     .Select(d => d as FullEntity)
                     .Where(d => d.GetZone() == (int)Zone.HAND)
+                    // Anomalies mess this up, as they trigger before mulligan, and are assigned first to a player
+                    // at random (apparenlty)
+                    .Where(d => d.GetTag(GameTag.CREATOR) != GameState.GetGameEntity()?.Id)
                     .Select(d => (IEntityData)d)
                     .ToList();
                 if (showEntities.Count == 0)

@@ -151,6 +151,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 return;
             }
 
+            //if (this.ParserState.StateType == StateType.PowerTaskList)
+            //{
+            //    Logger.Log($"Adding FullEntity {entity.CardId}, zone={entity.GetZone()}", "");
+            //}
 
             var newTags = entity.GetTagsCopy();
             // We need to do a copy because this otherwise we could mutate the entity from the log parser
@@ -158,6 +162,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             // That data is supposed to be a snapshot of the current log lines, and should be immutable
             var fullEntity = new FullEntity { CardId = entity.CardId, Id = entity.Id, Tags = newTags, TimeStamp = entity.TimeStamp };
             CurrentEntities.Add(entity.Id, fullEntity);
+
+            //if (this.ParserState.StateType == StateType.PowerTaskList)
+            //{
+            //    Logger.Log($"After Adding FullEntity {entity.CardId}, zone={entity.GetZone()}", "");
+            //}
         }
 
         public void ShowEntity(ShowEntity entity)
@@ -168,6 +177,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 return;
             }
 
+            //if (this.ParserState.StateType == StateType.PowerTaskList)
+            //{
+            //    Logger.Log($"Adding show Entity {entity.CardId}, existingZone={CurrentEntities[entity.Entity].GetZone()}", "");
+            //}
             CurrentEntities[entity.Entity].CardId = entity.CardId;
             List<int> newTagIds = entity.Tags.Select(tag => tag.Name).ToList();
             List<Tag> oldTagsToKeep = CurrentEntities[entity.Entity].Tags
@@ -181,6 +194,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
             oldTagsToKeep.AddRange(newTags);
             CurrentEntities[entity.Entity].Tags = oldTagsToKeep;
+            //if (this.ParserState.StateType == StateType.PowerTaskList)
+            //{
+            //    Logger.Log($"After adding show Entity {entity.CardId}, existingZone={CurrentEntities[entity.Entity].GetZone()}", "");
+            //}
         }
 
         public string GetCardIdForEntity(int id)
@@ -252,6 +269,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 Logger.Log("error while parsing, changeEntity doesn't have an entity in memory yet", "" + entity.Entity);
                 return;
             }
+
+            //if (this.ParserState.StateType == StateType.PowerTaskList)
+            //{
+            //    Logger.Log($"ChangeEntity {entity.CardId}, existingZone={CurrentEntities[entity.Entity].GetZone()}", "");
+            //}
             CurrentEntities[entity.Entity].CardId = entity.CardId;
             List<int> newTagIds = entity.Tags.Select(tag => tag.Name).ToList();
             List<Tag> oldTagsToKeep = CurrentEntities[entity.Entity].Tags
@@ -265,6 +287,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
             oldTagsToKeep.AddRange(newTags);
             CurrentEntities[entity.Entity].Tags = oldTagsToKeep;
+            //if (this.ParserState.StateType == StateType.PowerTaskList)
+            //{
+            //    Logger.Log($"After ChangeEntity {entity.CardId}, existingZone={CurrentEntities[entity.Entity].GetZone()}", "");
+            //}
         }
 
         public void TagChange(TagChange tagChange, string defChange)
@@ -273,7 +299,18 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             {
                 return;
             }
+
             var fullEntity = CurrentEntities[tagChange.Entity];
+
+            //if (tagChange.Name == (int)GameTag.ZONE)
+            //{
+            //    if (this.ParserState.StateType == StateType.PowerTaskList)
+            //    {
+            //        Logger.Log($"Zone TAG_CHANGE, cardId={CurrentEntities[tagChange.Entity].CardId}, " +
+            //        $"newZone={tagChange.Value}, " +
+            //        $"existingZone={CurrentEntities[tagChange.Entity].Tags.Find((t) => tagChange.Name == t.Name)?.Value}", "");
+            //    }
+            //}
             var newTags = fullEntity.GetTagsCopy();
             var existingTag = newTags.Find((tag) => tag.Name == tagChange.Name);
             if (existingTag == null)
@@ -287,7 +324,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             // Keep a history of things. This is useful when we use the "future game state" to know some information, but 
             // by the time we process it the informtion has already been reset in the real tags
             if (existingTag != null)
-            { 
+            {
                 fullEntity.AllPreviousTags.Add(new Tag() { Name = existingTag.Name, Value = existingTag.Value });
             }
         }
@@ -300,6 +337,16 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 Logger.Log("error while parsing, tag doesn't have an entity in memory yet", "" + entityId);
                 return;
             }
+
+            //if (tag.Name == (int)GameTag.ZONE)
+            //{
+            //    if (this.ParserState.StateType == StateType.PowerTaskList)
+            //    {
+            //        Logger.Log($"Zone TAG, cardId={CurrentEntities[entityId].CardId}, " +
+            //        $"newZone={tag.Value}, " +
+            //        $"existingZone={CurrentEntities[entityId].Tags.Find((t) => tag.Name == t.Name)?.Value}", "");
+            //    }
+            //}
             var existingTag = CurrentEntities[entityId].Tags.Find((t) => tag.Name == t.Name);
             if (existingTag == null)
             {
