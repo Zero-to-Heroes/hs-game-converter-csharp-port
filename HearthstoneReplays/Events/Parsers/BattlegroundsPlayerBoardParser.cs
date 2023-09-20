@@ -372,15 +372,8 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
+                    .Select(entity => AddSpecialTags(entity))
                     .ToList();
-                var board2 = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
-                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
-                    .Select(entity => entity.Clone())
-                    .ToList();
-
                 var secrets = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
@@ -404,7 +397,6 @@ namespace HearthstoneReplays.Events.Parsers
                     // We might be able to simply remove the damage, and use the buffed stats as the base stats. It won't be 
                     // perfect, but probably good enough
                     var boardCardIds = board.Select(e => e.CardId).ToList();
-
                     var handEntityIds = hand.Select(e => e.Id).ToList();
                     var revealedHand = hand
                         .Select(e => GetEntitySpawnedFromHand(e.Id) ?? e)
@@ -520,15 +512,41 @@ namespace HearthstoneReplays.Events.Parsers
             return null;
         }
 
+        private FullEntity AddSpecialTags(FullEntity entity)
+        {
+            switch (entity.CardId)
+            {
+                case LovesickBalladist_BG26_814:
+                case LovesickBalladist_BG26_814_G:
+                    return EnhanceLovesickBalladist(entity);
+                default:
+                    return entity;
+            }
+        }
+
+        private FullEntity EnhanceLovesickBalladist(FullEntity entity)
+        {
+            var buffEnchantmentValue = StateFacade.GsState.Replay.Games[StateFacade.GsState.Replay.Games.Count - 1]
+                .FilterGameData(typeof(ShowEntity))
+                .Select(d => d as ShowEntity)
+                .Where(e => e.GetCardType() == (int)CardType.ENCHANTMENT)
+                .Where(e => e.GetTag(GameTag.ATTACHED) > 0)
+                .Where(e => e.GetTag(GameTag.CREATOR) == entity.Id)
+                .Select(e => e.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1))
+                // Make sure to take the last one so we are not polluted by values from previous fights
+                .LastOrDefault();
+            if (buffEnchantmentValue > 0)
+            {
+                var baseVale = entity.CardId == LovesickBalladist_BG26_814 
+                    ? buffEnchantmentValue 
+                    : buffEnchantmentValue / 2;
+                entity.SetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, baseVale);
+            }
+            return entity;            
+        }
+
         private FullEntity GetEntitySpawnedFromHand(int id)
         {
-            //var tmp = StateFacade.GsState.GameState.CurrentEntities.Values
-            //    .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id);
-            //var tmp2 = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(15571);
-            //var tmp3 = StateFacade.GsState.GameState.CurrentEntities.Values
-            //    .Select(e => e.Entity);
-            //var tmp4 = StateFacade.GsState.GameState.CurrentEntities.Values
-            //    .Select(e => e.Id);
             var showEntity = StateFacade.GsState.Replay.Games[StateFacade.GsState.Replay.Games.Count - 1]
                 .FilterGameData(typeof(ShowEntity))
                 .Select(d => d as ShowEntity)
