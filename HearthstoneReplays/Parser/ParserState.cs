@@ -332,9 +332,11 @@ namespace HearthstoneReplays.Parser
 
             //Console.WriteLine("Trying to assign local player");
             List<IEntityData> showEntities = CurrentGame.FilterGameData(typeof(ShowEntity))
+                .Select(d => d as ShowEntity) // We need the HAND zone, because other effects can trigger before mulligan (like anomalies)
+                .Where(d => d.GetZone() == (int)Zone.HAND)
                 // Anomalies mess this up, as they trigger before mulligan, and are assigned first to a player
                 // at random (apparenlty)
-                .Where(d => (d as ShowEntity).GetTag(GameTag.CREATOR) != GameState.GetGameEntity()?.Id)
+                //.Where(d => d.GetTag(GameTag.CREATOR) != GameState.GetGameEntity()?.Id)
                 .Select(d => (IEntityData)d)
                 .ToList();
             // Happens when facing Bob, or when reconnecting
@@ -343,7 +345,6 @@ namespace HearthstoneReplays.Parser
                 Logger.Log("No show entity, fallback to fullentity in hand", "");
                 showEntities = CurrentGame
                     .FilterGameData(typeof(FullEntity))
-                    .Where(d => d is FullEntity)
                     .Select(d => d as FullEntity)
                     .Where(d => d.GetZone() == (int)Zone.HAND)
                     // Anomalies mess this up, as they trigger before mulligan, and are assigned first to a player
