@@ -719,6 +719,41 @@ namespace HearthstoneReplays.Events
                         var killerEntityId = actionEntity.GetTag(GameTag.LAST_AFFECTED_BY);
                         var killerEntity = gameState.CurrentEntities.GetValueOrDefault(killerEntityId);
                         return killerEntity?.CardId;
+                    } 
+                    else if (actionEntity?.CardId == TwistReality_ChaoticShuffleCopyEnchantment_TTN_002t21e)
+                    {
+                        var entity = node.Type == typeof(FullEntity) ? node.Object as FullEntity : null;
+                        if (entity != null)
+                        {
+                            var copiedEntityId = entity.SubSpellInEffect.Source;
+                            var copiedEntity = gameState.CurrentEntities.GetValueOrDefault(copiedEntityId);
+                            return copiedEntity?.CardId;
+                        }
+                    }
+                    else if (actionEntity?.CardId == ElixirOfVigor_ElixirOfVigorPlayerTavernBrawlEnchantment 
+                        || actionEntity?.CardId == ElixirOfVigor_ElixirOfVigorPlayerEnchantment)
+                    {
+                        var entity = node.Type == typeof(FullEntity) ? node.Object as FullEntity : null;
+                        if (entity != null)
+                        {
+                            // Go up until we find a PLAY action
+                            var playActionNode = node;
+                            while (playActionNode != null)
+                            {
+                                playActionNode = playActionNode.Parent;
+                                if (playActionNode.Type != typeof(Action))
+                                {
+                                    continue;
+                                }
+                                Action playAction = playActionNode.Object as Action;
+                                if (playAction.Type != (int)BlockType.PLAY) { 
+                                    continue;
+                                }
+                                var playedEntityId = playAction.Entity;
+                                var playedEntity = gameState.CurrentEntities.GetValueOrDefault(playedEntityId);
+                                return playedEntity?.CardId;                                
+                            }
+                        }
                     }
                     else if (actionEntity?.CardId == Helya_PlightOfTheDeadEnchantment && createdEntityId != null && createdEntityId.HasValue)
                     {
