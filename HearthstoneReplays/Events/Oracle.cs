@@ -261,6 +261,10 @@ namespace HearthstoneReplays.Events
                     case DragonbaneShot: return DragonbaneShot;
                     case DrawOffensivePlayTavernBrawlEnchantment: return OffensivePlayTavernBrawl;
                     case DreadlichTamsin_AV_316: return DreadlichTamsin_FelRiftToken;
+                    case RuleModifier_ApproachingNightmareToken_TTN_002t14: return YoggSaronHopesEnd_OG_134;
+                    case RuleModifier_DrivenToGreedToken_TTN_002t20: return TheCoinCore;
+                    case RuleModifier_ShiftingFateToken_TTN_002t50: return GearShift;
+                    case RuleModifier_ShiftingFuturesToken_TTN_002t36: return ShifterZerus_OG_123;
                     case DrygulchJailor: return SilverHandRecruitLegacyToken;
                     case EliseStarseeker_CORE_LOE_079: return UnearthedRaptor_MapToTheGoldenMonkeyToken;
                     case EliseStarseeker_LOE_079: return UnearthedRaptor_MapToTheGoldenMonkeyToken;
