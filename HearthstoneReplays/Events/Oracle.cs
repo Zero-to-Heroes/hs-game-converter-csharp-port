@@ -463,6 +463,7 @@ namespace HearthstoneReplays.Events
                     case WitchwoodApple: return WitchwoodApple_TreantToken;
                     case Wrenchcalibur: return SeaforiumBomber_BombToken;
                     case YseraUnleashed: return YseraUnleashed_DreamPortalToken;
+                    case YoggSaronUnleashed_TentacleSwarmToken_YOG_516t3: return ChaoticTendril_YOG_514;
                     case Zaqul_TSC_959: return SirakessCultist_AbyssalCurseToken;
                     case ZixorApexPredator: return ZixorApexPredator_ZixorPrimeToken;
 
