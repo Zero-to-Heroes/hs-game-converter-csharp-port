@@ -244,9 +244,14 @@ namespace HearthstoneReplays.Events
                     case ConjureManaBiscuit: return ConjureManaBiscuit_ManaBiscuitToken;
                     case ConjurersCalling_DAL_177: return ConjurersCalling_DAL_177ts;
                     case CoppertailSnoop: return TheCoinCore;
+                    case CoppertailSnoop_CoppertailSnoopEnchantment: return TheCoinCore;
                     case CreepyCurio_HauntedCurioTavernBrawl: return CreepyCurio_CursedCurioTavernBrawl;
                     case CreepyCurio: return HauntedCurio;
                     case CreepyCurioTavernBrawl: return CreepyCurio_HauntedCurioTavernBrawl;
+                    case CthunTheShattered_EyeOfCthunToken: return CthunTheShattered;
+                    case CthunTheShattered_HeartOfCthunToken: return CthunTheShattered;
+                    case CthunTheShattered_BodyOfCthunToken: return CthunTheShattered;
+                    case CthunTheShattered_MawOfCthunToken: return CthunTheShattered;
                     case CurseOfAgony: return CurseOfAgony_AgonyToken;
                     case CurseOfRafaam: return CurseOfRafaam_CursedToken;
                     case Cutpurse: return TheCoinCore;
@@ -312,6 +317,8 @@ namespace HearthstoneReplays.Events
                     case IgneousElemental: return FireFly_FlameElementalToken;
                     case Ignite: return Ignite;
                     case Impbalming: return Impbalming_WorthlessImpToken;
+                    case ImpCredibleTrousersTavernBrawl: return DreadlichTamsin_FelRiftToken;
+                    case ImpCredibleTrousers_ImpCredibleTrousersTavernBrawlEnchantment: return DreadlichTamsin_FelRiftToken;
                     case InfernalStrikeTavernBrawl: return TwinSlice_SecondSliceToken;
                     case InfestedGoblin: return WrappedGolem_ScarabToken;
                     case InfestedWatcher_YOG_523: return ChaoticTendril_YOG_514;
@@ -768,20 +775,28 @@ namespace HearthstoneReplays.Events
                             // Chained draws use the same action entity id
                             //.Where(d => d.Entity != actionEntity.Entity)
                             .ToList();
+                        // Most recent action is first
                         actions.Reverse();
                         var debugActions = actions.ToList();
-                        var plagueActions = actions
-                            .SkipWhile(a => IsPlightOfTheDeadAction(a, gameState))
-                            .SkipWhile(a => a.TriggerKeyword != (int)GameTag.TOPDECK)
-                            // keep all "TOPDECK" actions, even if they are not plagues, as they can be intertwined between plagues
-                            .TakeWhile(a => a.TriggerKeyword == (int)GameTag.TOPDECK)
-                            .Where(a => IsPlagueAction(a, gameState))
-                            .Reverse()
-                            .ToList();
-                        var plightOfTheDeadActions = actions.TakeWhile(a => IsPlightOfTheDeadAction(a, gameState)).Reverse().ToList();
-                        var currentPlightOfTheDeadAction = plightOfTheDeadActions.Find(a => ContainsFullEntityCreation(a, createdEntityId.Value));
-                        var currentPlagueIndex = plightOfTheDeadActions.IndexOf(currentPlightOfTheDeadAction);
-                        var plagueAction = plagueActions[currentPlagueIndex];
+                        //var plagueActions = BuildLastPlagueActions(actions, gameState);
+                        // This will give us all the Plague Actions ever. However, we will only take the first N items based
+                        // on the Plight of the Dead action indices
+                        var allPlagueActions = actions.Where(a => IsPlagueAction(a, gameState)).ToList();
+                        // It's important to NOT reverse it again at the end, as otherwise we can't use the index for the standard Plague actions
+                        // At this point, we have ALL the plague creation actions, in reverse order.
+                        // We only have the Plight of the Dead actions for the last N plagues that have been created
+                        // So in fact we need to isolate the Plague actions that are linked to the chain of plagues currently in progress
+                        // so we can start using indices from 0
+                        // We can use the "internalParent" entity to know this. All chained plague actions are nested
+                        // So then we HAVE TO reverse :)
+                        var baseInternalParent = GetTopInternalParentEntityId(allPlagueActions[0]);
+                        var plagueActions = allPlagueActions.Where(a => !a.Processed && GetTopInternalParentEntityId(a) == baseInternalParent).Reverse().ToList();
+                        //var debugPlagueActions = allPlagueActions.Where(a => GetTopInternalParentEntityId(a) == baseInternalParent).Reverse().ToList();
+                        //var plightOfTheDeadActions = actions.TakeWhile(a => IsPlightOfTheDeadAction(a, gameState)).Reverse().ToList();
+                        //var currentPlightOfTheDeadAction = plightOfTheDeadActions.Find(a => ContainsFullEntityCreation(a, createdEntityId.Value));
+                        //var currentPlagueIndex = plightOfTheDeadActions.IndexOf(currentPlightOfTheDeadAction);
+                        var plagueAction = plagueActions[0];
+                        plagueAction.Processed = true;
                         var result = gameState.CurrentEntities.GetValueOrDefault(plagueAction?.Entity ?? -1)?.CardId;
                         return result;
                     }
@@ -1268,6 +1283,27 @@ namespace HearthstoneReplays.Events
             return null;
         }
 
+        private static int GetTopInternalParentEntityId(Action action)
+        {
+            int baseEntity = action.Entity;
+            Action parentAction = null;
+            GameData current = action;
+            while (current.InternalParent != null)
+            {
+                current = current.InternalParent;
+                if (current.GetType() != typeof(Action))
+                {
+                    continue;
+                }
+                var currentAction = current as Action;
+                if (currentAction.InternalParent != null && currentAction.Entity > 0)
+                {
+                    baseEntity = currentAction.Entity;
+                }
+            }
+            return baseEntity;
+        }
+
         private static string AddMultipleKnownCards(GameState gameState, Node node, List<string> cardsList)
         {
             if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
@@ -1323,6 +1359,38 @@ namespace HearthstoneReplays.Events
             int entity = action.Entity;
             var cardId = gameState.CurrentEntities.GetValueOrDefault(entity)?.CardId;
             return cardId == CardIds.Helya_PlightOfTheDeadEnchantment;
+        }
+
+        private static List<Action> BuildLastPlagueActions(List<Action> actions, GameState gameState)
+        {
+            // At this stage, the latest actions are Plight of the Dead actions
+            var beforeEnchantments = actions.SkipWhile(a => IsPlightOfTheDeadAction(a, gameState));
+            // Now we will find out plague actions.
+            // However: they might be mixed in with other TOPDECK actions (we draw a topdeck card after
+            // drawing a first plague), or they might be other TRIGGER actions that happen when one 
+            // of the plagues is revealed
+            // These actions should all be nested - so we stop when the parent is the root of the game
+            var plagueActions = new List<Action>();
+            foreach (var action in beforeEnchantments)
+            {
+                if (action.InternalParent == null)
+                {
+                    break;
+                }
+                if (IsPlagueAction(action, gameState))
+                {
+                    plagueActions.Add(action);
+                }
+            }
+            //beforeEnchantments.TakeWhile(rootAction => IsPlagueAction(rootAction, gameState))
+            //var plagueActions = 
+            //    .SkipWhile(a => a.TriggerKeyword != (int)GameTag.TOPDECK)
+            //    // keep all "TOPDECK" actions, even if they are not plagues, as they can be intertwined between plagues
+            //    .TakeWhile(a => a.TriggerKeyword == (int)GameTag.TOPDECK)
+            //    .Where(a => IsPlagueAction(a, gameState))
+            //    .Reverse()
+            //    .ToList();
+            return plagueActions;
         }
 
         private static bool ContainsFullEntityCreation(Action action, int entityId)

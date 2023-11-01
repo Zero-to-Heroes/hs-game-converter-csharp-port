@@ -108,6 +108,10 @@ namespace HearthstoneReplays.Parser.ReplayData
 				foreach (GameData gameData in ((GameActions.Action) data).Data)
 				{
 					result.Add(gameData);
+					if (data != gameData)
+					{
+						gameData.InternalParent = data;
+					}
 					ExtractData(result, gameData);
 				}
 			}

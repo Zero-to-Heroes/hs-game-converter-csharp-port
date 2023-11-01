@@ -51,6 +51,10 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
 		[XmlIgnore]
 		public string DebugCreationLine { get; set; }
 
+		// Introduced to track plague actions + Helya interactions, as it was starting to get really messy
+        [XmlIgnore]
+        public bool Processed { get; set; }
+
 
         public List<GameData> GetDataRecursive()
 		{

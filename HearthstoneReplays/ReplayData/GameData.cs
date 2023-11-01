@@ -27,6 +27,9 @@ namespace HearthstoneReplays.Parser.ReplayData
         [XmlIgnore]
         public DateTime TimeStamp { get; set; }
 
+        [XmlIgnore]
+        public GameData InternalParent { get; set; }
+
         [XmlAttribute("ts")]
         public string TsForXml
         {
