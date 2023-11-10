@@ -45,7 +45,13 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
+            // This seems to happen when playing ETC and the sideboard options are shown
             var linkedEntity = GameState.CurrentEntities[tagChange.Value];
+            if (linkedEntity?.Id == tagChange.Entity)
+            {
+                return null;
+            }
+
             // In the case of Spy-o-matic, the active player discovers a card, and so the new entities are 
             // attached to the active player. We in fact want to have the controllerId be the controller 
             // of the original card, so that we can properly transfer information to it
