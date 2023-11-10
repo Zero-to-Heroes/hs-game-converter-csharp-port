@@ -124,7 +124,7 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
                 ? GameState.CurrentEntities[creatorEntityId].CardId
                 : null;
-            var shouldShortCircuit = ShouldShortCircuit(node);
+            //var shouldShortCircuit = ShouldShortCircuit(node);
             return new List<GameEventProvider>
             {
                 GameEventProvider.Create(
@@ -180,23 +180,23 @@ namespace HearthstoneReplays.Events.Parsers
         }
 
         // Only short-circuit after a reroll
-        private bool ShouldShortCircuit(Node node)
-        {
-            if (!StateFacade.IsBattlegrounds())
-            {
-                return false;
-            }
+        //private bool ShouldShortCircuit(Node node)
+        //{
+        //    if (!StateFacade.IsBattlegrounds())
+        //    {
+        //        return false;
+        //    }
 
-            if (node.Parent == null || node.Parent.Type != typeof(Action))
-            {
-                return false;
-            }
+        //    if (node.Parent == null || node.Parent.Type != typeof(Action))
+        //    {
+        //        return false;
+        //    }
 
-            var action = node.Parent.Object as Action;
-            return action.Type == (int)BlockType.POWER
-                && GameState.CurrentEntities.ContainsKey(action.Entity)
-                && (GameState.CurrentEntities[action.Entity].CardId == CardIds.Refresh_TB_BaconShop_8p_Reroll_Button
-                    || GameState.CurrentEntities[action.Entity].CardId == CardIds.Refresh_TB_BaconShop_1p_Reroll_Button);
-        }
+        //    var action = node.Parent.Object as Action;
+        //    return action.Type == (int)BlockType.POWER
+        //        && GameState.CurrentEntities.ContainsKey(action.Entity)
+        //        && (GameState.CurrentEntities[action.Entity].CardId == CardIds.Refresh_TB_BaconShop_8p_Reroll_Button
+        //            || GameState.CurrentEntities[action.Entity].CardId == CardIds.Refresh_TB_BaconShop_1p_Reroll_Button);
+        //}
     }
 }
