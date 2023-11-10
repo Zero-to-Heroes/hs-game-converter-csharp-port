@@ -5,6 +5,7 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -79,6 +80,12 @@ namespace HearthstoneReplays.Events.Parsers
                     : null;
                 var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
 
+                // Detect whether we are magnetizing
+                var magnetizedTo = this.StateFacade.GsState.GameState.CurrentEntities.Values
+                    .Reverse()
+                    .FirstOrDefault(e => e.GetTag(GameTag.CREATOR) == tagChange.Entity && e.GetTag(GameTag.MAGNETIC) == 1);
+                var magnetized = magnetizedTo != null;
+
                 System.Action preprocess = () => GameState.OnCardPlayed(tagChange.Entity, targetId);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
@@ -99,6 +106,7 @@ namespace HearthstoneReplays.Events.Parsers
                             Immune = entity.GetTag(GameTag.IMMUNE) == 1,
                             Dormant = entity.GetTag(GameTag.DORMANT) == 1,
                             Cost = entity.GetTag(GameTag.COST, 0),
+                            Magnetized = magnetized,
                         },
                         preprocess
                     ),
@@ -140,6 +148,13 @@ namespace HearthstoneReplays.Events.Parsers
                     ? GameState.CurrentEntities[creator].CardId
                     : null;
 
+                // Detect whether we are magnetizing
+                var magnetizedTo = this.StateFacade.GsState.GameState.CurrentEntities.Values
+                    .Reverse()
+                    .FirstOrDefault(e => e.GetTag(GameTag.CREATOR) == showEntity.Entity && e.GetTag(GameTag.MAGNETIC) == 1);
+                var magnetized = magnetizedTo != null;
+
+
                 System.Action preprocess = () => GameState.OnCardPlayed(showEntity.Entity, targetId);
                 // For now there can only be one card played per block
                 return new List<GameEventProvider> { GameEventProvider.Create(
@@ -158,6 +173,7 @@ namespace HearthstoneReplays.Events.Parsers
                             CreatorCardId = creatorCardId,
                             TransientCard = isOhMyYogg,
                             Immune = showEntity.GetTag(GameTag.IMMUNE) == 1,
+                            Magnetized = magnetized,
                         },
                         preprocess),
                     true,
