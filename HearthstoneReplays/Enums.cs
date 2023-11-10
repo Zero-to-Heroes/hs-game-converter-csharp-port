@@ -1075,6 +1075,7 @@ namespace HearthstoneReplays.Enums
         TAG_SCRIPT_DATA_NUM_3 = 2889,
         CARD_NAME_DATA_1 = 2890,
         BACON_GLOBAL_ANOMALY_DBID = 2897,
+        QUICKDRAW = 2905,
         BACON_COSTS_HEALTH_TO_BUY = 2911,
         TAG_SCRIPT_DATA_NUM_4 = 2919,
         TAG_SCRIPT_DATA_NUM_5 = 2920,
@@ -1101,6 +1102,7 @@ namespace HearthstoneReplays.Enums
         FX_DATANUM_2 = 3077,
         RITUALIST_MINION = 3078,
         FX_DATANUM_3 = 3109,
+        EXCAVATE = 3114,
         SUMMONED_WHEN_DRAWN = 3128,
         IS_ALTERNATE_HEROPOWER = 3130,
         TITAN_ABILITY_USED_1 = 3140,
@@ -1110,6 +1112,9 @@ namespace HearthstoneReplays.Enums
         ANOMALY2 = 3183,
         SUPPRESS_EVIL_TWIN_MUSTACHE_SOUND = 3198,
         HERO_DOESNT_MOVE_ON_ATTACK = 3211,
+        CURRENT_EXCAVATE_TIER = 3249,
+        ALONE_RANGER = 3258,
+        MAX_EXCAVATE_TIER = 3326,
     }
 
     public enum GameType
