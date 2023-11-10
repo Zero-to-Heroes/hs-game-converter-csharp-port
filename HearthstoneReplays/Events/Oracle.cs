@@ -314,6 +314,7 @@ namespace HearthstoneReplays.Events
                     case HighPriestessJeklik_CORE_TRL_252: return HighPriestessJeklik_CORE_TRL_252;
                     case HighPriestessJeklik_TRL_252: return HighPriestessJeklik_TRL_252;
                     case HoardingDragon_LOOT_144: return TheCoinCore;
+                    case HolySpringwater_WW_395: return HolySpringwater_BottledSpringwaterToken_WW_395t;
                     case IgneousElemental: return FireFly_FlameElementalToken;
                     case Ignite: return Ignite;
                     case Impbalming: return Impbalming_WorthlessImpToken;
@@ -323,6 +324,7 @@ namespace HearthstoneReplays.Events
                     case InfestedGoblin: return WrappedGolem_ScarabToken;
                     case InfestedWatcher_YOG_523: return ChaoticTendril_YOG_514;
                     case InfinitizeTheMaxitude_InfinitizeTheMaxitudeEnchantment: return InfinitizeTheMaxitude;
+                    case InvasiveShadeleaf_WW_393: return InvasiveShadeleaf_BottledShadeleafToken_WW_393t;
                     case IronJuggernaut: return IronJuggernaut_BurrowingMineToken;
                     case JadeIdol: return JadeIdol;
                     case JadeIdol_JadeStash: return JadeIdol;
@@ -363,6 +365,7 @@ namespace HearthstoneReplays.Events
                     case Parrrley_DED_005: return Parrrley_DED_005;
                     case PhotographerFizzle: return PhotographerFizzle_FizzlesSnapshotToken;
                     case PlagueOfMurlocs: return TwistPlagueOfMurlocs_SurpriseMurlocsToken;
+                    case PopgarThePutrid_WW_091: return TramMechanic_BarrelOfSludgeToken_WW_044t;
                     case PortalKeeper: return PortalKeeper_FelhoundPortalToken;
                     case PortalOverfiend: return PortalKeeper_FelhoundPortalToken;
                     case PozzikAudioEngineer: return PozzikAudioEngineer_AudioBotToken;
@@ -413,6 +416,7 @@ namespace HearthstoneReplays.Events
                     case SirakessCultist: return SirakessCultist_AbyssalCurseToken;
                     case SisterSvalna: return SisterSvalna_VisionOfDarknessToken;
                     case Sleetbreaker: return Windchill_AV_266;
+                    case SludgeOnWheels_WW_043: return TramMechanic_BarrelOfSludgeToken_WW_044t;
                     case SmugSenior: return SmugSenior_SpectralSeniorToken;
                     case Sn1pSn4p: return Sn1pSn4p;
                     case SneakyDelinquent: return SneakyDelinquent_SpectralDelinquentToken;
@@ -432,6 +436,7 @@ namespace HearthstoneReplays.Events
                     case SurlyMob_AngryMobTavernBrawl: return SurlyMob_CrazedMobTavernBrawl;
                     case SurlyMob: return AngryMob;
                     case SurlyMobTavernBrawl: return SurlyMob_AngryMobTavernBrawl;
+                    case SwarmOfLightbugs_WW_052: return SwarmOfLightbugs_BottledLightbugsToken_WW_052t2;
                     case TentacleGrip_YOG_526: return ChaoticTendril_YOG_514;
                     case TentacleTender_YOG_517: return ChaoticTendril_YOG_514;
                     case TheCandle: return TheCandle;
@@ -462,6 +467,7 @@ namespace HearthstoneReplays.Events
                     case Wanted: return Coin;
                     case Waxadred: return Waxadred_WaxadredsCandleToken;
                     case WeaselTunneler: return WeaselTunneler;
+                    case WhelpWrangler_WW_827: return TakeToTheSkies_HappyWhelpToken_WW_816t;
                     case WhiteEyes: return WhiteEyes_TheStormGuardianToken;
                     case WildGrowthCore: return WildGrowth_ExcessManaLegacyToken;
                     case WildGrowthLegacy: return WildGrowth_ExcessManaLegacyToken;
@@ -629,6 +635,7 @@ namespace HearthstoneReplays.Events
                         return null;
 
                     case ManaBind:
+                    case AzeriteVein_WW_422:
                     case FrozenClone_CORE_ICC_082:
                     case FrozenClone_ICC_082:
                         if (node.Parent.Type == typeof(Action) && node.Parent.Parent?.Type == typeof(Action))
