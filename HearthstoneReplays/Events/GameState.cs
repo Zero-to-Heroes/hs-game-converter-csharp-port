@@ -145,7 +145,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public void FullEntity(FullEntity entity, bool updating, string initialLog = null)
         {
-            if (updating || CurrentEntities.ContainsKey(entity.Id))
+            if (updating)
             {
                 // This actually happens in a normal scenario, so we just ignore it
                 return;
@@ -160,8 +160,20 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             // We need to do a copy because this otherwise we could mutate the entity from the log parser
             // This would mean that when a TagChange event occurs in the log, we also mutate the data inside the Game.Data
             // That data is supposed to be a snapshot of the current log lines, and should be immutable
-            var fullEntity = new FullEntity { CardId = entity.CardId, Id = entity.Id, Tags = newTags, TimeStamp = entity.TimeStamp };
+            var fullEntity = 
+                // when reconnecting, we sometimes get udpated information on the FullEntity
+                new FullEntity { 
+                    CardId = CurrentEntities.GetValueOrDefault(entity.Id)?.CardId?.Length > 0 ? CurrentEntities.GetValueOrDefault(entity.Id).CardId :  entity.CardId, 
+                    Id = CurrentEntities.GetValueOrDefault(entity.Id)?.Id ?? entity.Id, 
+                    TimeStamp = entity.TimeStamp 
+                };
+            fullEntity.Tags = newTags;
+            if (CurrentEntities.ContainsKey(entity.Id))
+            {
+                CurrentEntities.Remove(entity.Id);
+            }
             CurrentEntities.Add(entity.Id, fullEntity);
+            var debug = CurrentEntities.GetValueOrDefault(entity.Id);
 
             //if (this.ParserState.StateType == StateType.PowerTaskList)
             //{
@@ -194,6 +206,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
             oldTagsToKeep.AddRange(newTags);
             CurrentEntities[entity.Entity].Tags = oldTagsToKeep;
+            var debug = CurrentEntities.GetValueOrDefault(entity.Entity);
             //if (this.ParserState.StateType == StateType.PowerTaskList)
             //{
             //    Logger.Log($"After adding show Entity {entity.CardId}, existingZone={CurrentEntities[entity.Entity].GetZone()}", "");
@@ -287,6 +300,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
             oldTagsToKeep.AddRange(newTags);
             CurrentEntities[entity.Entity].Tags = oldTagsToKeep;
+            var debug = CurrentEntities.GetValueOrDefault(entity.Entity);
             //if (this.ParserState.StateType == StateType.PowerTaskList)
             //{
             //    Logger.Log($"After ChangeEntity {entity.CardId}, existingZone={CurrentEntities[entity.Entity].GetZone()}", "");

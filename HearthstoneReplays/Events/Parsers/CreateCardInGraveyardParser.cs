@@ -96,6 +96,8 @@ namespace HearthstoneReplays.Events.Parsers
             FullEntity fullEntity = node.Object as FullEntity;
             var controllerId = fullEntity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            var entityFromGameState = GameState.CurrentEntities.GetValueOrDefault(fullEntity.Entity);
+            var debug = true;
 
 
             return new List<GameEventProvider> { GameEventProvider.Create(
@@ -105,10 +107,11 @@ namespace HearthstoneReplays.Events.Parsers
                         
                         // Because Souleater's Scythe creates the cards in the graveyard at the start of the game, 
                         // we add this condition, so that we only keep cards created by effects
-                        if (StateFacade.LocalPlayer.PlayerId != fullEntity.GetController() && (node.Parent == null || node.Parent.Object is Game))
-                        {
-                            return null;
-                        }
+                        // Problem: when reconnecting, this means that we can skip some information for the opposing player
+                        //if (StateFacade.LocalPlayer.PlayerId != fullEntity.GetController() && (node.Parent == null || node.Parent.Object is Game))
+                        //{
+                        //    return null;
+                        //}
 
                         // We do it here because of Diligent Notetaker - we have to know the last
                         // card played before assigning anything

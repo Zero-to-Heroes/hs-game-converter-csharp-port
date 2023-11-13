@@ -114,6 +114,7 @@
     <Compile Include="Events\GameStateShort.cs" />
     <Compile Include="Events\Obfuscator.cs" />
     <Compile Include="Events\Parsers\AbstractBasicTagChangeParser.cs" />
+    <Compile Include="Events\Parsers\ExcavateTierChangedParser.cs" />
     <Compile Include="Events\Parsers\ConstructedAnomalyParser.cs" />
     <Compile Include="Events\Parsers\Controls\BattlegroundsControls.cs" />
     <Compile Include="Events\Parsers\Controls\ControlsManager.cs" />
