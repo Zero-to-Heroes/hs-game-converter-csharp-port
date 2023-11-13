@@ -255,6 +255,7 @@ namespace HearthstoneReplays.Events
                     case CurseOfAgony: return CurseOfAgony_AgonyToken;
                     case CurseOfRafaam: return CurseOfRafaam_CursedToken;
                     case Cutpurse: return TheCoinCore;
+                    case DartThrow_WW_006: return TheCoinCore;
                     case DeadlyFork: return DeadlyFork_SharpFork;
                     case DeathbringerSaurfangCore_RLK_082: return DeathbringerSaurfangCore_RLK_082;
                     case DeckOfWonders: return DeckOfWonders_ScrollOfWonderToken;
@@ -304,6 +305,7 @@ namespace HearthstoneReplays.Events
                     case GhastlyConjurer_CORE_ICC_069: return MirrorImageLegacy_CS2_027;
                     case GhastlyConjurer_ICC_069: return MirrorImageLegacy_CS2_027;
                     case GildedGargoyle_LOOT_534: return TheCoinCore;
+                    case GreedyPartner_WW_901: return TheCoinCore;
                     case HakkarTheSoulflayer: return HakkarTheSoulflayer_CorruptedBloodToken;
                     case HakkarTheSoulflayer_CorruptedBloodToken: return HakkarTheSoulflayer_CorruptedBloodToken;
                     case HalazziTheLynx: return Springpaw_LynxToken;
@@ -351,7 +353,7 @@ namespace HearthstoneReplays.Events
                     case Malorne: return Malorne;
                     case Mankrik: return Mankrik_OlgraMankriksWifeToken;
                     case Marrowslicer: return SchoolSpirits_SoulFragmentToken;
-                    case MarvelousMyceliumTavernBrawlToken: return MarvelousMyceliumTavernBrawlToken;
+                    //case MarvelousMyceliumTavernBrawlToken: return MarvelousMyceliumTavernBrawlToken;
                     case MidaPureLight_ONY_028: return MidaPureLight_FragmentOfMidaToken;
                     case MilitiaHorn: return VeteransMilitiaHorn;
                     case MisterMukla_ETC_836: return KingMukla_BananasLegacyToken;
@@ -368,6 +370,7 @@ namespace HearthstoneReplays.Events
                     case PopgarThePutrid_WW_091: return TramMechanic_BarrelOfSludgeToken_WW_044t;
                     case PortalKeeper: return PortalKeeper_FelhoundPortalToken;
                     case PortalOverfiend: return PortalKeeper_FelhoundPortalToken;
+                    case KoboldMiner_PouchOfCoinsToken_WW_001t18: return TheCoinCore;
                     case PozzikAudioEngineer: return PozzikAudioEngineer_AudioBotToken;
                     case Pyros_PyrosToken_UNG_027t2: return Pyros_PyrosToken_UNG_027t4;
                     case Pyros: return Pyros_PyrosToken_UNG_027t2;
