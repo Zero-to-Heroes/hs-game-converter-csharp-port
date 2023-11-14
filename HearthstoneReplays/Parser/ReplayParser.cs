@@ -115,7 +115,7 @@ namespace HearthstoneReplays.Parser
 
             if (!match.Success)
             {
-                if (line.Contains("End Spectator Mode") || line.Contains("Begin Spectating"))
+                if (line.Contains("End Spectator Mode") || (line.Contains("Begin Spectating") && !line.Contains("2nd")))
                 {
                     AddData(null, "Spectator", line);
                 }

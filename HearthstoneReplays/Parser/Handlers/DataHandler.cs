@@ -108,7 +108,8 @@ namespace HearthstoneReplays.Parser.Handlers
                     ((PlayerEntity)state.Node.Object).Tags.Add(tag);
                 else if (state.Node.Type == typeof(FullEntity))
                 {
-                    ((FullEntity)state.Node.Object).Tags.Add(tag);
+                    var fullEntity = ((FullEntity)state.Node.Object);
+                    fullEntity.Tags.Add(tag);
                     // Push the changes as they occur, so that it's ok if we miss a block end because of malformed logs
                     // UPDATE: this is in fact not possible, because I need to have the FullEntities in the state with their previous
                     // tags when applying CloseNode effects.
@@ -860,7 +861,8 @@ namespace HearthstoneReplays.Parser.Handlers
 
         private static bool HandleSpectator(DateTime timestamp, string data, ParserState state, StateFacade stateFacade)
         {
-            if (data.Contains("Begin Spectating"))
+            // Only trigger the reset when spectator mode happens for the first time
+            if (data.Contains("Begin Spectating") && !data.Contains("2nd"))
             {
                 state.Reset(stateFacade);
                 state.Spectating = true;
