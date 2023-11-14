@@ -76,6 +76,7 @@ namespace HearthstoneReplays.Events.Parsers
             CardIds.KoboldMiner_AzeriteGemToken_WW_001t14,
             CardIds.KoboldMiner_TheAzeriteHawkToken_WW_001t24,
             CardIds.KoboldMiner_TheAzeriteScorpionToken_WW_001t23,
+            CardIds.TheCountess_LegendaryInvitationToken,
             CardIds.ManaBind,
             CardIds.OrbOfRevelation_OrbOfRevelationTavernBrawlEnchantment_PVPDR_BAR_Passive08e1,
             CardIds.OrbOfRevelationTavernBrawl,
@@ -110,6 +111,25 @@ namespace HearthstoneReplays.Events.Parsers
             CardIds.WagglePick,
             CardIds.WaywardSage,
             CardIds.WilfredFizzlebang,
+        };
+
+        private List<string> validHoldWhenDrawnBuffers = new List<string>()
+        {
+            CardIds.SkullOfGuldan_BT_601,
+            CardIds.SkullOfGuldanTavernBrawl,
+        };
+
+        private List<string> validSubSpellBuffers = new List<string>()
+        {
+            CardIds.AegwynnTheGuardianCore,
+            CardIds.EfficientOctoBot,
+        };
+
+        private List<string> validTriggerBuffers = new List<string>()
+        {
+            CardIds.FarWatchPost,
+            CardIds.DemonslayerKurtrus_LudicrousSpeedEnchantment,
+            CardIds.Si7Skulker_SpyStuffEnchantment,
         };
 
         private Dictionary<string, List<string>> buffs = new Dictionary<string, List<string>>()
@@ -171,6 +191,7 @@ namespace HearthstoneReplays.Events.Parsers
             { CardIds.KoboldMiner_AzeriteGemToken_WW_001t14, new List<string> { CardIds.AzeriteGem_AzeriteGlowEnchantment_WW_001t14e }},
             { CardIds.KoboldMiner_TheAzeriteHawkToken_WW_001t24, new List<string> { CardIds.TidestoneOfGolganneth_ReducedEnchantment }},
             { CardIds.KoboldMiner_TheAzeriteScorpionToken_WW_001t23, new List<string> { CardIds.TheAzeriteScorpion_ScorpionsStingEnchantment_WW_001t23e }},
+            { CardIds.TheCountess_LegendaryInvitationToken, new List<string> { CardIds.TheCountess_GuestOfHonorEnchantment }},
             { CardIds.MesaduneTheFractured_WW_429, new List<string> { CardIds.AzeriteVein_FracturedEnchantment_WW_422e, CardIds.AzeriteVein_FracturedEnchantment_WW_422e2 } },
             { CardIds.OrbOfRevelationTavernBrawl, new List<string> { CardIds.OrbOfRevelation_OrbOfRevelationTavernBrawlEnchantment_PVPDR_BAR_Passive08e1}},
             { CardIds.OrbOfRevelation_OrbOfRevelationTavernBrawlEnchantment_PVPDR_BAR_Passive08e1, new List<string> { CardIds.OrbOfRevelation_OrbOfRevelationTavernBrawlEnchantment_PVPDR_BAR_Passive08e2}},
@@ -207,25 +228,6 @@ namespace HearthstoneReplays.Events.Parsers
             { CardIds.WagglePick, new List<string> { CardIds.CheatDeath_CloseCallEnchantment}},
             { CardIds.WaywardSage, new List<string> { CardIds.WaywardSage_FoundTheWrongWayEnchantment}},
             { CardIds.WilfredFizzlebang, new List<string> { CardIds.WilfredFizzlebang_MasterSummonerEnchantment}},
-        };
-
-        private List<string> validHoldWhenDrawnBuffers = new List<string>()
-        {
-            CardIds.SkullOfGuldan_BT_601,
-            CardIds.SkullOfGuldanTavernBrawl,
-        };
-
-        private List<string> validSubSpellBuffers = new List<string>()
-        {
-            CardIds.AegwynnTheGuardianCore,
-            CardIds.EfficientOctoBot,
-        };
-
-        private List<string> validTriggerBuffers = new List<string>()
-        {
-            CardIds.FarWatchPost,
-            CardIds.DemonslayerKurtrus_LudicrousSpeedEnchantment,
-            CardIds.Si7Skulker_SpyStuffEnchantment,
         };
 
         public CardBuffedInHandParser(ParserState ParserState, StateFacade facade)
