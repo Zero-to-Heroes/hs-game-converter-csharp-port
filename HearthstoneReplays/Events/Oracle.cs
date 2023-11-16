@@ -225,6 +225,7 @@ namespace HearthstoneReplays.Events
                     case BookOfWonders: return DeckOfWonders_ScrollOfWonderToken;
                     case BootyBayBookie: return TheCoinCore;
                     case Bottomfeeder: return Bottomfeeder;
+                    case BountyWrangler_WW_363: return TheCoinCore;
                     case BringOnRecruitsTavernBrawl: return SilverHandRecruitLegacyToken;
                     case BronzeHerald: return BronzeHerald_BronzeDragonToken;
                     case BuildASnowman_BuildASnowbruteToken: return BuildASnowman_BuildASnowgreToken;
@@ -460,6 +461,7 @@ namespace HearthstoneReplays.Events
                     case TombPillager_LOE_012: return TheCoinCore;
                     case TombPillager_CORE_LOE_012: return TheCoinCore;
                     case TombPillager_WON_340: return TheCoinCore;
+                    case TramMechanic_WW_044: return TramMechanic_BarrelOfSludgeToken_WW_044t;
                     case TwinSlice_BT_175: return TwinSlice_SecondSliceToken;
                     case UmbralSkulker: return TheCoinCore;
                     case UnearthedRaptor_MapToTheGoldenMonkeyToken: return UnearthedRaptor_GoldenMonkeyToken;
