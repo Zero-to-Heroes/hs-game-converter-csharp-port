@@ -718,6 +718,26 @@ namespace HearthstoneReplays.Events
                             return gameState.CurrentEntities.GetValueOrDefault(nextEntity)?.CardId;
                         }
                         return null;
+
+                    case CactusConstruct_WW_818:
+                        if (node.Parent.Type == typeof(Action))
+                        {
+                            var act = node.Parent.Object as Action;
+                            // Look at the GameState logs for the info since the minion has already been summoned there
+                            var gsData = stateFacade?.GsState?.CurrentGame?.FilterGameData(typeof(Action))?.Select(d => d as Action)?.ToList();
+                            if (gsData?.Count > 0)
+                            {
+                                gsData.Reverse();
+                                var cactusAction = gsData.First();
+                                var entities = cactusAction.Data
+                                    .Where(d => d is ShowEntity)
+                                    .Select(d => d as ShowEntity)
+                                    .Where(d => d.GetZone() == (int)Zone.PLAY && d.GetCardType() != (int)CardType.ENCHANTMENT)
+                                    .ToList();
+                                return entities.LastOrDefault()?.CardId;
+                            }
+                        }
+                        return null;
                 }
 
                 // Handle echo
