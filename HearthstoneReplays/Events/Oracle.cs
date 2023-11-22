@@ -365,6 +365,7 @@ namespace HearthstoneReplays.Events
                     case OldMilitiaHorn: return MilitiaHorn;
                     case OldMilitiaHornTavernBrawl: return OldMilitiaHorn_MilitiaHornTavernBrawl;
                     case OpenTheWaygate: return OpenTheWaygate_TimeWarpToken;
+                    case Overgrowth: return WildGrowth_ExcessManaLegacyToken;
                     case Parrrley_DED_005: return Parrrley_DED_005;
                     case PhotographerFizzle: return PhotographerFizzle_FizzlesSnapshotToken;
                     case PlagueOfMurlocs: return TwistPlagueOfMurlocs_SurpriseMurlocsToken;
