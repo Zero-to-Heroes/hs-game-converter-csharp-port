@@ -357,6 +357,7 @@ namespace HearthstoneReplays.Events
                     //case MarvelousMyceliumTavernBrawlToken: return MarvelousMyceliumTavernBrawlToken;
                     case MidaPureLight_ONY_028: return MidaPureLight_FragmentOfMidaToken;
                     case MilitiaHorn: return VeteransMilitiaHorn;
+                    case MiracleSalesman_WW_331: return MiracleSalesman_SnakeOilToken_WW_331t;
                     case MisterMukla_ETC_836: return KingMukla_BananasLegacyToken;
                     case MuklaTyrantOfTheVale: return KingMukla_BananasLegacyToken;
                     case MurgurMurgurgle: return MurgurMurgurgle_MurgurglePrimeToken;
@@ -765,6 +766,18 @@ namespace HearthstoneReplays.Events
                         var killerEntity = gameState.CurrentEntities.GetValueOrDefault(killerEntityId);
                         return killerEntity?.CardId;
                     } 
+                    else if (actionEntity?.CardId == SonyaShadowdancer)
+                    {
+                        var entityId = action.Data
+                            .Where(d => d is MetaData)
+                            .Select(d => d as MetaData)
+                            .SelectMany(d => d.MetaInfo)
+                            .Select(i => i.Id)
+                            .FirstOrDefault();
+                        var entity = gameState.CurrentEntities.GetValueOrDefault(entityId);
+                        return entity?.CardId;
+                            
+                    }
                     else if (actionEntity?.CardId == TwistReality_ChaoticShuffleCopyEnchantment_TTN_002t21e)
                     {
                         var entity = node.Type == typeof(FullEntity) ? node.Object as FullEntity : null;
