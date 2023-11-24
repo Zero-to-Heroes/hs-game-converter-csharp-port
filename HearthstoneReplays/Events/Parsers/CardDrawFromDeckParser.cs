@@ -114,7 +114,7 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                     GameState.OnCardDrawn(entity.Entity);
                     var finalCardId = cardId != null && cardId.Length > 0 ? cardId : predictedCardId;
-                    var shouldObfuscate = Obfuscator.shouldObfuscateCardDraw(cardId, GameState, node);
+                    var shouldObfuscate = Obfuscator.shouldObfuscateCardDraw(entity, GameState, node, controllerId == StateFacade.LocalPlayer.PlayerId);
                     return new GameEvent
                     {
                         Type =  "CARD_DRAW_FROM_DECK",

@@ -8,7 +8,7 @@ namespace HearthstoneReplays.Events
 {
     internal class Obfuscator
     {
-        internal static bool shouldObfuscateCardDraw(string cardId, GameState gameState, Node node)
+        internal static bool shouldObfuscateCardDraw(FullEntity entity, GameState gameState, Node node, bool isPlayer)
         {
             if (node?.Parent?.Type == typeof(Action))
             {
@@ -24,6 +24,12 @@ namespace HearthstoneReplays.Events
                             return true;
                     }
                 }
+            }
+
+            // Avoid info leaks for cards that have been traded into the deck. This is necessary because they
+            // are logged in clear in the Power.log
+            if (!isPlayer && entity.AllPreviousTags.Find(t => t.Name == (int)GameTag.IS_USING_TRADE_OPTION && t.Value == 1) != null) {
+                return true;
             }
 
             return false;
