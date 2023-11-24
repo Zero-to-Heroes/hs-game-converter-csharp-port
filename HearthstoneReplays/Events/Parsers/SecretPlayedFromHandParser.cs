@@ -83,6 +83,7 @@ namespace HearthstoneReplays.Events.Parsers
                             new {
                                 PlayerClass = playerClass,
                                 CreatorCardId = creatorEntityCardId,
+                                Cost = entity.GetTag(GameTag.COST, 0),
                             },
                             preprocess),
                        true,
@@ -125,6 +126,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 gameState,
                                 new {
                                     PlayerClass = playerClass,
+                                    Cost = showEntity.GetTag(GameTag.COST, 0),
                                 },
                                 preprocess),
                             true,
