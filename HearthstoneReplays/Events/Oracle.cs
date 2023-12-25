@@ -218,6 +218,7 @@ namespace HearthstoneReplays.Events
                     case BaubleOfBeetles_ULDA_307: return BaubleOfBeetles_ULDA_307ts;
                     case BeOurGuestTavernBrawl: return TheCountess_LegendaryInvitationToken;
                     case BeneathTheGrounds: return BeneathTheGrounds_NerubianAmbushToken;
+                    case BlackSoulstone: return BlackSoulstone;
                     case BlessingOfTheAncients_DAL_351: return BlessingOfTheAncients_DAL_351ts;
                     case BloodsailFlybooter: return BloodsailFlybooter_SkyPirateToken;
                     case BoneBaron_CORE_ICC_065: return GrimNecromancer_SkeletonToken;
@@ -305,6 +306,7 @@ namespace HearthstoneReplays.Events
                     case FullBlownEvil: return FullBlownEvil;
                     case GhastlyConjurer_CORE_ICC_069: return MirrorImageLegacy_CS2_027;
                     case GhastlyConjurer_ICC_069: return MirrorImageLegacy_CS2_027;
+                    case GiftOfTheHeartTavernBrawlToken: return WildGrowth_ExcessManaLegacyToken;
                     case GildedGargoyle_LOOT_534: return TheCoinCore;
                     case GreedyPartner_WW_901: return TheCoinCore;
                     case HakkarTheSoulflayer: return HakkarTheSoulflayer_CorruptedBloodToken;
@@ -375,8 +377,8 @@ namespace HearthstoneReplays.Events
                     case PortalOverfiend: return PortalKeeper_FelhoundPortalToken;
                     case KoboldMiner_PouchOfCoinsToken_WW_001t18: return TheCoinCore;
                     case PozzikAudioEngineer: return PozzikAudioEngineer_AudioBotToken;
-                    case Pyros_PyrosToken_UNG_027t2: return Pyros_PyrosToken_UNG_027t4;
                     case Pyros: return Pyros_PyrosToken_UNG_027t2;
+                    case Pyros_PyrosToken_UNG_027t2: return Pyros_PyrosToken_UNG_027t4;
                     case Queldelar_ForgingQueldelarToken_LOOTA_842t: return QueldelarTavernBrawl;
                     case Queldelar_ForgingQueldelarToken_ONY_005tc7t: return Queldelar_ForgingQueldelarToken_ONY_005tc7t;
                     case RaidTheDocks_SecureTheSuppliesToken: return RaidTheDocks_CapnRokaraToken;
@@ -760,13 +762,7 @@ namespace HearthstoneReplays.Events
                             ? gameState.CurrentEntities[action.Entity]
                             : null;
 
-                    if (actionEntity?.CardId == FateSplitter)
-                    {
-                        var killerEntityId = actionEntity.GetTag(GameTag.LAST_AFFECTED_BY);
-                        var killerEntity = gameState.CurrentEntities.GetValueOrDefault(killerEntityId);
-                        return killerEntity?.CardId;
-                    } 
-                    else if (actionEntity?.CardId == SonyaShadowdancer)
+                    if (actionEntity?.CardId == SonyaShadowdancer)
                     {
                         var entityId = action.Data
                             .Where(d => d is MetaData)
@@ -777,6 +773,18 @@ namespace HearthstoneReplays.Events
                         var entity = gameState.CurrentEntities.GetValueOrDefault(entityId);
                         return entity?.CardId;
                             
+                    }
+                    else if (actionEntity?.CardId == Kidnap_KidnappersSackToken)
+                    {
+                        var sackEntityId = actionEntity.Entity;
+                        // Card created by this Kidnap and that's a minion and that's not the sack?
+                        var attachedEnchantment = gameState.CurrentEntities.Values
+                            .Where(e => e.GetTag(GameTag.ATTACHED) == sackEntityId)
+                            .FirstOrDefault();
+                        var entityIdInSack = attachedEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1);
+                        var entityInSack = gameState.CurrentEntities.GetValueOrDefault(entityIdInSack ?? -1);
+                        return entityInSack?.CardId;
+
                     }
                     else if (actionEntity?.CardId == TwistReality_ChaoticShuffleCopyEnchantment_TTN_002t21e)
                     {
@@ -1137,7 +1145,9 @@ namespace HearthstoneReplays.Events
                         return cardDrawn != null ? gameState.CurrentEntities.GetValueOrDefault(cardDrawn.Entity)?.CardId : null;
                     }
                     // Vanessa VanCleed
-                    else if (actionEntity.CardId == VanessaVancleef_CORE_CS3_005 || actionEntity.CardId == VanessaVancleefLegacy)
+                    else if (actionEntity.CardId == VanessaVancleef_CORE_CS3_005 
+                        || actionEntity.CardId == VanessaVancleefLegacy
+                        || actionEntity.CardId == FateSplitter)
                     {
                         var vanessaControllerId = gameState.CurrentEntities.GetValueOrDefault(actionEntity.Entity)?.GetController();
                         var playerIds = gameState.CardsPlayedByPlayerEntityIdByTurn.Keys;

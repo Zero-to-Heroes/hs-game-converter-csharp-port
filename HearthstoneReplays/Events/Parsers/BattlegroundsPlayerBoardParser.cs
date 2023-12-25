@@ -24,6 +24,7 @@ namespace HearthstoneReplays.Events.Parsers
             // We need to send the board state before it triggers, because the simulator needs to handle it, so that
             // it is not broken if Ozumat + Tavish (or other hero power that is managed by the simulator) happen
             Ozumat_Tentacular,
+            TamsinRoame_FragrantPhylactery
         };
 
         private static List<string> TAVISH_HERO_POWERS = new List<string>() {
@@ -67,6 +68,7 @@ namespace HearthstoneReplays.Events.Parsers
             StaffOfOrigination_BG24_Reward_312,
             TheSmokingGun,
             StolenGold,
+            UpperHand_BG28_573,
         };
 
         private GameState GameState { get; set; }
@@ -375,7 +377,7 @@ namespace HearthstoneReplays.Events.Parsers
                     // to the ones who only just appeared removes a lot of issues
                     .Where(entity => isOpponent ? entity.GetTag(GameTag.NUM_TURNS_IN_PLAY) <= 1 : true)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.MINION)
+                    .Where(entity => entity.TakesBoardSpace())
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
                     .Select(entity => AddSpecialTags(entity))
@@ -388,6 +390,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.SIDEQUEST) != 1)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
+                    .Select(entity => BuildEntityWithCardIdFromTheFuture(entity, StateFacade.GsState.GameState))
                     .ToList();
                 var hand = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
@@ -405,7 +408,7 @@ namespace HearthstoneReplays.Events.Parsers
                     var boardCardIds = board.Select(e => e.CardId).ToList();
                     var handEntityIds = hand.Select(e => e.Id).ToList();
                     var revealedHand = hand
-                        .Select(e => GetEntitySpawnedFromHand(e.Id) ?? e)
+                        .Select(e => GetEntitySpawnedFromHand(e.Id, board) ?? e)
                         .Select(entity => entity.Clone())
                         .Select(e => e.SetTag(GameTag.DAMAGE, 0).SetTag(GameTag.ZONE, (int)Zone.HAND) as FullEntity)
                         .ToList();
@@ -450,6 +453,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .ToList();
 
                 var eternalKnightBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.EternalKnightPlayerEnchantEnchantment);
+                var tavernSpellsCastThisGame = GameState.CurrentEntities[player.Id]?.GetTag(GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME) ?? 0;
                 // Includes Anub'arak, Nerubian Deathswarmer
                 var undeadAttackBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment);
                 var frostlingBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.FlourishingFrostlingPlayerEnchantDntEnchantment);
@@ -505,6 +509,7 @@ namespace HearthstoneReplays.Events.Parsers
                     GlobalInfo = new BgsPlayerGlobalInfo()
                     {
                         EternalKnightsDeadThisGame = eternalKnightBonus,
+                        TavernSpellsCastThisGame = tavernSpellsCastThisGame,
                         UndeadAttackBonus = undeadAttackBonus,
                         FrostlingBonus = frostlingBonus,
                         BloodGemAttackBonus = bloodGemAttackBonus,
@@ -516,6 +521,21 @@ namespace HearthstoneReplays.Events.Parsers
                 };
             }
             return null;
+        }
+
+        private FullEntity BuildEntityWithCardIdFromTheFuture(FullEntity entity, GameState gsState)
+        {
+            if (entity.CardId != null && entity.CardId.Length > 0)
+            {
+                return entity;
+            }
+            var entityFromTheFuture = gsState.CurrentEntities.GetValueOrDefault(entity.Entity);
+            if (entityFromTheFuture.CardId == null || entityFromTheFuture.CardId.Length == 0)
+            {
+                return entity;
+            }
+            entity.CardId = entityFromTheFuture.CardId;
+            return entity;
         }
 
         private FullEntity AddSpecialTags(FullEntity entity)
@@ -543,43 +563,94 @@ namespace HearthstoneReplays.Events.Parsers
                 .LastOrDefault();
             if (buffEnchantmentValue > 0)
             {
-                var baseVale = entity.CardId == LovesickBalladist_BG26_814 
-                    ? buffEnchantmentValue 
+                var baseVale = entity.CardId == LovesickBalladist_BG26_814
+                    ? buffEnchantmentValue
                     : buffEnchantmentValue / 2;
                 entity.SetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, baseVale);
             }
-            return entity;            
+            return entity;
         }
 
-        private FullEntity GetEntitySpawnedFromHand(int id)
+        private FullEntity GetEntitySpawnedFromHand(int id, List<FullEntity> board)
         {
-            var showEntity = StateFacade.GsState.Replay.Games[StateFacade.GsState.Replay.Games.Count - 1]
-                .FilterGameData(typeof(ShowEntity))
-                .Select(d => d as ShowEntity)
-                .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id)
-                .LastOrDefault();
-            //var result = StateFacade.GsState.GameState.CurrentEntities.Values
-            //    .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id
-            //        || e.AllPreviousTags.Any(t => t.Name == (int)GameTag.COPIED_FROM_ENTITY_ID && t.Value == id))
-            //    .FirstOrDefault();
-            if (showEntity == null)
+            //var showEntity = StateFacade.GsState.Replay.Games[StateFacade.GsState.Replay.Games.Count - 1]
+            //    .FilterGameData(typeof(ShowEntity))
+            //    .Select(d => d as ShowEntity)
+            //    .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id)
+            //    .LastOrDefault();
+            //var enchantmentsAppliedOnShowEntity = 
+            //// Why this again?
+            //if (showEntity == null)
+            //{
+            var result = StateFacade.GsState.GameState.CurrentEntities.Values
+                .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id
+                    || e.AllPreviousTags.Any(t => t.Name == (int)GameTag.COPIED_FROM_ENTITY_ID && t.Value == id))
+                .FirstOrDefault();
+            // TODO: find out all the enchantments that apply on the card, and if the enchantments originate from one 
+            // of the board entities, unroll them
+            var enchantmentsAppliedOnShowEntity = StateFacade.GsState.GameState.CurrentEntities.Values
+                .Where(e => e.GetCardType() == (int)CardType.ENCHANTMENT)
+                .Where(e => e.IsInPlay())
+                .Where(e => e.GetTag(GameTag.ATTACHED) == id)
+                .ToList();
+            foreach (var enchantment in enchantmentsAppliedOnShowEntity)
             {
-                var result = StateFacade.GsState.GameState.CurrentEntities.Values
-                    .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id
-                        || e.AllPreviousTags.Any(t => t.Name == (int)GameTag.COPIED_FROM_ENTITY_ID && t.Value == id))
-                    .FirstOrDefault();
-                return result;
+                var healthBuff = GetEnchantmentHealthBuff(enchantment);
+                var attackBuff = GetEnchantmentAttackBuff(enchantment);
+                result = result
+                    .SetTag(GameTag.HEALTH, result.GetTag(GameTag.HEALTH) - healthBuff)
+                    .SetTag(GameTag.ATK, result.GetTag(GameTag.ATK) - attackBuff) 
+                    as FullEntity;
             }
-            return new FullEntity()
-            {
-                Entity = showEntity.Entity,
-                Id = showEntity.Entity,
-                CardId = showEntity.CardId,
-                Tags = showEntity.Tags,
-                TimeStamp = showEntity.TimeStamp,
-                TsForXml = showEntity.TsForXml,
-            };
+
+            return result;
+            //}
+            //return new FullEntity()
+            //{
+            //    Entity = showEntity.Entity,
+            //    Id = showEntity.Entity,
+            //    CardId = showEntity.CardId,
+            //    Tags = showEntity.Tags,
+            //    TimeStamp = showEntity.TimeStamp,
+            //    TsForXml = showEntity.TsForXml,
+            //};
             //return result;
+        }
+
+        private int GetEnchantmentHealthBuff(FullEntity enchantment)
+        {
+            switch (enchantment.CardId)
+            {
+                case Scourfin_BG26_360:
+                case Scourfin_BG26_360_G:
+                case Murcules_BG27_023:
+                case Murcules_BG27_023_G:
+                case DiremuckForager_BG27_556:
+                case DiremuckForager_BG27_556_G:
+                case CogworkCopter_BG24_008:
+                case CogworkCopter_BG24_008_G:
+                    return enchantment.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
+                default:
+                    return 0;
+            }
+        }
+
+        private int GetEnchantmentAttackBuff(FullEntity enchantment)
+        {
+            switch (enchantment.CardId)
+            {
+                case Scourfin_BG26_360:
+                case Scourfin_BG26_360_G:
+                case Murcules_BG27_023:
+                case Murcules_BG27_023_G:
+                case DiremuckForager_BG27_556:
+                case DiremuckForager_BG27_556_G:
+                case CogworkCopter_BG24_008:
+                case CogworkCopter_BG24_008_G:
+                    return enchantment.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
+                default:
+                    return 0;
+            }
         }
 
         private int GetPlayerEnchantmentValue(int playerId, string enchantment)
@@ -636,6 +707,7 @@ namespace HearthstoneReplays.Events.Parsers
         internal class BgsPlayerGlobalInfo
         {
             public int EternalKnightsDeadThisGame { get; set; }
+            public int TavernSpellsCastThisGame { get; set; }
             public int UndeadAttackBonus { get; set; }
             public int FrostlingBonus { get; set; }
             public int BloodGemAttackBonus { get; set; }

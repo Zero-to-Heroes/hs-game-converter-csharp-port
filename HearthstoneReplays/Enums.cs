@@ -217,6 +217,7 @@ namespace HearthstoneReplays.Enums
         BATTLEGROUND_HERO_BUDDY = 24,
         LOCATION = 39,
         BATTLEGROUND_QUEST_REWARD = 40,
+        BATTLEGROUND_SPELL = 42,
         BATTLEGROUND_ANOMALY = 43,
     }
 
@@ -1101,7 +1102,9 @@ namespace HearthstoneReplays.Enums
         FORGES_INTO = 3074,
         FX_DATANUM_2 = 3077,
         RITUALIST_MINION = 3078,
+        TAVERN_SPELLS_PLAYED_THIS_GAME = 3088,
         FX_DATANUM_3 = 3109,
+        ALLOW_MOVE_BACON_SPELL = 3111,
         EXCAVATE = 3114,
         SUMMONED_WHEN_DRAWN = 3128,
         IS_ALTERNATE_HEROPOWER = 3130,
@@ -1114,6 +1117,7 @@ namespace HearthstoneReplays.Enums
         HERO_DOESNT_MOVE_ON_ATTACK = 3211,
         CURRENT_EXCAVATE_TIER = 3249,
         ALONE_RANGER = 3258,
+        CUTSCENE_CARD_TYPE = 3265,
         MAX_EXCAVATE_TIER = 3326,
     }
 
@@ -1216,6 +1220,7 @@ namespace HearthstoneReplays.Enums
         CRITICAL_HIT = 23,
         HISTORY_TRIGGER_SOURCE = 24,
         HISTORY_SOURCE_OWNER = 25,
+        HISTORY_REMOVE_ENTITIES = 26,
     }
 
     public enum Mulligan

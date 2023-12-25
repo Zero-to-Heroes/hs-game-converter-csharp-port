@@ -165,6 +165,7 @@ namespace HearthstoneReplays.Events
                     new DamageParser(ParserState, StateFacade),
                     new HealingParser(ParserState, StateFacade),
                     new BurnedCardParser(ParserState, StateFacade),
+                    new RemovedFromHistoryParser(ParserState, StateFacade),
                     new MinionDiedParser(ParserState, StateFacade),
                     new SecretPlayedFromDeckParser(ParserState, StateFacade),
                     new SecretCreatedInGameParser(ParserState, StateFacade),
@@ -230,6 +231,7 @@ namespace HearthstoneReplays.Events
                     new CorposesSpentThisGameParser(ParserState, StateFacade),
                     new ConstructedAnomalyParser(ParserState, StateFacade),
 
+                    new CardForgedParser(ParserState, StateFacade),
                     new CreateCardInGraveyardParser(ParserState, StateFacade),
                     new MindrenderIlluciaParser(ParserState, StateFacade),
                     new SpecialCardPowerParser(ParserState, StateFacade),
