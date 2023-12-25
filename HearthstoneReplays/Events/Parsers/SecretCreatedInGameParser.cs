@@ -106,17 +106,18 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = fullEntity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             var playerClass = fullEntity.GetPlayerClass();
-            var creatorEntityId = fullEntity.GetTag(GameTag.CREATOR);
-            var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
-                ? GameState.CurrentEntities[creatorEntityId].CardId
-                : null;
+            var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
+            //var creatorEntityId = fullEntity.GetTag(GameTag.CREATOR);
+            //var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
+            //    ? GameState.CurrentEntities[creatorEntityId].CardId
+            //    : null;
             var eventName = fullEntity.GetTag(GameTag.SECRET) == 1
                 ? "SECRET_CREATED_IN_GAME"
                 : "QUEST_CREATED_IN_GAME";
             var cardId = fullEntity.CardId;
-            if (cardId.Length == 0 && fullEntity.GetTag(GameTag.SECRET) == 1)
+            if (cardId.Length == 0 && fullEntity.GetTag(GameTag.SECRET) == 1 && creator != null)
             {
-                cardId = Oracle.PredictCardId(GameState, creatorEntityCardId, creatorEntityId, node);
+                cardId = Oracle.PredictCardId(GameState, creator.Item1, creator.Item2, node, fullEntity.CardId);
             }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
@@ -130,7 +131,7 @@ namespace HearthstoneReplays.Events.Parsers
                     gameState,
                     new {
                         PlayerClass = playerClass,
-                        CreatorCardId = creatorEntityCardId,
+                        CreatorCardId = creator?.Item1,
                     }),
                 true,
                 node) };
