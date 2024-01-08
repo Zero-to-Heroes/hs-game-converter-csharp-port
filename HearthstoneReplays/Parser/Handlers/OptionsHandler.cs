@@ -3,7 +3,9 @@
 using System;
 using System.Collections.Generic;
 using HearthstoneReplays.Enums;
+using HearthstoneReplays.Events;
 using HearthstoneReplays.Parser.ReplayData;
+using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Parser.ReplayData.Meta;
 using HearthstoneReplays.Parser.ReplayData.Meta.Options;
 
@@ -26,6 +28,24 @@ namespace HearthstoneReplays.Parser.Handlers
             if (state.CurrentGame == null || state.Node == null)
             {
                 return;
+            }
+
+
+            if (stateType == StateType.PowerTaskList && state.ReconnectionOngoing)
+            {
+                state.ReconnectionOngoing = false;
+                stateFacade.GsState.ReconnectionOngoing = false;
+                state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
+                    timestamp,
+                    "RECONNECT_OVER",
+                    () => {
+                        return new GameEvent
+                        {
+                            Type = "RECONNECT_OVER",
+                        };
+                    },
+                    false,
+                    new Node(null, null, 0, null, data)) });
             }
 
             data = data.Trim();

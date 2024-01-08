@@ -450,10 +450,14 @@ namespace HearthstoneReplays.Parser
             }.Contains(CurrentGame.GameType);
         }
 
-        internal bool IsReconnecting()
+        internal bool IsReconnecting(long gameSeedForCurrentLogs)
         {
-            Logger.Log("Is reconnecting?", $"statType={StateType}, ended={Ended}, creates={NumberOfCreates}, spectating={Spectating}");
-            return !Ended && NumberOfCreates >= 1 && !Spectating;
+            Logger.Log("Is reconnecting?", $"statType={StateType}, ended={Ended}, creates={NumberOfCreates}, spectating={Spectating}, gameSeed={CurrentGame?.GameSeed}, currentGameSeed={gameSeedForCurrentLogs}");
+            return gameSeedForCurrentLogs != 0 
+                && CurrentGame != null 
+                && CurrentGame.GameSeed != 0 
+                && CurrentGame.GameSeed == gameSeedForCurrentLogs;
+            //return !Ended && NumberOfCreates >= 1 && !Spectating;
         }
 
         //private void HandleNodeUpdateEvent(Node oldNode, Node newNode)

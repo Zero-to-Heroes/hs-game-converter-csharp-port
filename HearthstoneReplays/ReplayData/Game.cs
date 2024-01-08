@@ -52,6 +52,9 @@ namespace HearthstoneReplays.Parser.ReplayData
 		[XmlAttribute("scenarioID")]
 		public int ScenarioID { get; set; }
 
+		[XmlAttribute("gameSeed")]
+		public int GameSeed { get; set; }
+
 		[XmlElement("Block", typeof(GameActions.Action))]
 		[XmlElement("Choices", typeof(Choices))]
 		[XmlElement("FullEntity", typeof(FullEntity))]
@@ -68,6 +71,8 @@ namespace HearthstoneReplays.Parser.ReplayData
 		[XmlElement("ChosenEntities", typeof(ChosenEntities))]
 		[XmlElement("ShuffleDeck", typeof(ShuffleDeck))]
 		public List<GameData> Data { get; set; }
+
+
 
         public Game()
 		{

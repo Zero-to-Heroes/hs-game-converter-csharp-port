@@ -29,13 +29,13 @@ namespace HearthstoneReplays.Parser.Handlers
             this.helper = helper;
         }
 
-        public void Handle(DateTime timestamp, string data, ParserState state, StateType stateType, DateTime previousTimestamp, StateFacade stateFacade)
+        public void Handle(DateTime timestamp, string data, ParserState state, StateType stateType, DateTime previousTimestamp, StateFacade stateFacade, long currentGameSeed)
         {
             var trimmed = data.Trim();
             var indentLevel = data.Length - trimmed.Length;
             data = trimmed;
             bool isApplied = false;
-            isApplied = isApplied || HandleNewGame(timestamp, data, state, previousTimestamp, stateType, stateFacade);
+            isApplied = isApplied || HandleNewGame(timestamp, data, state, previousTimestamp, stateType, stateFacade, currentGameSeed);
             isApplied = isApplied || HandleSpectator(timestamp, data, state, stateFacade);
 
             // When catching up with some log lines, sometimes we get some leftover from a previous game.
@@ -103,7 +103,13 @@ namespace HearthstoneReplays.Parser.Handlers
                 }
 
                 if (state.Node.Type == typeof(GameEntity))
+                {
                     ((GameEntity)state.Node.Object).Tags.Add(tag);
+                    if (tag.Name == (int)GameTag.GAME_SEED)
+                    {
+                        state.CurrentGame.GameSeed = tag.Value;
+                    }
+                }
                 else if (state.Node.Type == typeof(PlayerEntity))
                     ((PlayerEntity)state.Node.Object).Tags.Add(tag);
                 else if (state.Node.Type == typeof(FullEntity))
@@ -918,21 +924,21 @@ namespace HearthstoneReplays.Parser.Handlers
             return false;
         }
 
-        private bool HandleNewGame(DateTime timestamp, string data, ParserState state, DateTime previousTimestamp, StateType stateType, StateFacade gameInfoHelper)
+        private bool HandleNewGame(DateTime timestamp, string data, ParserState state, DateTime previousTimestamp, StateType stateType, StateFacade gameInfoHelper, long currentGameSeed)
         {
             if (data == "CREATE_GAME")
             {
                 state.NodeParser.ClearQueue();
 
                 Logger.Log("Handling create game", "");
-                var isReconnecting = stateType == StateType.GameState ? state.IsReconnecting() : gameInfoHelper.GsState.ReconnectionOngoing;
+                var isReconnecting = stateType == StateType.GameState ? state.IsReconnecting(currentGameSeed) : gameInfoHelper.GsState.ReconnectionOngoing;
                 if (isReconnecting)
                 {
-                    Logger.Log(
-                        $"Probable reconnect detected {stateType} {timestamp} // {previousTimestamp} // {state.Ended} // {state.NumberOfCreates} // {state.Spectating} // {stateType} // {data}",
-                        "" + (timestamp - previousTimestamp));
                     if (stateType == StateType.GameState)
                     {
+                        Logger.Log(
+                            $"Probable reconnect detected {stateType} {timestamp} // {previousTimestamp} // {state.Ended} // {state.NumberOfCreates} // {state.Spectating} // {stateType} // {data}",
+                            "" + (timestamp - previousTimestamp));
                         state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
                             timestamp,
                             "RECONNECT_START",

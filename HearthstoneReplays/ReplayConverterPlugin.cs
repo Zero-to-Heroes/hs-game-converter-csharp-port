@@ -72,7 +72,8 @@ namespace HearthstoneReplays
             {
                 try
                 {
-                    Array.ForEach(logLines, logLine => parser.ReadLine(logLine));
+                    var gameSeed = parser.ExtractGameSeed(logLines);
+                    Array.ForEach(logLines, logLine => parser.ReadLine(logLine, gameSeed));
                     callback(null);
                 }
                 catch (Exception e)

@@ -30,6 +30,7 @@ namespace HearthstoneReplays.Parser
         private ChoicesHandler choicesHandler;
         private EntityChosenHandler entityChosenHandler;
         private OptionsHandler optionsHandler;
+        private PowerProcessorHandler powerProcessorHandler;
 
         private DateTime previousTimestamp;
 
@@ -42,6 +43,7 @@ namespace HearthstoneReplays.Parser
             choicesHandler = new ChoicesHandler(helper);
             entityChosenHandler = new EntityChosenHandler(helper);
             optionsHandler = new OptionsHandler(helper);
+            powerProcessorHandler = new PowerProcessorHandler(helper);
             previousTimestamp = default;
             start = DateTime.Now; // Don't use UTC, otherwise it won't match with the log info
         }
@@ -63,9 +65,10 @@ namespace HearthstoneReplays.Parser
         public void Read(string[] lines)
         {
             Init();
+            var gameSeed = ExtractGameSeed(lines);
             foreach (var line in lines)
             {
-                ReadLine(line);
+                ReadLine(line, gameSeed);
             }
         }
 
@@ -76,7 +79,7 @@ namespace HearthstoneReplays.Parser
             //State.Reset();
         }
 
-        public void ReadLine(string line)
+        public void ReadLine(string line, long gameSeed)
         {
             // Ignore timestamps when catching up with past events
             //if (line == "START_CATCHING_UP")
@@ -117,14 +120,14 @@ namespace HearthstoneReplays.Parser
             {
                 if (line.Contains("End Spectator Mode") || (line.Contains("Begin Spectating") && !line.Contains("2nd")))
                 {
-                    AddData(null, "Spectator", line);
+                    AddData(null, "Spectator", line, gameSeed);
                 }
                 return;
             }
 
             //State.FullLog += line + "\n";
             //Logger.Log("Processing new line", line);
-            AddData(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value);
+            AddData(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value, gameSeed);
             // New game
             //if (State.FullLog.Length == 0)
             //{
@@ -133,7 +136,7 @@ namespace HearthstoneReplays.Parser
 
         }
 
-        private void AddData(string timestamp, string method, string data)
+        private void AddData(string timestamp, string method, string data, long gameSeed)
         {
             var normalizedTimestamp = NormalizeTimestamp(timestamp);
             switch (method)
@@ -141,7 +144,7 @@ namespace HearthstoneReplays.Parser
                 case "GameState.DebugPrintPower":
                 case "GameState.DebugPrintGame":
                 case "Spectator":
-                    dataHandler.Handle(normalizedTimestamp, data, State.GSState, StateType.GameState, previousTimestamp, State.StateFacade);
+                    dataHandler.Handle(normalizedTimestamp, data, State.GSState, StateType.GameState, previousTimestamp, State.StateFacade, gameSeed);
                     previousTimestamp = normalizedTimestamp;
                     State.StateFacade.LastProcessedGSLine = data;
                     break;
@@ -170,7 +173,7 @@ namespace HearthstoneReplays.Parser
                     break;
                 case "PowerTaskList.DebugPrintPower":
                     // Process the actual stuff
-                    dataHandler.Handle(normalizedTimestamp, data, State.PTLState, StateType.PowerTaskList, previousTimestamp, State.StateFacade);
+                    dataHandler.Handle(normalizedTimestamp, data, State.PTLState, StateType.PowerTaskList, previousTimestamp, State.StateFacade, gameSeed);
                     // Update entity names
                     powerDataHandler.Handle(normalizedTimestamp, data, State.PTLState);
                     // See comment in OptionsHandler
@@ -190,6 +193,10 @@ namespace HearthstoneReplays.Parser
                 //	break;
                 case "ChoiceCardMgr.WaitThenShowChoices":
                     choicesHandler.Handle(normalizedTimestamp, data, State.GSState);
+                    previousTimestamp = normalizedTimestamp;
+                    break;
+                case "PowerProcessor.EndCurrentTaskList":
+                    powerProcessorHandler.Handle(normalizedTimestamp, data, State.GSState, StateType.PowerTaskList, State.StateFacade);
                     previousTimestamp = normalizedTimestamp;
                     break;
                 //case "GameState.DebugPrintChoice":
@@ -219,5 +226,21 @@ namespace HearthstoneReplays.Parser
             }
             return logDateTime;
         } 
+
+        public long ExtractGameSeed(string[] lines)
+        {
+            string pattern = @"tag=GAME_SEED value=(\d+)";
+            var firstLines = lines.Take(40).ToArray();
+            foreach (var line in firstLines)
+            {
+                Match match = Regex.Match(line, pattern);
+                if (match.Success)
+                {
+                    string someValue = match.Groups[1].Value;
+                    return long.Parse(someValue);
+                }
+            }
+            return 0;
+        }
     }
 }
