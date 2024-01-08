@@ -100,11 +100,11 @@ namespace HearthstoneReplays
             try
             {
                 var hero = gameState.CurrentEntities.Values
+                    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetEffectiveController() == playerId)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
-                    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
                     .FirstOrDefault();
                 return hero ?? new GameStateShortSmallEntity();
             }
@@ -119,12 +119,18 @@ namespace HearthstoneReplays
         {
             try
             {
-                var weapon = gameState.CurrentEntities.Values
+                var debug = gameState.CurrentEntities.Values
+                    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.WEAPON)
                     .Where(entity => entity.GetEffectiveController() == playerId)
+                    .ToList();
+                var weapon = gameState.CurrentEntities.Values
                     .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
-                    .FirstOrDefault();
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.WEAPON)
+                    .Where(entity => entity.GetEffectiveController() == playerId)
+                    .LastOrDefault();
                 return weapon ?? new GameStateShortSmallEntity();
             }
             catch (Exception e)
@@ -149,12 +155,12 @@ namespace HearthstoneReplays
                 var entityToExcludeTC = tagChange?.Name == (int)GameTag.ZONE && tagChange?.Value != (int)zone ? tagChange.Entity : -1;
                 var entityToExcludeSE = showEntity?.GetTag(GameTag.ZONE) > 0 && showEntity?.GetTag(GameTag.ZONE) != (int)zone ? showEntity.Entity : -1;
                 return gameState.CurrentEntities.Values
-                    .Where(entity => entityToExcludeSE != entity.Entity
-                        && entityToExcludeTC != entity.Entity
-                        && (entity.GetTag(GameTag.ZONE) == (int)zone || entity.Entity == entityToConsiderTC || entity.Entity == entityToConsiderSE))
-                    .Where(entity => entity.GetEffectiveController() == playerId || entity.Entity == entityToConsiderTC || entity.Entity == entityToConsiderSE)
-                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION) == -1 ? 99 : entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
+                    .Where(entity => entityToExcludeSE != entity.entityId
+                        && entityToExcludeTC != entity.entityId
+                        && (entity.GetTag(GameTag.ZONE) == (int)zone || entity.entityId == entityToConsiderTC || entity.entityId == entityToConsiderSE))
+                    .Where(entity => entity.GetEffectiveController() == playerId || entity.entityId == entityToConsiderTC || entity.entityId == entityToConsiderSE)
+                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION) == -1 ? 99 : entity.GetTag(GameTag.ZONE_POSITION))
                     .ToList();
             }
             catch (Exception e)
@@ -169,12 +175,12 @@ namespace HearthstoneReplays
             try
             {
                 return gameState.CurrentEntities.Values
+                    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity, gameState.CurrentEntities.Values.ToList()))
                     .Where(entity => (entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY && !RemovedFromPlay(entity, tagChange, showEntity))
                         || PutInPlay(entity, tagChange, showEntity))
                     .Where(entity => entity.GetEffectiveController() == playerId)
                     .Where(entity => entity.IsMinionLike())
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
-                    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity, gameState.CurrentEntities.Values.ToList()))
                     .ToList();
             }
             catch (Exception e)
@@ -184,35 +190,35 @@ namespace HearthstoneReplays
             }
         }
 
-        private static bool RemovedFromPlay(FullEntity entity, TagChange tagChange, ShowEntity showEntity)
+        private static bool RemovedFromPlay(GameStateShortSmallEntity entity, TagChange tagChange, ShowEntity showEntity)
         {
             if (tagChange == null && showEntity == null)
             {
                 return false;
             }
             var valueTC = tagChange != null
-                && tagChange.Entity == entity.Entity
+                && tagChange.Entity == entity.entityId
                 && tagChange.Name == (int)GameTag.ZONE
                 && tagChange.Value != (int)Zone.PLAY;
             var valueSE = showEntity != null
-                && showEntity.Entity == entity.Entity
+                && showEntity.Entity == entity.entityId
                 && showEntity.GetTag(GameTag.ZONE) > 0
                 && showEntity.GetTag(GameTag.ZONE) != (int)Zone.PLAY;
             return valueTC || valueSE;
         }
 
-        private static bool PutInPlay(FullEntity entity, TagChange tagChange, ShowEntity showEntity)
+        private static bool PutInPlay(GameStateShortSmallEntity entity, TagChange tagChange, ShowEntity showEntity)
         {
             if (tagChange == null && showEntity == null)
             {
                 return false;
             }
             var valueTC = tagChange != null
-                && tagChange.Entity == entity.Entity
+                && tagChange.Entity == entity.entityId
                 && tagChange.Name == (int)GameTag.ZONE
                 && tagChange.Value == (int)Zone.PLAY;
             var valueSE = showEntity != null
-                && showEntity.Entity == entity.Entity
+                && showEntity.Entity == entity.entityId
                 && showEntity.GetTag(GameTag.ZONE) == (int)Zone.PLAY;
             return valueTC || valueSE;
         }
