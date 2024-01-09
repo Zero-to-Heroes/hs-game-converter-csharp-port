@@ -179,6 +179,7 @@ namespace HearthstoneReplays.Events.Parsers
                 entity.KnownEntityIds = GameState.CurrentEntities.Values
                     .Where(e => e.GetController() == entity.GetController())
                     .Where(e => e.InHand())
+                    .OrderBy(e => e.GetZonePosition())
                     .Select(e => e.Entity)
                     .ToList();
             }
