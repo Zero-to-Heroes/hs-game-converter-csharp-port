@@ -102,7 +102,7 @@ namespace HearthstoneReplays.Parser.ReplayData
 			    }
 
 			    // Now filter it
-			    return result.Where(data => types.Contains(data.GetType())).ToList();
+			    return result.Where(data => types == null || types.Contains(data.GetType())).ToList();
             }
 		}
 

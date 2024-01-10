@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using HearthstoneReplays.Enums;
 using System.Linq;
+using HearthstoneReplays.Parser.ReplayData.Entities;
 
 #endregion
 
@@ -28,6 +29,16 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
         {
             var match = Tags.FirstOrDefault(t => t.Name == (int)tag);
             return match == null ? defaultValue : match.Value;
+        }
+
+        public ShowEntity SetTag(GameTag tag, int value)
+        {
+            if (Tags.FirstOrDefault(t => t.Name == (int)tag) == null)
+            {
+                Tags.Add(new Tag() { Name = (int)tag, Value = value });
+            }
+            Tags.FirstOrDefault(t => t.Name == (int)tag).Value = value;
+            return this;
         }
 
         public string GetPlayerClass()
@@ -78,6 +89,14 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
         internal bool IsMinionLike()
         {
             return GetTag(GameTag.CARDTYPE) == (int)CardType.MINION || GetTag(GameTag.CARDTYPE) == (int)CardType.LOCATION;
+        }
+
+        public List<Tag> GetTagsCopy()
+        {
+            var tagsCopy = this.Tags
+                .Select(tag => new Tag() { Name = tag.Name, Value = tag.Value, })
+                .ToList();
+            return tagsCopy;
         }
     }
 }

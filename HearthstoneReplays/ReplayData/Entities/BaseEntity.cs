@@ -25,6 +25,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         [XmlIgnore]
         [JsonIgnore]
+        public List<Tag> TagsHistory { get; set; } = new List<Tag>();
+
+        [XmlIgnore]
+        [JsonIgnore]
         public List<Tag> AllPreviousTags { get; set; } = new List<Tag>();
 
         public override bool Equals(object obj)

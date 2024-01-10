@@ -168,6 +168,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                     TimeStamp = entity.TimeStamp 
                 };
             fullEntity.Tags = newTags;
+            fullEntity.TagsHistory = newTags;
             if (CurrentEntities.ContainsKey(entity.Id))
             {
                 CurrentEntities.Remove(entity.Id);
@@ -194,6 +195,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             //    Logger.Log($"Adding show Entity {entity.CardId}, existingZone={CurrentEntities[entity.Entity].GetZone()}", "");
             //}
             CurrentEntities[entity.Entity].CardId = entity.CardId;
+            CurrentEntities[entity.Entity].TagsHistory = entity.Tags;
             List<int> newTagIds = entity.Tags.Select(tag => tag.Name).ToList();
             List<Tag> oldTagsToKeep = CurrentEntities[entity.Entity].Tags
                 .Where(tag => !newTagIds.Contains(tag.Name))
@@ -335,6 +337,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 .Select(tag => tag.Name == tagChange.Name ? new Tag() { Name = tag.Name, Value = tagChange.Value } : tag)
                 .ToList();
             fullEntity.Tags = tagsAfterUpdate;
+            fullEntity.TagsHistory.Add(new Tag() { Name = tagChange.Name, Value = tagChange.Value });
             // Keep a history of things. This is useful when we use the "future game state" to know some information, but 
             // by the time we process it the informtion has already been reset in the real tags
             if (existingTag != null)
