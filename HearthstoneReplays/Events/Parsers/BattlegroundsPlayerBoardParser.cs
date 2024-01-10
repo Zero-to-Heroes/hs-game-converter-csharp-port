@@ -573,47 +573,94 @@ namespace HearthstoneReplays.Events.Parsers
 
         private FullEntity GetEntitySpawnedFromHand(int id, List<FullEntity> board)
         {
-            //var showEntity = StateFacade.GsState.Replay.Games[StateFacade.GsState.Replay.Games.Count - 1]
-            //    .FilterGameData(typeof(ShowEntity))
-            //    .Select(d => d as ShowEntity)
-            //    .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id)
-            //    .LastOrDefault();
-            //var enchantmentsAppliedOnShowEntity = 
-            //// Why this again?
-            //if (showEntity == null)
-            //{
-            var result = StateFacade.GsState.GameState.CurrentEntities.Values
-                .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id
-                    || e.AllPreviousTags.Any(t => t.Name == (int)GameTag.COPIED_FROM_ENTITY_ID && t.Value == id))
+            var allData = StateFacade.GsState.CurrentGame.FilterGameData(null);
+            var showEntity = allData
+                .Where(d => d is ShowEntity)
+                .Select(d => d as ShowEntity)
+                .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id)
                 .FirstOrDefault();
-            // TODO: find out all the enchantments that apply on the card, and if the enchantments originate from one 
-            // of the board entities, unroll them
-            var enchantmentsAppliedOnShowEntity = StateFacade.GsState.GameState.CurrentEntities.Values
-                .Where(e => e.GetCardType() == (int)CardType.ENCHANTMENT)
-                .Where(e => e.IsInPlay())
-                .Where(e => e.GetTag(GameTag.ATTACHED) == id)
-                .ToList();
-            foreach (var enchantment in enchantmentsAppliedOnShowEntity)
+            if (showEntity == null)
             {
-                var healthBuff = GetEnchantmentHealthBuff(enchantment);
-                var attackBuff = GetEnchantmentAttackBuff(enchantment);
-                result = result
-                    .SetTag(GameTag.HEALTH, result.GetTag(GameTag.HEALTH) - healthBuff)
-                    .SetTag(GameTag.ATK, result.GetTag(GameTag.ATK) - attackBuff) 
-                    as FullEntity;
+                return null;
             }
 
-            return result;
-            //}
-            //return new FullEntity()
+            // All of this doesn't work, because when entities are buffed in hand, we don't have a tag change
+            // or any numerical data. We would have to manually code the buffs in hand, but that feels way too 
+            // high-maintenance
+            //var showEntityIndex = allData.IndexOf(showEntity);
+            //// Get all the tag changes that affect the entity, and revert their effect
+            //var tagsBeforeShowEntity = allData.GetRange(0, showEntityIndex);
+            //// These apply to the entity in hand, not to the showEntity
+            //var tagChanges = tagsBeforeShowEntity
+            //    .Where(d => d is TagChange)
+            //    .Select(d => d as TagChange)
+            //    .Where(t => t.Entity == id)
+            //    .ToList();
+            //foreach (var tagChange in tagChanges)
             //{
-            //    Entity = showEntity.Entity,
-            //    Id = showEntity.Entity,
-            //    CardId = showEntity.CardId,
-            //    Tags = showEntity.Tags,
-            //    TimeStamp = showEntity.TimeStamp,
-            //    TsForXml = showEntity.TsForXml,
-            //};
+            //    if (tagChange.Name == (int)GameTag.ATK)
+            //    {
+            //        showEntity.SetTag(GameTag.ATK, showEntity.GetTag(GameTag.ATK) - tagChange.Value);
+            //    }
+            //    else if (tagChange.Name == (int)GameTag.HEALTH)
+            //    {
+            //        showEntity.SetTag(GameTag.HEALTH, showEntity.GetTag(GameTag.HEALTH) - tagChange.Value);
+            //    }
+            //}
+            
+            return new FullEntity()
+            {
+                Id = showEntity.Entity,
+                Entity = showEntity.Entity,
+                CardId = showEntity.CardId,
+                Tags = showEntity.GetTagsCopy(),
+                TimeStamp = showEntity.TimeStamp,
+            };
+
+            //var tagChangesForEntity = StateFacade.GsState.CurrentGame
+            //    .FilterGameData(typeof(TagChange))
+            //    .Select(d => d as TagChange)
+            //    .Where(t )
+            //// At this stage, we have the correct entity, BUT some tags have been reset
+            //// Indeed, once the entity dies and goes to the graveyard, there are tag changes going on to reset 
+            //// a lot of its state, like setting the atk back to its default value
+            //var result = StateFacade.GsState.GameState.CurrentEntities.Values
+            //    .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id
+            //        || e.AllPreviousTags.Any(t => t.Name == (int)GameTag.COPIED_FROM_ENTITY_ID && t.Value == id))
+            //    .FirstOrDefault();
+            //if (result == null)
+            //{
+            //    return null;
+            //}
+
+            //var attackWhenSummoned = result.TagsHistory.Find(t => t.Name == (int)GameTag.ATK).Value;
+            //var healthWhenSummoned = result.TagsHistory.Find(t => t.Name == (int)GameTag.HEALTH).Value;
+            //result = result
+            //    .SetTag(GameTag.ATK, attackWhenSummoned)
+            //    .SetTag(GameTag.HEALTH, healthWhenSummoned)
+            //    as FullEntity;
+            //// TODO: find out all the enchantments that apply on the card, and if the enchantments originate from one 
+            //// of the board entities, unroll them
+            //var debug = StateFacade.GsState.GameState.CurrentEntities.Values
+            //    .Where(e => e.GetCardType() == (int)CardType.ENCHANTMENT)
+            //    .Where(e => e.GetTag(GameTag.ATTACHED) == result.Entity)
+            //    .ToList();
+            //var enchantmentsAppliedOnShowEntity = StateFacade.GsState.GameState.CurrentEntities.Values
+            //    .Where(e => e.GetCardType() == (int)CardType.ENCHANTMENT)
+            //    .Where(e => e.IsInPlay())
+            //    .Where(e => e.GetTag(GameTag.ATTACHED) == result.Entity)
+
+            //    .ToList();
+            //foreach (var enchantment in enchantmentsAppliedOnShowEntity)
+            //{
+            //    var healthBuff = GetEnchantmentHealthBuff(enchantment);
+            //    var attackBuff = GetEnchantmentAttackBuff(enchantment);
+            //    result = result
+            //        .SetTag(GameTag.ATK, result.GetTag(GameTag.ATK) - attackBuff) 
+            //        .SetTag(GameTag.HEALTH, result.GetTag(GameTag.HEALTH) - healthBuff)
+            //        as FullEntity;
+            //}
+
             //return result;
         }
 
@@ -621,15 +668,22 @@ namespace HearthstoneReplays.Events.Parsers
         {
             switch (enchantment.CardId)
             {
-                case Scourfin_BG26_360:
-                case Scourfin_BG26_360_G:
-                case Murcules_BG27_023:
-                case Murcules_BG27_023_G:
                 case DiremuckForager_BG27_556:
+                    return 2;
                 case DiremuckForager_BG27_556_G:
+                    return 4;
+                case Scourfin_BG26_360:
+                    return 5;
+                case Scourfin_BG26_360_G:
+                    return 10;
+                case Murcules_BG27_023:
+                    return 2;
+                case Murcules_BG27_023_G:
+                    return 4;
                 case CogworkCopter_BG24_008:
+                    return 1;
                 case CogworkCopter_BG24_008_G:
-                    return enchantment.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
+                    return 2;
                 default:
                     return 0;
             }
@@ -639,15 +693,22 @@ namespace HearthstoneReplays.Events.Parsers
         {
             switch (enchantment.CardId)
             {
-                case Scourfin_BG26_360:
-                case Scourfin_BG26_360_G:
-                case Murcules_BG27_023:
-                case Murcules_BG27_023_G:
                 case DiremuckForager_BG27_556:
+                    return 2;
                 case DiremuckForager_BG27_556_G:
+                    return 4;
+                case Scourfin_BG26_360:
+                    return 5;
+                case Scourfin_BG26_360_G:
+                    return 10;
+                case Murcules_BG27_023:
+                    return 2;
+                case Murcules_BG27_023_G:
+                    return 4;
                 case CogworkCopter_BG24_008:
+                    return 1;
                 case CogworkCopter_BG24_008_G:
-                    return enchantment.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
+                    return 2;
                 default:
                     return 0;
             }
