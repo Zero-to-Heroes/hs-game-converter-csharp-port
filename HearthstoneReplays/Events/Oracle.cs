@@ -435,6 +435,7 @@ namespace HearthstoneReplays.Events
                     case SparkDrill_BOT_102: return SparkDrill_SparkToken;
                     case SparkEngine: return SparkDrill_SparkToken;
                     case SpiritJailer_SCH_700: return SchoolSpirits_SoulFragmentToken;
+                    case SpiritOfTheBadlands_WW_337: return SpiritOfTheBadlands_MirageToken_WW_337t;
                     case Springpaw_TRL_348: return Springpaw_LynxToken;
                     case Springpaw_CORE_TRL_348: return Springpaw_LynxToken;
                     case StaffOfAmmunae_ULDA_041: return StaffOfAmmunae_ULDA_041ts;
