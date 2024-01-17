@@ -168,7 +168,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                     TimeStamp = entity.TimeStamp 
                 };
             fullEntity.Tags = newTags;
-            fullEntity.TagsHistory = newTags;
+            fullEntity.TagsHistory = newTags?.Select(tag => new Tag() { Name = tag.Name, Value = tag.Value, }).ToList();
             if (CurrentEntities.ContainsKey(entity.Id))
             {
                 CurrentEntities.Remove(entity.Id);
@@ -195,7 +195,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             //    Logger.Log($"Adding show Entity {entity.CardId}, existingZone={CurrentEntities[entity.Entity].GetZone()}", "");
             //}
             CurrentEntities[entity.Entity].CardId = entity.CardId;
-            CurrentEntities[entity.Entity].TagsHistory = entity.Tags;
+            CurrentEntities[entity.Entity].TagsHistory = entity.Tags?.Select(tag => new Tag() { Name = tag.Name, Value = tag.Value, }).ToList();
             List<int> newTagIds = entity.Tags.Select(tag => tag.Name).ToList();
             List<Tag> oldTagsToKeep = CurrentEntities[entity.Entity].Tags
                 .Where(tag => !newTagIds.Contains(tag.Name))

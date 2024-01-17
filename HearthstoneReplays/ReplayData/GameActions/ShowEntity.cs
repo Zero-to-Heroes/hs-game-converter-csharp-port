@@ -31,16 +31,6 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
             return match == null ? defaultValue : match.Value;
         }
 
-        public ShowEntity SetTag(GameTag tag, int value)
-        {
-            if (Tags.FirstOrDefault(t => t.Name == (int)tag) == null)
-            {
-                Tags.Add(new Tag() { Name = (int)tag, Value = value });
-            }
-            Tags.FirstOrDefault(t => t.Name == (int)tag).Value = value;
-            return this;
-        }
-
         public string GetPlayerClass()
         {
             var playerClass = GetTag(GameTag.CLASS);
