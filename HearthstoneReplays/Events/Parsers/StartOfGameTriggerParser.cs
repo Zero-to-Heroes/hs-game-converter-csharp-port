@@ -31,7 +31,7 @@ namespace HearthstoneReplays.Events.Parsers
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(Action)
                 && (action = node.Object as Action).Type == (int)BlockType.TRIGGER
-                && (action.TriggerKeyword == (int)GameTag.START_OF_GAME || action.TriggerKeyword == (int)GameTag.TAG_NOT_SET);
+                && (action.TriggerKeyword == (int)GameTag.START_OF_GAME_KEYWORD || action.TriggerKeyword == (int)GameTag.TAG_NOT_SET);
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)

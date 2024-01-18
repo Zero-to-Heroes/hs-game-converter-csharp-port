@@ -44,7 +44,7 @@ namespace HearthstoneReplays.Events.Parsers
                 && tagChange.Value == (int)Zone.PLAY
                 && (tagChangeEntity = GameState.CurrentEntities[(node.Object as TagChange).Entity]).GetTag(GameTag.ZONE) == (int)Zone.HAND
                 // The only case we actually consider the trigger phases is if we're handling a Cast When Drawn spell
-                && ((!isTriggerPhase && !isPowerPhase )|| tagChangeEntity.GetTag(GameTag.CASTSWHENDRAWN) == 1);
+                && ((!isTriggerPhase && !isPowerPhase )|| tagChangeEntity.GetTag(GameTag.CASTS_WHEN_DRAWN) == 1);
             return stateType == StateType.PowerTaskList
                 && (sigilPlayed || cardPlayed);
         }

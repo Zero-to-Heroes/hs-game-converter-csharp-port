@@ -1168,6 +1168,7 @@
         public const string GalewingOfFire = "BG20_HERO_283_SKIN_B2";
         public const string GravewingGalewing = "BG20_HERO_283_SKIN_C3";
         public const string SkySailorGalewing = "BG20_HERO_283_SKIN_D4";
+        public const string LanternStringerGalewing_BG20_HERO_283_SKIN_E = "BG20_HERO_283_SKIN_E";
         public const string Galewing_DungarsGryphon = "BG20_HERO_283p";
         public const string WestfallToken = "BG20_HERO_283p_t1";
         public const string Westfall_WestfallEnchantment = "BG20_HERO_283p_t1e";
@@ -1356,6 +1357,7 @@
         public const string SmoreMasterCookie = "BG21_HERO_020_SKIN_A2";
         public const string FeastmasterCookie = "BG21_HERO_020_SKIN_B";
         public const string YshaarjCookie_BG21_HERO_020_SKIN_C = "BG21_HERO_020_SKIN_C";
+        public const string DumplingChefCookie_BG21_HERO_020_SKIN_D = "BG21_HERO_020_SKIN_D";
         public const string CookieTheCook_StirThePot = "BG21_HERO_020p";
         public const string Sneed_BG21_HERO_030 = "BG21_HERO_030";
         public const string PilotedWhirlOTron_BG21_HERO_030_Buddy = "BG21_HERO_030_Buddy";
@@ -1993,6 +1995,7 @@
         public const string TalentScout_BG25_HERO_105_Buddy = "BG25_HERO_105_Buddy";
         public const string TalentScout_BG25_HERO_105_Buddy_G = "BG25_HERO_105_Buddy_G";
         public const string BurningTaurenChieftain = "BG25_HERO_105_SKIN_A";
+        public const string ETCDragonDancer_BG25_HERO_105_SKIN_C = "BG25_HERO_105_SKIN_C";
         public const string ETCBandManager_SignANewArtist = "BG25_HERO_105p";
         public const string FairyTaleCaroler_BG26_001 = "BG26_001";
         public const string FairyTaleCaroler_BG26_001_G = "BG26_001_G";
@@ -2618,6 +2621,7 @@
         public const string RitualOfGrowth_BG28_812 = "BG28_812";
         public const string EchoingRoar_BG28_814 = "BG28_814";
         public const string EchoingRoar_EchoingRoarEnchantment_BG28_814e = "BG28_814e";
+        public const string EchoingRoar_EchoedRoarEnchantment_BG28_814e2 = "BG28_814e2";
         public const string DefendersRites_BG28_825 = "BG28_825";
         public const string DefendersRites_StopRiteThereEnchantment_BG28_825e = "BG28_825e";
         public const string LeafThroughThePages_BG28_827 = "BG28_827";
@@ -6887,6 +6891,70 @@
         public const string GoliathSneedsMasterpiece = "DED_525";
         public const string BlacksmithingHammer = "DED_527";
         public const string BlacksmithingHammer_BlacksmithingEnchantment = "DED_527e";
+        public const string SummoningWard_DEEP_000 = "DEEP_000";
+        public const string MismatchedFossils_DEEP_001 = "DEEP_001";
+        public const string MismatchedFossils_ANewSpeciesEnchantment_DEEP_001e = "DEEP_001e";
+        public const string ElementalCompanion_DEEP_002 = "DEEP_002";
+        public const string ElementalCompanion_HiffarToken_DEEP_002t = "DEEP_002t";
+        public const string ElementalCompanion_LuekkToken_DEEP_002t2 = "DEEP_002t2";
+        public const string ElementalCompanion_MeshoToken_DEEP_002t3 = "DEEP_002t3";
+        public const string Hiffar_HaffirEnchantment_DEEP_002te = "DEEP_002te";
+        public const string ShimmerShot_DEEP_003 = "DEEP_003";
+        public const string MantleShaper_DEEP_004 = "DEEP_004";
+        public const string ObsidianRevenant_DEEP_005 = "DEEP_005";
+        public const string StoneDrake_DEEP_006 = "DEEP_006";
+        public const string SirFinleyTheIntrepid_DEEP_007 = "DEEP_007";
+        public const string NeedlerockTotem_DEEP_008 = "DEEP_008";
+        public const string DiggingStraightDown_DEEP_009 = "DEEP_009";
+        public const string Aftershocks_DEEP_010 = "DEEP_010";
+        public const string BurningHeart_DEEP_011 = "DEEP_011";
+        public const string BurningHeart_HeartOfFireEnchantment_DEEP_011e = "DEEP_011e";
+        public const string ShadestoneSkulker_DEEP_012 = "DEEP_012";
+        public const string ShadestoneSkulker_BorrowedEnchantment_DEEP_012e = "DEEP_012e";
+        public const string FelFissure_DEEP_013 = "DEEP_013";
+        public const string FelFissure_FelFissureToken_DEEP_013t = "DEEP_013t";
+        public const string QuickPick_DEEP_014 = "DEEP_014";
+        public const string ProstheticHand_DEEP_015 = "DEEP_015";
+        public const string ProstheticHand_ProstheticHandEnchantment_DEEP_015e = "DEEP_015e";
+        public const string QuartziteCrusher_DEEP_016 = "DEEP_016";
+        public const string MiningCasualties_DEEP_017 = "DEEP_017";
+        public const string MiningCasualties_UnfortunateFateEnchantment_DEEP_017e = "DEEP_017e";
+        public const string Shroomscavate_DEEP_018 = "DEEP_018";
+        public const string CrimsonExpanse_DEEP_019 = "DEEP_019";
+        public const string CrimsonExpanse_CrimsonContainmentEnchantment_DEEP_019e = "DEEP_019e";
+        public const string DeepminerBrann_DEEP_020 = "DEEP_020";
+        public const string DeepminerBrann_DeepminingEnchantment_DEEP_020e = "DEEP_020e";
+        public const string ShadowWordSteal_DEEP_021 = "DEEP_021";
+        public const string FoolsGold_DEEP_022 = "DEEP_022";
+        public const string HiddenGem_DEEP_023 = "DEEP_023";
+        public const string GlowstoneGyreworm_DEEP_024 = "DEEP_024";
+        public const string GlowstoneGyreworm_GlowstoneGyrewormToken_DEEP_024t = "DEEP_024t";
+        public const string ShatteredReflections_DEEP_025 = "DEEP_025";
+        public const string PendantOfEarth_DEEP_026 = "DEEP_026";
+        public const string GloomstoneGuardian_DEEP_027 = "DEEP_027";
+        public const string GloomstoneGuardian_SplinteredForm_DEEP_027a = "DEEP_027a";
+        public const string GloomstoneGuardian_ManaDisintegration_DEEP_027b = "DEEP_027b";
+        public const string GloomstoneGuardian_GloomstoneGuardianToken_DEEP_027t = "DEEP_027t";
+        public const string CrystalCluster_DEEP_028 = "DEEP_028";
+        public const string CrystalCluster_CrystalCrusherToken_DEEP_028t = "DEEP_028t";
+        public const string TroggGemtosser_DEEP_029 = "DEEP_029";
+        public const string ElementiumGeode_DEEP_030 = "DEEP_030";
+        public const string ChaosCreation_DEEP_031 = "DEEP_031";
+        public const string Soulfreeze_DEEP_032 = "DEEP_032";
+        public const string FossilizedKaleidosaur_DEEP_033 = "DEEP_033";
+        public const string ShaleSpider_DEEP_034 = "DEEP_034";
+        public const string IridescentGyreworm_DEEP_035 = "DEEP_035";
+        public const string Therazane_DEEP_036 = "DEEP_036";
+        public const string Therazane_EarthmothersBoonEnchantment_DEEP_036e = "DEEP_036e";
+        public const string MaruutStonebinder_DEEP_037 = "DEEP_037";
+        public const string HeartblossomToken_DEEP_999t1 = "DEEP_999t1";
+        public const string Heartblossom_HeartblossomEnchantment_DEEP_999t1e = "DEEP_999t1e";
+        public const string DeepholmGeodeToken_DEEP_999t2 = "DEEP_999t2";
+        public const string WorldPillarFragmentToken_DEEP_999t3 = "DEEP_999t3";
+        public const string TheAzeriteDragonToken_DEEP_999t4 = "DEEP_999t4";
+        public const string TheAzeriteDragon_AzeriteSheenEnchantment_DEEP_999t4e = "DEEP_999t4e";
+        public const string TheAzeriteMurlocToken_DEEP_999t5 = "DEEP_999t5";
+        public const string TheAzeriteMurloc_AzeriteShimmerEnchantment_DEEP_999t5e = "DEEP_999t5e";
         public const string FastSpawnToDeckDummyFxLegacy = "DFX_001";
         public const string TimeWarpDummyFxLegacy = "DFX_002";
         public const string FrostNovaDummyFxLegacy = "DFX_003";
@@ -9324,6 +9392,7 @@
         public const string TouringETC_HERO_01ak_ETC = "HERO_01ak_ETC";
         public const string DestroyerGarrosh_HERO_01al_Garrosh = "HERO_01al_Garrosh";
         public const string OnslaughtGarrosh_HERO_01am_Garrosh = "HERO_01am_Garrosh";
+        public const string LunarDeathwing_HERO_01an_Deathwing = "HERO_01an_Deathwing";
         public const string GarroshHellscream_CorruptGarroshHeroSkins = "HERO_01b";
         public const string CorruptGarrosh_ArmorUpLegacy = "HERO_01bp";
         public const string CorruptGarrosh_TankUpLegacy = "HERO_01bp2";
@@ -9385,6 +9454,9 @@
         public const string HoedownInzah_HERO_02ao_Inzah = "HERO_02ao_Inzah";
         public const string CataclysmThrall_HERO_02ap_Thrall = "HERO_02ap_Thrall";
         public const string SkyshatterThrall_HERO_02aq_Thrall = "HERO_02aq_Thrall";
+        public const string DisidraStormglory_HERO_02ar_Disidra = "HERO_02ar_Disidra";
+        public const string TotemicCall_HERO_02arhp = "HERO_02arhp";
+        public const string TotemicSlam_HERO_02arhp2 = "HERO_02arhp2";
         public const string Thrall_KingRastakhanHeroSkins = "HERO_02b";
         public const string KingRastakhan_TotemicCallLegacy = "HERO_02bp";
         public const string KingRastakhan_TotemicSlamLegacy = "HERO_02bp2";
@@ -9528,6 +9600,7 @@
         public const string AlleriaWindrunner_StepfatherLorthemar_HERO_05ae = "HERO_05ae";
         public const string CowgirlAlleria_HERO_05af_Alleria = "HERO_05af_Alleria";
         public const string OutlawSylvanas_HERO_05ag_Sylvanas = "HERO_05ag_Sylvanas";
+        public const string FestivalHuln_HERO_05ah_Huln = "HERO_05ah_Huln";
         public const string Rexxar_WandererRexxarHeroSkins = "HERO_05b";
         public const string WandererRexxar_SteadyShotLegacy = "HERO_05bp";
         public const string WandererRexxar_BallistaShotLegacy = "HERO_05bp2";
@@ -9693,6 +9766,7 @@
         public const string JusticeJaina_HERO_08as_Jaina = "HERO_08as_Jaina";
         public const string Fireblast_HERO_08ashp = "HERO_08ashp";
         public const string FireblastRank2_HERO_08ashp2 = "HERO_08ashp2";
+        public const string DragonDanceCeleste_HERO_08at_Celeste = "HERO_08at_Celeste";
         public const string JainaProudmoore_KhadgarHeroSkins = "HERO_08b";
         public const string Khadgar_FireblastLegacy = "HERO_08bp";
         public const string Khadgar_FireblastRank2Legacy = "HERO_08bp2";
@@ -9749,6 +9823,7 @@
         public const string EliseTheLeader_HERO_09aj_EliseStarseeker = "HERO_09aj_EliseStarseeker";
         public const string LesserHeal_HERO_09ajhp = "HERO_09ajhp";
         public const string Heal_HERO_09ajhp2 = "HERO_09ajhp2";
+        public const string ScarletSally_HERO_09ak_Sally = "HERO_09ak_Sally";
         public const string AnduinWrynn_MadameLazulHeroSkins = "HERO_09b";
         public const string MadameLazul_LesserHealLegacy = "HERO_09bp";
         public const string MadameLazul_HealLegacy = "HERO_09bp2";
@@ -9791,6 +9866,9 @@
         public const string SecondSightIllidan_HERO_10ah_Illidan = "HERO_10ah_Illidan";
         public const string FelreaperIllidan_HERO_10ai_Illidan = "HERO_10ai_Illidan";
         public const string DeadeyeAranna_HERO_10aj_Aranna = "HERO_10aj_Aranna";
+        public const string KaileneEvergaze_HERO_10ak_Kailene = "HERO_10ak_Kailene";
+        public const string DemonClaws_HERO_10akhp = "HERO_10akhp";
+        public const string DemonsBite_HERO_10akhp2 = "HERO_10akhp2";
         public const string IllidanStormrage_ArannaStarseekerHeroSkins = "HERO_10b";
         public const string DemonClawsHeroSkins_HERO_10bbp = "HERO_10bbp";
         public const string DemonsBiteHeroSkins_HERO_10bbp2 = "HERO_10bbp2";
@@ -9862,6 +9940,7 @@
         public const string GhoulFrenzy_HERO_11ohp2 = "HERO_11ohp2";
         public const string ScourgeborneArthas_HERO_11p_LichKing = "HERO_11p_LichKing";
         public const string ThassarianArthas_HERO_11q_LichKing = "HERO_11q_LichKing";
+        public const string FestiveSai_HERO_11r_SaiShadestorm = "HERO_11r_SaiShadestorm";
         public const string EnemyCaptainTavernBrawlToken = "HERO_FB_Juggernaut";
         public const string GearmasterMechazodTavernBrawl_HRW02_1 = "HRW02_1";
         public const string GearmasterMechazod_OverclockTavernBrawlEnchantment = "HRW02_1e";
@@ -23085,6 +23164,7 @@
         public const string TradePrinceGallywix_TB_BaconShop_HERO_10 = "TB_BaconShop_HERO_10";
         public const string MurlocLordSaurfang = "TB_BaconShop_HERO_102_SKIN_F";
         public const string GladiatorSaurfang_TB_BaconShop_HERO_102_SKIN_G = "TB_BaconShop_HERO_102_SKIN_G";
+        public const string HongBaoBlackthorn_TB_BaconShop_HERO_103_SKIN_D = "TB_BaconShop_HERO_103_SKIN_D";
         public const string BilgewaterMogul_TB_BaconShop_HERO_10_Buddy = "TB_BaconShop_HERO_10_Buddy";
         public const string BilgewaterMogul_TB_BaconShop_HERO_10_Buddy_G = "TB_BaconShop_HERO_10_Buddy_G";
         public const string BilgewaterMogul_SmuggledRingToken_TB_BaconShop_HERO_10_Buddy_Gt2 = "TB_BaconShop_HERO_10_Buddy_Gt2";
@@ -23107,6 +23187,7 @@
         public const string InfernojetRagnaros = "TB_BaconShop_HERO_11_SKIN_B";
         public const string AbyssalVolcanoRagnaros = "TB_BaconShop_HERO_11_SKIN_C";
         public const string TheWoodFiredLord = "TB_BaconShop_HERO_11_SKIN_D";
+        public const string NianShouRagnaros_TB_BaconShop_HERO_11_SKIN_E = "TB_BaconShop_HERO_11_SKIN_E";
         public const string RagnarosTheFirelord_TB_BaconShop_HERO_11_Tutorial = "TB_BaconShop_HERO_11_Tutorial";
         public const string TheRatKing_TB_BaconShop_HERO_12 = "TB_BaconShop_HERO_12";
         public const string PigeonLord_TB_BaconShop_HERO_12_Buddy = "TB_BaconShop_HERO_12_Buddy";
@@ -23170,6 +23251,7 @@
         public const string StreetMagician_TB_BaconShop_HERO_21_Buddy_G = "TB_BaconShop_HERO_21_Buddy_G";
         public const string CrashinThrashinAkazamzarak = "TB_BaconShop_HERO_21_SKIN_A";
         public const string GrandEntertainerAkazamzarak = "TB_BaconShop_HERO_21_SKIN_B2";
+        public const string FirecrackerAkazamzarak_TB_BaconShop_HERO_21_SKIN_C = "TB_BaconShop_HERO_21_SKIN_C";
         public const string TheLichKing_TB_BaconShop_HERO_22 = "TB_BaconShop_HERO_22";
         public const string Arfus_TB_BaconShop_HERO_22_Buddy = "TB_BaconShop_HERO_22_Buddy";
         public const string Arfus_TB_BaconShop_HERO_22_Buddy_G = "TB_BaconShop_HERO_22_Buddy_G";
@@ -27290,6 +27372,7 @@
         public const string HotSpringGuardian = "UNG_938";
         public const string AwakenTheMakers = "UNG_940";
         public const string AwakenTheMakers_AmaraWardenOfHopeToken = "UNG_940t8";
+        public const string AmaraWardenOfHope_WardedByHopeEnchantment_UNG_940t8e = "UNG_940t8e";
         public const string PrimordialGlyph = "UNG_941";
         public const string PrimordialGlyph_PrimalMagicEnchantment = "UNG_941e";
         public const string UniteTheMurlocs = "UNG_942";
@@ -28587,5 +28670,4 @@
         public const string SpellbenderLegacy = "tt_010";
         public const string Spellbender_SpellbenderLegacy = "tt_010a";
     }
-
 }

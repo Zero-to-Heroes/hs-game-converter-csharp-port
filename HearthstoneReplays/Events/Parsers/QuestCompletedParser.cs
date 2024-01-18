@@ -29,7 +29,7 @@ namespace HearthstoneReplays.Events.Parsers
                 && node.Type == typeof(Parser.ReplayData.GameActions.Action)
                 && (action = node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER
                 // BG seems to only need sidequest
-                && (action.TriggerKeyword == (int)GameTag.SIDEQUEST || action.TriggerKeyword == (int)GameTag.QUEST);
+                && (action.TriggerKeyword == (int)GameTag.SIDE_QUEST || action.TriggerKeyword == (int)GameTag.QUEST);
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)

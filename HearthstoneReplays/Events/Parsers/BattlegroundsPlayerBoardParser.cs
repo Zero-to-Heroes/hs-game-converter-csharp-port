@@ -387,7 +387,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
                     .Where(entity => entity.GetTag(GameTag.BACON_IS_BOB_QUEST) != 1)
                     .Where(entity => entity.GetTag(GameTag.QUEST) != 1)
-                    .Where(entity => entity.GetTag(GameTag.SIDEQUEST) != 1)
+                    .Where(entity => entity.GetTag(GameTag.SIDE_QUEST) != 1)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
                     .Select(entity => BuildEntityWithCardIdFromTheFuture(entity, StateFacade.GsState.GameState))
