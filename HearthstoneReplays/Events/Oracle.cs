@@ -1037,6 +1037,16 @@ namespace HearthstoneReplays.Events
                         return gameState.CurrentEntities.GetValueOrDefault(previousChange?.Entity ?? -1)?.CardId;
                     }
 
+                    if (actionEntity.CardId == ShatteredReflections_DEEP_025)
+                    {
+                        var candidate = action.Data
+                            .Where(d => d is FullEntity)
+                            .Select(d => d as FullEntity)
+                            .Where(e => e.CardId != null)
+                            .FirstOrDefault();
+                        return candidate?.CardId;
+                    }
+
                     if (actionEntity.CardId == Griftah)
                     {
                         var candidates = action.Data
