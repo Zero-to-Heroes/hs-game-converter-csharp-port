@@ -57,7 +57,7 @@ namespace HearthstoneReplays.Parser.Handlers
             isApplied = isApplied || HandleSubSpell(timestamp, data, state, stateType, stateFacade);
             isApplied = isApplied || HandleShowEntity(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleChangeEntity(timestamp, data, state, indentLevel);
-            isApplied = isApplied || HandleHideEntity(timestamp, data, state);
+            isApplied = isApplied || HandleHideEntity(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleFullEntity(timestamp, data, state, indentLevel);
             isApplied = isApplied || HandleTagChange(timestamp, data, state, stateType, stateFacade, indentLevel);
             isApplied = isApplied || HandleTag(timestamp, data, state);
@@ -300,7 +300,7 @@ namespace HearthstoneReplays.Parser.Handlers
             return false;
         }
 
-        private bool HandleHideEntity(DateTime timestamp, string data, ParserState state)
+        private bool HandleHideEntity(DateTime timestamp, string data, ParserState state, int indentLevel)
         {
             var match = Regexes.ActionHideEntityRegex.Match(data);
             if (match.Success)
@@ -320,6 +320,10 @@ namespace HearthstoneReplays.Parser.Handlers
                     ((Action)state.Node.Object).Data.Add(hideEntity);
                 else
                     throw new Exception("Invalid node: " + state.Node.Type);
+
+                var newNode = new Node(typeof(HideEntity), hideEntity, indentLevel, state.Node, data);
+                state.CreateNewNode(newNode);
+                state.Node = newNode;
                 return true;
             }
             return false;

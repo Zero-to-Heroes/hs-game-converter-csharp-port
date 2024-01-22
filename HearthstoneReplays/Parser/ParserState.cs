@@ -68,7 +68,8 @@ namespace HearthstoneReplays.Parser
                         // This works because Tag and TagChanges don't create new nodes
                         && (_node.Type == typeof(FullEntity)
                                 || _node.Type == typeof(ShowEntity)
-                                || _node.Type == typeof(ChangeEntity)))
+                                || _node.Type == typeof(ChangeEntity)
+                    ))
                     {
                         EndAction();
                         if (_node.Type == typeof(ShowEntity))
