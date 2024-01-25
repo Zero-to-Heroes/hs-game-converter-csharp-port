@@ -87,6 +87,7 @@ namespace HearthstoneReplayTests
             logFile.Insert(0, "START_CATCHING_UP");
             logFile.Add("END_CATCHING_UP");
             var parser = new ReplayParser();
+
             HearthstoneReplay replay = parser.FromString(logFile);
             Thread.Sleep(1000);
             //string xml = new ReplayConverter().xmlFromReplay(replay);
