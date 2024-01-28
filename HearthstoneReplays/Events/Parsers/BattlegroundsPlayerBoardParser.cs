@@ -13,7 +13,6 @@ namespace HearthstoneReplays.Events.Parsers
         private static List<string> COMPETING_BATTLE_START_HERO_POWERS = new List<string>() {
             RebornRites,
             SwattingInsects,
-            EmbraceYourRage,
         };
 
         // We want to send the board states before these hero powers trigger
@@ -24,7 +23,8 @@ namespace HearthstoneReplays.Events.Parsers
             // We need to send the board state before it triggers, because the simulator needs to handle it, so that
             // it is not broken if Ozumat + Tavish (or other hero power that is managed by the simulator) happen
             Ozumat_Tentacular,
-            TamsinRoame_FragrantPhylactery
+            TamsinRoame_FragrantPhylactery,
+            EmbraceYourRage
         };
 
         private static List<string> TAVISH_HERO_POWERS = new List<string>() {
@@ -109,6 +109,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return false;
             }
 
+            string actionCardId = null;
             var isCorrectActionData = ((node.Object as Action).Type == (int)BlockType.ATTACK
                 // Why do we want deaths? Can there be a death without an attack or trigger first? AFAIK sacrifices like Tamsin's hero
                 // power is the only option?
@@ -120,20 +121,20 @@ namespace HearthstoneReplays.Events.Parsers
                         // Here we don't want to send the boards when the hero power is triggered, because we want the 
                         // board state to include the effect of the hero power, since the simulator can't guess
                         // what its outcome is (Embrace Your Rage) or what minion it targets (Reborn Rites)
-                        && !COMPETING_BATTLE_START_HERO_POWERS.Contains(actionEntity.CardId)
+                        && !COMPETING_BATTLE_START_HERO_POWERS.Contains((actionCardId = actionEntity.CardId))
                         && !IsTavishPreparation(node)
                         && (
-                            // This was introduced to wait until the damage is done to each hero before sending the board state. However,
-                            // forcing the entity to be the root entity means that sometimes we send the info way too late.
-                            actionEntity.CardId == CardIds.Baconshop8playerenchantEnchantment
-                            // This condition has been introduced to solve an issue when the Wingmen hero power triggers. In that case, the parent action of attacks
-                            // is not a TB_BaconShop_8P_PlayerE, but the hero power action itself.
-                            || actionEntity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER
-                            // Here we want the boards to be send before the minions start of combat effects happen, because
-                            // we want the simulator to include their random effects inside the simulation
-                            || START_OF_COMBAT_MINION_EFFECT.Contains(actionEntity.CardId)
-                            || START_OF_COMBAT_HERO_POWER.Contains(actionEntity.CardId)
-                            || START_OF_COMBAT_QUEST_REWARD_EFFECT.Contains(actionEntity.CardId)
+                                // This was introduced to wait until the damage is done to each hero before sending the board state. However,
+                                // forcing the entity to be the root entity means that sometimes we send the info way too late.
+                                actionCardId == CardIds.Baconshop8playerenchantEnchantment
+                                // This condition has been introduced to solve an issue when the Wingmen hero power triggers. In that case, the parent action of attacks
+                                // is not a TB_BaconShop_8P_PlayerE, but the hero power action itself.
+                                || actionEntity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER
+                                // Here we want the boards to be send before the minions start of combat effects happen, because
+                                // we want the simulator to include their random effects inside the simulation
+                                || START_OF_COMBAT_MINION_EFFECT.Contains(actionCardId)
+                                || START_OF_COMBAT_HERO_POWER.Contains(actionCardId)
+                                || START_OF_COMBAT_QUEST_REWARD_EFFECT.Contains(actionCardId)
                             )
                     )
             );
@@ -425,7 +426,8 @@ namespace HearthstoneReplays.Events.Parsers
                     Logger.Log("WARNING: could not find hero power", "");
                 }
                 var heroPowerUsed = heroPower?.GetTag(GameTag.BACON_HERO_POWER_ACTIVATED) == 1;
-                if (heroPower?.CardId == CardIds.EmbraceYourRage)
+                string heroPowerCreatedEntity = null;
+                if (!heroPowerUsed && heroPower?.CardId == CardIds.EmbraceYourRage)
                 {
                     var parentAction = (node.Parent.Object as Parser.ReplayData.GameActions.Action);
                     var hasTriggerBlock = parentAction.Data
@@ -469,13 +471,18 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)));
                 var choralEnchantment = choralEnchantments.FirstOrDefault();
 
-                var heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
+                dynamic heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
                 var heroPowerInfo2 = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2) ?? 0;
-                if (heroPower?.CardId == CardIds.TeronGorefiend_RapidReanimation)
+                if (heroPowerUsed && heroPower?.CardId == CardIds.TeronGorefiend_RapidReanimation)
                 {
                     var impendingDeathEnchantments = GameState.CurrentEntities.Values
                         .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                        .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment);
+                        .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
+                        .ToList();
+                    //var debug = StateFacade.GsState.GameState.CurrentEntities.Values
+                    //    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                    //    .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
+                    //    .ToList();
                     var impendingDeath = impendingDeathEnchantments
                         .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
                         .Where(entity => entity.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == -1)
@@ -492,6 +499,23 @@ namespace HearthstoneReplays.Events.Parsers
                         heroPowerInfo = impendingDeath.GetTag(GameTag.ATTACHED);
                     }
                 }
+                if (heroPowerUsed && heroPower?.CardId == CardIds.EmbraceYourRage)
+                {
+                    var embraceYourRageCreationAction = StateFacade.GsState.CurrentGame.FilterGameData(typeof(Action))
+                        .Select(d => d as Action)
+                        .Where(a => a.Type == (int)BlockType.TRIGGER)
+                        .Where(a => a.Entity == heroPower.Entity)
+                        .LastOrDefault();
+                    if (embraceYourRageCreationAction != null)
+                    {
+                        var entity = embraceYourRageCreationAction.Data
+                            .Where(d => d is FullEntity)
+                            .Select(d => d as FullEntity)
+                            .Where(d => d.CardId != null && d.CardId.Length > 0)
+                            .FirstOrDefault();
+                        heroPowerInfo = entity?.CardId;
+                    }
+                }
 
                 return new PlayerBoard()
                 {
@@ -500,6 +524,7 @@ namespace HearthstoneReplays.Events.Parsers
                     HeroPowerUsed = heroPowerUsed,
                     HeroPowerInfo = heroPowerInfo,
                     HeroPowerInfo2 = heroPowerInfo2,
+                    HeroPowerCreatedEntity = heroPowerCreatedEntity,
                     CardId = cardId,
                     PlayerId = playerId ?? 0,
                     Board = result,
@@ -607,7 +632,7 @@ namespace HearthstoneReplays.Events.Parsers
             //        showEntity.SetTag(GameTag.HEALTH, showEntity.GetTag(GameTag.HEALTH) - tagChange.Value);
             //    }
             //}
-            
+
             return new FullEntity()
             {
                 Id = showEntity.Entity,
@@ -753,9 +778,10 @@ namespace HearthstoneReplays.Events.Parsers
             public FullEntity Hero { get; set; }
             public string HeroPowerCardId { get; set; }
             public bool HeroPowerUsed { get; set; }
-            public int HeroPowerInfo { get; set; }
+            public dynamic HeroPowerInfo { get; set; }
             // Used for Tavish damage for instance
             public int HeroPowerInfo2 { get; set; }
+            public string HeroPowerCreatedEntity { get; set; }
             public string CardId { get; set; }
             public int PlayerId { get; set; }
             public List<string> QuestRewards { get; set; }
