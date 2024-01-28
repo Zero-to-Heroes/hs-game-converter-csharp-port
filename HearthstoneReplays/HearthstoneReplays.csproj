@@ -115,6 +115,8 @@
     <Compile Include="Events\Obfuscator.cs" />
     <Compile Include="Events\Parsers\AbstractBasicTagChangeParser.cs" />
     <Compile Include="Events\Parsers\CardForgedParser.cs" />
+    <Compile Include="Events\Parsers\FullEntityParser.cs" />
+    <Compile Include="Events\Parsers\ShowEntityParser.cs" />
     <Compile Include="Events\Parsers\HideEntityParser.cs" />
     <Compile Include="Events\Parsers\RemovedFromHistoryParser.cs" />
     <Compile Include="Events\Parsers\ExcavateTierChangedParser.cs" />

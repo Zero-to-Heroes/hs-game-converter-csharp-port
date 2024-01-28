@@ -852,7 +852,8 @@ namespace HearthstoneReplays.Events
                         //var currentPlagueIndex = plightOfTheDeadActions.IndexOf(currentPlightOfTheDeadAction);
                         var plagueAction = plagueActions[0];
                         plagueAction.Processed = true;
-                        var result = gameState.CurrentEntities.GetValueOrDefault(plagueAction?.Entity ?? -1)?.CardId;
+                        var plagueActionEntity = gameState.CurrentEntities.GetValueOrDefault(plagueAction?.Entity ?? -1);
+                        var result = plagueActionEntity?.CardId;
                         return result;
                     }
 
@@ -1416,15 +1417,17 @@ namespace HearthstoneReplays.Events
 
         private static bool IsPlagueAction(Action action, GameState gameState)
         {
-            int entity = action.Entity;
-            var cardId = gameState.CurrentEntities.GetValueOrDefault(entity)?.CardId;
+            int entityId = action.Entity;
+            var entity = gameState.CurrentEntities.GetValueOrDefault(entityId);
+            var cardId = entity?.CardId;
             return PLAGUES.Contains(cardId);
         }
 
         private static bool IsPlightOfTheDeadAction(Action action, GameState gameState)
         {
-            int entity = action.Entity;
-            var cardId = gameState.CurrentEntities.GetValueOrDefault(entity)?.CardId;
+            int entityId = action.Entity;
+            var entity = gameState.CurrentEntities.GetValueOrDefault(entityId);
+            var cardId = entity?.CardId;
             return cardId == CardIds.Helya_PlightOfTheDeadEnchantment;
         }
 

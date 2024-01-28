@@ -8,13 +8,13 @@ using System.Collections.Generic;
 
 namespace HearthstoneReplays.Events.Parsers
 {
-    public class HideEntityParser : ActionParser
+    public class FullEntityParser : ActionParser
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
         private StateFacade StateFacade { get; set; }
 
-        public HideEntityParser(ParserState ParserState, StateFacade facade)
+        public FullEntityParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
@@ -23,32 +23,31 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return stateType == StateType.PowerTaskList
-                && node.Type == typeof(HideEntity);
+            return false;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            return false;
+            return stateType == StateType.PowerTaskList
+                && node.Type == typeof(FullEntity);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            var hide = node.Object as HideEntity;
-            var hiddenEntityId = hide.Entity;
-            var hiddenEntity = GameState.CurrentEntities.GetValueOrDefault(hiddenEntityId);
-            if (hiddenEntity == null)
+            return null;
+        }
+
+        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
+        {
+            var obj = node.Object as FullEntity;
+            var entityId = obj.Entity;
+            var entity = GameState.CurrentEntities.GetValueOrDefault(entityId);
+            if (entity == null)
             {
                 return null;
             }
 
-            hiddenEntity.Hidden = true;
-            return null;
-        }
-
-        // Typically the case when the opponent plays a quest or a secret
-        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
-        {
+            entity.Hidden = false;
             return null;
         }
     }

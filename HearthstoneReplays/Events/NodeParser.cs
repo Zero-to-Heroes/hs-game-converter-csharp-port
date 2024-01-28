@@ -111,7 +111,12 @@ namespace HearthstoneReplays.Events
             {
                 return new List<ActionParser>()
                 {
-                    // Ordering is important, as we want to have "ability revealed" before 
+                    // Ordering is important,
+                    new HideEntityParser(ParserState, StateFacade),
+                    new ShowEntityParser(ParserState, StateFacade),
+                    new FullEntityParser(ParserState, StateFacade),
+
+                    // we want to have "ability revealed" before 
                     // "ability updated" (done by the EntityUpdateParser). Same with CardRevealed
                     // Also, MINION_SUMMONED need to happen before any Equipment / Ability revealed
                     new MinionSummonedParser(ParserState, StateFacade),
@@ -230,7 +235,6 @@ namespace HearthstoneReplays.Events
                     new OverloadedCrystalsParser(ParserState, StateFacade),
                     new CorposesSpentThisGameParser(ParserState, StateFacade),
                     new ConstructedAnomalyParser(ParserState, StateFacade),
-                    new HideEntityParser(ParserState, StateFacade),
 
                     new CardForgedParser(ParserState, StateFacade),
                     new CreateCardInGraveyardParser(ParserState, StateFacade),

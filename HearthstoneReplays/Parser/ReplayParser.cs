@@ -67,11 +67,9 @@ namespace HearthstoneReplays.Parser
             Init();
             // Use chunks to recompute the game seed when parsing multiple games at the same time
             int chunkSize = 500;
-            ArraySegment<string> segment;
-            for (int i = 0; i < lines.Length; i += chunkSize)
+            for (var i = 0; i < lines.Length; i += chunkSize)
             {
-                segment = new ArraySegment<string>(lines, i, chunkSize);
-                var processedLines = segment.ToArray();
+                string[] processedLines = lines.ToList().GetRange(i, Math.Min(chunkSize, lines.Length - i)).ToArray();
                 var gameSeed = ExtractGameSeed(processedLines);
                 foreach (var line in processedLines)
                 {
