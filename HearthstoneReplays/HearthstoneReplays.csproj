@@ -114,6 +114,7 @@
     <Compile Include="Events\GameStateShort.cs" />
     <Compile Include="Events\Obfuscator.cs" />
     <Compile Include="Events\Parsers\AbstractBasicTagChangeParser.cs" />
+    <Compile Include="Events\Parsers\BloodGemBuffChangedParser.cs" />
     <Compile Include="Events\Parsers\CardForgedParser.cs" />
     <Compile Include="Events\Parsers\FullEntityParser.cs" />
     <Compile Include="Events\Parsers\ShowEntityParser.cs" />

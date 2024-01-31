@@ -188,6 +188,7 @@ namespace HearthstoneReplays.Events
                     new HeroPowerChangedParser(ParserState, StateFacade),
                     new WeaponEquippedParser(ParserState, StateFacade),
                     new WeaponDestroyedParser(ParserState, StateFacade),
+
                     new BattlegroundsPlayerTechLevelUpdatedParser(ParserState, StateFacade),
                     new BattlegroundsBuddyGainedParser(ParserState, StateFacade),
                     new BattlegroundsQuestRevealedParser(ParserState, StateFacade),
@@ -208,6 +209,8 @@ namespace HearthstoneReplays.Events
                     new BattlegroundsHeroKilledParser(ParserState, StateFacade),
                     new BattlegroundsQuestRewardEquippedParser(ParserState, StateFacade),
                     new BattlegroundsQuestRewardDestroyedParser(ParserState, StateFacade),
+                    new BloodGemBuffChangedParser(ParserState, StateFacade),
+
                     new DecklistUpdateParser(ParserState, StateFacade),
                     new GameRunningParser(ParserState, StateFacade),
                     new AttackParser(ParserState, StateFacade),
