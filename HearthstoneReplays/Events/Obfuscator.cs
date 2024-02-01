@@ -31,7 +31,7 @@ namespace HearthstoneReplays.Events
             if (!isPlayer && entity.AllPreviousTags.Find(t => t.Name == (int)GameTag.IS_USING_TRADE_OPTION && t.Value == 1) != null) {
                 return true;
             }
-            if (!isPlayer && entity.Hidden)
+            if (!isPlayer && entity.Hidden && entity.GetTag(GameTag.CASTS_WHEN_DRAWN) != 1)
             {
                 return true;
             }
