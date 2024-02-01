@@ -435,7 +435,9 @@ namespace HearthstoneReplays.Events.Parsers
                         .Select(data => data as Parser.ReplayData.GameActions.Action)
                         .Where(action => action.Type == (int)BlockType.TRIGGER)
                         .Where(action => GameState.CurrentEntities.ContainsKey(action.Entity)
-                            && GameState.CurrentEntities[action.Entity]?.CardId == CardIds.EmbraceYourRage)
+                            && GameState.CurrentEntities[action.Entity]?.CardId == CardIds.EmbraceYourRage
+                            && GameState.CurrentEntities[action.Entity]?.GetEffectiveController() == playerId
+                         )
                         .Count() > 0;
                     heroPowerUsed = heroPowerUsed || hasTriggerBlock;
                 }
