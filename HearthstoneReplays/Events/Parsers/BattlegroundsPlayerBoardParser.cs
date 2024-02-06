@@ -475,31 +475,32 @@ namespace HearthstoneReplays.Events.Parsers
 
                 dynamic heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
                 var heroPowerInfo2 = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2) ?? 0;
+                // There is an enchantment attached to the entity that will die
                 if (heroPowerUsed && heroPower?.CardId == CardIds.TeronGorefiend_RapidReanimation)
                 {
-                    var impendingDeathEnchantments = GameState.CurrentEntities.Values
-                        .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                        .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
-                        .ToList();
-                    //var debug = StateFacade.GsState.GameState.CurrentEntities.Values
+                    //var impendingDeathEnchantments = GameState.CurrentEntities.Values
                     //    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     //    .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
                     //    .ToList();
-                    var impendingDeath = impendingDeathEnchantments
-                        .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
-                        .Where(entity => entity.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == -1)
-                        .FirstOrDefault()
-                        ?? impendingDeathEnchantments
-                            .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
-                            .FirstOrDefault()
-                        ?? impendingDeathEnchantments
-                            .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD)
-                            .FirstOrDefault();
-                    // Can be null if the player didn't use the hero power
-                    if (impendingDeath != null)
-                    {
-                        heroPowerInfo = impendingDeath.GetTag(GameTag.ATTACHED);
-                    }
+                    ////var debug = StateFacade.GsState.GameState.CurrentEntities.Values
+                    ////    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                    ////    .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
+                    ////    .ToList();
+                    //var impendingDeath = impendingDeathEnchantments
+                    //    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
+                    //    .Where(entity => entity.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == -1)
+                    //    .FirstOrDefault()
+                    //    ?? impendingDeathEnchantments
+                    //        .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
+                    //        .FirstOrDefault()
+                    //    ?? impendingDeathEnchantments
+                    //        .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD)
+                    //        .FirstOrDefault();
+                    //// Can be null if the player didn't use the hero power
+                    //if (impendingDeath != null)
+                    //{
+                    //    heroPowerInfo = impendingDeath.GetTag(GameTag.ATTACHED);
+                    //}
                 }
                 if (heroPowerUsed && heroPower?.CardId == CardIds.EmbraceYourRage)
                 {
@@ -753,13 +754,23 @@ namespace HearthstoneReplays.Events.Parsers
 
         private object AddEchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
         {
+            //var debug = currentEntities.Values
+            //    .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id)
+            //    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetZone() == (int)Zone.SETASIDE)
+            //    .ToList(); 
+            //var debug2 = currentEntities.Values
+            //    .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id)
+            //    .ToList();
+            // For some reason, Teron's RapidReanimation enchantment is sometimes in the GRAVEYARD zone
             var enchantments = currentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id)
-                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                .Where(entity => entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME)
                 .Select(entity => new
                 {
                     EntityId = entity.Id,
-                    CardId = entity.CardId
+                    CardId = entity.CardId,
+                    TagScriptDataNum1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1),
+                    TagScriptDataNum2 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2),
                 })
                 .ToList();
             dynamic result = new

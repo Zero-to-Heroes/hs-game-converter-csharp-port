@@ -391,7 +391,7 @@ namespace HearthstoneReplays.Events
                         RatSensei_MonkTurtleToken_WON_013t2,
                         RatSensei_MonkTurtleToken_WON_013t3,
                         RatSensei_MonkTurtleToken_WON_013t4,
-                    }.OrderBy(n => Guid.NewGuid()).ToArray()[0] ;
+                    }.OrderBy(n => Guid.NewGuid()).ToArray()[0];
                     case RayOfFrost_DAL_577: return RayOfFrost_DAL_577ts;
                     case RazorpetalLasher: return RazorpetalVolley_RazorpetalToken;
                     case RazorpetalVolley: return RazorpetalVolley_RazorpetalToken;
@@ -773,7 +773,15 @@ namespace HearthstoneReplays.Events
                             .FirstOrDefault();
                         var entity = gameState.CurrentEntities.GetValueOrDefault(entityId);
                         return entity?.CardId;
-                            
+                    } 
+                    else if (actionEntity?.CardId == RatSensei_WON_013)
+                    {
+                        return new[] {
+                            RatSensei_MonkTurtleToken_WON_013t,
+                            RatSensei_MonkTurtleToken_WON_013t2,
+                            RatSensei_MonkTurtleToken_WON_013t3,
+                            RatSensei_MonkTurtleToken_WON_013t4,
+                        }.OrderBy(n => Guid.NewGuid()).ToArray()[0];
                     }
                     else if (actionEntity?.CardId == Kidnap_KidnappersSackToken)
                     {
