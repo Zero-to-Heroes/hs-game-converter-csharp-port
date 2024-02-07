@@ -440,6 +440,7 @@ namespace HearthstoneReplays.Events
                     case Springpaw_CORE_TRL_348: return Springpaw_LynxToken;
                     case StaffOfAmmunae_ULDA_041: return StaffOfAmmunae_ULDA_041ts;
                     case Starseeker_ULDA_Elise_HP3: return MoonfireLegacy;
+                    case Starshooter_WW_813: return ArcaneShotLegacy_DS1_185;
                     case SteamSurger: return FlameGeyser;
                     case SunscaleRaptor: return SunscaleRaptor;
                     case SurlyMob_AngryMobTavernBrawl: return SurlyMob_CrazedMobTavernBrawl;
