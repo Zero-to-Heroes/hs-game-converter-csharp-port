@@ -61,6 +61,8 @@ namespace HearthstoneReplays.Events.Parsers
             AudaciousAnchor_BG28_904_G,
             DiremuckForager_BG27_556,
             DiremuckForager_BG27_556_G,
+            PilotedWhirlOTron_BG21_HERO_030_Buddy,
+            PilotedWhirlOTron_BG21_HERO_030_Buddy_G,
         };
 
         static List<string> START_OF_COMBAT_QUEST_REWARD_EFFECT = new List<string>() {
