@@ -464,7 +464,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                     //.Where(e => e.CardId == CardIds.Collectible.Rogue.Plagiarize) // We don't know it's plagiarize, so add it to all secrets
                     .Where(e => e.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
                     .ToList();
-                if (plagiarizes.Count > 0)
+                // Was countered
+                if (plagiarizes.Count > 0 && playedEntity.GetTag(GameTag.CANT_PLAY) != 1)
                 {
                     plagiarizes.ForEach(plagia => plagia.KnownEntityIds.Add(entityId));
                 }
