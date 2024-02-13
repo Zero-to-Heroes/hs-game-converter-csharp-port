@@ -178,25 +178,30 @@ namespace HearthstoneReplays.Events
             {
                 switch (creatorCardId)
                 {
+                    // Doesn't work that way. The card created in deck should be the wish, but we don't know about the card in hand
+                    //case FirstWishTavernBrawl: return SecondWishTavernBrawl;
+                    //case MarvelousMyceliumTavernBrawlToken: return MarvelousMyceliumTavernBrawlToken;
+                    //case SecondWishTavernBrawl: return ThirdWishTavernBrawl;
                     case AbyssalWave: return SirakessCultist_AbyssalCurseToken;
                     case Acornbearer: return Acornbearer_SquirrelToken;
                     case AdorableInfestation: return AdorableInfestation_MarsuulCubToken;
                     case AirRaid_YOD_012: return AirRaid_YOD_012ts;
                     case Akama_BT_713: return Akama_AkamaPrimeToken;
+                    //case AmateurPuppeteer: return AmateurPuppeteer_Token;
                     case AncientShade: return AncientShade_AncientCurseToken;
                     case AngryMob: return CrazedMob;
                     case ArcaneWyrm: return ArcaneBolt;
                     case ArchmageAntonidas: return FireballCore_CORE_CS2_029;
-                    case ArchmageAntonidasVanilla: return FireballCore_CORE_CS2_029;
                     case ArchmageAntonidasLegacy: return FireballCore_CORE_CS2_029;
+                    case ArchmageAntonidasVanilla: return FireballCore_CORE_CS2_029;
                     case ArchsporeMsshifn: return ArchsporeMsshifn_MsshifnPrimeToken;
                     case Arcsplitter: return ArcaneBolt;
-                    case AstalorBloodsworn: return AstalorBloodsworn_AstalorTheProtectorToken;
                     case AstalorBloodsworn_AstalorTheProtectorToken: return AstalorBloodsworn_AstalorTheFlamebringerToken;
+                    case AstalorBloodsworn: return AstalorBloodsworn_AstalorTheProtectorToken;
                     case AstralTiger: return AstralTiger;
                     case AstromancerSolarian: return AstromancerSolarian_SolarianPrimeToken;
-                    case AwakenTheMakers: return AwakenTheMakers_AmaraWardenOfHopeToken;
                     case AwakeningTremors: return AwakeningTremors_BurstingJormungarToken;
+                    case AwakenTheMakers: return AwakenTheMakers_AmaraWardenOfHopeToken;
                     case AzsharanDefector: return AzsharanDefector_SunkenDefectorToken;
                     case AzsharanGardens: return AzsharanGardens_SunkenGardensToken;
                     case AzsharanMooncatcher_TSC_644: return AzsharanMooncatcher_SunkenMooncatcherToken;
@@ -213,11 +218,11 @@ namespace HearthstoneReplays.Events
                     case BagOfCoinsTavernBrawl: return TheCoinCore;
                     case BananaBuffoon: return BananaBuffoon_BananasToken;
                     case BananaVendor: return BananaVendor_BananasToken;
-                    case BarrelOfMonkeys: return BarrelOfMonkeys_BarrelOfMonkeysToken_ETC_207t;
                     case BarrelOfMonkeys_BarrelOfMonkeysToken_ETC_207t: return BarrelOfMonkeys_BarrelOfMonkeysToken_ETC_207t2;
+                    case BarrelOfMonkeys: return BarrelOfMonkeys_BarrelOfMonkeysToken_ETC_207t;
                     case BaubleOfBeetles_ULDA_307: return BaubleOfBeetles_ULDA_307ts;
-                    case BeOurGuestTavernBrawl: return TheCountess_LegendaryInvitationToken;
                     case BeneathTheGrounds: return BeneathTheGrounds_NerubianAmbushToken;
+                    case BeOurGuestTavernBrawl: return TheCountess_LegendaryInvitationToken;
                     case BlackSoulstone: return BlackSoulstone;
                     case BlessingOfTheAncients_DAL_351: return BlessingOfTheAncients_DAL_351ts;
                     case BloodsailFlybooter: return BloodsailFlybooter_SkyPirateToken;
@@ -232,11 +237,11 @@ namespace HearthstoneReplays.Events
                     case BuildASnowman_BuildASnowbruteToken: return BuildASnowman_BuildASnowgreToken;
                     case BuildASnowman: return BuildASnowman_BuildASnowbruteToken;
                     case BumperCar: return BumperCar_DarkmoonRiderToken;
-                    case BunchOfBananas: return BunchOfBananas_BunchOfBananasToken_ETC_201t;
                     case BunchOfBananas_BunchOfBananasToken_ETC_201t: return BunchOfBananas_BunchOfBananasToken_ETC_201t2;
+                    case BunchOfBananas: return BunchOfBananas_BunchOfBananasToken_ETC_201t;
                     case BurglyBully: return TheCoinCore;
-                    case TwistTheCoffers_CacheOfCashToken: return TheCoinCore;
                     case ChainsOfDread_AV_316hp: return DreadlichTamsin_FelRiftToken;
+                    //case ChiaDrake: return ChiaDrake_Token;
                     case ClockworkGoblin_DAL_060: return SeaforiumBomber_BombToken;
                     case CoinPouch_SackOfCoinsTavernBrawl: return CoinPouch_HeftySackOfCoinsTavernBrawl;
                     case CoinPouch: return SackOfCoins;
@@ -245,14 +250,14 @@ namespace HearthstoneReplays.Events
                     case ConfectionCyclone: return ConfectionCyclone_SugarElementalToken;
                     case ConjureManaBiscuit: return ConjureManaBiscuit_ManaBiscuitToken;
                     case ConjurersCalling_DAL_177: return ConjurersCalling_DAL_177ts;
-                    case CoppertailSnoop: return TheCoinCore;
                     case CoppertailSnoop_CoppertailSnoopEnchantment: return TheCoinCore;
+                    case CoppertailSnoop: return TheCoinCore;
                     case CreepyCurio_HauntedCurioTavernBrawl: return CreepyCurio_CursedCurioTavernBrawl;
                     case CreepyCurio: return HauntedCurio;
                     case CreepyCurioTavernBrawl: return CreepyCurio_HauntedCurioTavernBrawl;
+                    case CthunTheShattered_BodyOfCthunToken: return CthunTheShattered;
                     case CthunTheShattered_EyeOfCthunToken: return CthunTheShattered;
                     case CthunTheShattered_HeartOfCthunToken: return CthunTheShattered;
-                    case CthunTheShattered_BodyOfCthunToken: return CthunTheShattered;
                     case CthunTheShattered_MawOfCthunToken: return CthunTheShattered;
                     case CurseOfAgony: return CurseOfAgony_AgonyToken;
                     case CurseOfRafaam: return CurseOfRafaam_CursedToken;
@@ -261,24 +266,20 @@ namespace HearthstoneReplays.Events
                     case DeadlyFork: return DeadlyFork_SharpFork;
                     case DeathbringerSaurfangCore_RLK_082: return DeathbringerSaurfangCore_RLK_082;
                     case DeckOfWonders: return DeckOfWonders_ScrollOfWonderToken;
-                    case DesperateMeasures_DAL_141: return DesperateMeasures_DAL_141ts;
                     case DefendTheDwarvenDistrict_KnockEmDownToken: return DefendTheDwarvenDistrict_TavishMasterMarksmanToken;
+                    case DesperateMeasures_DAL_141: return DesperateMeasures_DAL_141ts;
                     case DirehornHatchling: return DirehornHatchling_DirehornMatriarchToken;
                     case Doomcaller: return Cthun_OG_279;
                     case DraggedBelow: return SirakessCultist_AbyssalCurseToken;
                     case DragonbaneShot: return DragonbaneShot;
                     case DrawOffensivePlayTavernBrawlEnchantment: return OffensivePlayTavernBrawl;
                     case DreadlichTamsin_AV_316: return DreadlichTamsin_FelRiftToken;
-                    case RuleModifier_ApproachingNightmareToken_TTN_002t14: return YoggSaronHopesEnd_OG_134;
-                    case RuleModifier_DrivenToGreedToken_TTN_002t20: return TheCoinCore;
-                    case RuleModifier_ShiftingFateToken_TTN_002t50: return GearShift;
-                    case RuleModifier_ShiftingFuturesToken_TTN_002t36: return ShifterZerus_OG_123;
                     case DrygulchJailor: return SilverHandRecruitLegacyToken;
                     case EliseStarseeker_CORE_LOE_079: return UnearthedRaptor_MapToTheGoldenMonkeyToken;
                     case EliseStarseeker_LOE_079: return UnearthedRaptor_MapToTheGoldenMonkeyToken;
                     case EliseTheTrailblazer: return EliseTheTrailblazer_UngoroPackToken;
-                    case EliteTaurenChampion: return EliteTaurenChampion_MoltenPickOfRockToken;
                     case EliteTaurenChampion_MoltenPickOfRockToken: return EliteTaurenChampion_MoltenPickOfRockToken;
+                    case EliteTaurenChampion: return EliteTaurenChampion_MoltenPickOfRockToken;
                     case EncumberedPackMule: return EncumberedPackMule;
                     case ExcavatedEvil: return ExcavatedEvil;
                     case ExploreUngoro: return ExploreUngoro_ChooseYourPathToken;
@@ -291,26 +292,23 @@ namespace HearthstoneReplays.Events
                     case FireFly: return FireFly_FlameElementalToken;
                     case FirePlumesHeart: return FirePlumesHeart_SulfurasToken;
                     case FirstFlame: return FirstFlame_SecondFlameToken;
-                    // Doesn't work that way. The card created in deck should be the wish, but we don't know about the card in hand
-                    //case FirstWishTavernBrawl: return SecondWishTavernBrawl;
-                    //case SecondWishTavernBrawl: return ThirdWishTavernBrawl;
                     case FishyFlyer: return FishyFlyer_SpectralFlyerToken;
-                    case FlameGeyserCore: return FireFly_FlameElementalToken;
                     case FlameGeyser: return FireFly_FlameElementalToken;
+                    case FlameGeyserCore: return FireFly_FlameElementalToken;
                     case ForgottenTorch: return ForgottenTorch_RoaringTorchToken;
                     case Framester: return Framester_FramedToken;
                     case FreshScent_YOD_005: return FreshScent_YOD_005ts;
                     case FrostShardsTavernBrawl: return FrostShards_IceShardTavernBrawl;
-                    case FrozenTouch: return FrozenTouch_FrozenTouchToken;
                     case FrozenTouch_FrozenTouchToken: return FrozenTouch;
+                    case FrozenTouch: return FrozenTouch_FrozenTouchToken;
                     case FullBlownEvil: return FullBlownEvil;
                     case GhastlyConjurer_CORE_ICC_069: return MirrorImageLegacy_CS2_027;
                     case GhastlyConjurer_ICC_069: return MirrorImageLegacy_CS2_027;
                     case GiftOfTheHeartTavernBrawlToken: return WildGrowth_ExcessManaLegacyToken;
                     case GildedGargoyle_LOOT_534: return TheCoinCore;
                     case GreedyPartner_WW_901: return TheCoinCore;
-                    case HakkarTheSoulflayer: return HakkarTheSoulflayer_CorruptedBloodToken;
                     case HakkarTheSoulflayer_CorruptedBloodToken: return HakkarTheSoulflayer_CorruptedBloodToken;
+                    case HakkarTheSoulflayer: return HakkarTheSoulflayer_CorruptedBloodToken;
                     case HalazziTheLynx: return Springpaw_LynxToken;
                     case Harpoon: return ArcaneShot;
                     case HauntedCurio: return CursedCurio;
@@ -323,16 +321,16 @@ namespace HearthstoneReplays.Events
                     case IgneousElemental: return FireFly_FlameElementalToken;
                     case Ignite: return Ignite;
                     case Impbalming: return Impbalming_WorthlessImpToken;
-                    case ImpCredibleTrousersTavernBrawl: return DreadlichTamsin_FelRiftToken;
                     case ImpCredibleTrousers_ImpCredibleTrousersTavernBrawlEnchantment: return DreadlichTamsin_FelRiftToken;
+                    case ImpCredibleTrousersTavernBrawl: return DreadlichTamsin_FelRiftToken;
                     case InfernalStrikeTavernBrawl: return TwinSlice_SecondSliceToken;
                     case InfestedGoblin: return WrappedGolem_ScarabToken;
                     case InfestedWatcher_YOG_523: return ChaoticTendril_YOG_514;
                     case InfinitizeTheMaxitude_InfinitizeTheMaxitudeEnchantment: return InfinitizeTheMaxitude;
                     case InvasiveShadeleaf_WW_393: return InvasiveShadeleaf_BottledShadeleafToken_WW_393t;
                     case IronJuggernaut: return IronJuggernaut_BurrowingMineToken;
-                    case JadeIdol: return JadeIdol;
                     case JadeIdol_JadeStash: return JadeIdol;
+                    case JadeIdol: return JadeIdol;
                     case JungleGiants: return JungleGiants_BarnabusTheStomperToken;
                     case KangorDancingKing: return KangorDancingKing;
                     case KanrethadEbonlocke: return KanrethadEbonlocke_KanrethadPrimeToken;
@@ -341,22 +339,22 @@ namespace HearthstoneReplays.Events
                     case KingMuklaLegacy: return KingMukla_BananasLegacyToken;
                     case KingMuklaVanilla: return KingMukla_BananasLegacyToken;
                     case Kingsbane_LOOT_542: return Kingsbane_LOOT_542;
+                    case KoboldMiner_PouchOfCoinsToken_WW_001t18: return TheCoinCore;
                     case KoboldTaskmaster: return KoboldTaskmaster_ArmorScrapToken;
                     case LadyVashj_BT_109: return LadyVashj_VashjPrimeToken;
                     case LakkariSacrifice: return LakkariSacrifice_NetherPortalToken_UNG_829t1;
                     case LicensedAdventurer: return TheCoinCore;
                     case LightforgedBlessing_DAL_568: return LightforgedBlessing_DAL_568ts;
                     case LoanShark: return TheCoinCore;
+                    case Locuuuusts_ONY_005tb3: return Locuuuusts_GiantLocustToken_ONY_005tb3t2;
                     case Locuuuusts_ULDA_036: return GiantLocust_Locuuuusts;
                     case LocuuuustsTavernBrawl: return Locuuuusts_LocuuuustsTavernBrawl;
-                    case Locuuuusts_ONY_005tb3: return Locuuuusts_GiantLocustToken_ONY_005tb3t2;
                     case LostInThePark_FeralFriendsyToken: return LostInThePark_GuffTheToughToken;
                     case MagneticMinesTavernBrawl: return SeaforiumBomber_BombToken;
                     case MailboxDancer: return TheCoinCore;
                     case Malorne: return Malorne;
                     case Mankrik: return Mankrik_OlgraMankriksWifeToken;
                     case Marrowslicer: return SchoolSpirits_SoulFragmentToken;
-                    //case MarvelousMyceliumTavernBrawlToken: return MarvelousMyceliumTavernBrawlToken;
                     case MidaPureLight_ONY_028: return MidaPureLight_FragmentOfMidaToken;
                     case MilitiaHorn: return VeteransMilitiaHorn;
                     case MiracleSalesman_WW_331: return MiracleSalesman_SnakeOilToken_WW_331t;
@@ -375,36 +373,34 @@ namespace HearthstoneReplays.Events
                     case PopgarThePutrid_WW_091: return TramMechanic_BarrelOfSludgeToken_WW_044t;
                     case PortalKeeper: return PortalKeeper_FelhoundPortalToken;
                     case PortalOverfiend: return PortalKeeper_FelhoundPortalToken;
-                    case KoboldMiner_PouchOfCoinsToken_WW_001t18: return TheCoinCore;
                     case PozzikAudioEngineer: return PozzikAudioEngineer_AudioBotToken;
-                    case Pyros: return Pyros_PyrosToken_UNG_027t2;
                     case Pyros_PyrosToken_UNG_027t2: return Pyros_PyrosToken_UNG_027t4;
+                    case Pyros: return Pyros_PyrosToken_UNG_027t2;
                     case Queldelar_ForgingQueldelarToken_LOOTA_842t: return QueldelarTavernBrawl;
                     case Queldelar_ForgingQueldelarToken_ONY_005tc7t: return Queldelar_ForgingQueldelarToken_ONY_005tc7t;
                     case RaidTheDocks_SecureTheSuppliesToken: return RaidTheDocks_CapnRokaraToken;
                     case RamCommander: return RamCommander_BattleRamToken;
                     case RapidFire_DAL_373: return RapidFire_DAL_373ts;
                     case RaptorHatchling: return RaptorHatchling_RaptorPatriarchToken;
+                    case RatSensei_WON_013: return new[] { RatSensei_MonkTurtleToken_WON_013t, RatSensei_MonkTurtleToken_WON_013t2, RatSensei_MonkTurtleToken_WON_013t3, RatSensei_MonkTurtleToken_WON_013t4, }.OrderBy(n => Guid.NewGuid()).ToArray()[0];
                     case RatsOfExtraordinarySize: return RodentNest_RatToken;
-                    case RatSensei_WON_013: return new[] { 
-                        RatSensei_MonkTurtleToken_WON_013t,
-                        RatSensei_MonkTurtleToken_WON_013t2,
-                        RatSensei_MonkTurtleToken_WON_013t3,
-                        RatSensei_MonkTurtleToken_WON_013t4,
-                    }.OrderBy(n => Guid.NewGuid()).ToArray()[0];
                     case RayOfFrost_DAL_577: return RayOfFrost_DAL_577ts;
                     case RazorpetalLasher: return RazorpetalVolley_RazorpetalToken;
                     case RazorpetalVolley: return RazorpetalVolley_RazorpetalToken;
                     case ReliquaryOfSouls: return ReliquaryOfSouls_ReliquaryPrimeToken;
                     case RemoteControlledGolem_SW_097: return RemoteControlledGolem_GolemPartsToken;
                     case Rhonin: return ArcaneMissilesLegacy;
-                    case RisingWinds: return Eagle_RisingWinds;
                     case RinTheFirstDisciple_TheFinalSealToken: return RinTheFirstDisciple_AzariTheDevourerToken;
                     case RinTheFirstDisciple_TheFirstSealToken: return RinTheFirstDisciple_TheSecondSealToken;
                     case RinTheFirstDisciple_TheFourthSealToken: return RinTheFirstDisciple_TheFinalSealToken;
                     case RinTheFirstDisciple_TheSecondSealToken: return RinTheFirstDisciple_TheThirdSealToken;
-                    case RiseToTheOccasion_AvengeTheFallenToken: return RiseToTheOccasion_LightbornCarielToken;
                     case RinTheFirstDisciple: return RinTheFirstDisciple_TheFirstSealToken;
+                    case RiseToTheOccasion_AvengeTheFallenToken: return RiseToTheOccasion_LightbornCarielToken;
+                    case RisingWinds: return Eagle_RisingWinds;
+                    case RuleModifier_ApproachingNightmareToken_TTN_002t14: return YoggSaronHopesEnd_OG_134;
+                    case RuleModifier_DrivenToGreedToken_TTN_002t20: return TheCoinCore;
+                    case RuleModifier_ShiftingFateToken_TTN_002t50: return GearShift;
+                    case RuleModifier_ShiftingFuturesToken_TTN_002t36: return ShifterZerus_OG_123;
                     case RunawayGyrocopter: return RunawayGyrocopter;
                     case SackOfCoins: return HeftySackOfCoins;
                     case SandwaspQueen: return SandwaspQueen_SandwaspToken;
@@ -436,8 +432,8 @@ namespace HearthstoneReplays.Events
                     case SparkEngine: return SparkDrill_SparkToken;
                     case SpiritJailer_SCH_700: return SchoolSpirits_SoulFragmentToken;
                     case SpiritOfTheBadlands_WW_337: return SpiritOfTheBadlands_MirageToken_WW_337t;
-                    case Springpaw_TRL_348: return Springpaw_LynxToken;
                     case Springpaw_CORE_TRL_348: return Springpaw_LynxToken;
+                    case Springpaw_TRL_348: return Springpaw_LynxToken;
                     case StaffOfAmmunae_ULDA_041: return StaffOfAmmunae_ULDA_041ts;
                     case Starseeker_ULDA_Elise_HP3: return MoonfireLegacy;
                     case Starshooter_WW_813: return ArcaneShotLegacy_DS1_185;
@@ -450,29 +446,32 @@ namespace HearthstoneReplays.Events
                     case TentacleGrip_YOG_526: return ChaoticTendril_YOG_514;
                     case TentacleTender_YOG_517: return ChaoticTendril_YOG_514;
                     case TheCandle: return TheCandle;
-                    case TheCandlesquestion: return TheCandlesquestion_TheCandlesquestion_DALA_714a;
                     case TheCandlesquestion_TheCandlesquestion_DALA_714a: return TheCandlesquestion_TheCandlesquestion_DALA_714b;
                     case TheCandlesquestion_TheCandlesquestion_DALA_714b: return TheCandlesquestion_TheCandlesquestion_DALA_714c;
+                    case TheCandlesquestion: return TheCandlesquestion_TheCandlesquestion_DALA_714a;
                     case TheCavernsBelow: return TheCavernsBelow_CrystalCoreToken;
                     case TheCountess: return TheCountess_LegendaryInvitationToken;
                     case TheDarkness_LOOT_526: return TheDarkness_DarknessCandleToken;
                     case TheDemonSeed_CompleteTheRitualToken: return TheDemonSeed_BlightbornTamsinToken;
                     case TheForestsAid_DAL_256: return TheForestsAid_DAL_256ts;
-                    case TheLastKaleidosaur: return TheLastKaleidosaur_GalvadonToken;
                     case TheHandOfRafaam: return CurseOfRafaam_CursedToken;
-                    case TheMarshQueen: return TheMarshQueen_QueenCarnassaToken;
+                    case TheLastKaleidosaur: return TheLastKaleidosaur_GalvadonToken;
                     case TheMarshQueen_QueenCarnassaToken: return TheMarshQueen_CarnassasBroodToken;
+                    case TheMarshQueen: return TheMarshQueen_QueenCarnassaToken;
                     case ThrowGlaive: return ThrowGlaive; // TO CHECK
+                    //case TigressPlushy: return TigressPlushy_Token;
                     case TinyThimbleTavernBrawl: return TinyThimble_RegularSizeThimbleTavernBrawl;
-                    case TombPillager_LOE_012: return TheCoinCore;
                     case TombPillager_CORE_LOE_012: return TheCoinCore;
+                    case TombPillager_LOE_012: return TheCoinCore;
                     case TombPillager_WON_340: return TheCoinCore;
+                    //case ToyCaptainTarim: return ToyCaptainTarim_Token;
                     case TramMechanic_WW_044: return TramMechanic_BarrelOfSludgeToken_WW_044t;
                     case TwinSlice_BT_175: return TwinSlice_SecondSliceToken;
+                    case TwistTheCoffers_CacheOfCashToken: return TheCoinCore;
                     case UmbralSkulker: return TheCoinCore;
                     case UnearthedRaptor_MapToTheGoldenMonkeyToken: return UnearthedRaptor_GoldenMonkeyToken;
-                    case UnleashTheBeast_DAL_378: return UnleashTheBeast_DAL_378ts;
                     case UniteTheMurlocs: return UniteTheMurlocs_MegafinToken;
+                    case UnleashTheBeast_DAL_378: return UnleashTheBeast_DAL_378ts;
                     case UrzulHorror: return UrzulHorror_LostSoulToken;
                     case VioletSpellwing: return ArcaneMissilesLegacy;
                     case Wanted: return Coin;
@@ -483,15 +482,16 @@ namespace HearthstoneReplays.Events
                     case WildGrowthCore: return WildGrowth_ExcessManaLegacyToken;
                     case WildGrowthLegacy: return WildGrowth_ExcessManaLegacyToken;
                     case WildGrowthVanilla: return WildGrowth_ExcessManaLegacyToken;
-                    case WitchwoodAppleCore: return WitchwoodApple_TreantToken;
                     case WitchwoodApple: return WitchwoodApple_TreantToken;
+                    case WitchwoodAppleCore: return WitchwoodApple_TreantToken;
                     case Wrenchcalibur: return SeaforiumBomber_BombToken;
-                    case YseraUnleashed: return YseraUnleashed_DreamPortalToken;
                     case YoggSaronUnleashed_TentacleSwarmToken_YOG_516t3: return ChaoticTendril_YOG_514;
+                    case YseraUnleashed: return YseraUnleashed_DreamPortalToken;
                     case Zaqul_TSC_959: return SirakessCultist_AbyssalCurseToken;
                     case ZixorApexPredator: return ZixorApexPredator_ZixorPrimeToken;
+                    //case FaldoreiStriderCore: return FaldoreiStrider_SpiderAmbushCore;
 
-                        // Action targets
+                    // Action targets
                     case BalefulBanker:
                     case CelestialProjectionist:
                     case DireFrenzy_CORE_GIL_828:

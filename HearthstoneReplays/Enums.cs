@@ -454,6 +454,7 @@ namespace HearthstoneReplays.Enums
         SPARE_PART = 388,
         FORGETFUL = 389,
         CAN_SUMMON_MAXPLUSONE_MINION = 390,
+        OBFUSCATED = 391,
         BURNING = 392,
         OVERLOAD_LOCKED = 393,
         NUM_TIMES_HERO_POWER_USED_THIS_GAME = 394,
