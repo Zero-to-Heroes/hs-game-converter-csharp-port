@@ -450,12 +450,24 @@ namespace HearthstoneReplays.Events.Parsers
                     Logger.Log("Too many entities on board", "");
                 }
 
-                var questRewards = GameState.CurrentEntities.Values
+                var questRewardRawEntities = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.BATTLEGROUND_QUEST_REWARD)
                     .Select(entity => entity.Clone())
+                    .ToList();
+                var questRewards = questRewardRawEntities
                     .Select(entity => entity.CardId)
+                    .ToList();
+                var debug = questRewardRawEntities.Any(e => e.CardId == "BG28_Reward_505") && board.Any(e => e.Id == 12137);
+                var questRewardEntities = questRewardRawEntities
+                    .Select(entity => new QuestReward
+                    {
+                        CardId = entity.CardId,
+                        AvengeCurrent = 0,
+                        AvengeDefault = 0,
+                        ScriptDataNum1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0)
+                    })
                     .ToList();
 
                 var eternalKnightBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.EternalKnightPlayerEnchantEnchantment);
@@ -534,6 +546,7 @@ namespace HearthstoneReplays.Events.Parsers
                     PlayerId = playerId ?? 0,
                     Board = result,
                     QuestRewards = questRewards,
+                    QuestRewardEntities = questRewardEntities,
                     Secrets = secrets,
                     Hand = hand,
                     GlobalInfo = new BgsPlayerGlobalInfo()
@@ -800,6 +813,7 @@ namespace HearthstoneReplays.Events.Parsers
             public string CardId { get; set; }
             public int PlayerId { get; set; }
             public List<string> QuestRewards { get; set; }
+            public List<QuestReward> QuestRewardEntities { get; set; }
             public List<object> Board { get; set; }
             public List<FullEntity> Secrets { get; set; }
             public List<FullEntity> Hand { get; set; }
@@ -816,6 +830,14 @@ namespace HearthstoneReplays.Events.Parsers
             public int BloodGemHealthBonus { get; set; }
             public int ChoralHealthBuff { get; set; }
             public int ChoralAttackBuff { get; set; }
+        }
+
+        internal class QuestReward
+        {
+            public string CardId;
+            public int AvengeCurrent;
+            public int AvengeDefault;
+            public int ScriptDataNum1;
         }
     }
 }
