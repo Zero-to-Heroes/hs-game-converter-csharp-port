@@ -459,7 +459,6 @@ namespace HearthstoneReplays.Events.Parsers
                 var questRewards = questRewardRawEntities
                     .Select(entity => entity.CardId)
                     .ToList();
-                var debug = questRewardRawEntities.Any(e => e.CardId == "BG28_Reward_505") && board.Any(e => e.Id == 12137);
                 var questRewardEntities = questRewardRawEntities
                     .Select(entity => new QuestReward
                     {
@@ -467,6 +466,19 @@ namespace HearthstoneReplays.Events.Parsers
                         AvengeCurrent = 0,
                         AvengeDefault = 0,
                         ScriptDataNum1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0)
+                    })
+                    .ToList();
+                var questEntities = GameState.CurrentEntities.Values
+                    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
+                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.SPELL)
+                    .Where(entity => entity.GetTag(GameTag.QUEST) == 1)
+                    .Select(entity => new QuestEntity
+                    {
+                        CardId = entity.CardId,
+                        RewardDbfId = entity.GetTag(GameTag.QUEST_REWARD_DATABASE_ID, 0),
+                        ProgressCurrent = entity.GetTag(GameTag.QUEST_PROGRESS, 0),
+                        ProgressTotal = entity.GetTag(GameTag.QUEST_PROGRESS_TOTAL, 0),
                     })
                     .ToList();
 
@@ -545,6 +557,7 @@ namespace HearthstoneReplays.Events.Parsers
                     CardId = cardId,
                     PlayerId = playerId ?? 0,
                     Board = result,
+                    QuestEntities = questEntities,
                     QuestRewards = questRewards,
                     QuestRewardEntities = questRewardEntities,
                     Secrets = secrets,
@@ -812,6 +825,7 @@ namespace HearthstoneReplays.Events.Parsers
             public string HeroPowerCreatedEntity { get; set; }
             public string CardId { get; set; }
             public int PlayerId { get; set; }
+            public List<QuestEntity> QuestEntities { get; set; }
             public List<string> QuestRewards { get; set; }
             public List<QuestReward> QuestRewardEntities { get; set; }
             public List<object> Board { get; set; }
@@ -838,6 +852,14 @@ namespace HearthstoneReplays.Events.Parsers
             public int AvengeCurrent;
             public int AvengeDefault;
             public int ScriptDataNum1;
+        }
+
+        internal class QuestEntity
+        {
+            public string CardId;
+            public int RewardDbfId;
+            public int ProgressCurrent;
+            public int ProgressTotal;
         }
     }
 }
