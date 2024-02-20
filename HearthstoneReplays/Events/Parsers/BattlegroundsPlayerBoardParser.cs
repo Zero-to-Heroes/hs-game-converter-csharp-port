@@ -71,6 +71,7 @@ namespace HearthstoneReplays.Events.Parsers
             TheSmokingGun,
             StolenGold,
             UpperHand_BG28_573,
+            ToxicTumbleweed_BG28_641,
         };
 
         private GameState GameState { get; set; }
