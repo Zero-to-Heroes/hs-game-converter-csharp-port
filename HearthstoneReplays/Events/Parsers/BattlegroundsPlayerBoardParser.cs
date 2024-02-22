@@ -384,7 +384,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.TakesBoardSpace())
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
-                    .Select(entity => AddSpecialTags(entity))
+                    .Select(entity => EnhanceEntities(entity, GameState))
                     .ToList();
                 var secrets = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
@@ -595,7 +595,7 @@ namespace HearthstoneReplays.Events.Parsers
             return entity;
         }
 
-        private FullEntity AddSpecialTags(FullEntity entity)
+        private FullEntity EnhanceEntities(FullEntity entity, GameState gameState)
         {
             switch (entity.CardId)
             {
@@ -791,10 +791,12 @@ namespace HearthstoneReplays.Events.Parsers
             //    .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id)
             //    .ToList();
             // For some reason, Teron's RapidReanimation enchantment is sometimes in the GRAVEYARD zone
-            var enchantments = currentEntities.Values
+            var enchantmentEntities = currentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id)
                 .Where(entity => entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME)
-                .Select(entity => new
+                .ToList();
+            var enchantments = enchantmentEntities
+                .Select(entity => new Enchantment
                 {
                     EntityId = entity.Id,
                     CardId = entity.CardId,
@@ -802,6 +804,8 @@ namespace HearthstoneReplays.Events.Parsers
                     TagScriptDataNum2 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2),
                 })
                 .ToList();
+            List<Enchantment> additionalEnchantments = BuildAdditionalEnchantments(fullEntity, enchantmentEntities, currentEntities); ;
+            enchantments.AddRange(additionalEnchantments);
             dynamic result = new
             {
                 CardId = fullEntity.CardId,
@@ -814,6 +818,29 @@ namespace HearthstoneReplays.Events.Parsers
             return result;
         }
 
+        private List<Enchantment> BuildAdditionalEnchantments(FullEntity fullEntity, List<FullEntity> enchantmentEntities, Dictionary<int, FullEntity> currentEntities)
+        {
+            return enchantmentEntities
+                .Where(e => e.CardId == PolarizingBeatboxer_PolarizedEnchantment)
+                .Select(e => {
+                    var creatorEntity = currentEntities.GetValueOrDefault(e.GetTag(GameTag.CREATOR));
+                    var entityAsEnchantmentDbfId = creatorEntity?.GetTag(GameTag.ENTITY_AS_ENCHANTMENT);
+                    return new Enchantment
+                    {
+                        CardId = "" + (entityAsEnchantmentDbfId ?? e.GetTag(GameTag.CREATOR_DBID)),
+                        EntityId = e.GetTag(GameTag.CREATOR),
+                    };
+                })
+                .ToList();
+        }
+
+        internal class Enchantment
+        {
+            public int EntityId;
+            public string CardId;
+            public int TagScriptDataNum1;
+            public int TagScriptDataNum2;
+        }
 
         internal class PlayerBoard
         {
