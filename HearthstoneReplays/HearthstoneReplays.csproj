@@ -114,6 +114,8 @@
     <Compile Include="Events\GameStateShort.cs" />
     <Compile Include="Events\Obfuscator.cs" />
     <Compile Include="Events\Parsers\AbstractBasicTagChangeParser.cs" />
+    <Compile Include="Events\Parsers\BattlegroundsQuestCompletedParser.cs" />
+    <Compile Include="Events\Parsers\BattlegroundsRewardGainedParser.cs" />
     <Compile Include="Events\Parsers\BloodGemBuffChangedParser.cs" />
     <Compile Include="Events\Parsers\CardForgedParser.cs" />
     <Compile Include="Events\Parsers\FullEntityParser.cs" />
@@ -126,7 +128,6 @@
     <Compile Include="Events\Parsers\Controls\ControlsManager.cs" />
     <Compile Include="Events\Parsers\CorpsesSpentThisGameParser.cs" />
     <Compile Include="Events\Parsers\OverloadedCrystalsParser.cs" />
-    <Compile Include="Events\Parsers\BattlegroundsQuestCompletedParser .cs" />
     <Compile Include="Events\Parsers\BattlegroundsQuestRevealedParser.cs" />
     <Compile Include="Events\Parsers\DataScriptChangedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsBuddyGainedParser.cs" />

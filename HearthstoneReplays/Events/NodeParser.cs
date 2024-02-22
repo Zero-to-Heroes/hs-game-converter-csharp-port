@@ -193,6 +193,7 @@ namespace HearthstoneReplays.Events
                     new BattlegroundsBuddyGainedParser(ParserState, StateFacade),
                     new BattlegroundsQuestRevealedParser(ParserState, StateFacade),
                     new BattlegroundsQuestCompletedParser(ParserState, StateFacade),
+                    new BattlegroundsRewardGainedParser(ParserState, StateFacade),
                     new BattlegroundsPlayerLeaderboardPlaceUpdatedParser(ParserState, StateFacade),
                     new BattlegroundsHeroSelectionParser(ParserState, StateFacade),
                     new BattlegroundsNextOpponnentParser(ParserState),
