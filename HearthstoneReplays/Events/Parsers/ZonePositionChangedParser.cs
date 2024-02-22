@@ -14,6 +14,9 @@ namespace HearthstoneReplays.Events.Parsers
         private ParserState ParserState { get; set; }
         private StateFacade StateFacade { get; set; }
 
+        private long lastEventSentTicks;
+        private static long DEBOUNCE_TIME_IN_MS = 1000;
+
         public ZonePositionChangedParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
@@ -24,9 +27,11 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             TagChange tagChange;
+            var elapsed = TimeSpan.FromTicks(DateTime.UtcNow.Ticks - lastEventSentTicks);
+            var isOkToResend = elapsed.TotalMilliseconds > DEBOUNCE_TIME_IN_MS;
             return stateType == StateType.PowerTaskList
                 // Limit it to merceanries, the only mode where this is used, to limit the impact on the number of events sent (esp. in BG)
-                && ParserState.IsMercenaries()
+                && (ParserState.IsMercenaries() || isOkToResend)
                 && node.Type == typeof(TagChange)
                 && ((tagChange = node.Object as TagChange).Name == (int)GameTag.ZONE_POSITION);
         }
