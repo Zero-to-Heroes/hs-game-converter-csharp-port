@@ -211,6 +211,7 @@ namespace HearthstoneReplays.Events
                     new BattlegroundsQuestRewardEquippedParser(ParserState, StateFacade),
                     new BattlegroundsQuestRewardDestroyedParser(ParserState, StateFacade),
                     new BloodGemBuffChangedParser(ParserState, StateFacade),
+                    new BattlegroundsExtraGoldNextTurnParser(ParserState, StateFacade),
 
                     new DecklistUpdateParser(ParserState, StateFacade),
                     new GameRunningParser(ParserState, StateFacade),
