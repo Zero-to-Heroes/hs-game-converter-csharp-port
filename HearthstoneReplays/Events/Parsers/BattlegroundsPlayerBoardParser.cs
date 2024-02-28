@@ -444,9 +444,8 @@ namespace HearthstoneReplays.Events.Parsers
                         .Count() > 0;
                     heroPowerUsed = heroPowerUsed || hasTriggerBlock;
                 }
-                var result = board.Select(entity => AddEchantments(GameState.CurrentEntities, entity)).ToList();
-
-                if (result.Count > 7)
+                var finalBoard = board.Select(entity => AddEchantments(GameState.CurrentEntities, entity)).ToList();
+                if (finalBoard.Count > 7)
                 {
                     Logger.Log("Too many entities on board", "");
                 }
@@ -557,7 +556,7 @@ namespace HearthstoneReplays.Events.Parsers
                     HeroPowerCreatedEntity = heroPowerCreatedEntity,
                     CardId = cardId,
                     PlayerId = playerId ?? 0,
-                    Board = result,
+                    Board = finalBoard,
                     QuestEntities = questEntities,
                     QuestRewards = questRewards,
                     QuestRewardEntities = questRewardEntities,
@@ -721,55 +720,55 @@ namespace HearthstoneReplays.Events.Parsers
             //return result;
         }
 
-        private int GetEnchantmentHealthBuff(FullEntity enchantment)
-        {
-            switch (enchantment.CardId)
-            {
-                case DiremuckForager_BG27_556:
-                    return 2;
-                case DiremuckForager_BG27_556_G:
-                    return 4;
-                case Scourfin_BG26_360:
-                    return 5;
-                case Scourfin_BG26_360_G:
-                    return 10;
-                case Murcules_BG27_023:
-                    return 2;
-                case Murcules_BG27_023_G:
-                    return 4;
-                case CogworkCopter_BG24_008:
-                    return 1;
-                case CogworkCopter_BG24_008_G:
-                    return 2;
-                default:
-                    return 0;
-            }
-        }
+        //private int GetEnchantmentHealthBuff(FullEntity enchantment)
+        //{
+        //    switch (enchantment.CardId)
+        //    {
+        //        case DiremuckForager_BG27_556:
+        //            return 2;
+        //        case DiremuckForager_BG27_556_G:
+        //            return 4;
+        //        case Scourfin_BG26_360:
+        //            return 5;
+        //        case Scourfin_BG26_360_G:
+        //            return 10;
+        //        case Murcules_BG27_023:
+        //            return 2;
+        //        case Murcules_BG27_023_G:
+        //            return 4;
+        //        case CogworkCopter_BG24_008:
+        //            return 1;
+        //        case CogworkCopter_BG24_008_G:
+        //            return 2;
+        //        default:
+        //            return 0;
+        //    }
+        //}
 
-        private int GetEnchantmentAttackBuff(FullEntity enchantment)
-        {
-            switch (enchantment.CardId)
-            {
-                case DiremuckForager_BG27_556:
-                    return 2;
-                case DiremuckForager_BG27_556_G:
-                    return 4;
-                case Scourfin_BG26_360:
-                    return 5;
-                case Scourfin_BG26_360_G:
-                    return 10;
-                case Murcules_BG27_023:
-                    return 2;
-                case Murcules_BG27_023_G:
-                    return 4;
-                case CogworkCopter_BG24_008:
-                    return 1;
-                case CogworkCopter_BG24_008_G:
-                    return 2;
-                default:
-                    return 0;
-            }
-        }
+        //private int GetEnchantmentAttackBuff(FullEntity enchantment)
+        //{
+        //    switch (enchantment.CardId)
+        //    {
+        //        case DiremuckForager_BG27_556:
+        //            return 2;
+        //        case DiremuckForager_BG27_556_G:
+        //            return 4;
+        //        case Scourfin_BG26_360:
+        //            return 5;
+        //        case Scourfin_BG26_360_G:
+        //            return 10;
+        //        case Murcules_BG27_023:
+        //            return 2;
+        //        case Murcules_BG27_023_G:
+        //            return 4;
+        //        case CogworkCopter_BG24_008:
+        //            return 1;
+        //        case CogworkCopter_BG24_008_G:
+        //            return 2;
+        //        default:
+        //            return 0;
+        //    }
+        //}
 
         private int GetPlayerEnchantmentValue(int playerId, string enchantment)
         {

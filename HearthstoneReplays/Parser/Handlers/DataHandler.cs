@@ -21,7 +21,6 @@ namespace HearthstoneReplays.Parser.Handlers
     {
         private Helper helper;
         private GameMetaData metadata;
-        private SubSpell currentSubSpell;
 
 
         public DataHandler(Helper helper)
@@ -210,7 +209,7 @@ namespace HearthstoneReplays.Parser.Handlers
                     Value = tag.Value,
                     TimeStamp = timestamp,
                     DefChange = defChange,
-                    SubSpellInEffect = this.currentSubSpell,
+                    SubSpellInEffect = state.CurrentSubSpell?.GetActiveSubSpell(),
                 };
                 state.UpdateCurrentNode(typeof(Game), typeof(Action));
                 state.CreateNewNode(new Node(typeof(TagChange), tagChange, indentLevel, state.Node, data));
@@ -281,7 +280,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 state.GameState.UpdateEntityName(rawEntity);
 
                 var fullEntity = new FullEntity { CardId = cardId, Id = entity, Tags = new List<Tag>(), TimeStamp = timestamp };
-                fullEntity.SubSpellInEffect = this.currentSubSpell;
+                fullEntity.SubSpellInEffect = state.CurrentSubSpell?.GetActiveSubSpell();
                 //state.GameState.FullEntity(fullEntity, false);
 
                 state.UpdateCurrentNode(typeof(Game), typeof(Action));
@@ -364,7 +363,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 var entity = helper.ParseEntity(rawEntity);
 
                 var showEntity = new ShowEntity { CardId = cardId, Entity = entity, Tags = new List<Tag>(), TimeStamp = timestamp };
-                showEntity.SubSpellInEffect = this.currentSubSpell;
+                showEntity.SubSpellInEffect = state.CurrentSubSpell?.GetActiveSubSpell();
                 state.UpdateCurrentNode(typeof(Game), typeof(Action));
                 if (state.Node.Type == typeof(Game))
                     ((Game)state.Node.Object).AddData(showEntity);
@@ -403,11 +402,12 @@ namespace HearthstoneReplays.Parser.Handlers
                     sourceEntityId = parentAction?.Entity ?? -1;
                 }
                 var sourceEntity = state.GameState.CurrentEntities.ContainsKey(sourceEntityId) ? state.GameState.CurrentEntities[sourceEntityId] : null;
-                this.currentSubSpell = new SubSpell()
+                var spell = new SubSpell()
                 {
                     Prefab = subSpellPrefab,
                     Timestamp = timestamp,
                 };
+                SetActiveSubSpell(state, spell);
 
                 if (stateType == StateType.PowerTaskList && !state.IsBattlegrounds())
                 {
@@ -437,34 +437,34 @@ namespace HearthstoneReplays.Parser.Handlers
             }
 
             match = Regexes.SubSpellSourceRegex.Match(data);
-            if (match.Success && this.currentSubSpell != null)
+            if (match.Success && state.CurrentSubSpell != null)
             {
                 var rawEntity = match.Groups[1].Value;
                 var entity = helper.ParseEntity(rawEntity);
-                this.currentSubSpell.Source = entity;
+                state.CurrentSubSpell.GetActiveSubSpell().Source = entity;
                 return true;
             }
 
             match = Regexes.SubSpellTargetsRegex.Match(data);
-            if (match.Success && this.currentSubSpell != null)
+            if (match.Success && state.CurrentSubSpell != null)
             {
                 var rawEntity = match.Groups[1].Value;
                 var entity = helper.ParseEntity(rawEntity);
-                if (this.currentSubSpell.Targets == null)
+                if (state.CurrentSubSpell.GetActiveSubSpell().Targets == null)
                 {
-                    this.currentSubSpell.Targets = new List<int>();
+                    state.CurrentSubSpell.GetActiveSubSpell().Targets = new List<int>();
                 }
-                this.currentSubSpell.Targets.Add(entity);
+                state.CurrentSubSpell.GetActiveSubSpell().Targets.Add(entity);
                 return true;
             }
 
-            if (data == "SUB_SPELL_END" && !state.IsBattlegrounds())
+            if (stateType == StateType.PowerTaskList && data == "SUB_SPELL_END" && !state.IsBattlegrounds())
             {
                 //Logger.Log("Sub spell end", this.currentSubSpell);
-                state.NodeParser.CloseNode(new Node(typeof(SubSpell), this.currentSubSpell, 0, state.Node, data), stateType);
-                if (this.currentSubSpell != null)
+                state.NodeParser.CloseNode(new Node(typeof(SubSpell), state.CurrentSubSpell, 0, state.Node, data), stateType);
+                if (state.CurrentSubSpell != null)
                 {
-                    var subSpell = this.currentSubSpell;
+                    var subSpell = state.CurrentSubSpell.GetActiveSubSpell();
                     Action parentAction = null;
                     if (state.Node?.Type == typeof(Action))
                     {
@@ -497,10 +497,31 @@ namespace HearthstoneReplays.Parser.Handlers
                         new Node(null, null, 0, null, data)
                     )});
                 }
-                this.currentSubSpell = null;
+                SetActiveSubSpell(state, null);
                 return true;
             }
             return false;
+        }
+
+        private void SetActiveSubSpell(ParserState state, SubSpell spell)
+        {
+            var type = state.StateType;
+            if (spell != null)
+            {
+                if (state.CurrentSubSpell == null)
+                {
+                    state.CurrentSubSpell = spell;
+                }
+                else
+                {
+                    state.CurrentSubSpell.GetActiveSubSpell().Spell = spell;
+                }
+            }
+            else
+            {
+                state.ClearActiveSubSpell();
+            }
+
         }
 
         private bool HandleActionMetaDataInfo(DateTime timestamp, string data, ParserState state, int indentLevel)

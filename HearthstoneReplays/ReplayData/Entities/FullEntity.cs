@@ -135,6 +135,15 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             return GetZone() == (int)Zone.PLAY;
         }
 
+        internal bool IsInPlay(TagChange tagChange)
+        {
+            if (tagChange.Name != (int)GameTag.ZONE || tagChange.Entity != this.Entity)
+            {
+                return IsInPlay();
+            }
+            return tagChange.Value == (int)Zone.PLAY;
+        }
+
         internal bool IsInGraveyard()
         {
             return GetZone() == (int)Zone.GRAVEYARD;

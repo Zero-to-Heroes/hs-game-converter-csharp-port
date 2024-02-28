@@ -45,6 +45,7 @@ namespace HearthstoneReplays.Parser
         public Options Options { get; set; }
         public Option CurrentOption { get; set; }
         public object LastOption { get; set; }
+        public SubSpell CurrentSubSpell { get; set; }
         public int FirstPlayerEntityId { get; set; }
         public int CurrentPlayerId { get; set; }
         public ChosenEntities CurrentChosenEntites { get; set; }
@@ -461,13 +462,23 @@ namespace HearthstoneReplays.Parser
             //return !Ended && NumberOfCreates >= 1 && !Spectating;
         }
 
-        //private void HandleNodeUpdateEvent(Node oldNode, Node newNode)
-        //{
-        //	if (oldNode != null && oldNode.Type == typeof(FullEntity))
-        //	{
-        //		//Logger.Log("Handling node update", oldNode.Type);
-        //		GameState.FullEntityNodeComplete((oldNode.Object as FullEntity));
-        //	}
-        //}
+        public void ClearActiveSubSpell()
+        {
+            var current = this.CurrentSubSpell;
+            SubSpell parent = null;
+            if (current?.Spell == null)
+            {
+                this.CurrentSubSpell = null;
+            }
+            while (current?.Spell != null)
+            {
+                parent = current;
+                current = current.Spell;
+            }
+            if (parent != null)
+            {
+                parent.Spell = null;
+            }
+        }
     }
 }
