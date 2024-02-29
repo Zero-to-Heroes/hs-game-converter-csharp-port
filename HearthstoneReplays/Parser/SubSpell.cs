@@ -13,7 +13,22 @@ namespace HearthstoneReplays.Parser
 		public string Prefab { get; set; }
 		public int Source { get; set; }
 		public IList<int> Targets { get; set; }
-		public SubSpell Spell { get;  set; }
+
+		public SubSpell Spell { 
+			get {
+				return _subSpell;
+			}
+			set
+			{
+				this._subSpell = value;
+				if (this.Spell != null) { 
+					this._subSpell.Parent = this;
+				}
+			}
+		}
+		private SubSpell _subSpell;
+
+		public SubSpell Parent { get; private set; }
 
         public SubSpell GetActiveSubSpell()
         {

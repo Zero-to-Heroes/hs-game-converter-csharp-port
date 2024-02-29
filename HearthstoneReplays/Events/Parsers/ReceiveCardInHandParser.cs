@@ -6,6 +6,7 @@ using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
+using System.Linq;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -156,6 +157,11 @@ namespace HearthstoneReplays.Events.Parsers
             var dataNum2 = fullEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2);
             var position = fullEntity.GetZonePosition();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            Action parentAction = null;
+            if (node.Parent?.Type == typeof(Action))
+            {
+                parentAction = node.Parent.Object as Action;
+            }
             return new List<GameEventProvider> { GameEventProvider.Create(
                     fullEntity.TimeStamp,
                     "RECEIVE_CARD_IN_HAND",
@@ -176,6 +182,13 @@ namespace HearthstoneReplays.Events.Parsers
                                 cardId = "GAME_005";
                                 creatorCardId = "GAME_005";
                             }
+                        }
+                        if (cardId == null 
+                            && (parentAction?.SubSpells?.Any(s => s.Prefab == "BARFX_RankedSpell_Upgrade_Impact_Sneaky_Rogue") ?? false))
+                            //&& string.IsNullOrEmpty(creatorCardId) && fullEntity.SubSpellInEffect?.Prefab == "zDeprecatedFX_Poison_SpawnToHand_Super_Duplicate")
+                        {
+                            cardId = "MIXED_CONCOCTION_UNKNOWN";
+                            creatorCardId = "MIXED_CONCOCTION_UNKNOWN";
                         }
                         var buffingCardEntityCardId = Oracle.GetBuffingCardCardId(creator?.Item2 ?? -1, creatorCardId);
                         var buffCardId = Oracle.GetBuffCardId(creator?.Item2 ?? -1, creatorCardId);
