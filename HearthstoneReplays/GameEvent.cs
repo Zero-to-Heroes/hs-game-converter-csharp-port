@@ -247,16 +247,17 @@ namespace HearthstoneReplays
                 //        .Any(option => option.Entity == entity.Id) 
                 //    : false,
                 tags = newTags,
-                enchantments = fullEntities
-                    ?.Where(e => e.GetTag(GameTag.ATTACHED) == entity.Id)
-                    ?.Where(e => e.GetZone() == (int)Zone.PLAY)
-                    .Select(e => new GameStateShortEnchantment()
-                    {
-                        entityId = e.Entity,
-                        cardId = e.CardId,
-                        tags = e.GetTagsCopy(),
-                    })
-                    .ToList()
+                // Used only in mercs
+                //enchantments = fullEntities
+                //    ?.Where(e => e.GetTag(GameTag.ATTACHED) == entity.Id)
+                //    ?.Where(e => e.GetZone() == (int)Zone.PLAY)
+                //    .Select(e => new GameStateShortEnchantment()
+                //    {
+                //        entityId = e.Entity,
+                //        cardId = e.CardId,
+                //        tags = e.GetTagsCopy(),
+                //    })
+                //    .ToList()
 
             };
         }

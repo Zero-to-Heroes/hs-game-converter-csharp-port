@@ -110,10 +110,10 @@ namespace HearthstoneReplays.Events
             {
                 processing = true;
                 //Logger.Log("[csharp] Event to process", "");
+                GameEventProvider provider = null;
 
                 try
                 {
-                    GameEventProvider provider;
                     lock (listLock)
                     {
                         if (eventQueue.Count == 0)
@@ -151,6 +151,7 @@ namespace HearthstoneReplays.Events
                 }
                 catch (Exception ex)
                 {
+                    Logger.Log("Exception while parsing event " + provider?.EventName, provider?.CreationLogLine);
                     Logger.Log("Exception while parsing event queue " + ex.Message, ex.StackTrace);
                     processing = false;
                     return;

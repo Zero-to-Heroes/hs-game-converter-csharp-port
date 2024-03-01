@@ -60,7 +60,10 @@ namespace HearthstoneReplays
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             }));
             // The goal here is to make sure the order is kept while in Dev mode, where events are very rapidly firing
-            GameEventHandler.EventProviderAll = (IList<GameEvent> gameEvents) => onGameEvent(JsonConvert.SerializeObject(gameEvents));
+            GameEventHandler.EventProviderAll = (IList<GameEvent> gameEvents) => onGameEvent(JsonConvert.SerializeObject(gameEvents, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            }));
             parser = new ReplayParser();
             parser.Init();
             callback?.Invoke(null);

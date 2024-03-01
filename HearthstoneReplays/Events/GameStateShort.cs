@@ -33,7 +33,7 @@ namespace HearthstoneReplays.Events
         public int health { get; set; }
         public int durability { get; set; }
         public List<Tag> tags { get; set; }
-        public List<GameStateShortEnchantment> enchantments { get; set; }
+        //public List<GameStateShortEnchantment> enchantments { get; set; }
 
         public int GetTag(GameTag tag, int defaultValue = -1)
         {

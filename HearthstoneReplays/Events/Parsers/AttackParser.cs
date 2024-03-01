@@ -87,7 +87,7 @@ namespace HearthstoneReplays.Events.Parsers
                     -1,
                     -1,
                     StateFacade,
-                    gameState,
+                    null, // gameState, // Because the event is already quite big, and is usually accompanied by other events
                     new {
                         AttackerCardId = attackerCardId,
                         AttackerEntityId = attacker.Id,

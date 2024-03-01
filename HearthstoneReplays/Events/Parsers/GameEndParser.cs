@@ -64,7 +64,10 @@ namespace HearthstoneReplays.Events.Parsers
                         LocalPlayer = StateFacade.LocalPlayer,
                         OpponentPlayer = StateFacade.OpponentPlayer,
                         GameStateReport = gameStateReport,
-                        Game = ParserState.CurrentGame,
+                        FormatType = ParserState.CurrentGame.FormatType,
+                        GameType = ParserState.CurrentGame.GameType,
+                        ScenarioID = ParserState.CurrentGame.ScenarioID,
+                        //Game = ParserState.CurrentGame,
                         ReplayXml = xmlReplay,
                         Spectating = StateFacade.Spectating,
                     }
