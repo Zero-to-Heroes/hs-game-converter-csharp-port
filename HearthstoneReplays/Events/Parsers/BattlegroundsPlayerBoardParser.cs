@@ -819,9 +819,11 @@ namespace HearthstoneReplays.Events.Parsers
 
         private List<Enchantment> BuildAdditionalEnchantments(FullEntity fullEntity, List<FullEntity> enchantmentEntities, Dictionary<int, FullEntity> currentEntities)
         {
+            var isDebug = fullEntity.Entity == 11465;
             return enchantmentEntities
                 .Where(e => e.CardId == PolarizingBeatboxer_PolarizedEnchantment)
                 .Select(e => {
+                    // Sometimes the creator doesn't appear in the logs, we only have the entityId
                     var creatorEntity = currentEntities.GetValueOrDefault(e.GetTag(GameTag.CREATOR));
                     var entityAsEnchantmentDbfId = creatorEntity?.GetTag(GameTag.ENTITY_AS_ENCHANTMENT);
                     return new Enchantment
