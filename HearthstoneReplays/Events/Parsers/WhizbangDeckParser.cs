@@ -43,31 +43,66 @@ namespace HearthstoneReplays.Events.Parsers
             var whizbangDeckId = playerEntity.GetTag(GameTag.WHIZBANG_DECK_ID);
             if (whizbangDeckId == -1)
             {
+                // In this case, this gives the card ID (like TOY_700t2)
+                var splendiferousCardId = playerEntity.GetTag(GameTag.WHIZBANG_SPLENDIFEROUS_DECK_ID);
+                if (splendiferousCardId != -1)
+                {
+                    whizbangDeckId = GetSplendiferousDeckId(splendiferousCardId);
+                }
+            }
+            if (whizbangDeckId == -1)
+            {
                 return null;
             }
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 playerEntity.TimeStamp,
                 "WHIZBANG_DECK_ID",
-                () => {
-                    // The info is also logged for the opponent, but we ignore it
-                    if (playerEntity.PlayerId != Helper.LocalPlayer.PlayerId)
-                    {
-                        return null;
-                    }
-
-                    //Logger.Log("Providing game event for WinnerParser", node.CreationLogLine);
-                    return new GameEvent
-                    {
-                        Type = "WHIZBANG_DECK_ID",
-                        Value = new
-                        {
-                            DeckId = whizbangDeckId,
-                        }
-                    };
-                },
+                GameEvent.CreateProvider(
+                    "WHIZBANG_DECK_ID",
+                    null,
+                    playerEntity.GetEffectiveController(),
+                    playerEntity.Id,
+                    Helper,
+                    null,
+                    new {
+                        DeckId = whizbangDeckId,
+                    }),
                 true,
                 node) };
+        }
+
+        private int GetSplendiferousDeckId(int splendiferousCardId)
+        {
+            switch (splendiferousCardId)
+            {
+                // Manually map a card id with a deck from the DECK.json DBF
+                case 106243: return 5342; // Priest
+                case 106244: return 5343; // Death Knight Rainbow
+                case 106245: return 5345; // Rogue
+                case 106246: return 5344; // Warlock
+                //case 106247: return ; // Copycat
+                case 106248: return 5385; // Mage
+                case 106249: return 5346; // Druid
+                case 106252: return 5381; // Paladin
+                case 106253: return 5382; // Hunter
+                case 106251: return 5383; // DH
+                case 106250: return 5384; // Shaman
+                case 108932: return 5410; // Warrior
+                //case 106244: return 5317; // DK_DH
+                //case 106244: return 5318; // Rogue_Hunter
+                //case 106244: return 5319; // Paladin_DK
+                //case 106244: return 5336; // ??? d4
+                //case 106244: return 5320; // Warlock_Priest
+                //case 106244: return 5337; // ??? d5
+                //case 106244: return 5321; // Druid_Warrior
+                //case 106244: return 5322; // Shaman_Mage
+                //case 106244: return 5327; // ??? d1
+                //case 106244: return 5328; // ??? d2
+                //case 106244: return 5329; // ??? d3
+                //case 106244: return 5322; // Shaman_Mage
+                default: return -1;
+            }
         }
     }
 }

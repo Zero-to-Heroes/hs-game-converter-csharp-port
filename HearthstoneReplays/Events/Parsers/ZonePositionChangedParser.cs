@@ -28,7 +28,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             TagChange tagChange;
             var elapsed = TimeSpan.FromTicks(DateTime.UtcNow.Ticks - lastEventSentTicks);
-            var isOkToResend = elapsed.TotalMilliseconds > DEBOUNCE_TIME_IN_MS;
+            var isOkToResend = true; //  !ParserState.IsBattlegrounds() || (elapsed.TotalMilliseconds > DEBOUNCE_TIME_IN_MS);
             return stateType == StateType.PowerTaskList
                 // Limit it to merceanries, the only mode where this is used, to limit the impact on the number of events sent (esp. in BG)
                 && (ParserState.IsMercenaries() || isOkToResend)
@@ -48,7 +48,7 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
             var zonePosition = tagChange.Value;
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "ZONE_POSITION_CHANGED",
@@ -58,7 +58,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    gameState,
+                    null,
                     new {
                         ZonePosition = zonePosition,
                     }

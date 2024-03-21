@@ -486,7 +486,8 @@ namespace HearthstoneReplays.Events.Parsers
                 var tavernSpellsCastThisGame = GameState.CurrentEntities[player.Id]?.GetTag(GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME) ?? 0;
                 // Includes Anub'arak, Nerubian Deathswarmer
                 var undeadAttackBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment);
-                var frostlingBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.FlourishingFrostlingPlayerEnchantDntEnchantment);
+                // Looks like the enchantment isn't used anymore, at least for the opponent?
+                var frostlingBonus = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME);
                 var bloodGemEnchant = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
@@ -778,6 +779,11 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(entity => entity.CardId == enchantment)
                 .FirstOrDefault()
                 ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
+        }
+
+        private int GetPlayerTag(int playerEntityId, GameTag tag)
+        {
+            return GameState.CurrentEntities.GetValueOrDefault(playerEntityId)?.GetTag(tag, 0) ?? 0;
         }
 
         private object AddEchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)

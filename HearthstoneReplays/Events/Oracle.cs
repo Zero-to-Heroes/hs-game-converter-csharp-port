@@ -458,7 +458,8 @@ namespace HearthstoneReplays.Events
                     case SurlyMob: return AngryMob;
                     case SurlyMobTavernBrawl: return SurlyMob_AngryMobTavernBrawl;
                     case SwarmOfLightbugs_WW_052: return SwarmOfLightbugs_BottledLightbugsToken_WW_052t2;
-                    //case SweetenedSnowflurry: return SweetenedSnowflurry_MiniToken;
+                    case SweetenedSnowflurry_TOY_307: return SweetenedSnowflurry_SweetenedSnowflurryToken_TOY_307t;
+                    case TabletopRoleplayer_TOY_915: return TabletopRoleplayer_TabletopRoleplayerToken_TOY_915t;
                     case TentacleGrip_YOG_526: return ChaoticTendril_YOG_514;
                     case TentacleTender_YOG_517: return ChaoticTendril_YOG_514;
                     case TheCandle: return TheCandle;
@@ -498,6 +499,7 @@ namespace HearthstoneReplays.Events
                     case WildGrowthCore: return WildGrowth_ExcessManaLegacyToken;
                     case WildGrowthLegacy: return WildGrowth_ExcessManaLegacyToken;
                     case WildGrowthVanilla: return WildGrowth_ExcessManaLegacyToken;
+                    case WindowShopper_TOY_652: return WindowShopper_WindowShopperToken_TOY_652t;
                     case WitchwoodApple: return WitchwoodApple_TreantToken;
                     case WitchwoodAppleCore: return WitchwoodApple_TreantToken;
                     case Wrenchcalibur: return SeaforiumBomber_BombToken;
