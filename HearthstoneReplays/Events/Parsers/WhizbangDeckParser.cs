@@ -40,7 +40,10 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var playerEntity = node.Object as PlayerEntity;
-            var whizbangDeckId = playerEntity.GetTag(GameTag.WHIZBANG_DECK_ID);
+            // Old tag, which we don't want to show for the opponent
+            var whizbangDeckId = playerEntity.PlayerId == Helper.OpponentPlayer.PlayerId 
+                ? -1 
+                : playerEntity.GetTag(GameTag.WHIZBANG_DECK_ID);
             if (whizbangDeckId == -1)
             {
                 // In this case, this gives the card ID (like TOY_700t2)
