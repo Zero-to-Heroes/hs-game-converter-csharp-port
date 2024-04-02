@@ -245,6 +245,7 @@ namespace HearthstoneReplays.Events
                     new CreateCardInGraveyardParser(ParserState, StateFacade),
                     new MindrenderIlluciaParser(ParserState, StateFacade),
                     new SpecialCardPowerParser(ParserState, StateFacade),
+                    new WheelOfDeathCounterParser(ParserState, StateFacade),
 
                     // Needs to happen after EntityUpdate, because somsetimes the event is sent from the 
                     // SHOW_ENTITY block that triggers the ENTITY_UPDATE event
