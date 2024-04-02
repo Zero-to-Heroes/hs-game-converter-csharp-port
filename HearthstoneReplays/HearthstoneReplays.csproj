@@ -176,6 +176,7 @@
     <Compile Include="Events\Parsers\BattlegroundsQuestRewardDestroyedParser.cs" />
     <Compile Include="Events\Parsers\WhizbangDeckParser.cs" />
     <Compile Include="Events\Parsers\ZoneChangeParser.cs" />
+    <Compile Include="Events\Parsers\WheelOfDeathCounterParser.cs" />
     <Compile Include="Events\Parsers\ZonePositionChangedParser.cs" />
     <Compile Include="Events\StopDevModeProvider.cs" />
     <Compile Include="Events\StartDevModeProvider.cs" />

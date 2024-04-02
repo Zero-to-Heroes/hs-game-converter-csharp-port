@@ -499,7 +499,7 @@ namespace HearthstoneReplays.Events
                     case WildGrowthCore: return WildGrowth_ExcessManaLegacyToken;
                     case WildGrowthLegacy: return WildGrowth_ExcessManaLegacyToken;
                     case WildGrowthVanilla: return WildGrowth_ExcessManaLegacyToken;
-                    case WindowShopper_TOY_652: return WindowShopper_WindowShopperToken_TOY_652t;
+                    //case WindowShopper_TOY_652: return WindowShopper_WindowShopperToken_TOY_652t;
                     case WitchwoodApple: return WitchwoodApple_TreantToken;
                     case WitchwoodAppleCore: return WitchwoodApple_TreantToken;
                     case Wrenchcalibur: return SeaforiumBomber_BombToken;
@@ -550,6 +550,13 @@ namespace HearthstoneReplays.Events
                                 LaughingSisterLegacy,
                                 YseraAwakensLegacy,
                                 EmeraldDrakeLegacy,
+                            });
+                    case PatchworkPals_TOY_353:
+                        return AddMultipleKnownCards(gameState, node, new List<string>()
+                            {
+                                HufferLegacy,
+                                MishaLegacy,
+                                LeokkLegacy,
                             });
                     case RivendareWarrider:
                         return AddMultipleKnownCards(gameState, node, new List<string>()
