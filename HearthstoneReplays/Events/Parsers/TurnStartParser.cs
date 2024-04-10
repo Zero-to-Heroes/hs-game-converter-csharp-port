@@ -6,6 +6,7 @@ using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -93,6 +94,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var timestamp = Utility.GetUtcTimestamp(tagChange.TimeStamp);
+            var currentPlayer = GameState.GetActivePlayerId();
             result.Add(GameEventProvider.Create(
                    tagChange.TimeStamp,
                    "TURN_START",
@@ -104,6 +106,7 @@ namespace HearthstoneReplays.Events.Parsers
                            Value = new
                            {
                                Turn = newTurnValue,
+                               ActivePlayerId = currentPlayer,
                                GameState = gameState,
                                LocalPlayer = StateFacade.LocalPlayer,
                                OpponentPlayer = StateFacade.OpponentPlayer,
