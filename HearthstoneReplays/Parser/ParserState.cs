@@ -436,6 +436,11 @@ namespace HearthstoneReplays.Parser
             return CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS || CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY;
         }
 
+        public bool InRecruitPhase()
+        {
+            return GameState.GetGameEntity().GetTag(GameTag.BOARD_VISUAL_STATE) == 1;
+        }
+
         public bool IsMercenaries()
         {
             return IsMercenariesPvE() || new List<int>() {

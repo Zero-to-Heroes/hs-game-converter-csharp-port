@@ -122,6 +122,11 @@ namespace HearthstoneReplays.Parser
             return State.GSState.IsBattlegrounds();
         }
 
+        internal bool InRecruitPhase()
+        {
+            return State.PTLState.InRecruitPhase();
+        }
+
         internal List<PlayerEntity> GetPlayers()
         {
             return State.GSState.getPlayers();

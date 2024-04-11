@@ -98,6 +98,13 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         {
             return GetTag(GameTag.ZONE);
         }
+        
+        internal int GetZone(TagChange tagChange)
+        {
+            return tagChange.Name == (int)GameTag.ZONE && tagChange.Entity == this.Entity 
+                ? tagChange.Value
+                : GetTag(GameTag.ZONE);
+        }
 
         internal bool IsMinionLike()
         {

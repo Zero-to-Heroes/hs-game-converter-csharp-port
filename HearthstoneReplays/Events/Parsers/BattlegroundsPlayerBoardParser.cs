@@ -788,13 +788,6 @@ namespace HearthstoneReplays.Events.Parsers
 
         private object AddEchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
         {
-            //var debug = currentEntities.Values
-            //    .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id)
-            //    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetZone() == (int)Zone.SETASIDE)
-            //    .ToList(); 
-            //var debug2 = currentEntities.Values
-            //    .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id)
-            //    .ToList();
             // For some reason, Teron's RapidReanimation enchantment is sometimes in the GRAVEYARD zone
             var enchantmentEntities = currentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id)
@@ -830,8 +823,9 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(e => e.CardId == PolarizingBeatboxer_PolarizedEnchantment)
                 .Select(e => {
                     // Sometimes the creator doesn't appear in the logs, we only have the entityId
-                    var creatorEntity = currentEntities.GetValueOrDefault(e.GetTag(GameTag.CREATOR));
-                    var entityAsEnchantmentDbfId = creatorEntity?.GetTag(GameTag.ENTITY_AS_ENCHANTMENT);
+                    var entityAsEnchantmentDbfId = currentEntities
+                        .GetValueOrDefault(e.GetTag(GameTag.CREATOR))
+                        ?.GetTag(GameTag.ENTITY_AS_ENCHANTMENT);
                     return new Enchantment
                     {
                         CardId = "" + (entityAsEnchantmentDbfId ?? e.GetTag(GameTag.CREATOR_DBID)),

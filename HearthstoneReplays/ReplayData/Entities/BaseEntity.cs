@@ -52,7 +52,9 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public bool TakesBoardSpace()
         {
-            return GetTag(GameTag.CARDTYPE) == (int)CardType.MINION || GetTag(GameTag.CARDTYPE) == (int)CardType.BATTLEGROUND_SPELL;
+            return GetTag(GameTag.CARDTYPE) == (int)CardType.MINION 
+                || GetTag(GameTag.CARDTYPE) == (int)CardType.LOCATION
+                || GetTag(GameTag.CARDTYPE) == (int)CardType.BATTLEGROUND_SPELL;
         }
 
         public BaseEntity SetTag(GameTag tag, int value)

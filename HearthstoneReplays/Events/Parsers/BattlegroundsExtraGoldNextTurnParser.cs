@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using static HearthstoneReplays.Events.CardIds;
 using System;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
+using System.ComponentModel;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -32,6 +33,11 @@ namespace HearthstoneReplays.Events.Parsers
                 return false;
             }
 
+            if (!StateFacade.InRecruitPhase())
+            {
+                return false;
+            }
+
             var tagChange = (node.Object as TagChange);
             var isExtraGoldNextTurn = tagChange.Name == (int)GameTag.TAG_SCRIPT_DATA_NUM_1
                 && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity)?.CardId == CardIds.SouthseaBusker_ExtraGoldNextTurnDntEnchantment;
@@ -41,7 +47,10 @@ namespace HearthstoneReplays.Events.Parsers
             var isOverconfidence = tagChange.Name == (int)GameTag.ZONE
                 //&& tagChange.Value == (int)Zone.PLAY
                 && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity)?.CardId == CardIds.Overconfidence_OverconfidentDntEnchantment_BG28_884e;
-            return isExtraGoldNextTurn || isOverconfidence || isExtraGoldNextTurnRemoved;
+            var isNewTurn = tagChange.Name == (int)GameTag.BOARD_VISUAL_STATE && tagChange.Value == 1;
+            var isCardUpdated = tagChange.Name == (int)GameTag.ZONE 
+                && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity)?.GetController() == StateFacade.LocalPlayer.PlayerId;
+            return isExtraGoldNextTurn || isOverconfidence || isExtraGoldNextTurnRemoved || isNewTurn || isCardUpdated;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -71,6 +80,8 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(e => e.IsInPlay(tagChange))
                 .ToList();
 
+            var boardAndEnchantments = BuildBoardAndEnchantmentCardIds(tagChange);
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "BATTLEGROUNDS_EXTRA_GOLD_NEXT_TURN",
@@ -84,9 +95,42 @@ namespace HearthstoneReplays.Events.Parsers
                     new {
                         ExtraGoldNextTurn = extraGoldNextTurnValue,
                         Overconfidences = overconfidentEnchantments.Count(),
+                        BoardAndEnchantments = boardAndEnchantments,
                     }),
                 true,
                 node) };
+        }
+
+        private List<string> BuildBoardAndEnchantmentCardIds(TagChange tagChange)
+        {
+
+            var board = GameState.CurrentEntities.Values
+                .Where(e => e.GetEffectiveController() == StateFacade.LocalPlayer.PlayerId)
+                .Where(e => e.GetZone(tagChange) == (int)Zone.PLAY)
+                .Where(e => e.TakesBoardSpace())
+                .ToList();
+            var boardEntityIds = board.Select(e => e.Entity).ToList();
+            var enchantmentCardIds = GameState.CurrentEntities.Values
+                .Where(entity => boardEntityIds.Contains(entity.GetTag(GameTag.ATTACHED)))
+                .Where(entity => entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME)
+                .Select(e => e.CardId == PolarizingBeatboxer_PolarizedEnchantment
+                    ? "" + GameState.CurrentEntities
+                        .GetValueOrDefault(e.GetTag(GameTag.CREATOR))
+                        ?.GetTag(GameTag.ENTITY_AS_ENCHANTMENT)
+                    : e.CardId)
+                .ToList();
+            var boardCardIds = board.Select(e => e.CardId).ToList();
+            boardCardIds.AddRange(enchantmentCardIds);
+            return boardCardIds
+                //.Where(id => new List<string>() {
+                //    AccordOTron_BG26_147,
+                //    AccordOTron_AccordOTronEnchantment_BG26_147e,
+                //    AccordOTron_BG26_147_G,
+                //    AccordOTron_AccordOTronEnchantment_BG26_147_Ge,
+                //    RecordSmuggler_BG26_812,
+                //    RecordSmuggler_BG26_812_G
+                //}.Contains(id))
+                .ToList();
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
