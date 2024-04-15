@@ -204,7 +204,7 @@ namespace HearthstoneReplays.Events.Parsers
                     EntityId = entity.Id,
                     Health = entity.GetTag(GameTag.HEALTH, 0) - entity.GetTag(GameTag.DAMAGE, 0),
                     Armor = entity.GetTag(GameTag.ARMOR, 0),
-                    debugTags = entity.Tags,
+                    //debugTags = entity.Tags,
                 })
                 .Where(hero => hero.PlayerId > 0)
                 .ToList();

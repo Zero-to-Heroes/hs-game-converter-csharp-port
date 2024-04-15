@@ -24,7 +24,8 @@ namespace HearthstoneReplays.Events.Parsers
             // it is not broken if Ozumat + Tavish (or other hero power that is managed by the simulator) happen
             Ozumat_Tentacular,
             TamsinRoame_FragrantPhylactery,
-            EmbraceYourRage
+            EmbraceYourRage,
+            FlobbidinousFloop_GloriousGloop_BGDUO_HERO_101p,
         };
 
         private static List<string> TAVISH_HERO_POWERS = new List<string>() {
@@ -63,6 +64,20 @@ namespace HearthstoneReplays.Events.Parsers
             DiremuckForager_BG27_556_G,
             PilotedWhirlOTron_BG21_HERO_030_Buddy,
             PilotedWhirlOTron_BG21_HERO_030_Buddy_G,
+            IrateRooster_BG29_990,
+            IrateRooster_BG29_990_G,
+            MisfitDragonling_BG29_814,
+            MisfitDragonling_BG29_814_G,
+            ThousandthPaperDrake_BG29_810,
+            ThousandthPaperDrake_BG29_810_G,
+            YulonFortuneGranter_BG29_811,
+            YulonFortuneGranter_BG29_811_G,
+            HoardingHatespawn_BG29_872,
+            HoardingHatespawn_BG29_872_G,
+            TheUninvitedGuest_BG29_875,
+            TheUninvitedGuest_BG29_875_G,
+            Sandy_BGDUO_125,
+            Sandy_BGDUO_125_G,
         };
 
         static List<string> START_OF_COMBAT_QUEST_REWARD_EFFECT = new List<string>() {
@@ -95,6 +110,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool IsApplyOnNewNode(Node node)
         {
+            // Could it work on NEXT_STEP=MAIN_ACTION and BOARD_VISUAL_STATE=2?
             var isAction = StateFacade.IsBattlegrounds()
                 && GameState.GetGameEntity() != null
                 && GameState.GetGameEntity().GetTag(GameTag.TURN) % 2 == 0
@@ -151,8 +167,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 // Here we accept to face the ghost
-                .Where(entity => entity.CardId != BartenderBob
-                    && entity.CardId != BaconphheroHeroic)
+                .Where(entity => entity.CardId != BartenderBob && entity.CardId != BaconphheroHeroic)
                 //.Select(entity => entity.IsBaconGhost() 
                 //    ? GetGhostBaseEntity(entity)
                 //    : entity)
@@ -166,6 +181,7 @@ namespace HearthstoneReplays.Events.Parsers
             //    .Where(entity => entity.CardId != BartenderBob
             //        && entity.CardId != BaconphheroHeroic)
             //    .ToList();
+            var debug = node.CreationLogLine.Contains("BLOCK_START BlockType=ATTACK Entity=[entityName=Passenger id=506");
             if (!haveHeroesAllRequiredData)
             {
                 return false;
@@ -255,17 +271,18 @@ namespace HearthstoneReplays.Events.Parsers
         {
             // We rely on nested actions to avoid send the event too often. However, this is an issue when 
             // dealing with start of combat triggers like RedWhelp or Prized Promo-Drake
-            var parentAction = (node.Parent.Object as Parser.ReplayData.GameActions.Action);
-            if (parentAction == null)
-            {
-                return null;
-            }
+            // Update 15/04/2024: looks like there can be ATTACK actions at the root
 
-            var entity = GameState.CurrentEntities[parentAction.Entity];
-            if (entity.CardId != "TB_BaconShop_8P_PlayerE")
-            {
-                return null;
-            }
+            //var parentAction = (node.Parent.Object as Parser.ReplayData.GameActions.Action);
+            //if (parentAction == null)
+            //{
+            //    return null;
+            //}
+            //var entity = GameState.CurrentEntities[parentAction.Entity];
+            //if (entity.CardId != "TB_BaconShop_8P_PlayerE")
+            //{
+            //    return null;
+            //}
 
 
 

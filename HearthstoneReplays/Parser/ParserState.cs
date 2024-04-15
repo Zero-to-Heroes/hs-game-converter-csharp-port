@@ -433,7 +433,10 @@ namespace HearthstoneReplays.Parser
 
         public bool IsBattlegrounds()
         {
-            return CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS || CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY;
+            return CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+                || CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY
+                || CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_DUO
+                || CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_DUO_FRIENDLY;
         }
 
         public bool InRecruitPhase()

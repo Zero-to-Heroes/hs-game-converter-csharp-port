@@ -139,7 +139,8 @@ namespace HearthstoneReplays.Events
                         // Wait until we have all the necessary data
                         while (!Helper.HasMetaData())
                         {
-                            Logger.Log("Awaiting metadata", provider.EventName);
+                            Logger.Log($"Awaiting metadata {Helper.GsState.CurrentGame.FormatType}, {Helper.GsState.CurrentGame.GameType}," +
+                                $"{Helper.LocalPlayer}", provider.EventName);
                             await Task.Delay(100);
                         }
                         waitingForMetaData = false;
