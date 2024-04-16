@@ -105,6 +105,7 @@ namespace HearthstoneReplays.Events
                     new ChoosingOptionsParser(ParserState, StateFacade),
                     // Will parse the GameState logs (because choices are logged only in GS), but uses the PTL states
                     new EntityChosenParser(ParserState, StateFacade),
+                    new BattlegroundsDuoTeammatePlayerBoardParser(ParserState, StateFacade),
                 };
             }
             else

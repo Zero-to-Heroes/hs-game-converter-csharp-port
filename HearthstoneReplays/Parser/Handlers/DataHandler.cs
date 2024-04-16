@@ -413,6 +413,7 @@ namespace HearthstoneReplays.Parser.Handlers
                     parentAction.SubSpells.Add(spell);
                 }
 
+                state.NodeParser.NewNode(new Node(typeof(SubSpell), state.CurrentSubSpell?.GetActiveSubSpell(), 0, state.Node, data), stateType);
                 if (stateType == StateType.PowerTaskList && !state.IsBattlegrounds())
                 {
                     state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
@@ -462,11 +463,12 @@ namespace HearthstoneReplays.Parser.Handlers
                 return true;
             }
 
-            if (stateType == StateType.PowerTaskList && data == "SUB_SPELL_END" && !state.IsBattlegrounds())
+            if (data == "SUB_SPELL_END")
             {
                 //Logger.Log("Sub spell end", this.currentSubSpell);
+                var debug = state.CurrentSubSpell?.GetActiveSubSpell();
                 state.NodeParser.CloseNode(new Node(typeof(SubSpell), state.CurrentSubSpell?.GetActiveSubSpell(), 0, state.Node, data), stateType);
-                if (state.CurrentSubSpell != null)
+                if (stateType == StateType.PowerTaskList && state.CurrentSubSpell != null && !state.IsBattlegrounds())
                 {
                     var subSpell = state.CurrentSubSpell.GetActiveSubSpell();
                     Action parentAction = null;

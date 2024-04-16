@@ -115,8 +115,10 @@
     <Compile Include="Events\Obfuscator.cs" />
     <Compile Include="Events\Parsers\AbstractBasicTagChangeParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsExtraGoldNextTurnParser.cs" />
+    <Compile Include="Events\Parsers\BattlegroundsDuoTeammatePlayerBoardParser .cs" />
     <Compile Include="Events\Parsers\BattlegroundsQuestCompletedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsRewardGainedParser.cs" />
+    <Compile Include="Events\Parsers\BattlegroundsStartOfBattleLegacySnapshot.cs" />
     <Compile Include="Events\Parsers\BloodGemBuffChangedParser.cs" />
     <Compile Include="Events\Parsers\CardForgedParser.cs" />
     <Compile Include="Events\Parsers\FullEntityParser.cs" />

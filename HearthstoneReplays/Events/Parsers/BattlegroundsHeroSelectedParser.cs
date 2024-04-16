@@ -41,13 +41,18 @@ namespace HearthstoneReplays.Events.Parsers
             // In some cases (starting the app late? Reconnect?) we don't realize it's a reconnect
             // However, in BG we should never have a FullEntity, whose controller is the player, 
             // unless it's a HERO_SELECTED event
+            FullEntity fullEntity = null;
             return stateType == StateType.PowerTaskList
                 && StateFacade.IsBattlegrounds()
+                // When the hero is created during the battle prep
+                && GameState.GetGameEntity()?.GetTag(GameTag.BG_BATTLE_STARTING) != 1
                 && node.Type == typeof(FullEntity)
-                && (node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.HERO
-                && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.PLAY
+                && (fullEntity = node.Object as FullEntity).GetTag(GameTag.CARDTYPE) == (int)CardType.HERO
+                && fullEntity.GetTag(GameTag.ZONE) == (int)Zone.PLAY
                 // For Aranna / Azshara
-                && (node.Object as FullEntity).GetTag(GameTag.REPLACEMENT_ENTITY) != 1;
+                && fullEntity.GetTag(GameTag.REPLACEMENT_ENTITY) != 1
+                // When swapping teammates in a Duos fight
+                && !(fullEntity.SubSpellInEffect?.Prefab?.StartsWith("ReuseFX_Generic_OverrideSpawn_FromPortal_Super_Random_SuppressPlaySounds") ?? false);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)

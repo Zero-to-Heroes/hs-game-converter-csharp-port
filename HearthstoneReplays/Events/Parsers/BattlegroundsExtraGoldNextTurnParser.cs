@@ -47,10 +47,10 @@ namespace HearthstoneReplays.Events.Parsers
             var isOverconfidence = tagChange.Name == (int)GameTag.ZONE
                 //&& tagChange.Value == (int)Zone.PLAY
                 && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity)?.CardId == CardIds.Overconfidence_OverconfidentDntEnchantment_BG28_884e;
-            var isNewTurn = tagChange.Name == (int)GameTag.BOARD_VISUAL_STATE && tagChange.Value == 1;
-            var isCardUpdated = tagChange.Name == (int)GameTag.ZONE 
-                && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity)?.GetController() == StateFacade.LocalPlayer.PlayerId;
-            return isExtraGoldNextTurn || isOverconfidence || isExtraGoldNextTurnRemoved || isNewTurn || isCardUpdated;
+            var isNewTurn = tagChange.Name == (int)GameTag.BOARD_VISUAL_STATE;
+            //var isCardUpdated = tagChange.Name == (int)GameTag.ZONE 
+            //    && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity)?.GetController() == StateFacade.LocalPlayer.PlayerId;
+            return isExtraGoldNextTurn || isOverconfidence || isExtraGoldNextTurnRemoved || isNewTurn;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
