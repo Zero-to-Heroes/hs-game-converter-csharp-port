@@ -357,6 +357,7 @@ namespace HearthstoneReplays.Events
                     case Locuuuusts_ULDA_036: return GiantLocust_Locuuuusts;
                     case LocuuuustsTavernBrawl: return Locuuuusts_LocuuuustsTavernBrawl;
                     case LostInThePark_FeralFriendsyToken: return LostInThePark_GuffTheToughToken;
+                    case MadeOfCoins: return TheCoinCore;
                     case MagneticMinesTavernBrawl: return SeaforiumBomber_BombToken;
                     case MailboxDancer: return TheCoinCore;
                     case Malorne: return Malorne;
