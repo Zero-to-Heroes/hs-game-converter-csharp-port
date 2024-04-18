@@ -195,7 +195,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             //    Logger.Log($"Adding show Entity {entity.CardId}, existingZone={CurrentEntities[entity.Entity].GetZone()}", "");
             //}
             CurrentEntities[entity.Entity].CardId = entity.CardId;
-            CurrentEntities[entity.Entity].TagsHistory = entity.Tags?.Select(tag => new Tag() { Name = tag.Name, Value = tag.Value, }).ToList();
+            // Preseve the history
+            CurrentEntities[entity.Entity].TagsHistory.Add(new Tag() { Name = (int)GameTag.SHOW_ENTITY_START, Value = 1, });
+            CurrentEntities[entity.Entity].TagsHistory
+                .AddRange(entity.Tags?.Select(tag => new Tag() { Name = tag.Name, Value = tag.Value, }).ToList());
+            CurrentEntities[entity.Entity].TagsHistory.Add(new Tag() { Name = (int)GameTag.SHOW_ENTITY_END, Value = 1, });
             List<int> newTagIds = entity.Tags.Select(tag => tag.Name).ToList();
             List<Tag> oldTagsToKeep = CurrentEntities[entity.Entity].Tags
                 .Where(tag => !newTagIds.Contains(tag.Name))
@@ -336,6 +340,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             var tagsAfterUpdate = newTags
                 .Select(tag => tag.Name == tagChange.Name ? new Tag() { Name = tag.Name, Value = tagChange.Value } : tag)
                 .ToList();
+            var debug = tagChange.Entity == 12791 && tagChange.Name == (int)GameTag.ATK;
             fullEntity.Tags = tagsAfterUpdate;
             fullEntity.TagsHistory.Add(new Tag() { Name = tagChange.Name, Value = tagChange.Value });
             // Keep a history of things. This is useful when we use the "future game state" to know some information, but 

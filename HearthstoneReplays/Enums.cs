@@ -1172,6 +1172,8 @@ namespace HearthstoneReplays.Enums
         HERO_FRAME_TYPE = 3495,
         BACON_TRIPLED_BASE_MINION_ID2 = 3499,
         BACON_TRIPLED_BASE_MINION_ID3 = 3500,
+        SHOW_ENTITY_START = 133790006,
+        SHOW_ENTITY_END = 133790007,
     }
 
     public enum GameType

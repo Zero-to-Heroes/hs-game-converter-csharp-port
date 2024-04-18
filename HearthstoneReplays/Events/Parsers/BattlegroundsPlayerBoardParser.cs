@@ -183,9 +183,21 @@ namespace HearthstoneReplays.Events.Parsers
                     var handEntityIds = hand.Select(e => e.Id).ToList();
                     var revealedHand = hand
                         .Select(e => GetEntitySpawnedFromHand(e.Id, board, StateFacade) ?? e)
-                        .Select(entity => entity.Clone())
                         .Select(e => e.SetTag(GameTag.DAMAGE, 0).SetTag(GameTag.ZONE, (int)Zone.HAND) as FullEntity)
                         .ToList();
+                    var debugEntity = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425);
+                    var debugEntityOrigin = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425);
+                    var debugEntityOriginHealth = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
+                        .Where(t => t.Name == (int)GameTag.HEALTH)
+                        .ToList();
+                    var debugEntityOriginHealth2 = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
+                        .TakeWhile(t => t.Name != (int)GameTag.SHOW_ENTITY_START)
+                        .Where(t => t.Name == (int)GameTag.HEALTH)
+                        .ToList();
+                    //var debugEntityOriginHealth2 = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
+                    //    .TakeWhile(t => t.Name != (int)GameTag.SHOW_ENTITY_START)
+                    //    .Where(t => t.Name == (int)GameTag.HEALTH)
+                    //    .ToList();
                     hand = revealedHand;
                 }
                 var debug = GameState.CurrentEntities.Values
@@ -273,51 +285,65 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)));
                 var choralEnchantment = choralEnchantments.FirstOrDefault();
 
+                // String or int
                 dynamic heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
                 var heroPowerInfo2 = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2) ?? 0;
                 // There is an enchantment attached to the entity that will die
-                if (heroPowerUsed && heroPower?.CardId == CardIds.TeronGorefiend_RapidReanimation)
+                //if (heroPowerUsed && heroPower?.CardId == CardIds.TeronGorefiend_RapidReanimation)
+                //{
+                //    //var impendingDeathEnchantments = GameState.CurrentEntities.Values
+                //    //    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                //    //    .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
+                //    //    .ToList();
+                //    ////var debug = StateFacade.GsState.GameState.CurrentEntities.Values
+                //    ////    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                //    ////    .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
+                //    ////    .ToList();
+                //    //var impendingDeath = impendingDeathEnchantments
+                //    //    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
+                //    //    .Where(entity => entity.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == -1)
+                //    //    .FirstOrDefault()
+                //    //    ?? impendingDeathEnchantments
+                //    //        .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
+                //    //        .FirstOrDefault()
+                //    //    ?? impendingDeathEnchantments
+                //    //        .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD)
+                //    //        .FirstOrDefault();
+                //    //// Can be null if the player didn't use the hero power
+                //    //if (impendingDeath != null)
+                //    //{
+                //    //    heroPowerInfo = impendingDeath.GetTag(GameTag.ATTACHED);
+                //    //}
+                //}
+                if (heroPowerUsed && heroPower?.CardId == CardIds.EmbraceYourRage && heroPowerInfo == -1)
                 {
-                    //var impendingDeathEnchantments = GameState.CurrentEntities.Values
-                    //    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                    //    .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
-                    //    .ToList();
-                    ////var debug = StateFacade.GsState.GameState.CurrentEntities.Values
-                    ////    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                    ////    .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
-                    ////    .ToList();
-                    //var impendingDeath = impendingDeathEnchantments
-                    //    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
-                    //    .Where(entity => entity.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == -1)
-                    //    .FirstOrDefault()
-                    //    ?? impendingDeathEnchantments
-                    //        .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
-                    //        .FirstOrDefault()
-                    //    ?? impendingDeathEnchantments
-                    //        .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD)
-                    //        .FirstOrDefault();
-                    //// Can be null if the player didn't use the hero power
-                    //if (impendingDeath != null)
+                    //var debugEntities = StateFacade.GsState.GameState.CurrentEntities.Values
+                    //    .Where(e => e.GetTag(GameTag.CREATOR) == heroPower.Entity)
+                    //    .Where(e => e.GetCardType() == (int)CardType.MINION)
+                    //    .Reverse()
+                    //    .FirstOrDefault();
+                    var createdEntity = StateFacade.GsState.GameState.CurrentEntities.Values
+                        .Where(e => e.GetTag(GameTag.CREATOR) == heroPower.Entity)
+                        .Where(e => e.GetCardType() == (int)CardType.MINION)
+                        .Reverse()
+                        .FirstOrDefault();
+                    //var debugCreated = createdEntity?.CardId;
+                    heroPowerInfo = createdEntity?.CardId;
+
+                    //var embraceYourRageCreationAction = StateFacade.GsState.CurrentGame.FilterGameData(typeof(Action))
+                    //    .Select(d => d as Action)
+                    //    .Where(a => a.Type == (int)BlockType.TRIGGER)
+                    //    .Where(a => a.Entity == heroPower.Entity)
+                    //    .LastOrDefault();
+                    //if (embraceYourRageCreationAction != null)
                     //{
-                    //    heroPowerInfo = impendingDeath.GetTag(GameTag.ATTACHED);
+                    //    var entity = embraceYourRageCreationAction.Data
+                    //        .Where(d => d is FullEntity)
+                    //        .Select(d => d as FullEntity)
+                    //        .Where(d => d.CardId != null && d.CardId.Length > 0)
+                    //        .FirstOrDefault();
+                    //    heroPowerInfo = entity?.CardId;
                     //}
-                }
-                if (heroPowerUsed && heroPower?.CardId == CardIds.EmbraceYourRage)
-                {
-                    var embraceYourRageCreationAction = StateFacade.GsState.CurrentGame.FilterGameData(typeof(Action))
-                        .Select(d => d as Action)
-                        .Where(a => a.Type == (int)BlockType.TRIGGER)
-                        .Where(a => a.Entity == heroPower.Entity)
-                        .LastOrDefault();
-                    if (embraceYourRageCreationAction != null)
-                    {
-                        var entity = embraceYourRageCreationAction.Data
-                            .Where(d => d is FullEntity)
-                            .Select(d => d as FullEntity)
-                            .Where(d => d.CardId != null && d.CardId.Length > 0)
-                            .FirstOrDefault();
-                        heroPowerInfo = entity?.CardId;
-                    }
                 }
 
                 return new PlayerBoard()
@@ -401,51 +427,83 @@ namespace HearthstoneReplays.Events.Parsers
             return entity;
         }
 
+        private static void OverrideTagWithHistory(FullEntity entity, GameTag tag)
+        {
+            var tags = entity.TagsHistory
+                // When a minion is summoned from hand in combat, there is a SHOW_ENTITY node with the buffed value,
+                // which includes the buffs from combat
+                .TakeWhile(t => t.Name != (int)GameTag.SHOW_ENTITY_START)
+                .Where(t => t.Name == (int)tag)
+                .ToList();
+            var tagInHand = tags.Count == 1
+                ? tags[0].Value
+                : tags
+                    // Because the first value is the "default" value
+                    // If the card in hand has no enchantments whatsoever, we should still have a "reset" at the end
+                    .Skip(1)
+                    .FirstOrDefault()?.Value;
+            entity.SetTag(tag, tagInHand ?? entity.GetTag(tag));
+        }
+
         internal static FullEntity GetEntitySpawnedFromHand(int id, List<FullEntity> board, StateFacade StateFacade)
         {
-            var allData = StateFacade.GsState.CurrentGame.FilterGameData(null);
-            var showEntity = allData
-                .Where(d => d is ShowEntity)
-                .Select(d => d as ShowEntity)
-                .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id)
-                .FirstOrDefault();
-            if (showEntity == null)
-            {
-                return null;
-            }
+            var entityInHand = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(id);
+            var clone = entityInHand.Clone();
 
-            // All of this doesn't work, because when entities are buffed in hand, we don't have a tag change
-            // or any numerical data. We would have to manually code the buffs in hand, but that feels way too 
-            // high-maintenance
-            //var showEntityIndex = allData.IndexOf(showEntity);
-            //// Get all the tag changes that affect the entity, and revert their effect
-            //var tagsBeforeShowEntity = allData.GetRange(0, showEntityIndex);
-            //// These apply to the entity in hand, not to the showEntity
-            //var tagChanges = tagsBeforeShowEntity
-            //    .Where(d => d is TagChange)
-            //    .Select(d => d as TagChange)
-            //    .Where(t => t.Entity == id)
-            //    .ToList();
-            //foreach (var tagChange in tagChanges)
+            // This seems to have changed with 29.2. Now, the entity is created in hand with its base values,
+            // enchantments are reapplied, and a tag change occurs at the end with the new value
+            // I don't have many data points yet, so there might be other tags to update, and there might be
+            // circumstances in which this doesn't work (e.g. if multiple tags are applied)
+            // ISSUE: if the buff is a buff that occurs in combat (and not a buff that happens on the setup phase),
+            // it will still be detected
+            OverrideTagWithHistory(clone, GameTag.HEALTH);
+            OverrideTagWithHistory(clone, GameTag.ATK);
+
+            return clone;
+
+            //var allData = StateFacade.GsState.CurrentGame.FilterGameData(null);
+            //var showEntity = allData
+            //    .Where(d => d is ShowEntity)
+            //    .Select(d => d as ShowEntity)
+            //    .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id)
+            //    .FirstOrDefault();
+            //if (showEntity == null)
             //{
-            //    if (tagChange.Name == (int)GameTag.ATK)
-            //    {
-            //        showEntity.SetTag(GameTag.ATK, showEntity.GetTag(GameTag.ATK) - tagChange.Value);
-            //    }
-            //    else if (tagChange.Name == (int)GameTag.HEALTH)
-            //    {
-            //        showEntity.SetTag(GameTag.HEALTH, showEntity.GetTag(GameTag.HEALTH) - tagChange.Value);
-            //    }
+            //    return null;
             //}
 
-            return new FullEntity()
-            {
-                Id = showEntity.Entity,
-                Entity = showEntity.Entity,
-                CardId = showEntity.CardId,
-                Tags = showEntity.GetTagsCopy(),
-                TimeStamp = showEntity.TimeStamp,
-            };
+            //// All of this doesn't work, because when entities are buffed in hand, we don't have a tag change
+            //// or any numerical data. We would have to manually code the buffs in hand, but that feels way too 
+            //// high-maintenance
+            ////var showEntityIndex = allData.IndexOf(showEntity);
+            ////// Get all the tag changes that affect the entity, and revert their effect
+            ////var tagsBeforeShowEntity = allData.GetRange(0, showEntityIndex);
+            ////// These apply to the entity in hand, not to the showEntity
+            ////var tagChanges = tagsBeforeShowEntity
+            ////    .Where(d => d is TagChange)
+            ////    .Select(d => d as TagChange)
+            ////    .Where(t => t.Entity == id)
+            ////    .ToList();
+            ////foreach (var tagChange in tagChanges)
+            ////{
+            ////    if (tagChange.Name == (int)GameTag.ATK)
+            ////    {
+            ////        showEntity.SetTag(GameTag.ATK, showEntity.GetTag(GameTag.ATK) - tagChange.Value);
+            ////    }
+            ////    else if (tagChange.Name == (int)GameTag.HEALTH)
+            ////    {
+            ////        showEntity.SetTag(GameTag.HEALTH, showEntity.GetTag(GameTag.HEALTH) - tagChange.Value);
+            ////    }
+            ////}
+
+            //return new FullEntity()
+            //{
+            //    Id = showEntity.Entity,
+            //    Entity = showEntity.Entity,
+            //    CardId = showEntity.CardId,
+            //    Tags = showEntity.GetTagsCopy(),
+            //    TimeStamp = showEntity.TimeStamp,
+            //};
 
             //var tagChangesForEntity = StateFacade.GsState.CurrentGame
             //    .FilterGameData(typeof(TagChange))
@@ -594,7 +652,8 @@ namespace HearthstoneReplays.Events.Parsers
             var isDebug = fullEntity.Entity == 11465;
             return enchantmentEntities
                 .Where(e => e.CardId == PolarizingBeatboxer_PolarizedEnchantment)
-                .Select(e => {
+                .Select(e =>
+                {
                     // Sometimes the creator doesn't appear in the logs, we only have the entityId
                     var entityAsEnchantmentDbfId = currentEntities
                         .GetValueOrDefault(e.GetTag(GameTag.CREATOR))
