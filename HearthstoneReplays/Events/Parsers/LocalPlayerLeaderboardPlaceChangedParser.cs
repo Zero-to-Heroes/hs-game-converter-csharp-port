@@ -25,7 +25,8 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.PLAYER_LEADERBOARD_PLACE;
+                && ((node.Object as TagChange).Name == (int)GameTag.PLAYER_LEADERBOARD_PLACE
+                    || (node.Object as TagChange).Name == (int)GameTag.BACON_DUO_PLAYER_FIGHTS_FIRST_NEXT_COMBAT);
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -41,21 +42,38 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return null;
             }
+            var basePlace = tagChange.Name == (int)GameTag.PLAYER_LEADERBOARD_PLACE
+                ? tagChange.Value
+                : entity.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE, 0);
+            var baseFirst = tagChange.Name == (int)GameTag.BACON_DUO_PLAYER_FIGHTS_FIRST_NEXT_COMBAT
+                ? tagChange.Value
+                : entity.GetTag(GameTag.BACON_DUO_PLAYER_FIGHTS_FIRST_NEXT_COMBAT, 0);
             if (entity.GetEffectiveController() == StateFacade.LocalPlayer.PlayerId)
             {
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "LOCAL_PLAYER_LEADERBOARD_PLACE_CHANGED",
-                    GameEvent.CreateProvider(
+                    GameEvent.CreateProviderWithDeferredProps(
                         "LOCAL_PLAYER_LEADERBOARD_PLACE_CHANGED",
                         null,
                         -1,
                         entity.Id,
                         StateFacade,
                         null,
-                        new {
-                            NewPlace = tagChange.Value
-                        }),
+                        () =>
+                        // Defer it because we need the meta data
+                        {
+                            var leaderboardPlace = StateFacade.GetMetaData().GameType == (int)GameType.GT_BATTLEGROUNDS_DUO
+                                || StateFacade.GetMetaData().GameType == (int)GameType.GT_BATTLEGROUNDS_DUO_FRIENDLY
+                                || StateFacade.GetMetaData().GameType == (int)GameType.GT_BATTLEGROUNDS_DUO_AI_VS_AI
+                                || StateFacade.GetMetaData().GameType == (int)GameType.GT_BATTLEGROUNDS_DUO_VS_AI
+                                ? basePlace * 2 - baseFirst
+                                : basePlace;
+                            return new {
+                                NewPlace = leaderboardPlace
+                            };
+                        }
+                    ),
                     true,
                     node) };
 

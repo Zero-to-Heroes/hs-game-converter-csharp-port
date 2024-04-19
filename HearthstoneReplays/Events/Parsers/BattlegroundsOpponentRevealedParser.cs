@@ -83,7 +83,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 {
                                     CardId = cardId,
                                     OpponentPlayerId = fullEntity.GetTag(GameTag.PLAYER_ID),
-                                    LeaderboardPlace = fullEntity.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE),
+                                    LeaderboardPlace = fullEntity.GetLeaderboardPosition((GameType)StateFacade.GetMetaData().GameType),
                                 }
                             };
                         },
@@ -123,7 +123,7 @@ namespace HearthstoneReplays.Events.Parsers
                 {
                     CardId = cardId,
                     PlayerId = fullEntity.GetTag(GameTag.PLAYER_ID),
-                    LeaderboardPlace = fullEntity.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE),
+                    LeaderboardPlace = fullEntity.GetLeaderboardPosition((GameType)StateFacade.GetMetaData().GameType),
                     Health = fullEntity.GetTag(GameTag.HEALTH),
                     Armor = fullEntity.GetTag(GameTag.ARMOR),
                 }

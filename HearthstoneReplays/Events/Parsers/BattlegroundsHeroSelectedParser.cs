@@ -162,7 +162,7 @@ namespace HearthstoneReplays.Events.Parsers
                     CardId = fullEntity.CardId,
                     LocalPlayer = StateFacade.LocalPlayer,
                     OpponentPlayer = StateFacade.OpponentPlayer,
-                    LeaderboardPlace = fullEntity.GetTag(GameTag.PLAYER_LEADERBOARD_PLACE),
+                    LeaderboardPlace = fullEntity.GetLeaderboardPosition((GameType)StateFacade.GetMetaData().GameType),
                     Health = fullEntity.GetTag(GameTag.HEALTH),
                     Armor = fullEntity.GetTag(GameTag.ARMOR, 0),
                     Damage = fullEntity.GetTag(GameTag.DAMAGE),

@@ -61,6 +61,39 @@ namespace HearthstoneReplays
             };
         }
 
+        public static Func<GameEvent> CreateProviderWithDeferredProps(
+            string type,
+            string cardId,
+            int controllerId,
+            int entityId,
+            StateFacade helper,
+            GameStateShort gameState,
+            Func<object> additionalProsProvider)
+        {
+            return () =>
+            {
+                return new GameEvent
+                {
+                    Type = type,
+                    Value = new
+                    {
+                        CardId = cardId,
+                        ControllerId = controllerId,
+                        LocalPlayer = helper.LocalPlayer,
+                        OpponentPlayer = helper.OpponentPlayer,
+                        EntityId = entityId,
+                        // We do it now so that the zone positions should have been resolved, while 
+                        // if we compute it when the event is built, there is no guarantee of that
+                        // BUT if we compute it now, we have no guarantee that the state matches what 
+                        // the state looked like when we built the event, so building it beforehand
+                        // is the way to go
+                        GameState = gameState, //fullGameState.BuildGameStateReport(),// gameState,
+                        AdditionalProps = additionalProsProvider.Invoke()
+                    }
+                };
+            };
+        }
+
         // It needs to be built beforehand, as the game state we pass is not immutable
         public static GameStateShort BuildGameState(ParserState parserState, StateFacade helper, GameState gameState, TagChange tagChange, ShowEntity showEntity)
         {

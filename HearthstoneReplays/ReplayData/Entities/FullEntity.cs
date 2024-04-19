@@ -180,5 +180,15 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         {
             return GetTag(GameTag.CARDTYPE) == (int)CardType.SPELL;
         }
+
+        internal object GetLeaderboardPosition(GameType gameType)
+        {
+            return gameType == GameType.GT_BATTLEGROUNDS_DUO 
+                || gameType == GameType.GT_BATTLEGROUNDS_DUO_FRIENDLY
+                || gameType == GameType.GT_BATTLEGROUNDS_DUO_AI_VS_AI
+                || gameType == GameType.GT_BATTLEGROUNDS_DUO_VS_AI
+                ? GetTag(GameTag.PLAYER_LEADERBOARD_PLACE) * 2 - GetTag(GameTag.BACON_DUO_PLAYER_FIGHTS_FIRST_NEXT_COMBAT, 0)
+                : GetTag(GameTag.PLAYER_LEADERBOARD_PLACE);
+        }
     }
 }
