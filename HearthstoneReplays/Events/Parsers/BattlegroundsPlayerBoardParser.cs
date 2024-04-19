@@ -185,15 +185,15 @@ namespace HearthstoneReplays.Events.Parsers
                         .Select(e => GetEntitySpawnedFromHand(e.Id, board, StateFacade) ?? e)
                         .Select(e => e.SetTag(GameTag.DAMAGE, 0).SetTag(GameTag.ZONE, (int)Zone.HAND) as FullEntity)
                         .ToList();
-                    var debugEntity = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425);
-                    var debugEntityOrigin = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425);
-                    var debugEntityOriginHealth = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
-                        .Where(t => t.Name == (int)GameTag.HEALTH)
-                        .ToList();
-                    var debugEntityOriginHealth2 = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
-                        .TakeWhile(t => t.Name != (int)GameTag.SHOW_ENTITY_START)
-                        .Where(t => t.Name == (int)GameTag.HEALTH)
-                        .ToList();
+                    //var debugEntity = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425);
+                    //var debugEntityOrigin = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425);
+                    //var debugEntityOriginHealth = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
+                    //    .Where(t => t.Name == (int)GameTag.HEALTH)
+                    //    .ToList();
+                    //var debugEntityOriginHealth2 = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
+                    //    .TakeWhile(t => t.Name != (int)GameTag.SHOW_ENTITY_START)
+                    //    .Where(t => t.Name == (int)GameTag.HEALTH)
+                    //    .ToList();
                     //var debugEntityOriginHealth2 = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
                     //    .TakeWhile(t => t.Name != (int)GameTag.SHOW_ENTITY_START)
                     //    .Where(t => t.Name == (int)GameTag.HEALTH)
@@ -459,6 +459,19 @@ namespace HearthstoneReplays.Events.Parsers
             OverrideTagWithHistory(clone, GameTag.HEALTH);
             OverrideTagWithHistory(clone, GameTag.ATK);
 
+            var enchantments = StateFacade.GsState.GameState.CurrentEntities.Values
+                .Where(entity => entity.GetTag(GameTag.ATTACHED) == id)
+                // Not sure why it can be REMOVEDFROMGAME
+                //.Where(entity => entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME)
+                .ToList();
+            //var debug = StateFacade.GsState.GameState.CurrentEntities.Values
+            //    .Where(entity => entity.GetTag(GameTag.ATTACHED) == id)
+            //    .ToList();
+            if (enchantments.Any(e => e.CardId == ExpeditionPlans_UnplayableEnchantment))
+            {
+                clone.SetTag(GameTag.UNPLAYABLE_VISUALS, 1);
+            }
+
             return clone;
 
             //var allData = StateFacade.GsState.CurrentGame.FilterGameData(null);
@@ -620,10 +633,25 @@ namespace HearthstoneReplays.Events.Parsers
         internal static object AddEchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
         {
             // For some reason, Teron's RapidReanimation enchantment is sometimes in the GRAVEYARD zone
+            List<Enchantment> enchantments = BuildEnchantments(currentEntities, fullEntity);
+            dynamic result = new
+            {
+                CardId = fullEntity.CardId,
+                Entity = fullEntity.Entity,
+                Id = fullEntity.Id,
+                Tags = fullEntity.GetTagsCopy(),
+                TimeStamp = fullEntity.TimeStamp,
+                Enchantments = enchantments,
+            };
+            return result;
+        }
+
+        private static List<Enchantment> BuildEnchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
+        {
             var enchantmentEntities = currentEntities.Values
-                .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id)
-                .Where(entity => entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME)
-                .ToList();
+                            .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id)
+                            .Where(entity => entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME)
+                            .ToList();
             var enchantments = enchantmentEntities
                 .Select(entity => new Enchantment
                 {
@@ -635,16 +663,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .ToList();
             List<Enchantment> additionalEnchantments = BuildAdditionalEnchantments(fullEntity, enchantmentEntities, currentEntities); ;
             enchantments.AddRange(additionalEnchantments);
-            dynamic result = new
-            {
-                CardId = fullEntity.CardId,
-                Entity = fullEntity.Entity,
-                Id = fullEntity.Id,
-                Tags = fullEntity.GetTagsCopy(),
-                TimeStamp = fullEntity.TimeStamp,
-                Enchantments = enchantments,
-            };
-            return result;
+            return enchantments;
         }
 
         internal static List<Enchantment> BuildAdditionalEnchantments(FullEntity fullEntity, List<FullEntity> enchantmentEntities, Dictionary<int, FullEntity> currentEntities)
