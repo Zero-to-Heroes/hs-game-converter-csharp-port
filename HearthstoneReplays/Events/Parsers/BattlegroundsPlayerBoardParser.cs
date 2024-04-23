@@ -105,6 +105,9 @@ namespace HearthstoneReplays.Events.Parsers
                         && entity.CardId != BaconphheroHeroic)
                     .OrderBy(entity => entity.Id)
                     .LastOrDefault();
+                var debug = GameState.CurrentEntities.Values
+                    .Where(entity => entity.CardId == "BG22_HERO_201")
+                    .ToList();
                 var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
 
                 var nextOpponentCandidates = GameState.CurrentEntities.Values
@@ -458,6 +461,8 @@ namespace HearthstoneReplays.Events.Parsers
             // it will still be detected
             OverrideTagWithHistory(clone, GameTag.HEALTH);
             OverrideTagWithHistory(clone, GameTag.ATK);
+            OverrideTagWithHistory(clone, GameTag.LITERALLY_UNPLAYABLE);
+            OverrideTagWithHistory(clone, GameTag.UNPLAYABLE_VISUALS);
 
             var enchantments = StateFacade.GsState.GameState.CurrentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.ATTACHED) == id)
