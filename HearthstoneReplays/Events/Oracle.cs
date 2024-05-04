@@ -381,7 +381,7 @@ namespace HearthstoneReplays.Events
                     case Overgrowth: return WildGrowth_ExcessManaLegacyToken;
                     case Parrrley_DED_005: return Parrrley_DED_005;
                     case PhotographerFizzle: return PhotographerFizzle_FizzlesSnapshotToken;
-                    case PlagueOfMurlocs: return TwistPlagueOfMurlocs_SurpriseMurlocsToken;
+                    case TwistPlagueOfMurlocs: return TwistPlagueOfMurlocs_SurpriseMurlocsToken;
                     case PopgarThePutrid_WW_091: return TramMechanic_BarrelOfSludgeToken_WW_044t;
                     case PortalKeeper: return PortalKeeper_FelhoundPortalToken;
                     case PortalOverfiend: return PortalKeeper_FelhoundPortalToken;
@@ -483,6 +483,7 @@ namespace HearthstoneReplays.Events
                     case TombPillager_LOE_012: return TheCoinCore;
                     case TombPillager_WON_340: return TheCoinCore;
                     case ToyCaptainTarim_TOY_813: return ToyCaptainTarim_ToyCaptainTarimToken_TOY_813t;
+                    case TradePrinceGallywix_GVG_028: return TradePrinceGallywix_GallywixsCoinToken;
                     case TramMechanic_WW_044: return TramMechanic_BarrelOfSludgeToken_WW_044t;
                     case TwinSlice_BT_175: return TwinSlice_SecondSliceToken;
                     case TwistTheCoffers_CacheOfCashToken: return TheCoinCore;
