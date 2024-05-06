@@ -1292,41 +1292,41 @@ namespace HearthstoneReplays.Events
                         return targetEntityId != null ? gameState.CurrentEntities.GetValueOrDefault(targetEntityId.Value)?.CardId : null;
                     }
                     // Horde Operative
-                    else if (actionEntity.CardId == HordeOperative)
-                    {
-                        var actionControllerId = actionEntity.GetController();
-                        if (actionEntity.KnownEntityIds.Count == 0)
-                        {
-                            // Find all secrets currently in play
-                            var allOpponentSecrets = gameState.CurrentEntities.Values
-                                .Where(e => e.GetController() != actionControllerId)
-                                .Where(e => e.GetZone() == (int)Zone.SECRET)
-                                .Where(e => e.GetTag(GameTag.SECRET) == 1)
-                                .OrderBy(e => e.GetTag(GameTag.ZONE_POSITION))
-                                .ToList();
-                            actionEntity.KnownEntityIds = allOpponentSecrets
-                                .Select(e => e.Entity)
-                                .ToList();
-                        }
+                    //else if (actionEntity.CardId == HordeOperative)
+                    //{
+                    //    var actionControllerId = actionEntity.GetController();
+                    //    if (actionEntity.KnownEntityIds.Count == 0)
+                    //    {
+                    //        // Find all secrets currently in play
+                    //        var allOpponentSecrets = gameState.CurrentEntities.Values
+                    //            .Where(e => e.GetController() != actionControllerId)
+                    //            .Where(e => e.GetZone() == (int)Zone.SECRET)
+                    //            .Where(e => e.GetTag(GameTag.SECRET) == 1)
+                    //            .OrderBy(e => e.GetTag(GameTag.ZONE_POSITION))
+                    //            .ToList();
+                    //        actionEntity.KnownEntityIds = allOpponentSecrets
+                    //            .Select(e => e.Entity)
+                    //            .ToList();
+                    //    }
 
-                        if (actionEntity.KnownEntityIds.Count > 0)
-                        {
-                            var currentSecretCardIds = gameState.CurrentEntities.Values
-                                .Where(e => e.GetController() == actionControllerId)
-                                .Where(e => e.GetZone() == (int)Zone.SECRET)
-                                .Where(e => e.GetTag(GameTag.SECRET) == 1)
-                                .OrderBy(e => e.GetTag(GameTag.ZONE_POSITION))
-                                .Select(e => e.CardId)
-                                .ToList();
-                            var entities = actionEntity.KnownEntityIds
-                                .Select(entityId => gameState.CurrentEntities.GetValueOrDefault(entityId))
-                                .Where(e => e != null &&  !currentSecretCardIds.Contains(e.CardId))
-                                .ToList();
-                            var nextCard = entities[0].CardId;
-                            actionEntity.KnownEntityIds.Remove(entities[0].Entity);
-                            return nextCard;
-                        }
-                    }
+                    //    if (actionEntity.KnownEntityIds.Count > 0)
+                    //    {
+                    //        var currentSecretCardIds = gameState.CurrentEntities.Values
+                    //            .Where(e => e.GetController() == actionControllerId)
+                    //            .Where(e => e.GetZone() == (int)Zone.SECRET)
+                    //            .Where(e => e.GetTag(GameTag.SECRET) == 1)
+                    //            .OrderBy(e => e.GetTag(GameTag.ZONE_POSITION))
+                    //            .Select(e => e.CardId)
+                    //            .ToList();
+                    //        var entities = actionEntity.KnownEntityIds
+                    //            .Select(entityId => gameState.CurrentEntities.GetValueOrDefault(entityId))
+                    //            .Where(e => e != null &&  !currentSecretCardIds.Contains(e.CardId))
+                    //            .ToList();
+                    //        var nextCard = entities[0].CardId;
+                    //        actionEntity.KnownEntityIds.Remove(entities[0].Entity);
+                    //        return nextCard;
+                    //    }
+                    //}
                     // Conqueror's Banner
                     else if (actionEntity.CardId == ConquerorsBanner && node.Type == typeof(TagChange))
                     {
@@ -1382,6 +1382,72 @@ namespace HearthstoneReplays.Events
             if (node.Type == typeof(FullEntity) && (node.Object as FullEntity).SubSpellInEffect?.Prefab == "Librams_SpawnToHand_Book")
             {
                 return LibramOfWisdom_BT_025;
+            }
+
+            return null;
+        }
+
+        public static string PredictSecret(
+            GameState gameState,
+            string creatorCardId,
+            int creatorEntityId,
+            Node node,
+            string inputCardId = null,
+            StateFacade stateFacade = null,
+            int? createdEntityId = null)
+        {
+            if (inputCardId != null && inputCardId.Length > 0)
+            {
+                return inputCardId;
+            }
+
+            if (node.Parent != null && node.Parent.Type == typeof(Action))
+            {
+                var action = node.Parent.Object as Action;
+                if (action.Type == (int)BlockType.POWER)
+                {
+                    var actionEntity = gameState.CurrentEntities.GetValueOrDefault(action.Entity);
+                    if (actionEntity == null)
+                    {
+                        return null;
+                    }
+
+                    if (actionEntity.CardId == HordeOperative)
+                    {
+                        var actionControllerId = actionEntity.GetController();
+                        if (actionEntity.KnownEntityIds.Count == 0)
+                        {
+                            // Find all secrets currently in play
+                            var allOpponentSecrets = gameState.CurrentEntities.Values
+                                .Where(e => e.GetController() != actionControllerId)
+                                .Where(e => e.GetZone() == (int)Zone.SECRET)
+                                .Where(e => e.GetTag(GameTag.SECRET) == 1)
+                                .OrderBy(e => e.GetTag(GameTag.ZONE_POSITION))
+                                .ToList();
+                            actionEntity.KnownEntityIds = allOpponentSecrets
+                                .Select(e => e.Entity)
+                                .ToList();
+                        }
+
+                        if (actionEntity.KnownEntityIds.Count > 0)
+                        {
+                            var currentSecretCardIds = gameState.CurrentEntities.Values
+                                .Where(e => e.GetController() == actionControllerId)
+                                .Where(e => e.GetZone() == (int)Zone.SECRET)
+                                .Where(e => e.GetTag(GameTag.SECRET) == 1)
+                                .OrderBy(e => e.GetTag(GameTag.ZONE_POSITION))
+                                .Select(e => e.CardId)
+                                .ToList();
+                            var entities = actionEntity.KnownEntityIds
+                                .Select(entityId => gameState.CurrentEntities.GetValueOrDefault(entityId))
+                                .Where(e => e != null && !currentSecretCardIds.Contains(e.CardId))
+                                .ToList();
+                            var nextCard = entities[0].CardId;
+                            actionEntity.KnownEntityIds.Remove(entities[0].Entity);
+                            return nextCard;
+                        }
+                    }
+                }
             }
 
             return null;

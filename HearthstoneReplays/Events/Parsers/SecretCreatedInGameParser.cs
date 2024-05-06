@@ -117,7 +117,12 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = fullEntity.CardId;
             if (cardId.Length == 0 && fullEntity.GetTag(GameTag.SECRET) == 1 && creator != null)
             {
-                cardId = Oracle.PredictCardId(GameState, creator.Item1, creator.Item2, node, fullEntity.CardId);
+                // ISSUE: This doesn't work well, as if the card itself can create other cards (e.g Desperate Measures),
+                // it will give the ID of that card instead of guessing the secret.
+                //cardId = Oracle.PredictCardId(GameState, creator.Item1, creator.Item2, node, fullEntity.CardId);
+                // We should probably use a more dedicated secret-predicting method, if need be in the future
+                // This is needed for Horde Operative at least
+                cardId = Oracle.PredictSecret(GameState, creator.Item1, creator.Item2, node, fullEntity.CardId);
             }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
