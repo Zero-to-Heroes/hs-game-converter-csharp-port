@@ -30,7 +30,7 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             var oldWhizbangAndLegacy = node.Type == typeof(PlayerEntity);
-            var newWhizbang = node.Type == typeof(FullEntity);
+            var newWhizbang = node.Type == typeof(FullEntity) || node.Type == typeof(ShowEntity);
             return stateType == StateType.PowerTaskList 
                 && (oldWhizbangAndLegacy || newWhizbang);
         }
@@ -46,9 +46,13 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return CreateFromPlayerEntity(node);
             }
-            else
+            else if (node.Type == typeof(FullEntity))
             {
                 return CreateFromFullEntity(node);
+            }
+            else
+            {
+                return CreateFromShowEntity(node);
             }
         }
 
@@ -75,6 +79,38 @@ namespace HearthstoneReplays.Events.Parsers
                     null,
                     entity.GetEffectiveController(),
                     entity.Id,
+                    Helper,
+                    null,
+                    new {
+                        DeckId = whizbangDeckId,
+                    }),
+                true,
+                node) };
+        }
+
+        public List<GameEventProvider> CreateFromShowEntity(Node node)
+        {
+            var entity = node.Object as ShowEntity;
+            var parentAction = node.Parent?.Type == typeof(Action) ? node.Parent.Object as Action : null;
+            if (parentAction == null)
+            {
+                return null;
+            }
+
+            var whizbangDeckId = GetSplendiferousDeckId(entity.CardId);
+            if (whizbangDeckId == -1)
+            {
+                return null;
+            }
+
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                entity.TimeStamp,
+                "WHIZBANG_DECK_ID",
+                GameEvent.CreateProvider(
+                    "WHIZBANG_DECK_ID",
+                    null,
+                    entity.GetEffectiveController(),
+                    entity.Entity,
                     Helper,
                     null,
                     new {
