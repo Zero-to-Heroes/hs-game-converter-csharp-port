@@ -5,6 +5,7 @@ using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using static HearthstoneReplays.Events.CardIds;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
+using System;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -31,7 +32,7 @@ namespace HearthstoneReplays.Events.Parsers
             var debug = node.Type == typeof(SubSpell)
                     && (node.Object as SubSpell).Prefab.StartsWith("ReuseFX_Generic_OverrideSpawn_FromPortal_Super_Random_SuppressPlaySounds");
             var subSpell = debug ? node.Object as SubSpell : null;
-            return stateType == StateType.GameState 
+            return stateType == StateType.GameState
                     && StateFacade.IsBattlegrounds()
                     && GameState.GetGameEntity()?.GetTag(GameTag.BOARD_VISUAL_STATE) == 2
                     && node.Type == typeof(SubSpell)
@@ -62,7 +63,6 @@ namespace HearthstoneReplays.Events.Parsers
             var opponentBoard = BattlegroundsPlayerBoardParser.CreateProviderFromAction(opponent, true, player, GameState, StateFacade);
             var playerBoard = BattlegroundsPlayerBoardParser.CreateProviderFromAction(player, false, player, GameState, StateFacade);
 
-
             // If we move back to GS logs, this probably needs to be in another parser
             GameState.BgsHasSentNextOpponent = false;
 
@@ -70,20 +70,39 @@ namespace HearthstoneReplays.Events.Parsers
             result.Add(GameEventProvider.Create(
                    subSpell.Timestamp,
                    "BATTLEGROUNDS_DUO_FUTURE_TEAMMATE_BOARD",
-                   () => new GameEvent
+                   () =>
                    {
-                       Type = "BATTLEGROUNDS_DUO_FUTURE_TEAMMATE_BOARD",
-                       Value = new
+                       // Because there is some data that is not available at the time we build the teammates board, and because we can't "look into the future" 
+                       // here (since we already use the GS), we use the slight delay from event to be provided so that the info will be present in the GameState
+                       // Be careful though, as it's possible that the full battle is already ended at that stage, so getting data like attack and health could be misleading
+                       EnhanceInfo(playerBoard);
+                       EnhanceInfo(opponentBoard);
+                       return new GameEvent
                        {
-                           Timestamp = subSpell.Timestamp,
-                           PlayerBoard = playerBoard,
-                           OpponentBoard = opponentBoard,
-                       }
+                           Type = "BATTLEGROUNDS_DUO_FUTURE_TEAMMATE_BOARD",
+                           Value = new
+                           {
+                               Timestamp = subSpell.Timestamp,
+                               PlayerBoard = playerBoard,
+                               OpponentBoard = opponentBoard,
+                           }
+                       };
                    },
                    true,
                    node
                ));
             return result;
+        }
+
+        private void EnhanceInfo(BattlegroundsPlayerBoardParser.PlayerBoard playerBoard)
+        {
+            EnhanceHeroPower(playerBoard);
+        }
+
+        private void EnhanceHeroPower(BattlegroundsPlayerBoardParser.PlayerBoard playerBoard)
+        {
+            BattlegroundsPlayerBoardParser.GetEmbraceYourRageTarget(
+                StateFacade, playerBoard.HeroPowerUsed, playerBoard.HeroPowerCardId, playerBoard?.HeroPowerEntityId, (newValue) => playerBoard.HeroPowerInfo = newValue);
         }
     }
 }

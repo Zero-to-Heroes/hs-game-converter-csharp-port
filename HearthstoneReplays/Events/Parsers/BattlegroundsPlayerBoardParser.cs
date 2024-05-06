@@ -5,6 +5,8 @@ using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using static HearthstoneReplays.Events.CardIds;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
+using System.Runtime.InteropServices;
+using System;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -188,19 +190,6 @@ namespace HearthstoneReplays.Events.Parsers
                         .Select(e => GetEntitySpawnedFromHand(e.Id, board, StateFacade) ?? e)
                         .Select(e => e.SetTag(GameTag.DAMAGE, 0).SetTag(GameTag.ZONE, (int)Zone.HAND) as FullEntity)
                         .ToList();
-                    //var debugEntity = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425);
-                    //var debugEntityOrigin = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425);
-                    //var debugEntityOriginHealth = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
-                    //    .Where(t => t.Name == (int)GameTag.HEALTH)
-                    //    .ToList();
-                    //var debugEntityOriginHealth2 = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
-                    //    .TakeWhile(t => t.Name != (int)GameTag.SHOW_ENTITY_START)
-                    //    .Where(t => t.Name == (int)GameTag.HEALTH)
-                    //    .ToList();
-                    //var debugEntityOriginHealth2 = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
-                    //    .TakeWhile(t => t.Name != (int)GameTag.SHOW_ENTITY_START)
-                    //    .Where(t => t.Name == (int)GameTag.HEALTH)
-                    //    .ToList();
                     hand = revealedHand;
                 }
                 var debug = GameState.CurrentEntities.Values
@@ -218,20 +207,6 @@ namespace HearthstoneReplays.Events.Parsers
                 }
                 var heroPowerUsed = heroPower?.GetTag(GameTag.BACON_HERO_POWER_ACTIVATED) == 1;
                 string heroPowerCreatedEntity = null;
-                //if (!heroPowerUsed && heroPower?.CardId == CardIds.EmbraceYourRage)
-                //{
-                //    var parentAction = (node.Parent.Object as Parser.ReplayData.GameActions.Action);
-                //    var hasTriggerBlock = parentAction.Data
-                //        .Where(data => data is Parser.ReplayData.GameActions.Action)
-                //        .Select(data => data as Parser.ReplayData.GameActions.Action)
-                //        .Where(action => action.Type == (int)BlockType.TRIGGER)
-                //        .Where(action => GameState.CurrentEntities.ContainsKey(action.Entity)
-                //            && GameState.CurrentEntities[action.Entity]?.CardId == CardIds.EmbraceYourRage
-                //            && GameState.CurrentEntities[action.Entity]?.GetEffectiveController() == player.PlayerId
-                //         )
-                //        .Count() > 0;
-                //    heroPowerUsed = heroPowerUsed || hasTriggerBlock;
-                //}
                 var finalBoard = board.Select(entity => AddEchantments(GameState.CurrentEntities, entity)).ToList();
                 if (finalBoard.Count > 7)
                 {
@@ -291,68 +266,13 @@ namespace HearthstoneReplays.Events.Parsers
                 // String or int
                 dynamic heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
                 var heroPowerInfo2 = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2) ?? 0;
-                // There is an enchantment attached to the entity that will die
-                //if (heroPowerUsed && heroPower?.CardId == CardIds.TeronGorefiend_RapidReanimation)
-                //{
-                //    //var impendingDeathEnchantments = GameState.CurrentEntities.Values
-                //    //    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                //    //    .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
-                //    //    .ToList();
-                //    ////var debug = StateFacade.GsState.GameState.CurrentEntities.Values
-                //    ////    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                //    ////    .Where(entity => entity.CardId == CardIds.RapidReanimation_ImpendingDeathEnchantment)
-                //    ////    .ToList();
-                //    //var impendingDeath = impendingDeathEnchantments
-                //    //    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
-                //    //    .Where(entity => entity.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == -1)
-                //    //    .FirstOrDefault()
-                //    //    ?? impendingDeathEnchantments
-                //    //        .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || entity.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE)
-                //    //        .FirstOrDefault()
-                //    //    ?? impendingDeathEnchantments
-                //    //        .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD)
-                //    //        .FirstOrDefault();
-                //    //// Can be null if the player didn't use the hero power
-                //    //if (impendingDeath != null)
-                //    //{
-                //    //    heroPowerInfo = impendingDeath.GetTag(GameTag.ATTACHED);
-                //    //}
-                //}
-                if (heroPowerUsed && heroPower?.CardId == CardIds.EmbraceYourRage && heroPowerInfo == -1)
-                {
-                    //var debugEntities = StateFacade.GsState.GameState.CurrentEntities.Values
-                    //    .Where(e => e.GetTag(GameTag.CREATOR) == heroPower.Entity)
-                    //    .Where(e => e.GetCardType() == (int)CardType.MINION)
-                    //    .Reverse()
-                    //    .FirstOrDefault();
-                    var createdEntity = StateFacade.GsState.GameState.CurrentEntities.Values
-                        .Where(e => e.GetTag(GameTag.CREATOR) == heroPower.Entity)
-                        .Where(e => e.GetCardType() == (int)CardType.MINION)
-                        .Reverse()
-                        .FirstOrDefault();
-                    //var debugCreated = createdEntity?.CardId;
-                    heroPowerInfo = createdEntity?.CardId;
-
-                    //var embraceYourRageCreationAction = StateFacade.GsState.CurrentGame.FilterGameData(typeof(Action))
-                    //    .Select(d => d as Action)
-                    //    .Where(a => a.Type == (int)BlockType.TRIGGER)
-                    //    .Where(a => a.Entity == heroPower.Entity)
-                    //    .LastOrDefault();
-                    //if (embraceYourRageCreationAction != null)
-                    //{
-                    //    var entity = embraceYourRageCreationAction.Data
-                    //        .Where(d => d is FullEntity)
-                    //        .Select(d => d as FullEntity)
-                    //        .Where(d => d.CardId != null && d.CardId.Length > 0)
-                    //        .FirstOrDefault();
-                    //    heroPowerInfo = entity?.CardId;
-                    //}
-                }
+                GetEmbraceYourRageTarget(StateFacade, heroPowerUsed, heroPower?.CardId, heroPower?.Entity, (newValue) => heroPowerInfo = newValue);
 
                 return new PlayerBoard()
                 {
                     Hero = hero,
                     HeroPowerCardId = heroPower?.CardId,
+                    HeroPowerEntityId = heroPower?.Entity ?? -1,
                     HeroPowerUsed = heroPowerUsed,
                     HeroPowerInfo = heroPowerInfo,
                     HeroPowerInfo2 = heroPowerInfo2,
@@ -380,6 +300,20 @@ namespace HearthstoneReplays.Events.Parsers
                 };
             }
             return null;
+        }
+
+        internal static void GetEmbraceYourRageTarget(
+            StateFacade stateFacade, bool heroPowerUsed, string heroPowerCardId, int? heroPowerEntityId, Action<dynamic> assignHeroPowerInfo)
+        {
+            if (heroPowerUsed && heroPowerCardId == CardIds.EmbraceYourRage)
+            {
+                var createdEntity = stateFacade.GsState.GameState.CurrentEntities.Values
+                    .Where(e => e.GetTag(GameTag.CREATOR) == heroPowerEntityId)
+                    .Where(e => e.GetCardType() == (int)CardType.MINION)
+                    .Reverse()
+                    .FirstOrDefault();
+                assignHeroPowerInfo.Invoke(createdEntity?.CardId);
+            }
         }
 
         internal static FullEntity BuildEntityWithCardIdFromTheFuture(FullEntity entity, GameState gsState)
@@ -703,6 +637,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             public FullEntity Hero { get; set; }
             public string HeroPowerCardId { get; set; }
+            public int HeroPowerEntityId { get; set; }
             public bool HeroPowerUsed { get; set; }
             public dynamic HeroPowerInfo { get; set; }
             // Used for Tavish damage for instance
