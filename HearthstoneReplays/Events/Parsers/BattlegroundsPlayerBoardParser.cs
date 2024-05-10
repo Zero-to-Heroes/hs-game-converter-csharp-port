@@ -245,28 +245,12 @@ namespace HearthstoneReplays.Events.Parsers
                     })
                     .ToList();
 
-                var eternalKnightBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.EternalKnightPlayerEnchantEnchantment, GameState);
-                var tavernSpellsCastThisGame = GameState.CurrentEntities[player.Id]?.GetTag(GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME) ?? 0;
-                // Includes Anub'arak, Nerubian Deathswarmer
-                var undeadAttackBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, GameState);
-                // Looks like the enchantment isn't used anymore, at least for the opponent?
-                var frostlingBonus = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, GameState);
-                var bloodGemEnchant = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.CardId == CardIds.BloodGemPlayerEnchantEnchantment)
-                    .FirstOrDefault();
-                var bloodGemAttackBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0;
-                var bloodGemHealthBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0;
-                var choralEnchantments = StateFacade.GsState.GameState.CurrentEntities.Values
-                    .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
-                    .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)));
-                var choralEnchantment = choralEnchantments.FirstOrDefault();
+                BgsPlayerGlobalInfo globalInfo = BuildGlobalInfo(player.PlayerId, player.Id, finalBoard, GameState, StateFacade);
 
                 // String or int
                 dynamic heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
                 var heroPowerInfo2 = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2) ?? 0;
-                GetEmbraceYourRageTarget(StateFacade, heroPowerUsed, heroPower?.CardId, heroPower?.Entity, (newValue) => heroPowerInfo = newValue);
+                UpdateEmbraceYourRageTarget(StateFacade, heroPowerUsed, heroPower?.CardId, heroPower?.Entity, (newValue) => heroPowerInfo = newValue);
 
                 return new PlayerBoard()
                 {
@@ -279,30 +263,56 @@ namespace HearthstoneReplays.Events.Parsers
                     HeroPowerCreatedEntity = heroPowerCreatedEntity,
                     CardId = cardId,
                     PlayerId = playerId,
+                    PlayerEntityId = player.Id,
                     Board = finalBoard,
                     QuestEntities = questEntities,
                     QuestRewards = questRewards,
                     QuestRewardEntities = questRewardEntities,
                     Secrets = secrets,
                     Hand = hand,
-                    GlobalInfo = new BgsPlayerGlobalInfo()
-                    {
-                        EternalKnightsDeadThisGame = eternalKnightBonus,
-                        TavernSpellsCastThisGame = tavernSpellsCastThisGame,
-                        UndeadAttackBonus = undeadAttackBonus,
-                        FrostlingBonus = frostlingBonus,
-                        BloodGemAttackBonus = bloodGemAttackBonus,
-                        BloodGemHealthBonus = bloodGemHealthBonus,
-                        // TODO: always show the base version, even for golden
-                        ChoralAttackBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0,
-                        ChoralHealthBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0,
-                    }
+                    GlobalInfo = globalInfo,
                 };
             }
             return null;
         }
 
-        internal static void GetEmbraceYourRageTarget(
+        internal static BgsPlayerGlobalInfo BuildGlobalInfo(int playerId, int playerEntityId, List<BgsPlayerBoardEntity> board, GameState GameState, StateFacade StateFacade)
+        {
+            var eternalKnightBonus = GetPlayerEnchantmentValue(playerId, CardIds.EternalKnightPlayerEnchantEnchantment, GameState);
+            var tavernSpellsCastThisGame = GameState.CurrentEntities[playerEntityId]?.GetTag(GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME) ?? 0;
+            // Includes Anub'arak, Nerubian Deathswarmer
+            var undeadAttackBonus = GetPlayerEnchantmentValue(playerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, GameState);
+            // Looks like the enchantment isn't used anymore, at least for the opponent?
+            var frostlingBonus = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, GameState);
+            var bloodGemEnchant = GameState.CurrentEntities.Values
+                .Where(entity => entity.GetEffectiveController() == playerId)
+                // Don't use the PLAY zone, as it could cause issues with teammate state in Duos? To be tested
+                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                .Where(entity => entity.CardId == CardIds.BloodGemPlayerEnchantEnchantment)
+                .LastOrDefault();
+            var bloodGemAttackBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0;
+            var bloodGemHealthBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0;
+            var debugList = StateFacade.GsState.GameState.CurrentEntities.Values
+                .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
+                .ToList();
+            var choralEnchantments = StateFacade.GsState.GameState.CurrentEntities.Values
+                .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
+                .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)));
+            var choralEnchantment = choralEnchantments.FirstOrDefault();
+            return new BgsPlayerGlobalInfo()
+            {
+                EternalKnightsDeadThisGame = eternalKnightBonus,
+                TavernSpellsCastThisGame = tavernSpellsCastThisGame,
+                UndeadAttackBonus = undeadAttackBonus,
+                FrostlingBonus = frostlingBonus,
+                BloodGemAttackBonus = bloodGemAttackBonus,
+                BloodGemHealthBonus = bloodGemHealthBonus,
+                ChoralAttackBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0,
+                ChoralHealthBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0,
+            };
+        }
+
+        internal static void UpdateEmbraceYourRageTarget(
             StateFacade stateFacade, bool heroPowerUsed, string heroPowerCardId, int? heroPowerEntityId, Action<dynamic> assignHeroPowerInfo)
         {
             if (heroPowerUsed && heroPowerCardId == CardIds.EmbraceYourRage)
@@ -412,147 +422,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             return clone;
-
-            //var allData = StateFacade.GsState.CurrentGame.FilterGameData(null);
-            //var showEntity = allData
-            //    .Where(d => d is ShowEntity)
-            //    .Select(d => d as ShowEntity)
-            //    .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id)
-            //    .FirstOrDefault();
-            //if (showEntity == null)
-            //{
-            //    return null;
-            //}
-
-            //// All of this doesn't work, because when entities are buffed in hand, we don't have a tag change
-            //// or any numerical data. We would have to manually code the buffs in hand, but that feels way too 
-            //// high-maintenance
-            ////var showEntityIndex = allData.IndexOf(showEntity);
-            ////// Get all the tag changes that affect the entity, and revert their effect
-            ////var tagsBeforeShowEntity = allData.GetRange(0, showEntityIndex);
-            ////// These apply to the entity in hand, not to the showEntity
-            ////var tagChanges = tagsBeforeShowEntity
-            ////    .Where(d => d is TagChange)
-            ////    .Select(d => d as TagChange)
-            ////    .Where(t => t.Entity == id)
-            ////    .ToList();
-            ////foreach (var tagChange in tagChanges)
-            ////{
-            ////    if (tagChange.Name == (int)GameTag.ATK)
-            ////    {
-            ////        showEntity.SetTag(GameTag.ATK, showEntity.GetTag(GameTag.ATK) - tagChange.Value);
-            ////    }
-            ////    else if (tagChange.Name == (int)GameTag.HEALTH)
-            ////    {
-            ////        showEntity.SetTag(GameTag.HEALTH, showEntity.GetTag(GameTag.HEALTH) - tagChange.Value);
-            ////    }
-            ////}
-
-            //return new FullEntity()
-            //{
-            //    Id = showEntity.Entity,
-            //    Entity = showEntity.Entity,
-            //    CardId = showEntity.CardId,
-            //    Tags = showEntity.GetTagsCopy(),
-            //    TimeStamp = showEntity.TimeStamp,
-            //};
-
-            //var tagChangesForEntity = StateFacade.GsState.CurrentGame
-            //    .FilterGameData(typeof(TagChange))
-            //    .Select(d => d as TagChange)
-            //    .Where(t )
-            //// At this stage, we have the correct entity, BUT some tags have been reset
-            //// Indeed, once the entity dies and goes to the graveyard, there are tag changes going on to reset 
-            //// a lot of its state, like setting the atk back to its default value
-            //var result = StateFacade.GsState.GameState.CurrentEntities.Values
-            //    .Where(e => e.GetTag(GameTag.COPIED_FROM_ENTITY_ID) == id
-            //        || e.AllPreviousTags.Any(t => t.Name == (int)GameTag.COPIED_FROM_ENTITY_ID && t.Value == id))
-            //    .FirstOrDefault();
-            //if (result == null)
-            //{
-            //    return null;
-            //}
-
-            //var attackWhenSummoned = result.TagsHistory.Find(t => t.Name == (int)GameTag.ATK).Value;
-            //var healthWhenSummoned = result.TagsHistory.Find(t => t.Name == (int)GameTag.HEALTH).Value;
-            //result = result
-            //    .SetTag(GameTag.ATK, attackWhenSummoned)
-            //    .SetTag(GameTag.HEALTH, healthWhenSummoned)
-            //    as FullEntity;
-            //// TODO: find out all the enchantments that apply on the card, and if the enchantments originate from one 
-            //// of the board entities, unroll them
-            //var debug = StateFacade.GsState.GameState.CurrentEntities.Values
-            //    .Where(e => e.GetCardType() == (int)CardType.ENCHANTMENT)
-            //    .Where(e => e.GetTag(GameTag.ATTACHED) == result.Entity)
-            //    .ToList();
-            //var enchantmentsAppliedOnShowEntity = StateFacade.GsState.GameState.CurrentEntities.Values
-            //    .Where(e => e.GetCardType() == (int)CardType.ENCHANTMENT)
-            //    .Where(e => e.IsInPlay())
-            //    .Where(e => e.GetTag(GameTag.ATTACHED) == result.Entity)
-
-            //    .ToList();
-            //foreach (var enchantment in enchantmentsAppliedOnShowEntity)
-            //{
-            //    var healthBuff = GetEnchantmentHealthBuff(enchantment);
-            //    var attackBuff = GetEnchantmentAttackBuff(enchantment);
-            //    result = result
-            //        .SetTag(GameTag.ATK, result.GetTag(GameTag.ATK) - attackBuff) 
-            //        .SetTag(GameTag.HEALTH, result.GetTag(GameTag.HEALTH) - healthBuff)
-            //        as FullEntity;
-            //}
-
-            //return result;
         }
-
-        //private int GetEnchantmentHealthBuff(FullEntity enchantment)
-        //{
-        //    switch (enchantment.CardId)
-        //    {
-        //        case DiremuckForager_BG27_556:
-        //            return 2;
-        //        case DiremuckForager_BG27_556_G:
-        //            return 4;
-        //        case Scourfin_BG26_360:
-        //            return 5;
-        //        case Scourfin_BG26_360_G:
-        //            return 10;
-        //        case Murcules_BG27_023:
-        //            return 2;
-        //        case Murcules_BG27_023_G:
-        //            return 4;
-        //        case CogworkCopter_BG24_008:
-        //            return 1;
-        //        case CogworkCopter_BG24_008_G:
-        //            return 2;
-        //        default:
-        //            return 0;
-        //    }
-        //}
-
-        //private int GetEnchantmentAttackBuff(FullEntity enchantment)
-        //{
-        //    switch (enchantment.CardId)
-        //    {
-        //        case DiremuckForager_BG27_556:
-        //            return 2;
-        //        case DiremuckForager_BG27_556_G:
-        //            return 4;
-        //        case Scourfin_BG26_360:
-        //            return 5;
-        //        case Scourfin_BG26_360_G:
-        //            return 10;
-        //        case Murcules_BG27_023:
-        //            return 2;
-        //        case Murcules_BG27_023_G:
-        //            return 4;
-        //        case CogworkCopter_BG24_008:
-        //            return 1;
-        //        case CogworkCopter_BG24_008_G:
-        //            return 2;
-        //        default:
-        //            return 0;
-        //    }
-        //}
 
         internal static int GetPlayerEnchantmentValue(int playerId, string enchantment, GameState GameState)
         {
@@ -569,11 +439,11 @@ namespace HearthstoneReplays.Events.Parsers
             return GameState.CurrentEntities.GetValueOrDefault(playerEntityId)?.GetTag(tag, 0) ?? 0;
         }
 
-        internal static object AddEchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
+        internal static BgsPlayerBoardEntity AddEchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
         {
             // For some reason, Teron's RapidReanimation enchantment is sometimes in the GRAVEYARD zone
             List<Enchantment> enchantments = BuildEnchantments(currentEntities, fullEntity);
-            dynamic result = new
+            BgsPlayerBoardEntity result = new BgsPlayerBoardEntity()
             {
                 CardId = fullEntity.CardId,
                 Entity = fullEntity.Entity,
@@ -645,16 +515,27 @@ namespace HearthstoneReplays.Events.Parsers
             public string HeroPowerCreatedEntity { get; set; }
             public string CardId { get; set; }
             public int PlayerId { get; set; }
+            public int PlayerEntityId { get; set; }
             public List<QuestEntity> QuestEntities { get; set; }
             public List<string> QuestRewards { get; set; }
             public List<QuestReward> QuestRewardEntities { get; set; }
-            public List<object> Board { get; set; }
+            public List<BgsPlayerBoardEntity> Board { get; set; }
             public List<FullEntity> Secrets { get; set; }
             public List<FullEntity> Hand { get; set; }
             public BgsPlayerGlobalInfo GlobalInfo { get; set; }
         }
 
-        internal class BgsPlayerGlobalInfo
+        internal class BgsPlayerBoardEntity
+        {
+            public string CardId;
+            public int Entity;
+            public int Id;
+            public List<Tag> Tags;
+            public DateTime TimeStamp;
+            public List<Enchantment> Enchantments;
+        }
+
+        public class BgsPlayerGlobalInfo
         {
             public int EternalKnightsDeadThisGame { get; set; }
             public int TavernSpellsCastThisGame { get; set; }

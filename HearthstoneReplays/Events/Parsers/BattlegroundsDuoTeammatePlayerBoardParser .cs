@@ -75,8 +75,8 @@ namespace HearthstoneReplays.Events.Parsers
                        // Because there is some data that is not available at the time we build the teammates board, and because we can't "look into the future" 
                        // here (since we already use the GS), we use the slight delay from event to be provided so that the info will be present in the GameState
                        // Be careful though, as it's possible that the full battle is already ended at that stage, so getting data like attack and health could be misleading
-                       EnhanceInfo(playerBoard);
-                       EnhanceInfo(opponentBoard);
+                       EnhanceInfo(playerBoard, GameState, StateFacade);
+                       EnhanceInfo(opponentBoard, GameState, StateFacade);
                        return new GameEvent
                        {
                            Type = "BATTLEGROUNDS_DUO_FUTURE_TEAMMATE_BOARD",
@@ -94,15 +94,18 @@ namespace HearthstoneReplays.Events.Parsers
             return result;
         }
 
-        private void EnhanceInfo(BattlegroundsPlayerBoardParser.PlayerBoard playerBoard)
+        private void EnhanceInfo(BattlegroundsPlayerBoardParser.PlayerBoard playerBoard, GameState gameState, StateFacade stateFacade)
         {
             EnhanceHeroPower(playerBoard);
+            var globalInfo = BattlegroundsPlayerBoardParser.BuildGlobalInfo(playerBoard.PlayerId, playerBoard.PlayerEntityId, playerBoard.Board, gameState, stateFacade);
+            playerBoard.GlobalInfo = globalInfo;
         }
 
         private void EnhanceHeroPower(BattlegroundsPlayerBoardParser.PlayerBoard playerBoard)
         {
-            BattlegroundsPlayerBoardParser.GetEmbraceYourRageTarget(
-                StateFacade, playerBoard.HeroPowerUsed, playerBoard.HeroPowerCardId, playerBoard?.HeroPowerEntityId, (newValue) => playerBoard.HeroPowerInfo = newValue);
+            BattlegroundsPlayerBoardParser.UpdateEmbraceYourRageTarget(StateFacade, playerBoard.HeroPowerUsed, playerBoard.HeroPowerCardId, playerBoard?.HeroPowerEntityId, 
+                (newValue) => playerBoard.HeroPowerInfo = newValue);
+
         }
     }
 }
