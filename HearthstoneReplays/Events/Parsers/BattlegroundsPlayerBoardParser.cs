@@ -278,13 +278,15 @@ namespace HearthstoneReplays.Events.Parsers
 
         internal static BgsPlayerGlobalInfo BuildGlobalInfo(int playerId, int playerEntityId, List<BgsPlayerBoardEntity> board, GameState GameState, StateFacade StateFacade)
         {
-            var eternalKnightBonus = GetPlayerEnchantmentValue(playerId, CardIds.EternalKnightPlayerEnchantEnchantment, GameState);
+            var currentEntities = GameState.CurrentEntities.Values.ToList();
+            var currentEntitiesGs = StateFacade.GsState.GameState.CurrentEntities.Values.ToList();
+            var eternalKnightBonus = GetPlayerEnchantmentValue(playerId, CardIds.EternalKnightPlayerEnchantEnchantment, currentEntities);
             var tavernSpellsCastThisGame = GameState.CurrentEntities[playerEntityId]?.GetTag(GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME) ?? 0;
             // Includes Anub'arak, Nerubian Deathswarmer
-            var undeadAttackBonus = GetPlayerEnchantmentValue(playerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, GameState);
+            var undeadAttackBonus = GetPlayerEnchantmentValue(playerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, currentEntities);
             // Looks like the enchantment isn't used anymore, at least for the opponent?
-            var frostlingBonus = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, GameState);
-            var bloodGemEnchant = GameState.CurrentEntities.Values
+            var frostlingBonus = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, currentEntities);
+            var bloodGemEnchant = currentEntities
                 .Where(entity => entity.GetEffectiveController() == playerId)
                 // Don't use the PLAY zone, as it could cause issues with teammate state in Duos? To be tested
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
@@ -292,10 +294,10 @@ namespace HearthstoneReplays.Events.Parsers
                 .LastOrDefault();
             var bloodGemAttackBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0;
             var bloodGemHealthBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0;
-            var debugList = StateFacade.GsState.GameState.CurrentEntities.Values
+            var debugList = currentEntitiesGs
                 .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
                 .ToList();
-            var choralEnchantments = StateFacade.GsState.GameState.CurrentEntities.Values
+            var choralEnchantments = currentEntitiesGs
                 .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
                 .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)));
             var choralEnchantment = choralEnchantments.FirstOrDefault();
@@ -424,9 +426,9 @@ namespace HearthstoneReplays.Events.Parsers
             return clone;
         }
 
-        internal static int GetPlayerEnchantmentValue(int playerId, string enchantment, GameState GameState)
+        internal static int GetPlayerEnchantmentValue(int playerId, string enchantment, List<FullEntity> currentEntities)
         {
-            return GameState.CurrentEntities.Values
+            return currentEntities
                 .Where(entity => entity.GetEffectiveController() == playerId)
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 .Where(entity => entity.CardId == enchantment)
@@ -434,9 +436,9 @@ namespace HearthstoneReplays.Events.Parsers
                 ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
         }
 
-        internal static int GetPlayerTag(int playerEntityId, GameTag tag, GameState GameState)
+        internal static int GetPlayerTag(int playerEntityId, GameTag tag, List<FullEntity> currentEntities)
         {
-            return GameState.CurrentEntities.GetValueOrDefault(playerEntityId)?.GetTag(tag, 0) ?? 0;
+            return currentEntities.Find(e => e.Entity == playerEntityId)?.GetTag(tag, 0) ?? 0;
         }
 
         internal static BgsPlayerBoardEntity AddEchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
