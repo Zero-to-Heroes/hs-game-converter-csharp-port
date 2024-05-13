@@ -60,8 +60,8 @@ namespace HearthstoneReplays.Events.Parsers
 
             // The info here will be degraded, since we aren't able to look into the future (we're already using the
             // GameState), but it should be good enough
-            var opponentBoard = BattlegroundsPlayerBoardParser.CreateProviderFromAction(opponent, true, player, GameState, StateFacade);
-            var playerBoard = BattlegroundsPlayerBoardParser.CreateProviderFromAction(player, false, player, GameState, StateFacade);
+            var opponentBoard = BattlegroundsPlayerBoardParser.CreateProviderFromAction(opponent.PlayerId, opponent.Id, true, player, GameState, StateFacade);
+            var playerBoard = BattlegroundsPlayerBoardParser.CreateProviderFromAction(player.PlayerId, player.Id, false, player, GameState, StateFacade);
 
             // If we move back to GS logs, this probably needs to be in another parser
             GameState.BgsHasSentNextOpponent = false;
@@ -75,8 +75,8 @@ namespace HearthstoneReplays.Events.Parsers
                        // Because there is some data that is not available at the time we build the teammates board, and because we can't "look into the future" 
                        // here (since we already use the GS), we use the slight delay from event to be provided so that the info will be present in the GameState
                        // Be careful though, as it's possible that the full battle is already ended at that stage, so getting data like attack and health could be misleading
-                       EnhanceInfo(playerBoard, GameState, StateFacade);
-                       EnhanceInfo(opponentBoard, GameState, StateFacade);
+                       EnhanceInfo(playerBoard, player, GameState, StateFacade);
+                       EnhanceInfo(opponentBoard, opponent, GameState, StateFacade);
                        return new GameEvent
                        {
                            Type = "BATTLEGROUNDS_DUO_FUTURE_TEAMMATE_BOARD",
@@ -94,10 +94,12 @@ namespace HearthstoneReplays.Events.Parsers
             return result;
         }
 
-        private void EnhanceInfo(BattlegroundsPlayerBoardParser.PlayerBoard playerBoard, GameState gameState, StateFacade stateFacade)
+        private void EnhanceInfo(BattlegroundsPlayerBoardParser.PlayerBoard playerBoard, Player player, GameState gameState, StateFacade stateFacade)
         {
             EnhanceHeroPower(playerBoard);
-            var globalInfo = BattlegroundsPlayerBoardParser.BuildGlobalInfo(playerBoard.PlayerId, playerBoard.PlayerEntityId, playerBoard.Board, gameState, stateFacade);
+            // Here this is a bit weird, as the Controller of the effects is actually the "main player" or the "opponent player",
+            // and not the actual player id
+            var globalInfo = BattlegroundsPlayerBoardParser.BuildGlobalInfo(player.PlayerId, playerBoard.PlayerEntityId, playerBoard.Board, gameState, stateFacade);
             playerBoard.GlobalInfo = globalInfo;
         }
 

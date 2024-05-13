@@ -49,7 +49,7 @@ namespace HearthstoneReplays.Events.Parsers
             var opponent = StateFacade.OpponentPlayer;
             var player = StateFacade.LocalPlayer;
 
-            var playerBoard = BattlegroundsPlayerBoardParser.CreateProviderFromAction(player, false, player, GameState, StateFacade);
+            var playerBoard = BattlegroundsPlayerBoardParser.CreateProviderFromAction(player.PlayerId, player.Id, false, player, GameState, StateFacade);
 
             GameState.BgsHasSentNextOpponent = false;
 
