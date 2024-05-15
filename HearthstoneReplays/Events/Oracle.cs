@@ -300,6 +300,7 @@ namespace HearthstoneReplays.Events
                     case FishyFlyer: return FishyFlyer_SpectralFlyerToken;
                     case FlameGeyser: return FireFly_FlameElementalToken;
                     case FlameGeyserCore: return FireFly_FlameElementalToken;
+                    case FlickeringLightbot_MIS_918: return FlickeringLightbot_FlickeringLightbotToken_MIS_918t;
                     case FloppyHydra_TOY_897: return FloppyHydra_TOY_897;
                     case ForgottenTorch: return ForgottenTorch_RoaringTorchToken;
                     case Framester: return Framester_FramedToken;
@@ -369,6 +370,7 @@ namespace HearthstoneReplays.Events
                     case MisterMukla_ETC_836: return KingMukla_BananasLegacyToken;
                     case MuklaTyrantOfTheVale: return KingMukla_BananasLegacyToken;
                     case MurgurMurgurgle: return MurgurMurgurgle_MurgurglePrimeToken;
+                    case MurlocGrowfin_MIS_307: return MurlocGrowfin_MurlocGrowfinToken_MIS_307t1;
                     case MysteryEgg_TOY_351: return MysteryEgg_MysteryEggToken_TOY_351t;
                     case MysticalMirage_ULDA_035: return MysticalMirage_ULDA_035ts;
                     case NostalgicClown_TOY_341: return NostalgicClown_NostalgicClownToken_TOY_341t;
@@ -438,6 +440,7 @@ namespace HearthstoneReplays.Events
                     case SleetSkater_TOY_375: return SleetSkater_SleetSkaterToken_TOY_375t;
                     case SludgeOnWheels_WW_043: return TramMechanic_BarrelOfSludgeToken_WW_044t;
                     case SmugSenior: return SmugSenior_SpectralSeniorToken;
+                    case SnuggleTeddy_MIS_300: return SnuggleTeddy_SnuggleTeddyToken_MIS_300t;
                     case Sn1pSn4p: return Sn1pSn4p;
                     case SneakyDelinquent: return SneakyDelinquent_SpectralDelinquentToken;
                     case SoldierOfFortune: return TheCoinCore;
@@ -483,6 +486,7 @@ namespace HearthstoneReplays.Events
                     case TombPillager_LOE_012: return TheCoinCore;
                     case TombPillager_WON_340: return TheCoinCore;
                     case ToyCaptainTarim_TOY_813: return ToyCaptainTarim_ToyCaptainTarimToken_TOY_813t;
+                    case ToysnatchingGeist_MIS_006: return ToysnatchingGeist_ToysnatchingGeistToken_MIS_006t;
                     case TradePrinceGallywix_GVG_028: return TradePrinceGallywix_GallywixsCoinToken;
                     case TramMechanic_WW_044: return TramMechanic_BarrelOfSludgeToken_WW_044t;
                     case TwinSlice_BT_175: return TwinSlice_SecondSliceToken;
@@ -532,6 +536,7 @@ namespace HearthstoneReplays.Events
                     case TogwagglesScheme:
                     case ZolaTheGorgon:
                     case ZolaTheGorgonCore:
+                    case PuppetTheatre_MIS_919:
                         if (node.Parent.Type == typeof(Action))
                         {
                             var act = node.Parent.Object as Action;
@@ -543,7 +548,13 @@ namespace HearthstoneReplays.Events
                         }
                         return null;
 
-                        // Multiple known cards
+                    // Multiple known cards
+                    case TheReplicatorInator_MIS_025:
+                        return AddMultipleKnownCards(gameState, node, new List<string>()
+                            {
+                                TheReplicatorInator_TheReplicatorInatorMiniToken_MIS_025t,
+                                TheReplicatorInator_TheReplicatorInatorToken_MIS_025t1,
+                            });
                     case YseraTheDreamerCore:
                         return AddMultipleKnownCards(gameState, node, new List<string>()
                             {
