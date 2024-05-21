@@ -140,7 +140,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var nextOpponentPlayerId = fullEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
-            var heroes = GameState.CurrentEntities.Values
+            var heroes = GameState.CurrentEntities.Values.ToList()
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
                 .Where(entity => entity.CardId != BartenderBob
