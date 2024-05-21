@@ -28,21 +28,22 @@ namespace HearthstoneReplayTests
         [TestMethod]
         public void Test()
         {
-            //var serializerSettings = new JsonSerializerSettings()
-            //{
-            //    ContractResolver = new IgnorePropertiesResolver(new[] {
-            //        "GameState",
-            //        "ReplayXml",
-            //        "LocalPlayer",
-            //        "OpponentPlayer",
-            //        "GameStateReport",
-            //        "Game"
-            //    })
-            //};
             var serializerSettings = new JsonSerializerSettings()
             {
+                ContractResolver = new IgnorePropertiesResolver(new[] {
+                    "GameState",
+                    "ReplayXml",
+                    "LocalPlayer",
+                    "OpponentPlayer",
+                    "GameStateReport",
+                    "Game"
+                }),
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };
+            //var serializerSettings = new JsonSerializerSettings()
+            //{
+            //    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            //};
             GameEventHandler.EventProviderAll = (IList<GameEvent> gameEvents) =>
             {
                 foreach (GameEvent gameEvent in gameEvents)

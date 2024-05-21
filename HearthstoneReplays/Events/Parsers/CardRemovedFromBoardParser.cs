@@ -5,6 +5,7 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -53,9 +54,21 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
+            Action parentAction = null;
+            string removedByCardId = null;
+            int? removedByEntityId = null;
+            if (node.Parent.Type == typeof(Action))
+            {
+                parentAction = node.Parent.Object as Action;
+                var parentEntity = GameState.CurrentEntities.GetValueOrDefault(parentAction.Entity);
+                removedByCardId = parentEntity?.CardId;
+                removedByEntityId = parentEntity?.Entity;
+            }
+
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "CARD_REMOVED_FROM_BOARD",
@@ -65,7 +78,11 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    gameState),
+                    gameState,
+                    new {
+                        RemovedByCardId = removedByCardId,
+                        RemovedByEntityId = removedByEntityId,
+                    }),
                 true,
                 node) };
         }
