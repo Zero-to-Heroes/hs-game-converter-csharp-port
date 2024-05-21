@@ -383,6 +383,7 @@ namespace HearthstoneReplays.Events
                     case Overgrowth: return WildGrowth_ExcessManaLegacyToken;
                     case Parrrley_DED_005: return Parrrley_DED_005;
                     case PhotographerFizzle: return PhotographerFizzle_FizzlesSnapshotToken;
+                    case PiranhaPoacher: return PiranhaSwarmer;
                     case TwistPlagueOfMurlocs: return TwistPlagueOfMurlocs_SurpriseMurlocsToken;
                     case PopgarThePutrid_WW_091: return TramMechanic_BarrelOfSludgeToken_WW_044t;
                     case PortalKeeper: return PortalKeeper_FelhoundPortalToken;
