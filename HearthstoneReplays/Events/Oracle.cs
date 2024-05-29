@@ -347,6 +347,7 @@ namespace HearthstoneReplays.Events
                     case KingMuklaLegacy: return KingMukla_BananasLegacyToken;
                     case KingMuklaVanilla: return KingMukla_BananasLegacyToken;
                     case Kingsbane_LOOT_542: return Kingsbane_LOOT_542;
+                    case KingTogwaggle: return KingTogwaggle_KingsRansomToken;
                     case KoboldMiner_PouchOfCoinsToken_WW_001t18: return TheCoinCore;
                     case KoboldTaskmaster: return KoboldTaskmaster_ArmorScrapToken;
                     case LadyVashj_BT_109: return LadyVashj_VashjPrimeToken;
@@ -993,7 +994,9 @@ namespace HearthstoneReplays.Events
 
                     // Ice Trap
                     if (actionEntity != null
-                        && (actionEntity.CardId == IceTrap || actionEntity.CardId == BeaststalkerTavish_ImprovedIceTrapToken)
+                        && (actionEntity.CardId == IceTrap
+                            || actionEntity.CardId == IceTrap_CORE_AV_226
+                            || actionEntity.CardId == BeaststalkerTavish_ImprovedIceTrapToken)
                         && action.TriggerKeyword == (int)GameTag.SECRET)
                     {
                         var candidateEntityIds = action.Data
