@@ -804,6 +804,15 @@ namespace HearthstoneReplays.Events
                             ? gameState.CurrentEntities[action.Entity]
                             : null;
 
+
+                    if (actionEntity.CardId == SonyaWaterdancer_TOY_515)
+                    {
+                        if (node.Parent.Parent?.Type == typeof(Action))
+                        {
+                            var initialAction = node.Parent.Parent.Object as Action;
+                            return gameState.CurrentEntities.GetValueOrDefault(initialAction.Entity)?.CardId;
+                        }
+                    }
                     if (actionEntity?.CardId == SonyaShadowdancer)
                     {
                         var entityId = action.Data
