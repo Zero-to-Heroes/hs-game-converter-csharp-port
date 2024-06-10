@@ -38,11 +38,12 @@ namespace HearthstoneReplays.Events.Parsers
             var appliesFullEntity = stateType == StateType.PowerTaskList
                 && node.Type == typeof(FullEntity)
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SECRET;
-            // For Nagaling
+            // For Nagaling or Twist Objectives (passives=
             var appliesShowEntity = stateType == StateType.PowerTaskList
                 && node.Type == typeof(ShowEntity)
                 && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.SECRET
-                && GameState.CurrentEntities[(node.Object as ShowEntity).Entity]?.GetTag(GameTag.ZONE) == (int)Zone.REMOVEDFROMGAME;
+                && (GameState.CurrentEntities[(node.Object as ShowEntity).Entity]?.GetTag(GameTag.ZONE) == (int)Zone.REMOVEDFROMGAME
+                    || GameState.CurrentEntities[(node.Object as ShowEntity).Entity]?.GetTag(GameTag.ZONE) == (int)Zone.SETASIDE);
             return appliesFullEntity || appliesShowEntity;
         }
 
