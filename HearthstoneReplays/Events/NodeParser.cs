@@ -49,10 +49,19 @@ namespace HearthstoneReplays.Events
             {
                 if (Controller.Applies(parser) && parser.AppliesOnNewNode(node, stateType))
                 {
-                    List<GameEventProvider> providers = parser.CreateGameEventProviderFromNew(node);
-                    if (providers != null)
+                    try
                     {
-                        EnqueueGameEvent(providers);
+                        List<GameEventProvider> providers = parser.CreateGameEventProviderFromNew(node);
+                        if (providers != null)
+                        {
+                            EnqueueGameEvent(providers);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Log("ERROR: Exception while parsing node", e.Message);
+                        Logger.Log(node.CreationLogLine, "");
+                        Logger.Log(e.StackTrace.ToString(), "");
                     }
                 }
             }
@@ -68,10 +77,19 @@ namespace HearthstoneReplays.Events
             {
                 if (!node.Closed && Controller.Applies(parser) && parser.AppliesOnCloseNode(node, stateType))
                 {
-                    List<GameEventProvider> providers = parser.CreateGameEventProviderFromClose(node);
-                    if (providers != null && providers.Count > 0)
+                    try
                     {
-                        EnqueueGameEvent(providers);
+                        List<GameEventProvider> providers = parser.CreateGameEventProviderFromClose(node);
+                        if (providers != null && providers.Count > 0)
+                        {
+                            EnqueueGameEvent(providers);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Log("ERROR: Exception while parsing node", e.Message);
+                        Logger.Log(node.CreationLogLine, "");
+                        Logger.Log(e.StackTrace.ToString(), "");
                     }
                 }
             }
