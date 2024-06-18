@@ -7,6 +7,7 @@ using static HearthstoneReplays.Events.CardIds;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System.Runtime.InteropServices;
 using System;
+using static HearthstoneReplays.Events.Parsers.BattlegroundsActivePlayerBoardParser;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -445,6 +446,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         internal static BgsPlayerBoardEntity AddEchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
         {
+            var debug = fullEntity.Id == 8608;
             // For some reason, Teron's RapidReanimation enchantment is sometimes in the GRAVEYARD zone
             List<Enchantment> enchantments = BuildEnchantments(currentEntities, fullEntity);
             BgsPlayerBoardEntity result = new BgsPlayerBoardEntity()
@@ -474,37 +476,9 @@ namespace HearthstoneReplays.Events.Parsers
                     TagScriptDataNum2 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2),
                 })
                 .ToList();
-            List<Enchantment> additionalEnchantments = BuildAdditionalEnchantments(fullEntity, enchantmentEntities, currentEntities); ;
+            List<Enchantment> additionalEnchantments = BattlegroundsActivePlayerBoardParser.BuildAdditionalEnchantments(fullEntity, enchantmentEntities, currentEntities);
             enchantments.AddRange(additionalEnchantments);
             return enchantments;
-        }
-
-        internal static List<Enchantment> BuildAdditionalEnchantments(FullEntity fullEntity, List<FullEntity> enchantmentEntities, Dictionary<int, FullEntity> currentEntities)
-        {
-            var isDebug = fullEntity.Entity == 11465;
-            return enchantmentEntities
-                .Where(e => e.CardId == PolarizingBeatboxer_PolarizedEnchantment)
-                .Select(e =>
-                {
-                    // Sometimes the creator doesn't appear in the logs, we only have the entityId
-                    var entityAsEnchantmentDbfId = currentEntities
-                        .GetValueOrDefault(e.GetTag(GameTag.CREATOR))
-                        ?.GetTag(GameTag.ENTITY_AS_ENCHANTMENT);
-                    return new Enchantment
-                    {
-                        CardId = "" + (entityAsEnchantmentDbfId ?? e.GetTag(GameTag.CREATOR_DBID)),
-                        EntityId = e.GetTag(GameTag.CREATOR),
-                    };
-                })
-                .ToList();
-        }
-
-        internal class Enchantment
-        {
-            public int EntityId;
-            public string CardId;
-            public int TagScriptDataNum1;
-            public int TagScriptDataNum2;
         }
 
         internal class PlayerBoard
