@@ -476,7 +476,7 @@ namespace HearthstoneReplays.Events.Parsers
                     TagScriptDataNum2 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2),
                 })
                 .ToList();
-            List<Enchantment> additionalEnchantments = BattlegroundsActivePlayerBoardParser.BuildAdditionalEnchantments(fullEntity, enchantmentEntities, currentEntities);
+            List<Enchantment> additionalEnchantments = BuildAdditionalEnchantments(fullEntity, enchantmentEntities, currentEntities);
             enchantments.AddRange(additionalEnchantments);
             return enchantments;
         }
