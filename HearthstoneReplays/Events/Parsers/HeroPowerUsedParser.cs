@@ -38,7 +38,6 @@ namespace HearthstoneReplays.Events.Parsers
             return null;
         }
 
-        // Typically the case when the opponent plays a quest or a secret
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
 
@@ -53,6 +52,13 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return null;
             }
+
+            // Some hero powers (like Galakrond's Greed) have nested power calls for a single use (maybe when they are multi-step processes)
+            if (action.EffectIndex != 0)
+            {
+                return null;
+            }
+
 
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
