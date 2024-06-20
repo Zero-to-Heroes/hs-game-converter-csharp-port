@@ -26,7 +26,7 @@ namespace HearthstoneReplays.Events.Parsers
                 && StateFacade.IsBattlegrounds()
                 && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
-                && (node.Object as TagChange).Value == (int)Zone.REMOVEDFROMGAME
+                && (node.Object as TagChange).Value == (int)Zone.GRAVEYARD
                 && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.CARDTYPE) == (int)CardType.HERO;
         }
 
