@@ -444,6 +444,11 @@ namespace HearthstoneReplays.Parser
             return GameState.GetGameEntity().GetTag(GameTag.BOARD_VISUAL_STATE) == 1;
         }
 
+        public bool InCombatPhase()
+        {
+            return GameState.GetGameEntity().GetTag(GameTag.BOARD_VISUAL_STATE) == 2;
+        }
+
         public bool IsMercenaries()
         {
             return IsMercenariesPvE() || new List<int>() {

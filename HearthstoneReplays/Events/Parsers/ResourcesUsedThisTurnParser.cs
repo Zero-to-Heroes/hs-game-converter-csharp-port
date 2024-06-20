@@ -38,8 +38,18 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
+            if (ParserState.IsBattlegrounds() && ParserState.InCombatPhase())
+            {
+                return null;
+            }
+
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
+            if (entity.CardId == CardIds.TagtransferplayerenchantDntEnchantment_Bacon_TagTransferPlayerE)
+            {
+                return null;
+            }
+
             var resourcesUsed = tagChange.Name == (int)GameTag.RESOURCES_USED ? tagChange.Value : entity.GetTag(GameTag.RESOURCES_USED, 0);
             var tempResources = tagChange.Name == (int)GameTag.TEMP_RESOURCES ? tagChange.Value : entity.GetTag(GameTag.TEMP_RESOURCES, 0);
             var totalResources = tagChange.Name == (int)GameTag.RESOURCES ? tagChange.Value : entity.GetTag(GameTag.RESOURCES, 0);
