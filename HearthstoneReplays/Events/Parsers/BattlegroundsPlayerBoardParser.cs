@@ -8,6 +8,9 @@ using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System.Runtime.InteropServices;
 using System;
 using static HearthstoneReplays.Events.Parsers.BattlegroundsActivePlayerBoardParser;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
+using HearthstoneReplays.Parser.ReplayData.Meta;
+using static HearthstoneReplays.Events.Parsers.BattlegroundsPlayerBoardParser;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -254,6 +257,8 @@ namespace HearthstoneReplays.Events.Parsers
                 dynamic heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
                 var heroPowerInfo2 = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2) ?? 0;
                 UpdateEmbraceYourRageTarget(StateFacade, heroPowerUsed, heroPower?.CardId, heroPower?.Entity, (newValue) => heroPowerInfo = newValue);
+                int heroPowerInfoAsInt = heroPowerInfo is int intValue ? intValue : 0;
+                UpdateRebornRitesTarget(StateFacade, heroPowerUsed, heroPower?.CardId, heroPower?.Entity, heroPowerInfoAsInt, (newValue) => heroPowerInfo = newValue);
 
                 return new PlayerBoard()
                 {
@@ -328,6 +333,27 @@ namespace HearthstoneReplays.Events.Parsers
                     .Reverse()
                     .FirstOrDefault();
                 assignHeroPowerInfo.Invoke(createdEntity?.CardId);
+            }
+        }
+
+        internal static void UpdateRebornRitesTarget(
+            StateFacade stateFacade, bool heroPowerUsed, string heroPowerCardId, int? heroPowerEntityId, int heroPowerInfo, Action<dynamic> assignHeroPowerInfo)
+        {
+            if (heroPowerUsed && heroPowerCardId == CardIds.RebornRites && heroPowerInfo <= 0)
+            {
+                Action lastActionTrigger = stateFacade.GsState.CurrentGame.FilterGameData(typeof(Action))
+                    .Select(action => action as Action)
+                    .Where(action => action.Type == (int)BlockType.TRIGGER && action.Entity == heroPowerEntityId)
+                    .LastOrDefault();
+                if (lastActionTrigger != null)
+                {
+                    var metaBlock = lastActionTrigger.Data.Where(d => d is MetaData).Select(m => m as MetaData).FirstOrDefault();
+                    var targetEntityId = metaBlock?.MetaInfo?.FirstOrDefault()?.Entity;
+                    if (targetEntityId != null && targetEntityId > 0)
+                    {
+                        assignHeroPowerInfo.Invoke(targetEntityId);
+                    }
+                }
             }
         }
 

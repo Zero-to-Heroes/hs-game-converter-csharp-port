@@ -107,7 +107,9 @@ namespace HearthstoneReplays.Events.Parsers
         {
             BattlegroundsPlayerBoardParser.UpdateEmbraceYourRageTarget(StateFacade, playerBoard.HeroPowerUsed, playerBoard.HeroPowerCardId, playerBoard?.HeroPowerEntityId, 
                 (newValue) => playerBoard.HeroPowerInfo = newValue);
-
+            int heroPowerInfo = playerBoard?.HeroPowerInfo is int intValue ? intValue : 0;
+            BattlegroundsPlayerBoardParser.UpdateRebornRitesTarget(StateFacade, playerBoard.HeroPowerUsed, playerBoard.HeroPowerCardId, playerBoard?.HeroPowerEntityId,
+                heroPowerInfo, (newValue) => playerBoard.HeroPowerInfo = newValue);
         }
     }
 }
