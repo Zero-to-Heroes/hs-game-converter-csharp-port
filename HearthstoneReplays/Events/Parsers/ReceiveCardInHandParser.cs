@@ -79,6 +79,7 @@ namespace HearthstoneReplays.Events.Parsers
                         gameState,
                         new {
                             CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
+                            CreatorEntityId = creator?.Item2,
                             LastInfluencedByCardId = lastInfluencedByCardId,
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
                             Position = position,
@@ -127,6 +128,7 @@ namespace HearthstoneReplays.Events.Parsers
                         gameState,
                         new {
                             CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
+                            CreatorEntityId = creator?.Item2,
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1,
                             DataNum1 = dataNum1,
                             DataNum2 = dataNum2,
@@ -170,6 +172,7 @@ namespace HearthstoneReplays.Events.Parsers
                         // card played before assigning anything
                         var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
                         var creatorCardId = creator?.Item1;
+                        var creatorEntityId = creator?.Item2;
                         //var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, fullEntity, node);
                         // The delay is also needed for Fight Over Me, because the DEATHS block is processed after the entities
                         // are actually added to hand (which I think is a bug on HS)
@@ -208,6 +211,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 GameState = gameState,
                                 AdditionalProps = new {
                                     CreatorCardId = creatorCardId,
+                                    CreatorEntityId = creatorEntityId,
                                     IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1,
                                     BuffingEntityCardId = buffingCardEntityCardId,
                                     BuffCardId = buffCardId,
