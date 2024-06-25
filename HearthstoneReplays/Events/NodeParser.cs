@@ -207,6 +207,7 @@ namespace HearthstoneReplays.Events
                     new ChangeCardCreatorParser(ParserState, StateFacade),
                     new LocalPlayerLeaderboardPlaceChangedParser(ParserState, StateFacade),
                     new HeroPowerChangedParser(ParserState, StateFacade),
+                    new HeroChangedParser(ParserState, StateFacade),
                     new WeaponEquippedParser(ParserState, StateFacade),
                     new WeaponDestroyedParser(ParserState, StateFacade),
 
