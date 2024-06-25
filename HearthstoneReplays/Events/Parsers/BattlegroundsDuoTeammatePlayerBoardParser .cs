@@ -99,8 +99,10 @@ namespace HearthstoneReplays.Events.Parsers
             EnhanceHeroPower(playerBoard);
             // Here this is a bit weird, as the Controller of the effects is actually the "main player" or the "opponent player",
             // and not the actual player id
-            var globalInfo = BattlegroundsPlayerBoardParser.BuildGlobalInfo(player.PlayerId, playerBoard.PlayerEntityId, playerBoard.Board, gameState, stateFacade);
-            playerBoard.GlobalInfo = globalInfo;
+            var globalInfoFuture = BattlegroundsPlayerBoardParser.BuildGlobalInfo(player.PlayerId, playerBoard.PlayerEntityId, playerBoard.Board, gameState, stateFacade);
+            // Only set the info that relies on seeing into the future
+            playerBoard.GlobalInfo.ChoralAttackBuff = globalInfoFuture.ChoralAttackBuff;
+            playerBoard.GlobalInfo.ChoralHealthBuff = globalInfoFuture.ChoralHealthBuff;
         }
 
         private void EnhanceHeroPower(BattlegroundsPlayerBoardParser.PlayerBoard playerBoard)

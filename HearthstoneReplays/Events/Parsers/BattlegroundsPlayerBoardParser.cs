@@ -302,9 +302,9 @@ namespace HearthstoneReplays.Events.Parsers
                 .LastOrDefault();
             var bloodGemAttackBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0;
             var bloodGemHealthBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0;
-            var debugList = currentEntitiesGs
-                .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
-                .ToList();
+            //var debugList = currentEntitiesGs
+            //    .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
+            //    .ToList();
             var choralEnchantments = currentEntitiesGs
                 .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
                 .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)));
