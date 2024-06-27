@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using static HearthstoneReplays.Events.CardIds;
 using System;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
+using HearthstoneReplays.Events.Parsers.Utils;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -54,7 +55,7 @@ namespace HearthstoneReplays.Events.Parsers
             string opponentCardId = GameState.BgsCurrentBattleOpponent;
             int opponentPlayerId = GameState.BgsCurrentBattleOpponentPlayerId;
             var mainPlayer = StateFacade.LocalPlayer;
-            if (opponentCardId == null || opponentCardId == Kelthuzad_TB_BaconShop_HERO_KelThuzad)
+            if (opponentCardId == null || BgsUtils.IsBaconGhost(opponentCardId))
             {
                 // Finding the one that is flagged as the player's NEXT_OPPONENT
                 var playerEntity = GameState.CurrentEntities.Values
@@ -62,7 +63,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
                     .Where(entity => entity.CardId != BartenderBob
-                        && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                        && !entity.IsBaconGhost()
                         && entity.CardId != BaconphheroHeroic)
                     .OrderBy(entity => entity.Id)
                     .LastOrDefault();
@@ -72,7 +73,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
                     .Where(entity => entity.CardId != BartenderBob
-                        && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                        && !entity.IsBaconGhost()
                         && entity.CardId != BaconphheroHeroic)
                     .ToList();
                 var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
@@ -134,7 +135,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(data => data.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .FirstOrDefault();
                 var cardId = opponentHero?.CardId;
-                if (cardId == Kelthuzad_TB_BaconShop_HERO_KelThuzad)
+                if (BgsUtils.IsBaconGhost(cardId))
                 {
                     // Find the nexwt_opponent_id
                     var player = GameState.CurrentEntities[StateFacade.LocalPlayer.Id];
@@ -142,7 +143,7 @@ namespace HearthstoneReplays.Events.Parsers
                     opponentHero = GameState.CurrentEntities.Values
                         .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == opponentPlayerId)
                         .Where(entity => entity.CardId != BartenderBob
-                            && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                            && !entity.IsBaconGhost()
                             && entity.CardId != BaconphheroHeroic)
                         .FirstOrDefault();
                     cardId = opponentHero?.CardId;
@@ -198,7 +199,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
                     .Where(entity => entity.CardId != BartenderBob
-                        && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                        && !entity.IsBaconGhost()
                         && entity.CardId != BaconphheroHeroic)
                     .OrderBy(entity => entity.Id)
                     .LastOrDefault();
@@ -209,7 +210,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
                     .Where(entity => entity.CardId != BartenderBob
-                        && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                        && !entity.IsBaconGhost()
                         && entity.CardId != BaconphheroHeroic)
                     .ToList();
                 var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];

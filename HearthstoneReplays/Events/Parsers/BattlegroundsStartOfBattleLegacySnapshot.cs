@@ -190,7 +190,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
                 .Where(entity => entity.CardId != BartenderBob
-                    && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                    && !entity.IsBaconGhost()
                     && entity.CardId != BaconphheroHeroic)
                 .OrderBy(entity => entity.Id)
                 .LastOrDefault();
@@ -199,7 +199,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
                 .Where(entity => entity.CardId != BartenderBob
-                    && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad
+                    && !entity.IsBaconGhost()
                     && entity.CardId != BaconphheroHeroic)
                 .ToList();
             var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];

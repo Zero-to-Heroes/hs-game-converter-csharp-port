@@ -144,7 +144,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
                 .Where(entity => entity.CardId != BartenderBob
-                    && entity.CardId != Kelthuzad_TB_BaconShop_HERO_KelThuzad)
+                    && !entity.IsBaconGhost())
                 .ToList();
             var hero = heroes == null || heroes.Count == 0 ? null : heroes[0];
             // Happens in some circumstances, though it's not clear for me which ones. Maybe

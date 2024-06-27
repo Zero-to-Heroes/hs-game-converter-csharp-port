@@ -179,6 +179,7 @@
     <Compile Include="Events\Parsers\TurnDurationUpdateParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsQuestRewardEquippedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsQuestRewardDestroyedParser.cs" />
+    <Compile Include="Events\Parsers\Utils\BgsUtils.cs" />
     <Compile Include="Events\Parsers\WhizbangDeckParser.cs" />
     <Compile Include="Events\Parsers\ZoneChangeParser.cs" />
     <Compile Include="Events\Parsers\WheelOfDeathCounterParser.cs" />

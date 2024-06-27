@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Events;
+using HearthstoneReplays.Events.Parsers.Utils;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 
 #endregion
@@ -168,7 +169,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         internal bool IsBaconGhost()
         {
-            return GetTag(GameTag.BACON_IS_KEL_THUZAD) == 1;
+            return GetTag(GameTag.BACON_IS_KEL_THUZAD) == 1
+                || BgsUtils.IsBaconGhost(this.CardId);
         }
 
         internal bool IsMinion()
