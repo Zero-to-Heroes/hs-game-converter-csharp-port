@@ -13,5 +13,10 @@ namespace HearthstoneReplays.Events.Parsers.Utils
             return cardId == CardIds.LadyDeathwhisper_TB_BaconShop_HERO_Deathwhisper
                 || cardId == CardIds.Kelthuzad_TB_BaconShop_HERO_KelThuzad;
         }
+
+        public static bool IsBaconBartender(string cardId)
+        {
+            return cardId == CardIds.BartenderBob;
+        }
     }
 }

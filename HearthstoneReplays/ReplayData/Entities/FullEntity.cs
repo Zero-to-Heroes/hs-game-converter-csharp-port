@@ -173,6 +173,12 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 || BgsUtils.IsBaconGhost(this.CardId);
         }
 
+        internal bool IsBaconBartender()
+        {
+            return GetTag(GameTag.BACON_BOB_SKIN) == 1 ||
+                BgsUtils.IsBaconBartender(this.CardId);
+        }
+
         internal bool IsMinion()
         {
             return GetTag(GameTag.CARDTYPE) == (int)CardType.MINION;

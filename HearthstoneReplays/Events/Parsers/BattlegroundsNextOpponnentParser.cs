@@ -52,7 +52,7 @@ namespace HearthstoneReplays.Events.Parsers
             var heroes = GameState.CurrentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == tagChange.Value)
-                .Where(entity => entity.CardId != BartenderBob
+                .Where(entity => !entity.IsBaconBartender()
                     && !entity.IsBaconGhost()
                     && entity.CardId != BaconphheroHeroic)
                 .ToList();
@@ -64,7 +64,7 @@ namespace HearthstoneReplays.Events.Parsers
                 GameState.NextBgsOpponentPlayerId = tagChange.Value;
             }
             //Logger.Log("Next opponent player id", hero?.CardId);
-            if (hero?.CardId != null && hero.CardId != BartenderBob)
+            if (hero?.CardId != null && !hero.IsBaconBartender())
             {
                 GameState.BgsHasSentNextOpponent = true;
                 return new List<GameEventProvider> {

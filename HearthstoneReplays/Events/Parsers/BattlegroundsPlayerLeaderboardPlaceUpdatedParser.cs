@@ -41,7 +41,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var hero = GameState.CurrentEntities[tagChange.Entity];
-            if (hero?.CardId != null && hero.CardId != BartenderBob)
+            if (hero?.CardId != null && !hero.IsBaconBartender())
             {
                 var basePlace = tagChange.Name == (int)GameTag.PLAYER_LEADERBOARD_PLACE
                     ? tagChange.Value

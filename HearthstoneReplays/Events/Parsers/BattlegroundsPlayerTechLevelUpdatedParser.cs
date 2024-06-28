@@ -70,7 +70,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             // The value is set to 0 when rotating the entities it seems
-            if (hero?.CardId != null && hero.CardId != BartenderBob 
+            if (hero?.CardId != null && !hero.IsBaconBartender() 
                 // Sometimes we have updates for the ghost, probably to indicate the initial tavern. We ignore them
                 && !hero.IsBaconGhost() && tagChange.Value > 1)
             {

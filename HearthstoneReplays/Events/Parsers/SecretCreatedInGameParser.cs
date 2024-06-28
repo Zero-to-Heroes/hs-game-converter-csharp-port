@@ -60,14 +60,17 @@ namespace HearthstoneReplays.Events.Parsers
                     : "QUEST_CREATED_IN_GAME";
                 var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
                 var playerClass = entity.GetPlayerClass();
-                var creatorEntityId = entity.GetTag(GameTag.CREATOR);
-                if (creatorEntityId == -1)
+                var creator = Oracle.FindCardCreator(GameState, entity, node);
+                var creatorCardId = creator?.Item1;
+                if (creatorCardId == null)
                 {
-                    creatorEntityId = entity.GetTag(GameTag.DISPLAYED_CREATOR);
+                    var creatorEntityId = entity.GetTag(GameTag.CREATOR);
+                    if (creatorEntityId == -1)
+                    {
+                        creatorEntityId = entity.GetTag(GameTag.DISPLAYED_CREATOR);
+                    }
+                    creatorCardId = GameState.CurrentEntities.GetValueOrDefault(creatorEntityId)?.CardId;
                 }
-                var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
-                    ? GameState.CurrentEntities[creatorEntityId].CardId
-                    : null;
                 return new List<GameEventProvider> { GameEventProvider.Create(
                         tagChange.TimeStamp,
                         eventName,
@@ -80,7 +83,7 @@ namespace HearthstoneReplays.Events.Parsers
                             gameState,
                             new {
                                 PlayerClass = playerClass,
-                                CreatorCardId = creatorEntityCardId,
+                                CreatorCardId = creatorCardId,
                             }),
                        true,
                        node) };

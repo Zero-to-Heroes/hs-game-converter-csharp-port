@@ -40,7 +40,7 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var hero = GameState.CurrentEntities[tagChange.Entity];
             // The value is set to 0 when rotating the entities it seems
-            if (hero?.CardId != null && hero.CardId != BartenderBob && tagChange.Value > 0)
+            if (hero?.CardId != null && !hero.IsBaconBartender() && tagChange.Value > 0)
             {
                 return new List<GameEventProvider> {  GameEventProvider.Create(
                tagChange.TimeStamp,
