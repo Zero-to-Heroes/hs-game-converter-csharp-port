@@ -54,7 +54,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == tagChange.Value)
                 .Where(entity => !entity.IsBaconBartender()
                     && !entity.IsBaconGhost()
-                    && entity.CardId != BaconphheroHeroic)
+                    && !entity.IsBaconEnchantment())
                 .ToList();
             var hero = heroes == null || heroes.Count == 0 ? null : heroes[0];
             // Happens in some circumstances, though it's not clear for me which ones. Maybe

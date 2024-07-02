@@ -70,25 +70,27 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             // The value is set to 0 when rotating the entities it seems
-            if (hero?.CardId != null && !hero.IsBaconBartender() 
+            if (hero?.CardId != null && !hero.IsBaconBartender() && !hero.IsBaconEnchantment()
                 // Sometimes we have updates for the ghost, probably to indicate the initial tavern. We ignore them
                 && !hero.IsBaconGhost() && tagChange.Value > 1)
             {
+                var debug = hero.CardId == CardIds.TagtransferplayerenchantDntEnchantment_Bacon_TagTransferPlayerE;
                 return new List<GameEventProvider> {  GameEventProvider.Create(
-               tagChange.TimeStamp,
-               "BATTLEGROUNDS_TAVERN_UPGRADE",
-               () => new GameEvent
-               {
-                   Type = "BATTLEGROUNDS_TAVERN_UPGRADE",
-                   Value = new
+                   tagChange.TimeStamp,
+                   "BATTLEGROUNDS_TAVERN_UPGRADE",
+                   () => new GameEvent
                    {
-                       CardId = hero.CardId,
-                       PlayerId = hero.GetTag(GameTag.PLAYER_ID),
-                       TavernLevel = tagChange.Value,
-                   }
-               },
-               false,
-               node) };
+                       Type = "BATTLEGROUNDS_TAVERN_UPGRADE",
+                       Value = new
+                       {
+                           CardId = hero.CardId,
+                           PlayerId = hero.GetTag(GameTag.PLAYER_ID),
+                           TavernLevel = tagChange.Value,
+                       }
+                   },
+                   false,
+                   node
+                )};
             }
             return null;
         }

@@ -7,6 +7,7 @@ using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using static HearthstoneReplays.Events.CardIds;
 using System;
+using HearthstoneReplays.Events.Parsers.Utils;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -50,7 +51,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var fullEntity = node.Object as FullEntity;
             var cardId = fullEntity.CardId;
-            if (cardId == CardIds.BaconphheroHeroic)
+            if (BgsUtils.IsBaconEnchantment(cardId))
             {
                 return null;
             }

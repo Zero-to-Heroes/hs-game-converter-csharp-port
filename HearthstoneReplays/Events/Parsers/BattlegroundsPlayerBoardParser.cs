@@ -94,7 +94,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 .Where(entity => entity.GetEffectiveController() == playerPlayerId)
                 // Here we accept to face the ghost
-                .Where(entity => !entity.IsBaconBartender() && entity.CardId != BaconphheroHeroic)
+                .Where(entity => !entity.IsBaconBartender() && !entity.IsBaconEnchantment())
                 .ToList();
             var hero = potentialHeroes.FirstOrDefault()?.Clone();
             var cardId = hero?.CardId;
@@ -111,7 +111,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
                     .Where(entity => !entity.IsBaconBartender()
                         && !entity.IsBaconGhost()
-                        && entity.CardId != BaconphheroHeroic)
+                        && !entity.IsBaconEnchantment())
                     .OrderBy(entity => entity.Id)
                     .LastOrDefault();
                 var debug = GameState.CurrentEntities.Values
@@ -124,7 +124,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
                     .Where(entity => !entity.IsBaconBartender()
                         && !entity.IsBaconGhost()
-                        && entity.CardId != BaconphheroHeroic)
+                        && !entity.IsBaconEnchantment())
                     .ToList();
                 var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
 

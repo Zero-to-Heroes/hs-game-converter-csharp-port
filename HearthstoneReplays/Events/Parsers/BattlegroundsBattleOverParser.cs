@@ -64,7 +64,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
                     .Where(entity => !entity.IsBaconBartender()
                         && !entity.IsBaconGhost()
-                        && entity.CardId != BaconphheroHeroic)
+                        && !entity.IsBaconEnchantment())
                     .OrderBy(entity => entity.Id)
                     .LastOrDefault();
                 var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
@@ -74,7 +74,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
                     .Where(entity => !entity.IsBaconBartender()
                         && !entity.IsBaconGhost()
-                        && entity.CardId != BaconphheroHeroic)
+                        && !entity.IsBaconEnchantment())
                     .ToList();
                 var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
 
@@ -144,7 +144,7 @@ namespace HearthstoneReplays.Events.Parsers
                         .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == opponentPlayerId)
                         .Where(entity => !entity.IsBaconBartender()
                             && !entity.IsBaconGhost()
-                            && entity.CardId != BaconphheroHeroic)
+                            && !entity.IsBaconEnchantment())
                         .FirstOrDefault();
                     cardId = opponentHero?.CardId;
                 }
@@ -200,7 +200,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
                     .Where(entity => !entity.IsBaconBartender()
                         && !entity.IsBaconGhost()
-                        && entity.CardId != BaconphheroHeroic)
+                        && !entity.IsBaconEnchantment())
                     .OrderBy(entity => entity.Id)
                     .LastOrDefault();
                 // Sometimes there is no player entity, but I don't know why
@@ -211,7 +211,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
                     .Where(entity => !entity.IsBaconBartender()
                         && !entity.IsBaconGhost()
-                        && entity.CardId != BaconphheroHeroic)
+                        && !entity.IsBaconEnchantment())
                     .ToList();
                 var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
 

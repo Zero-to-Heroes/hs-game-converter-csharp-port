@@ -70,7 +70,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
-            if (chosenEntity.CardId == BaconphheroHeroic)
+            if (chosenEntity.IsBaconEnchantment())
             {
                 return null;
             }
@@ -134,7 +134,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
 
-            if (fullEntity.CardId == BaconphheroHeroic)
+            if (fullEntity.IsBaconEnchantment())
             {
                 return null;
             }

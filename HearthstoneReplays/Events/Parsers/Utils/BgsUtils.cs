@@ -18,5 +18,10 @@ namespace HearthstoneReplays.Events.Parsers.Utils
         {
             return cardId == CardIds.BartenderBob;
         }
+
+        public static bool IsBaconEnchantment(string cardId)
+        {
+            return cardId == CardIds.BaconphheroHeroic || cardId == CardIds.TagtransferplayerenchantDntEnchantment_Bacon_TagTransferPlayerE;
+        }
     }
 }
