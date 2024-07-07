@@ -295,6 +295,7 @@ namespace HearthstoneReplays.Events.Parsers
             var undeadAttackBonus = GetPlayerEnchantmentValue(playerId,  CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, currentEntities);
             // Looks like the enchantment isn't used anymore, at least for the opponent?
             var frostlingBonus = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, currentEntities);
+            var piratesPlayedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_PIRATESS_PLAYED_THIS_GAME, currentEntities);
             var bloodGemEnchant = currentEntities
                 .Where(entity => entity.GetEffectiveController() == playerId)
                 // Don't use the PLAY zone, as it could cause issues with teammate state in Duos? To be tested
@@ -316,6 +317,7 @@ namespace HearthstoneReplays.Events.Parsers
                 TavernSpellsCastThisGame = tavernSpellsCastThisGame,
                 UndeadAttackBonus = undeadAttackBonus,
                 FrostlingBonus = frostlingBonus,
+                PiratesPlayedThisGame = piratesPlayedThisGame,
                 BloodGemAttackBonus = bloodGemAttackBonus,
                 BloodGemHealthBonus = bloodGemHealthBonus,
                 ChoralAttackBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0,
@@ -544,6 +546,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             public int EternalKnightsDeadThisGame { get; set; }
             public int TavernSpellsCastThisGame { get; set; }
+            public int PiratesPlayedThisGame { get; set; }
             public int UndeadAttackBonus { get; set; }
             public int FrostlingBonus { get; set; }
             public int BloodGemAttackBonus { get; set; }
