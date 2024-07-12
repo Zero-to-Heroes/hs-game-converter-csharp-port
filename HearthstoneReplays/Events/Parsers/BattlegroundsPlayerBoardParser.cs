@@ -344,10 +344,12 @@ namespace HearthstoneReplays.Events.Parsers
         {
             if (heroPowerUsed && heroPowerCardId == CardIds.RebornRites && heroPowerInfo <= 0)
             {
-                Action lastActionTrigger = stateFacade.GsState.CurrentGame.FilterGameData(typeof(Action))
-                    .Select(action => action as Action)
-                    .Where(action => action.Type == (int)BlockType.TRIGGER && action.Entity == heroPowerEntityId)
-                    .LastOrDefault();
+                Action lastActionTrigger = stateFacade.GsState.CurrentGame
+                    .GetLastAction(action => action.Type == (int)BlockType.TRIGGER && action.Entity == heroPowerEntityId);
+                //Action lastActionTrigger = stateFacade.GsState.CurrentGame.FilterGameData(typeof(Action))
+                //    .Select(action => action as Action)
+                //    .Where(action => action.Type == (int)BlockType.TRIGGER && action.Entity == heroPowerEntityId)
+                //    .LastOrDefault();
                 if (lastActionTrigger != null)
                 {
                     var metaBlock = lastActionTrigger.Data.Where(d => d is MetaData).Select(m => m as MetaData).FirstOrDefault();

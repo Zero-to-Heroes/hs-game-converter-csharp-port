@@ -58,6 +58,15 @@ namespace HearthstoneReplays.Parser.ReplayData.GameActions
         [XmlIgnore]
         public bool Processed { get; set; }
 
+        public readonly object listLock = new object();
+        public void AddData(GameData data)
+        {
+            lock (listLock)
+            {
+                Data.Add(data);
+            }
+        }
+
 
         public List<GameData> GetDataRecursive()
 		{

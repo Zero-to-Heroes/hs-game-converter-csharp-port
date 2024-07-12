@@ -72,8 +72,6 @@ namespace HearthstoneReplays.Parser.ReplayData
 		[XmlElement("ShuffleDeck", typeof(ShuffleDeck))]
 		public List<GameData> Data { get; set; }
 
-
-
         public Game()
 		{
 			Data = new List<GameData>();
@@ -88,6 +86,7 @@ namespace HearthstoneReplays.Parser.ReplayData
                 Data.Add(data);
             }
         }
+
 
 		internal List<GameData> FilterGameData(params System.Type[] types)
 		{
@@ -121,5 +120,38 @@ namespace HearthstoneReplays.Parser.ReplayData
 				}
 			}
 		}
-	}
+
+		public GameActions.Action GetLastAction(Predicate<GameActions.Action> predicate)
+		{
+			lock (listLock)
+			{
+				return GetLastActionInternal(Data, predicate);
+			}
+		}
+
+        private GameActions.Action GetLastActionInternal(List<GameData> GameData, Predicate<GameActions.Action> predicate)
+        {
+            lock (listLock)
+            {
+                for (var i = GameData.Count - 1; i >= 0; i--)
+                {
+                    if (GameData[i].GetType() != typeof(GameActions.Action))
+                    {
+                        continue;
+                    }
+                    var action = GameData[i] as GameActions.Action;
+					var childMatch = GetLastActionInternal(action.Data, predicate);
+                    if (childMatch != null)
+                    {
+						return childMatch;
+                    }
+                    if (predicate(action))
+                    {
+                        return action;
+                    }
+                }
+				return null;
+            }
+        }
+    }
 }
