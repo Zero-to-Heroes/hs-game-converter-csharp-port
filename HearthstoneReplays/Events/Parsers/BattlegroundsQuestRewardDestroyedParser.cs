@@ -28,8 +28,8 @@ namespace HearthstoneReplays.Events.Parsers
                 && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.REMOVEDFROMGAME
-                && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.CARDTYPE) == (int)CardType.BATTLEGROUND_QUEST_REWARD
-                && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.PLAY;
+                && GameState.CurrentEntities.GetValueOrDefault((node.Object as TagChange).Entity)?.GetTag(GameTag.CARDTYPE) == (int)CardType.BATTLEGROUND_QUEST_REWARD
+                && GameState.CurrentEntities.GetValueOrDefault((node.Object as TagChange).Entity)?.GetTag(GameTag.ZONE) == (int)Zone.PLAY;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)

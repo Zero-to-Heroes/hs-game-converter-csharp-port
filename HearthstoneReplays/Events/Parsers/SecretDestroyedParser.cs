@@ -30,7 +30,7 @@ namespace HearthstoneReplays.Events.Parsers
                 && ((node.Object as TagChange).Value == (int)Zone.GRAVEYARD
                     // For BG quests
                     || (node.Object as TagChange).Value == (int)Zone.REMOVEDFROMGAME)
-                && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.SECRET;
+                && GameState.CurrentEntities.GetValueOrDefault((node.Object as TagChange).Entity)?.GetTag(GameTag.ZONE) == (int)Zone.SECRET;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
