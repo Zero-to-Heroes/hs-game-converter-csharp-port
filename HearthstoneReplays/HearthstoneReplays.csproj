@@ -114,6 +114,7 @@
     <Compile Include="Events\GameStateShort.cs" />
     <Compile Include="Events\Obfuscator.cs" />
     <Compile Include="Events\Parsers\AbstractBasicTagChangeParser.cs" />
+    <Compile Include="Events\Parsers\LocationUsedParser.cs" />
     <Compile Include="Events\Parsers\HeroChangedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsExtraGoldNextTurnParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsDuoTeammatePlayerBoardParser .cs" />

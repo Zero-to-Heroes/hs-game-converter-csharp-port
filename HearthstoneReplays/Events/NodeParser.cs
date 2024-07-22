@@ -264,6 +264,7 @@ namespace HearthstoneReplays.Events
                     new ConstructedAnomalyParser(ParserState, StateFacade),
 
                     new CardForgedParser(ParserState, StateFacade),
+                    new LocationUsedParser(ParserState, StateFacade),
                     new CreateCardInGraveyardParser(ParserState, StateFacade),
                     new MindrenderIlluciaParser(ParserState, StateFacade),
                     new SpecialCardPowerParser(ParserState, StateFacade),
