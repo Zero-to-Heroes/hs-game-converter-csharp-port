@@ -113,7 +113,7 @@ namespace HearthstoneReplays.Events.Parsers
                         AbilitySpeed = abilitySpeed == -1 ? (int?)null : abilitySpeed,
                         ZonePosition = zonePosition,
                         Zone = zone,
-                        Reveaked = revealed,
+                        Revealed = revealed,
                         DataNum1 = dataNum1,
                         DataNum2 = dataNum2,
                     }),

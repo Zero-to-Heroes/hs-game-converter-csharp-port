@@ -59,6 +59,16 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 cardId = null;
             }
+
+            string removedByCardId = null;
+            int? removedByEntityId = null;
+            if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+            {
+                var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                removedByCardId = GameState.CurrentEntities.GetValueOrDefault(act.Entity)?.CardId;
+                removedByEntityId = act.Entity;
+            }
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "CARD_REMOVED_FROM_HAND",
@@ -68,7 +78,11 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    gameState),
+                    gameState,
+                    new {
+                        RemovedByCardId = removedByCardId,
+                        RemovedByEntityId = removedByEntityId,
+                    }),
                 true,
                 node) };
         }

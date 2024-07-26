@@ -66,6 +66,14 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+
+            string removedByCardId = null;
+            if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+            {
+                var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                removedByCardId = GameState.CurrentEntities.GetValueOrDefault(act.Entity)?.CardId;
+            }
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "CARD_REMOVED_FROM_DECK",
@@ -75,7 +83,10 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    gameState),
+                    gameState,
+                    new {
+                        RemovedByCardId = removedByCardId,
+                    }),
                 true,
                 node) };
         }
@@ -100,6 +111,7 @@ namespace HearthstoneReplays.Events.Parsers
             // Usually, the burned card meta data info appears after the showEntity,and is 
             // handled via the duplicatePredicate of the BurnedCard provider, but I'm 
             // keeping this here just in case
+            string removedByCardId = null;
             if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
             {
                 var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
@@ -113,6 +125,7 @@ namespace HearthstoneReplays.Events.Parsers
                 {
                     return null;
                 }
+                removedByCardId = GameState.CurrentEntities.GetValueOrDefault(act.Entity)?.CardId;
             }
 
             var cardId = showEntity.CardId;
@@ -130,7 +143,8 @@ namespace HearthstoneReplays.Events.Parsers
                     gameState,
                     new {
                         // Needed to properly remove the Dragons created by Prestor when we play Kazalusan afterwards
-                        Cost = showEntity.GetCost()
+                        Cost = showEntity.GetCost(),
+                        RemovedByCardId = removedByCardId,
                     }),
                 true,
                 node) };

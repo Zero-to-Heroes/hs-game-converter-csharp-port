@@ -62,9 +62,10 @@ namespace HearthstoneReplays.Events.Parsers
                 var playerClass = entity.GetPlayerClass();
                 var creator = Oracle.FindCardCreator(GameState, entity, node);
                 var creatorCardId = creator?.Item1;
+                int creatorEntityId = creator?.Item2 ?? -1;
                 if (creatorCardId == null)
                 {
-                    var creatorEntityId = entity.GetTag(GameTag.CREATOR);
+                    creatorEntityId = creatorEntityId == -1 ? entity.GetTag(GameTag.CREATOR) : creatorEntityId;
                     if (creatorEntityId == -1)
                     {
                         creatorEntityId = entity.GetTag(GameTag.DISPLAYED_CREATOR);
@@ -84,6 +85,7 @@ namespace HearthstoneReplays.Events.Parsers
                             new {
                                 PlayerClass = playerClass,
                                 CreatorCardId = creatorCardId,
+                                CreatorEntityId = creatorEntityId,
                             }),
                        true,
                        node) };
@@ -141,6 +143,7 @@ namespace HearthstoneReplays.Events.Parsers
                     new {
                         PlayerClass = playerClass,
                         CreatorCardId = creator?.Item1,
+                        CreatorEntityId = creator?.Item2,
                     }),
                 true,
                 node) };
@@ -173,6 +176,7 @@ namespace HearthstoneReplays.Events.Parsers
                     new {
                         PlayerClass = playerClass,
                         CreatorCardId = creatorEntityCardId,
+                        CreatorEntityId = creatorEntityId,
                     }),
                 true,
                 node) };

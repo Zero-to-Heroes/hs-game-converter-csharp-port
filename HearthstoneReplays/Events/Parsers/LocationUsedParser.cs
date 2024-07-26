@@ -6,6 +6,7 @@ using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
+using System.Linq;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -24,6 +25,11 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
+            return false;
+        }
+
+        public bool AppliesOnCloseNode(Node node, StateType stateType)
+        {
             Action action = null;
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(Action)
@@ -31,14 +37,24 @@ namespace HearthstoneReplays.Events.Parsers
                 && GameState.CurrentEntities.GetValueOrDefault(action.Entity)?.GetCardType() == (int)CardType.LOCATION;
         }
 
-        public bool AppliesOnCloseNode(Node node, StateType stateType)
-        {
-            return false;
-        }
-
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
+            return null;
+        }
+
+        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
+        {
             var action = node.Object as Action;
+            var hasLocationCooldown = action.Data
+                .Where(d => d is TagChange)
+                .Select(d => d as TagChange)
+                .Where(d => d.Name == (int)GameTag.LOCATION_ACTION_COOLDOWN && d.Entity == action.Entity)
+                .Count() > 0;
+            // Don't know why, but happens sometimes that there are multiple POWER blocks, and one of them is empty
+            if (!hasLocationCooldown)
+            {
+                return null;
+            }
             var entity = GameState.CurrentEntities.GetValueOrDefault(action.Entity);
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
@@ -54,11 +70,6 @@ namespace HearthstoneReplays.Events.Parsers
                     null),
                 true,
                 node) };
-        }
-
-        public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
-        {
-            return null;
         }
     }
 }

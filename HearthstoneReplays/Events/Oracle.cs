@@ -517,6 +517,21 @@ namespace HearthstoneReplays.Events
                     case Zaqul_TSC_959: return SirakessCultist_AbyssalCurseToken;
                     case ZixorApexPredator: return ZixorApexPredator_ZixorPrimeToken;
                     case FaldoreiStrider_CORE_LOOT_026: return FaldoreiStrider_SpiderAmbush;
+                    case SeabreezeChalice_VAC_520: return SeabreezeChalice_SeabreezeChaliceToken_VAC_520t;
+                    case SeabreezeChalice_SeabreezeChaliceToken_VAC_520t: return SeabreezeChalice_SeabreezeChaliceToken_VAC_520t2;
+                    case DivineBrew_VAC_916: return DivineBrew_DivineBrewToken_VAC_916t2;
+                    case DivineBrew_DivineBrewToken_VAC_916t2: return DivineBrew_DivineBrewToken_VAC_916t3;
+                    case NightshadeTea_VAC_404: return NightshadeTea_NightshadeTeaToken_VAC_404t1;
+                    case NightshadeTea_NightshadeTeaToken_VAC_404t1: return NightshadeTea_NightshadeTeaToken_VAC_404t2;
+                    case MaltedMagma_VAC_323: return MaltedMagma_MaltedMagmaToken_VAC_323t;
+                    case MaltedMagma_MaltedMagmaToken_VAC_323t: return MaltedMagma_MaltedMagmaToken_VAC_323t2;
+                    case CupOMuscle_VAC_338: return CupOMuscle_CupOMuscleToken_VAC_338t;
+                    case CupOMuscle_CupOMuscleToken_VAC_338t: return CupOMuscle_CupOMuscleToken_VAC_338t2;
+                    case HealthDrink_VAC_951: return HealthDrink_HealthDrinkToken_VAC_951t;
+                    case HealthDrink_HealthDrinkToken_VAC_951t: return HealthDrink_HealthDrinkToken_VAC_951t2;
+                    case AdaptiveAmalgam_VAC_958: return AdaptiveAmalgam_VAC_958;
+                    case Corpsicle_CorpsicleEnchantment_VAC_427e: return Corpsicle_VAC_427;
+                    case LineCook_VAC_337: return LineCook_VAC_337;
 
                     // Action targets
                     case BalefulBanker:

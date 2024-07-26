@@ -149,21 +149,45 @@ namespace HearthstoneReplays.Events.Parsers
                 GameState.CurrentEntities[fullEntity.Id].PlayedWhileInHand.Clear();
             }
 
+            Action parentAction = null;
+            if (node.Parent?.Type == typeof(Action))
+            {
+                parentAction = node.Parent.Object as Action;
+            }
+
             // For Nagaling
             int? additionalPlayInfo = null;
             if (fullEntity.GetTag(GameTag.ADDITIONAL_PLAY_REQS_1) != -1)
             {
                 additionalPlayInfo = fullEntity.GetTag(GameTag.ADDITIONAL_PLAY_REQS_1);
             }
+
+            // For minion sandwich
+            List<string> referencedCardIds = new List<string>();
+            if (fullEntity.CardId == CardIds.TheRyecleaver_MinionSandwichToken_VAC_525t2)
+            {
+                if (parentAction != null)
+                {
+                    var parentEntity = GameState.CurrentEntities.GetValueOrDefault(parentAction.Entity);
+                    if (parentEntity != null)
+                    {
+                        var sandwichedMinions = parentAction.Data
+                            .Where(d => d is TagChange)
+                            .Select(d => d as TagChange)
+                            .Where(t => t.Name == (int)GameTag.ZONE && t.Value == (int)Zone.SETASIDE)
+                            .Select(t => GameState.CurrentEntities.GetValueOrDefault(t.Entity))
+                            .Where(e => e?.GetCardType() == (int)CardType.MINION)
+                            .Select(e => e.CardId)
+                            .ToList();
+                        referencedCardIds = sandwichedMinions;
+                    }
+                }
+            }
+
             var dataNum1 = fullEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1);
             var dataNum2 = fullEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2);
             var position = fullEntity.GetZonePosition();
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
-            Action parentAction = null;
-            if (node.Parent?.Type == typeof(Action))
-            {
-                parentAction = node.Parent.Object as Action;
-            }
             return new List<GameEventProvider> { GameEventProvider.Create(
                     fullEntity.TimeStamp,
                     "RECEIVE_CARD_IN_HAND",
@@ -219,6 +243,7 @@ namespace HearthstoneReplays.Events.Parsers
                                     DataNum1 = dataNum1,
                                     DataNum2 = dataNum2,
                                     Position = position,
+                                    ReferencedCardIds = referencedCardIds
                                 }
                             }
                         };
