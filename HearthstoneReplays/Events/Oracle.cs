@@ -242,6 +242,7 @@ namespace HearthstoneReplays.Events
                     case BunchOfBananas: return BunchOfBananas_BunchOfBananasToken_ETC_201t;
                     case BurglyBully: return TheCoinCore;
                     case CarelessCrafter_TOY_382: return CarelessCrafter_BandageToken_TOY_382t;
+                    case CarryOnGrub_VAC_935: return CarryOnGrub_CarryOnSuitcaseToken_VAC_935t;
                     case ChainsOfDread_AV_316hp: return DreadlichTamsin_FelRiftToken;
                     case ChiaDrake_TOY_801: return ChiaDrake_ChiaDrakeToken_TOY_801t;
                     case ClayMatriarch_TOY_380: return ClayMatriarch_ClayMatriarchToken_TOY_380t;
@@ -355,6 +356,7 @@ namespace HearthstoneReplays.Events
                     case LadyVashj_BT_109: return LadyVashj_VashjPrimeToken;
                     case LakkariSacrifice: return LakkariSacrifice_NetherPortalToken_UNG_829t1;
                     case LicensedAdventurer: return TheCoinCore;
+                    case LifesavingAura_VAC_922: return Grillmaster_SunscreenToken_VAC_917t;
                     case LightforgedBlessing_DAL_568: return LightforgedBlessing_DAL_568ts;
                     case LoanShark: return TheCoinCore;
                     case Locuuuusts_ONY_005tb3: return Locuuuusts_GiantLocustToken_ONY_005tb3t2;
@@ -367,6 +369,7 @@ namespace HearthstoneReplays.Events
                     case Malorne: return Malorne;
                     case Mankrik: return Mankrik_OlgraMankriksWifeToken;
                     case Marrowslicer: return SchoolSpirits_SoulFragmentToken;
+                    case MetalDetector_VAC_330: return TheCoinCore;
                     case MidaPureLight_ONY_028: return MidaPureLight_FragmentOfMidaToken;
                     case MilitiaHorn: return VeteransMilitiaHorn;
                     case MiracleSalesman_WW_331: return MiracleSalesman_SnakeOilToken_WW_331t;
@@ -379,6 +382,7 @@ namespace HearthstoneReplays.Events
                     case NostalgicClown_TOY_341: return NostalgicClown_NostalgicClownToken_TOY_341t;
                     case NostalgicGnome_TOY_312: return NostalgicGnome_NostalgicGnomeToken_TOY_312t;
                     case NostalgicInitiate_TOY_340: return NostalgicInitiate_NostalgicInitiateToken_TOY_340t1;
+                    case OhManager_VAC_460: return TheCoinCore;
                     case OldMilitiaHorn_MilitiaHornTavernBrawl: return OldMilitiaHorn_VeteransMilitiaHornTavernBrawl;
                     case OldMilitiaHorn: return MilitiaHorn;
                     case OldMilitiaHornTavernBrawl: return OldMilitiaHorn_MilitiaHornTavernBrawl;
@@ -398,6 +402,7 @@ namespace HearthstoneReplays.Events
                     case Queldelar_ForgingQueldelarToken_ONY_005tc7t: return Queldelar_ForgingQueldelarToken_ONY_005tc7t;
                     case RaidTheDocks_SecureTheSuppliesToken: return RaidTheDocks_CapnRokaraToken;
                     case RamCommander: return RamCommander_BattleRamToken;
+                    case RangerGilly_VAC_413: return RangerGilly_IslandCrocoliskToken_VAC_413t;
                     case RapidFire_DAL_373: return RapidFire_DAL_373ts;
                     case RaptorHatchling: return RaptorHatchling_RaptorPatriarchToken;
                     case RatSensei_WON_013: return new[] { RatSensei_MonkTurtleToken_WON_013t, RatSensei_MonkTurtleToken_WON_013t2, RatSensei_MonkTurtleToken_WON_013t3, RatSensei_MonkTurtleToken_WON_013t4, }.OrderBy(n => Guid.NewGuid()).ToArray()[0];
@@ -482,6 +487,7 @@ namespace HearthstoneReplays.Events
                     case TheLastKaleidosaur: return TheLastKaleidosaur_GalvadonToken;
                     case TheMarshQueen_QueenCarnassaToken: return TheMarshQueen_CarnassasBroodToken;
                     case TheMarshQueen: return TheMarshQueen_QueenCarnassaToken;
+                    case TheRyecleaver_VAC_525: return TheRyecleaver_SliceOfBreadToken_VAC_525t1;
                     case ThrowGlaive: return ThrowGlaive; // TO CHECK
                     case TigressPlushy_TOY_811: return TigressPlushy_TigressPlushyToken_TOY_811t;
                     case TinyThimbleTavernBrawl: return TinyThimble_RegularSizeThimbleTavernBrawl;
