@@ -298,6 +298,7 @@ namespace HearthstoneReplays.Events
                     case FinalShowdown_CloseThePortalToken: return DemonslayerKurtrusToken;
                     case FindTheImposter_MarkedATraitorToken: return FindTheImposter_SpymasterScabbsToken;
                     case FireFly: return FireFly_FlameElementalToken;
+                    case FireFly_CORE_UNG_809: return FireFly_FlameElementalToken;
                     case FirePlumesHeart: return FirePlumesHeart_SulfurasToken;
                     case FirstFlame: return FirstFlame_SecondFlameToken;
                     case FishyFlyer: return FishyFlyer_SpectralFlyerToken;
