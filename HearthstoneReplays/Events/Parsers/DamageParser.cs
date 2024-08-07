@@ -121,6 +121,10 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var action = node.Object as Parser.ReplayData.GameActions.Action;
+            // NOTE: it looks like that, if the parent action is a PLAY action, the damage comes from
+            // simply paying stuff with health. The assumption is that, for cards that deal damage as
+            // an effect, a POWER block is used instead
+            var isPayingWithHealth = action.Type == (int)BlockType.PLAY;
             var damageTags = action.Data
                 .Where((d) => d.GetType() == typeof(MetaData))
                 .Select((meta) => meta as MetaData)
@@ -181,6 +185,7 @@ namespace HearthstoneReplays.Events.Parsers
                             TargetCardId = targetCardId,
                             Damage = 0,
                             Timestamp = info.TimeStamp,
+                            IsPayingWithHealth = isPayingWithHealth
                         };
                         currentSourceDamages[targetCardId + "-" + targetEntityId] = currentTargetDamages;
                     }
@@ -282,6 +287,7 @@ namespace HearthstoneReplays.Events.Parsers
             public string TargetCardId;
             public int Damage;
             public DateTime Timestamp;
+            public bool IsPayingWithHealth;
 
             public override string ToString()
             {
