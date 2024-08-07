@@ -518,6 +518,7 @@ namespace HearthstoneReplays.Events
                     //case WindowShopper_TOY_652: return WindowShopper_WindowShopperToken_TOY_652t;
                     case WitchwoodApple: return WitchwoodApple_TreantToken;
                     case WitchwoodAppleCore: return WitchwoodApple_TreantToken;
+                    case WorkForTogwaggle_WorkForTogwaggleEnchantTavernBrawlEnchantment: return TheCoinCore;
                     case Wrenchcalibur: return SeaforiumBomber_BombToken;
                     case YoggSaronUnleashed_TentacleSwarmToken_YOG_516t3: return ChaoticTendril_YOG_514;
                     case YseraUnleashed: return YseraUnleashed_DreamPortalToken;
