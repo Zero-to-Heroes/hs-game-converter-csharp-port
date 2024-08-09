@@ -59,6 +59,7 @@ namespace HearthstoneReplays.Events.Parsers
                     CardId = cardId,
                     EntityId = entity.Id,
                     ControllerId = controllerId,
+                    Cost = entity.GetCost(),
                     Timestamp = tag.TimeStamp,
                 };
             }).ToList();
