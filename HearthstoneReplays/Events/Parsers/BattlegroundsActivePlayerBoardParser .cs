@@ -5,6 +5,7 @@ using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using static HearthstoneReplays.Events.CardIds;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
+using static HearthstoneReplays.Events.Parsers.BattlegroundsPlayerBoardParser;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -254,6 +255,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var undeadAttackBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, GameState);
                 // Looks like the enchantment isn't used anymore, at least for the opponent?
                 var frostlingBonus = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, GameState);
+                var astralAutomatonBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.AstralAutomatonPlayerEnchantDntEnchantment_BG_TTN_401pe, GameState);
                 var bloodGemEnchant = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
@@ -265,6 +267,8 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
                     .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)));
                 var choralEnchantment = choralEnchantments.FirstOrDefault();
+
+                var trinkets = BattlegroundsPlayerBoardParser.BuildTrinkets(player.PlayerId, GameState);
 
                 // String or int
                 dynamic heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
@@ -295,12 +299,14 @@ namespace HearthstoneReplays.Events.Parsers
                     QuestRewardEntities = questRewardEntities,
                     Secrets = secrets,
                     Hand = hand,
+                    Trinkets = trinkets,
                     GlobalInfo = new BgsPlayerGlobalInfo()
                     {
                         EternalKnightsDeadThisGame = eternalKnightBonus,
                         TavernSpellsCastThisGame = tavernSpellsCastThisGame,
                         UndeadAttackBonus = undeadAttackBonus,
                         FrostlingBonus = frostlingBonus,
+                        AstralAutomatonsSummonedThisGame = astralAutomatonBonus,
                         BloodGemAttackBonus = bloodGemAttackBonus,
                         BloodGemHealthBonus = bloodGemHealthBonus,
                         // TODO: always show the base version, even for golden
@@ -488,6 +494,7 @@ namespace HearthstoneReplays.Events.Parsers
             public List<object> Board { get; set; }
             public List<FullEntity> Secrets { get; set; }
             public List<FullEntity> Hand { get; set; }
+            public List<TrinketEntity> Trinkets { get; set; }
             public BgsPlayerGlobalInfo GlobalInfo { get; set; }
         }
 
@@ -497,6 +504,7 @@ namespace HearthstoneReplays.Events.Parsers
             public int TavernSpellsCastThisGame { get; set; }
             public int UndeadAttackBonus { get; set; }
             public int FrostlingBonus { get; set; }
+            public int AstralAutomatonsSummonedThisGame { get; set; }
             public int BloodGemAttackBonus { get; set; }
             public int BloodGemHealthBonus { get; set; }
             public int ChoralHealthBuff { get; set; }

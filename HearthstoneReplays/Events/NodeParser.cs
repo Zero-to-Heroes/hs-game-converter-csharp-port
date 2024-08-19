@@ -116,16 +116,18 @@ namespace HearthstoneReplays.Events
                     new NewGameParser(ParserState, StateFacade),
                     new TurnCleanupParser(ParserState, StateFacade),
                     new GameCleanupParser(ParserState, StateFacade),
-                    new BattlegroundsHeroSelectedParser(ParserState, StateFacade),
                     new SecretWillTriggeredParser(ParserState, StateFacade),
                     new CounterWillTriggerParser(ParserState, StateFacade),
                     new MinionsWillDieParser(ParserState, StateFacade),
                     new ChoosingOptionsParser(ParserState, StateFacade),
                     // Will parse the GameState logs (because choices are logged only in GS), but uses the PTL states
                     new EntityChosenParser(ParserState, StateFacade),
+
+                    new BattlegroundsHeroSelectedParser(ParserState, StateFacade),
                     new BattlegroundsDuoTeammatePlayerBoardParser(ParserState, StateFacade),
                     new BattlegroundsBattleStartingParser(ParserState, StateFacade),
                     new BattlegroundsActivePlayerBoardParser(ParserState, StateFacade),
+                    new BattlegroundsTrinketSelectedParser(ParserState, StateFacade),
                 };
             }
             else
@@ -234,6 +236,7 @@ namespace HearthstoneReplays.Events
                     new BattlegroundsQuestRewardDestroyedParser(ParserState, StateFacade),
                     new BloodGemBuffChangedParser(ParserState, StateFacade),
                     new BattlegroundsExtraGoldNextTurnParser(ParserState, StateFacade),
+                    new BattlegroundsTrinketSelectionParser(ParserState, StateFacade),
 
                     new DecklistUpdateParser(ParserState, StateFacade),
                     new GameRunningParser(ParserState, StateFacade),

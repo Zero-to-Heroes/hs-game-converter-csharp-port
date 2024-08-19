@@ -28,6 +28,7 @@ namespace HearthstoneReplays.Parser
         private DataHandler dataHandler;
         private PowerDataHandler powerDataHandler;
         private ChoicesHandler choicesHandler;
+        private SendChoicesHandler sendChoicesHandler;
         private EntityChosenHandler entityChosenHandler;
         private OptionsHandler optionsHandler;
         private PowerProcessorHandler powerProcessorHandler;
@@ -41,6 +42,7 @@ namespace HearthstoneReplays.Parser
             dataHandler = new DataHandler(helper);
             powerDataHandler = new PowerDataHandler(helper);
             choicesHandler = new ChoicesHandler(helper);
+            sendChoicesHandler = new SendChoicesHandler(helper);
             entityChosenHandler = new EntityChosenHandler(helper);
             optionsHandler = new OptionsHandler(helper);
             powerProcessorHandler = new PowerProcessorHandler(helper);
@@ -155,8 +157,8 @@ namespace HearthstoneReplays.Parser
                     State.StateFacade.LastProcessedGSLine = data;
                     break;
                 //case "GameState.SendChoices":
-                //	SendChoicesHandler.Handle(timestamp, data, State);
-                //	break;
+                //    sendChoicesHandler.Handle(normalizedTimestamp, data, State.GSState);
+                //    break;
                 //case "GameState.DebugPrintChoices":
                 case "GameState.DebugPrintEntityChoices":
                     choicesHandler.Handle(normalizedTimestamp, data, State.GSState);

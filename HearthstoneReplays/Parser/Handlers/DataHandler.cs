@@ -84,6 +84,7 @@ namespace HearthstoneReplays.Parser.Handlers
 
                 var tagName = match.Groups[1].Value;
                 var value = match.Groups[2].Value;
+                //var debug = value == "BATTLEGROUND_TRINKET";
                 Tag tag = null;
                 try
                 {

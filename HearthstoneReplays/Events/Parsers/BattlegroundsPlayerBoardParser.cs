@@ -251,6 +251,7 @@ namespace HearthstoneReplays.Events.Parsers
                         ProgressTotal = entity.GetTag(GameTag.QUEST_PROGRESS_TOTAL, 0),
                     })
                     .ToList();
+                List<TrinketEntity> trinkets = BuildTrinkets(playerPlayerId, GameState);
 
                 BgsPlayerGlobalInfo globalInfo = BuildGlobalInfo(playerPlayerId, playerEntityId, finalBoard, GameState, StateFacade);
 
@@ -279,10 +280,26 @@ namespace HearthstoneReplays.Events.Parsers
                     QuestRewardEntities = questRewardEntities,
                     Secrets = secrets,
                     Hand = hand,
+                    Trinkets = trinkets,
                     GlobalInfo = globalInfo,
                 };
             }
             return null;
+        }
+
+        public static List<TrinketEntity> BuildTrinkets(int playerPlayerId, GameState gameState)
+        {
+            return gameState.CurrentEntities.Values
+                .Where(entity => entity.GetEffectiveController() == playerPlayerId)
+                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                .Where(entity => entity.GetCardType() == (int)CardType.BATTLEGROUND_TRINKET)
+                .Select(entity => new TrinketEntity
+                {
+                    cardId = entity.CardId,
+                    entityId = entity.Entity,
+                    scriptDataNum1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1),
+                })
+                .ToList();
         }
 
         internal static BgsPlayerGlobalInfo BuildGlobalInfo(int playerId, int playerEntityId, List<BgsPlayerBoardEntity> board, GameState GameState, StateFacade StateFacade)
@@ -293,6 +310,7 @@ namespace HearthstoneReplays.Events.Parsers
             var tavernSpellsCastThisGame = GameState.CurrentEntities[playerEntityId]?.GetTag(GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME) ?? 0;
             // Includes Anub'arak, Nerubian Deathswarmer
             var undeadAttackBonus = GetPlayerEnchantmentValue(playerId,  CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, currentEntities);
+            var astralAutomatonBonus = GetPlayerEnchantmentValue(playerId, CardIds.AstralAutomatonPlayerEnchantDntEnchantment_BG_TTN_401pe, currentEntities);
             // Looks like the enchantment isn't used anymore, at least for the opponent?
             var frostlingBonus = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, currentEntities);
             var piratesPlayedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_PIRATESS_PLAYED_THIS_GAME, currentEntities);
@@ -317,6 +335,7 @@ namespace HearthstoneReplays.Events.Parsers
                 TavernSpellsCastThisGame = tavernSpellsCastThisGame,
                 UndeadAttackBonus = undeadAttackBonus,
                 FrostlingBonus = frostlingBonus,
+                AstralAutomatonsSummonedThisGame = astralAutomatonBonus,
                 PiratesPlayedThisGame = piratesPlayedThisGame,
                 BloodGemAttackBonus = bloodGemAttackBonus,
                 BloodGemHealthBonus = bloodGemHealthBonus,
@@ -530,6 +549,7 @@ namespace HearthstoneReplays.Events.Parsers
             public List<QuestReward> QuestRewardEntities { get; set; }
             public List<BgsPlayerBoardEntity> Board { get; set; }
             public List<FullEntity> Secrets { get; set; }
+            public List<TrinketEntity> Trinkets { get; set; }
             public List<FullEntity> Hand { get; set; }
             public BgsPlayerGlobalInfo GlobalInfo { get; set; }
         }
@@ -551,6 +571,7 @@ namespace HearthstoneReplays.Events.Parsers
             public int PiratesPlayedThisGame { get; set; }
             public int UndeadAttackBonus { get; set; }
             public int FrostlingBonus { get; set; }
+            public int AstralAutomatonsSummonedThisGame { get; set; }
             public int BloodGemAttackBonus { get; set; }
             public int BloodGemHealthBonus { get; set; }
             public int ChoralHealthBuff { get; set; }
@@ -571,6 +592,13 @@ namespace HearthstoneReplays.Events.Parsers
             public int RewardDbfId;
             public int ProgressCurrent;
             public int ProgressTotal;
+        }
+
+        public class TrinketEntity
+        {
+            public string cardId;
+            public int entityId;
+            public int scriptDataNum1;
         }
     }
 }
