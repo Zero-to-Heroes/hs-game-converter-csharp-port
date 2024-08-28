@@ -127,7 +127,6 @@ namespace HearthstoneReplays.Events
                     new BattlegroundsDuoTeammatePlayerBoardParser(ParserState, StateFacade),
                     new BattlegroundsBattleStartingParser(ParserState, StateFacade),
                     new BattlegroundsActivePlayerBoardParser(ParserState, StateFacade),
-                    new BattlegroundsTrinketSelectedParser(ParserState, StateFacade),
                 };
             }
             else
@@ -236,6 +235,7 @@ namespace HearthstoneReplays.Events
                     new BattlegroundsQuestRewardDestroyedParser(ParserState, StateFacade),
                     new BloodGemBuffChangedParser(ParserState, StateFacade),
                     new BattlegroundsExtraGoldNextTurnParser(ParserState, StateFacade),
+                    new BattlegroundsTrinketSelectedParser(ParserState, StateFacade),
                     new BattlegroundsTrinketSelectionParser(ParserState, StateFacade),
 
                     new DecklistUpdateParser(ParserState, StateFacade),

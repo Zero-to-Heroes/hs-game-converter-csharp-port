@@ -28,10 +28,12 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return stateType == StateType.GameState
+            TagChange tagChange = null;
+            return stateType == StateType.PowerTaskList
                 && StateFacade.IsBattlegrounds()
-                && node.Type == typeof(Choice)
-                && ParserState.CurrentChosenEntites != null;
+                && node.Type == typeof(TagChange)
+                && ((tagChange = node.Object as TagChange).Name == (int)GameTag.BACON_FIRST_TRINKET_DATABASE_ID
+                    || tagChange.Name == (int)GameTag.BACON_SECOND_TRINKET_DATABASE_ID);
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -41,33 +43,33 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            var choice = node.Object as Choice;
-            var chosenEntity = GameState.CurrentEntities[choice.Entity];
-            if (chosenEntity == null || chosenEntity.GetTag(GameTag.CARDTYPE) != (int)CardType.BATTLEGROUND_TRINKET)
+            var tagChange = node.Object as TagChange;
+            var hero = GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity);
+            // The value is set to 0 when rotating the entities it seems
+            if (hero?.CardId != null && !hero.IsBaconBartender() && tagChange.Value > 0)
             {
-                return null;
+                return new List<GameEventProvider> {  GameEventProvider.Create(
+                   tagChange.TimeStamp,
+                    "BATTLEGROUNDS_TRINKET_SELECTED",
+                   () => new GameEvent
+                   {
+                       Type = "BATTLEGROUNDS_TRINKET_SELECTED",
+                       Value = new
+                       {
+                           CardId = hero.CardId,
+                           PlayerId = hero.GetTag(GameTag.PLAYER_ID),
+                           AdditionalProps = new
+                           {
+                               HeroCardId = hero.CardId,
+                               TrinketDbfId = tagChange.Value,
+                               IsFirstTrinket = tagChange.Name == (int)GameTag.BACON_FIRST_TRINKET_DATABASE_ID
+                           }
+                       }
+                   },
+                   false,
+                   node) };
             }
-
-            var controllerId = chosenEntity.GetEffectiveController();
-
-            return new List<GameEventProvider> { GameEventProvider.Create(
-                choice.TimeStamp,
-                "BATTLEGROUNDS_TRINKET_SELECTED",
-                () => {
-                    return new GameEvent
-                    {
-                        Type = "BATTLEGROUNDS_TRINKET_SELECTED",
-                        Value = new
-                        {
-                            CardId = chosenEntity.CardId,
-                            LocalPlayer = StateFacade.LocalPlayer,
-                            OpponentPlayer = StateFacade.OpponentPlayer,
-                        }
-                    };
-                },
-                true,
-                node)
-            };
+            return null;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)

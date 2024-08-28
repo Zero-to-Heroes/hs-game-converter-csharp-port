@@ -210,6 +210,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .FirstOrDefault();
                 if (heroPower == null)
                 {
+                    var debugHP = hero.Entity == 12613;
                     Logger.Log("WARNING: could not find hero power", "");
                 }
                 var heroPowerUsed = heroPower?.GetTag(GameTag.BACON_HERO_POWER_ACTIVATED) == 1;
@@ -298,7 +299,9 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId = entity.CardId,
                     entityId = entity.Entity,
                     scriptDataNum1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1),
+                    scriptDataNum6 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_6),
                 })
+                .OrderBy(trinket => trinket.scriptDataNum6)
                 .ToList();
         }
 
@@ -599,6 +602,7 @@ namespace HearthstoneReplays.Events.Parsers
             public string cardId;
             public int entityId;
             public int scriptDataNum1;
+            public int scriptDataNum6;
         }
     }
 }
