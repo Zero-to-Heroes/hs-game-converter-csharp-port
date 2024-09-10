@@ -242,6 +242,7 @@ namespace HearthstoneReplays.Events
                     case BunchOfBananas: return BunchOfBananas_BunchOfBananasToken_ETC_201t;
                     case BurglyBully: return TheCoinCore;
                     case CarelessCrafter_TOY_382: return CarelessCrafter_BandageToken_TOY_382t;
+                    case CashCow_WORK_019: return TheCoinCore;
                     case CarryOnGrub_VAC_935: return CarryOnGrub_CarryOnSuitcaseToken_VAC_935t;
                     case ChainsOfDread_AV_316hp: return DreadlichTamsin_FelRiftToken;
                     case ChiaDrake_TOY_801: return ChiaDrake_ChiaDrakeToken_TOY_801t;
@@ -321,6 +322,7 @@ namespace HearthstoneReplays.Events
                     case HakkarTheSoulflayer_CorruptedBloodToken: return HakkarTheSoulflayer_CorruptedBloodToken;
                     case HakkarTheSoulflayer: return HakkarTheSoulflayer_CorruptedBloodToken;
                     case HalazziTheLynx: return Springpaw_LynxToken;
+                    case HandleWithBear_WORK_024: return HandleWithBear_CarefulBearToken_WORK_024t;
                     case Harpoon: return ArcaneShot;
                     case HauntedCurio: return CursedCurio;
                     case HeadcrackLegacy: return HeadcrackLegacy;
@@ -375,11 +377,13 @@ namespace HearthstoneReplays.Events
                     case MilitiaHorn: return VeteransMilitiaHorn;
                     case MiracleSalesman_WW_331: return MiracleSalesman_SnakeOilToken_WW_331t;
                     case MisterMukla_ETC_836: return KingMukla_BananasLegacyToken;
+                    case MonkeyBusiness_WORK_020: return KingMukla_BananasLegacyToken;
                     case MuklaTyrantOfTheVale: return KingMukla_BananasLegacyToken;
                     case MurgurMurgurgle: return MurgurMurgurgle_MurgurglePrimeToken;
                     case MurlocGrowfin_MIS_307: return MurlocGrowfin_MurlocGrowfinToken_MIS_307t1;
                     case MysteryEgg_TOY_351: return MysteryEgg_MysteryEggToken_TOY_351t;
                     case MysticalMirage_ULDA_035: return MysticalMirage_ULDA_035ts;
+                    case NarainSoothfancy_VAC_420: return NarainSoothfancy_FortuneToken_VAC_420t;
                     case NostalgicClown_TOY_341: return NostalgicClown_NostalgicClownToken_TOY_341t;
                     case NostalgicGnome_TOY_312: return NostalgicGnome_NostalgicGnomeToken_TOY_312t;
                     case NostalgicInitiate_TOY_340: return NostalgicInitiate_NostalgicInitiateToken_TOY_340t1;
