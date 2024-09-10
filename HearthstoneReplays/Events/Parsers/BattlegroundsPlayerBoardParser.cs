@@ -105,18 +105,16 @@ namespace HearthstoneReplays.Events.Parsers
             if (BgsUtils.IsBaconGhost(cardId) || (hero?.IsBaconBartender() ?? false))
             {
                 // Finding the one that is flagged as the player's NEXT_OPPONENT
-                var playerEntity = GameState.CurrentEntities.Values
+                var candidates = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
-                    .Where(entity => !entity.IsBaconBartender()
-                        && !entity.IsBaconGhost()
-                        && !entity.IsBaconEnchantment())
-                    .OrderBy(entity => entity.Id)
-                    .LastOrDefault();
-                var debug = GameState.CurrentEntities.Values
-                    .Where(entity => entity.CardId == "BG22_HERO_201")
                     .ToList();
+                var playerEntity = candidates
+                        .Where(entity => !entity.IsBaconBartender() && !entity.IsBaconGhost() && !entity.IsBaconEnchantment())
+                        .OrderBy(entity => entity.Id)
+                        .LastOrDefault()
+                    ?? candidates.OrderBy(entity => entity.Id).LastOrDefault();
                 var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
 
                 var nextOpponentCandidates = GameState.CurrentEntities.Values
