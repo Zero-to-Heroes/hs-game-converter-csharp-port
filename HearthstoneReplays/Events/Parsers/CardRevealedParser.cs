@@ -113,6 +113,7 @@ namespace HearthstoneReplays.Events.Parsers
                         MercenariesEquipmentId = mercEquipmentId,
                         RevealedFromBlock = revealedFromBlock,
                         IndexInBlock = indexInBlock,
+                        Cost = fullEntity.GetCost(),
                     }
                 ),
                 true,
