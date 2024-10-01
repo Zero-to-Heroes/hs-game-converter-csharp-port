@@ -104,31 +104,65 @@ namespace HearthstoneReplays.Events.Parsers
 
             if (BgsUtils.IsBaconGhost(cardId) || (hero?.IsBaconBartender() ?? false))
             {
-                // Finding the one that is flagged as the player's NEXT_OPPONENT
-                var candidates = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
-                    .ToList();
-                var playerEntity = candidates
-                        .Where(entity => !entity.IsBaconBartender() && !entity.IsBaconGhost() && !entity.IsBaconEnchantment())
-                        .OrderBy(entity => entity.Id)
-                        .LastOrDefault()
-                    ?? candidates.OrderBy(entity => entity.Id).LastOrDefault();
-                var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
+                var linkedEntityId = hero.GetTag(GameTag.LINKED_ENTITY);
+                var linkedEntity = GameState.CurrentEntities.GetValueOrDefault(linkedEntityId);
+                if (linkedEntity != null)
+                {
+                    if (!linkedEntity.IsBaconBartender() && !linkedEntity.IsBaconGhost())
+                    {
+                        hero = linkedEntity;
+                        cardId = hero.CardId;
+                        playerId = hero.GetTag(GameTag.PLAYER_ID);
+                    }
+                    else
+                    {
+                        var heroesForTargetPlayerId = GameState.CurrentEntities.Values
+                            .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                            .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == playerId)
+                            .Where(entity => !entity.IsBaconBartender() && !entity.IsBaconEnchantment() && !entity.IsBaconGhost())
+                            .ToList();
+                        var candidate = heroesForTargetPlayerId.LastOrDefault();
+                        if (candidate != null)
+                        {
+                            hero = candidate;
+                            cardId = candidate.CardId;
+                            playerId = candidate.GetTag(GameTag.PLAYER_ID);
+                        }
 
-                var nextOpponentCandidates = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                    .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
-                    .Where(entity => !entity.IsBaconBartender()
-                        && !entity.IsBaconGhost()
-                        && !entity.IsBaconEnchantment())
-                    .ToList();
-                var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
+                    }
+                }
+                //if (linkedEntityId == -1)
+                //{
+                //    // Finding the one that is flagged as the player's NEXT_OPPONENT
+                //    // FIXME: not applicable in Duos
+                //    var candidates = GameState.CurrentEntities.Values
+                //        .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                //        .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
+                //        .Where(entity => !entity.IsBaconBartender() && !entity.IsBaconGhost() && !entity.IsBaconEnchantment())
+                //        .ToList();
+                //    var playerEntity = candidates
+                //            .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                //            .OrderBy(entity => entity.Id)
+                //            .LastOrDefault()
+                //        ?? candidates.OrderBy(entity => entity.Id).LastOrDefault();
+                //    // FIXME: this doesn't work in Duos, as the ghost might be the partner
+                //    var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
 
-                hero = nextOpponent;
-                cardId = nextOpponent?.CardId;
-                playerId = nextOpponent?.GetTag(GameTag.PLAYER_ID) ?? playerId;
+                //    // FIXME: this doesn't work, at least in Duos, as the candidates are the heroes that weren't picked during
+                //    // hero selection
+                //    var nextOpponentCandidates = GameState.CurrentEntities.Values
+                //        .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                //        .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
+                //        .Where(entity => !entity.IsBaconBartender()
+                //            && !entity.IsBaconGhost()
+                //            && !entity.IsBaconEnchantment())
+                //        .ToList();
+                //    var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
+
+                //    hero = nextOpponent;
+                //    cardId = nextOpponent?.CardId;
+                //    playerId = nextOpponent?.GetTag(GameTag.PLAYER_ID) ?? playerId;
+                //}
 
             }
 
@@ -307,10 +341,10 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var currentEntities = GameState.CurrentEntities.Values.ToList();
             var currentEntitiesGs = StateFacade.GsState.GameState.CurrentEntities.Values.ToList();
-            var eternalKnightBonus = GetPlayerEnchantmentValue(playerId,  CardIds.EternalKnightPlayerEnchantEnchantment, currentEntities);
+            var eternalKnightBonus = GetPlayerEnchantmentValue(playerId, CardIds.EternalKnightPlayerEnchantEnchantment, currentEntities);
             var tavernSpellsCastThisGame = GameState.CurrentEntities[playerEntityId]?.GetTag(GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME) ?? 0;
             // Includes Anub'arak, Nerubian Deathswarmer
-            var undeadAttackBonus = GetPlayerEnchantmentValue(playerId,  CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, currentEntities);
+            var undeadAttackBonus = GetPlayerEnchantmentValue(playerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, currentEntities);
             var astralAutomatonBonus = GetPlayerEnchantmentValue(playerId, CardIds.AstralAutomatonPlayerEnchantDntEnchantment_BG_TTN_401pe, currentEntities);
             // Looks like the enchantment isn't used anymore, at least for the opponent?
             var frostlingBonus = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, currentEntities);
@@ -326,9 +360,11 @@ namespace HearthstoneReplays.Events.Parsers
             //var debugList = currentEntitiesGs
             //    .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
             //    .ToList();
+            var debug = GameState.CurrentEntities.GetValueOrDefault(14758);
             var choralEnchantments = currentEntitiesGs
                 .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
-                .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)));
+                .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)))
+                .ToList();
             var choralEnchantment = choralEnchantments.FirstOrDefault();
             return new BgsPlayerGlobalInfo()
             {

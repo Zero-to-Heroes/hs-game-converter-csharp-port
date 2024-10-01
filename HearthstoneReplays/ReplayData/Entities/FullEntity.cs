@@ -169,14 +169,12 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         internal bool IsBaconGhost()
         {
-            return GetTag(GameTag.BACON_IS_KEL_THUZAD) == 1
-                || BgsUtils.IsBaconGhost(this.CardId);
+            return GetTag(GameTag.BACON_IS_KEL_THUZAD) == 1 || BgsUtils.IsBaconGhost(this.CardId);
         }
 
         internal bool IsBaconBartender()
         {
-            return GetTag(GameTag.BACON_BOB_SKIN) == 1 ||
-                BgsUtils.IsBaconBartender(this.CardId);
+            return GetTag(GameTag.BACON_BOB_SKIN) == 1 || BgsUtils.IsBaconBartender(this.CardId);
         }
 
         internal bool IsBaconEnchantment()

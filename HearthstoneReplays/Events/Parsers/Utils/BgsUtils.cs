@@ -16,7 +16,7 @@ namespace HearthstoneReplays.Events.Parsers.Utils
 
         public static bool IsBaconBartender(string cardId)
         {
-            return cardId == CardIds.BartenderBob;
+            return cardId?.StartsWith(CardIds.BartenderBob) ?? false;
         }
 
         public static bool IsBaconEnchantment(string cardId)
