@@ -52,6 +52,10 @@ namespace HearthstoneReplays.Events.Parsers
             var deadMinions = deathTags.Select(tag =>
             {
                 var entity = GameState.CurrentEntities[tag.Entity];
+                if (entity.GetCardType() != (int)CardType.MINION)
+                {
+                    return null;
+                }
                 var cardId = entity.CardId;
                 var controllerId = entity.GetEffectiveController();
                 return new
@@ -62,7 +66,9 @@ namespace HearthstoneReplays.Events.Parsers
                     Cost = entity.GetCost(),
                     Timestamp = tag.TimeStamp,
                 };
-            }).ToList();
+            })
+                .Where(death => death != null)
+                .ToList();
 
             var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
