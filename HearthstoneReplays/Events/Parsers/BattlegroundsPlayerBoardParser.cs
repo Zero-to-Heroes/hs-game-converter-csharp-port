@@ -35,8 +35,6 @@ namespace HearthstoneReplays.Events.Parsers
             // Use PTL to be able to "see the future", even if it means the info will be delayed
             // Using PTL instead of GS will add a few seconds delay, but it shouldn't be too much
             return stateType == StateType.PowerTaskList && IsApplyOnNewNode(node);
-            // Legacy
-            //return stateType == StateType.PowerTaskList && this.Snapshot.IsApplyOnNewNode(node);
         }
 
         public bool IsApplyOnNewNode(Node node)
@@ -54,6 +52,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
+            Logger.Log("Starting to build player boards", "");
             var tagChange = node.Object as TagChange;
             var opponent = StateFacade.OpponentPlayer;
             var player = StateFacade.LocalPlayer;
@@ -62,6 +61,7 @@ namespace HearthstoneReplays.Events.Parsers
             var opponentBoard = BattlegroundsPlayerBoardParser.CreateProviderFromAction(opponent.PlayerId, opponent.Id, true, player, GameState, StateFacade);
 
             GameState.BgsHasSentNextOpponent = false;
+            Logger.Log("Player boards built", "");
 
             var result = new List<GameEventProvider>();
             result.Add(GameEventProvider.Create(
