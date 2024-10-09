@@ -25,6 +25,7 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return node.Type == typeof(TagChange)
+                && !ParserState.IsBattlegrounds()
                 && (node.Object as TagChange).Name == (int)GameTag.TIMEOUT;
         }
 

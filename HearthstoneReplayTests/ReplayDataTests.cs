@@ -17,6 +17,7 @@ using System.Reflection;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System.IO;
+using System.Collections;
 
 #endregion
 
@@ -92,6 +93,37 @@ namespace HearthstoneReplayTests
             string xml = new ReplayConverter().xmlFromReplay(replay);
             //Thread.Sleep(5000);
             //Console.Write(xml);
+        }
+
+
+        [TestMethod]
+        public void TestCountEvents()
+        {
+            // Base: 1.5-1.7 min
+            // Removing ZONE_POSITION_CHANGED: 1.2 min
+            // Debounce ZONE_POSITION_CHANGED: 1.3 min
+            // + exclude some events (TURN_DURATION_UPDATED, DEATHRATTLE_TRIGGERED, NUM_CARDS_PLAYED_THIS_TURN): 1.2min
+            // Improve ParseEnum: 37s
+            var serializerSettings = new JsonSerializerSettings() { };
+            var eventsCount = new Dictionary<string, int>();
+            GameEventHandler.EventProvider = (GameEvent gameEvent) =>
+            {
+                string type = gameEvent.Type;
+                eventsCount.TryGetValue(type, out int count);
+                count++;
+                eventsCount[type] = count;
+            };
+            List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
+            logFile.Insert(0, "START_CATCHING_UP");
+            logFile.Add("END_CATCHING_UP");
+            var parser = new ReplayParser();
+            HearthstoneReplay replay = parser.FromString(logFile); 
+
+            Console.WriteLine($"Will trace {eventsCount.Count} events");
+            List<string> keyValuePairs = eventsCount
+                .OrderByDescending(kvp => kvp.Value)
+                .Select(kvp => $"{kvp.Key}: {kvp.Value}").ToList();
+            keyValuePairs.ForEach(Console.WriteLine);
         }
 
         [TestMethod]

@@ -249,15 +249,35 @@ namespace HearthstoneReplays.Parser
             return tag;
         }
 
+        private static readonly Dictionary<Type, Dictionary<string, int>> EnumCache = new Dictionary<Type, Dictionary<string, int>>();
+
         public int ParseEnum(Type type, string tag)
         {
-            int value;
-            if (int.TryParse(tag, out value))
+            if (!EnumCache.ContainsKey(type))
+            {
+                var names = type.GetEnumNames();
+                var values = type.GetEnumValues();
+                var nameValueDict = new Dictionary<string, int>();
+
+                for (int i = 0; i < names.Length; i++)
+                {
+                    nameValueDict[names[i]] = (int)values.GetValue(i);
+                }
+
+                EnumCache[type] = nameValueDict;
+            }
+
+            if (EnumCache[type].TryGetValue(tag, out int value))
+            {
                 return value;
-            var index = type.GetEnumNames().ToList().IndexOf(tag);
-            if (index > -1)
-                return (int)type.GetEnumValues().GetValue(index);
-            //Logger.Log("Error: enuum not found", tag);
+            }
+
+            if (int.TryParse(tag, out value))
+            {
+                return value;
+            }
+
+            //Logger.Log("Error: enum not found", tag);
             //throw new Exception("Enum not found: " + tag);
             return -1;
         }

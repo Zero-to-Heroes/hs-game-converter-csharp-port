@@ -39,10 +39,16 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool IsApplyOnNewNode(Node node)
         {
+            //return StateFacade.IsBattlegrounds()
+            //        && node.Type == typeof(TagChange)
+            //        && (node.Object as TagChange).Name == (int)GameTag.BG_BATTLE_STARTING
+            //        && (node.Object as TagChange).Value == 0;
+            // This seems to always trigger a few seconds before the BATTLE_STARTING tag change, without any significant
+            // data being produced
             return StateFacade.IsBattlegrounds()
                     && node.Type == typeof(TagChange)
-                    && (node.Object as TagChange).Name == (int)GameTag.BG_BATTLE_STARTING
-                    && (node.Object as TagChange).Value == 0;
+                    && (node.Object as TagChange).Name == (int)GameTag.BACON_CHOSEN_BOARD_SKIN_ID
+                    && (node.Object as TagChange).Value != 0;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -52,7 +58,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            Logger.Log("Starting to build player boards", "");
+            Logger.Log("Starting to build player boards", node.CreationLogLine);
             var tagChange = node.Object as TagChange;
             var opponent = StateFacade.OpponentPlayer;
             var player = StateFacade.LocalPlayer;

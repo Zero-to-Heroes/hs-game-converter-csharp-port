@@ -27,11 +27,14 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             TagChange tagChange;
+            // Limit it to merceanries, the only mode where this is used, to limit the impact on the number of events sent (esp. in BG)
             var elapsed = TimeSpan.FromTicks(DateTime.UtcNow.Ticks - lastEventSentTicks);
-            var isOkToResend = true; //  !ParserState.IsBattlegrounds() || (elapsed.TotalMilliseconds > DEBOUNCE_TIME_IN_MS);
+            var isOkToResend = ParserState.IsMercenaries()
+                // We still need an event to be sent at some point to force the zone ordering computation
+                || (ParserState.IsBattlegrounds() && elapsed.TotalMilliseconds > DEBOUNCE_TIME_IN_MS);
+
             return stateType == StateType.PowerTaskList
-                // Limit it to merceanries, the only mode where this is used, to limit the impact on the number of events sent (esp. in BG)
-                && (ParserState.IsMercenaries() || isOkToResend)
+                && isOkToResend
                 && node.Type == typeof(TagChange)
                 && ((tagChange = node.Object as TagChange).Name == (int)GameTag.ZONE_POSITION);
         }
@@ -43,6 +46,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
+            lastEventSentTicks = DateTime.UtcNow.Ticks;
+
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;

@@ -24,6 +24,7 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return stateType == StateType.PowerTaskList
+                && !ParserState.IsBattlegrounds()
                 && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.NUM_CARDS_PLAYED_THIS_TURN;
         }

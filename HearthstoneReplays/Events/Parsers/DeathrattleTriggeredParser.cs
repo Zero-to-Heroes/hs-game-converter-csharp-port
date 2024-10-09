@@ -24,6 +24,7 @@ namespace HearthstoneReplays.Events.Parsers
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
             return stateType == StateType.PowerTaskList
+                && !ParserState.IsBattlegrounds()
                 && node.Type == typeof(Parser.ReplayData.GameActions.Action)
                 && (node.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER
                 && (node.Object as Parser.ReplayData.GameActions.Action).TriggerKeyword == (int)GameTag.DEATHRATTLE;
