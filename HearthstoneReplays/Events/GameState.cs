@@ -160,12 +160,13 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             // We need to do a copy because this otherwise we could mutate the entity from the log parser
             // This would mean that when a TagChange event occurs in the log, we also mutate the data inside the Game.Data
             // That data is supposed to be a snapshot of the current log lines, and should be immutable
-            var fullEntity = 
+            var fullEntity =
                 // when reconnecting, we sometimes get udpated information on the FullEntity
-                new FullEntity { 
-                    CardId = CurrentEntities.GetValueOrDefault(entity.Id)?.CardId?.Length > 0 ? CurrentEntities.GetValueOrDefault(entity.Id).CardId :  entity.CardId, 
-                    Id = CurrentEntities.GetValueOrDefault(entity.Id)?.Id ?? entity.Id, 
-                    TimeStamp = entity.TimeStamp 
+                new FullEntity
+                {
+                    CardId = CurrentEntities.GetValueOrDefault(entity.Id)?.CardId?.Length > 0 ? CurrentEntities.GetValueOrDefault(entity.Id).CardId : entity.CardId,
+                    Id = CurrentEntities.GetValueOrDefault(entity.Id)?.Id ?? entity.Id,
+                    TimeStamp = entity.TimeStamp
                 };
             fullEntity.Tags = newTags;
             fullEntity.TagsHistory = newTags?.Select(tag => new Tag() { Name = tag.Name, Value = tag.Value, }).ToList();
@@ -407,10 +408,22 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                     .Where(e => e.Tags.Find(x => (x.Name == (int)GameTag.CURRENT_PLAYER && x.Value == 1)) != null)
                     .FirstOrDefault();
             var activePlayerEntityId = activePlayer?.Id;
-            var activePlayerEntity = ParserState.CurrentGame.FilterGameData(typeof(PlayerEntity))
-                .Select(player => (PlayerEntity)player)
-                .FirstOrDefault(player => player.Id == activePlayerEntityId);
-            return activePlayerEntity?.PlayerId ?? -1;
+            foreach (var data in ParserState.CurrentGame.Data)
+            {
+                if (data.GetType() == typeof(PlayerEntity))
+                {
+                    var playerEntity = (PlayerEntity)data;
+                    if (playerEntity?.Id == activePlayerEntityId)
+                    {
+                        return playerEntity.PlayerId;
+                    }
+                }
+            }
+            return -1;
+            //var activePlayerEntity = ParserState.CurrentGame.FilterGameData(typeof(PlayerEntity))
+            //    .Select(player => (PlayerEntity)player)
+            //    .FirstOrDefault(player => player.Id == activePlayerEntityId);
+            //return activePlayerEntity?.PlayerId ?? -1;
         }
 
         public void OnCardPlayed(int entityId, int? targetEntityId = null)

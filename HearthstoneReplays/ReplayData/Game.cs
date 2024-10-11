@@ -87,7 +87,12 @@ namespace HearthstoneReplays.Parser.ReplayData
             }
         }
 
-
+		/// <summary>
+		/// CAUTION: it builds the whole data and return it to you.
+		/// So if you're interested in getting a specific node, it's probably best to iterate over it yourself
+		/// </summary>
+		/// <param name="types"></param>
+		/// <returns></returns>
 		internal List<GameData> FilterGameData(params System.Type[] types)
 		{
 			// Build the list - could probably be built incrementally instead of rebuilding it completely every time
@@ -105,7 +110,7 @@ namespace HearthstoneReplays.Parser.ReplayData
             }
 		}
 
-		internal void ExtractData(List<GameData> result, GameData data)
+        internal void ExtractData(List<GameData> result, GameData data)
 		{
 			if (data.GetType() == typeof(GameActions.Action))
 			{

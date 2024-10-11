@@ -103,7 +103,8 @@ namespace HearthstoneReplayTests
             // Removing ZONE_POSITION_CHANGED: 1.2 min
             // Debounce ZONE_POSITION_CHANGED: 1.3 min
             // + exclude some events (TURN_DURATION_UPDATED, DEATHRATTLE_TRIGGERED, NUM_CARDS_PLAYED_THIS_TURN): 1.2min
-            // Improve ParseEnum: 37s
+            // Improve ParseEnum: 37.8s
+            // Improve GetActivePlayerId: 21.9? Might be a bug somewhere
             var serializerSettings = new JsonSerializerSettings() { };
             var eventsCount = new Dictionary<string, int>();
             GameEventHandler.EventProvider = (GameEvent gameEvent) =>

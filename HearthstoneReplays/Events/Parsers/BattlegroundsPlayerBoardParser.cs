@@ -39,16 +39,16 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool IsApplyOnNewNode(Node node)
         {
-            //return StateFacade.IsBattlegrounds()
-            //        && node.Type == typeof(TagChange)
-            //        && (node.Object as TagChange).Name == (int)GameTag.BG_BATTLE_STARTING
-            //        && (node.Object as TagChange).Value == 0;
-            // This seems to always trigger a few seconds before the BATTLE_STARTING tag change, without any significant
-            // data being produced
             return StateFacade.IsBattlegrounds()
                     && node.Type == typeof(TagChange)
-                    && (node.Object as TagChange).Name == (int)GameTag.BACON_CHOSEN_BOARD_SKIN_ID
-                    && (node.Object as TagChange).Value != 0;
+                    && (node.Object as TagChange).Name == (int)GameTag.BG_BATTLE_STARTING
+                    && (node.Object as TagChange).Value == 0;
+            // This seems to always trigger a few seconds before the BATTLE_STARTING tag change, without any significant
+            // data being produced
+            //return StateFacade.IsBattlegrounds()
+            //        && node.Type == typeof(TagChange)
+            //        && (node.Object as TagChange).Name == (int)GameTag.BACON_CHOSEN_BOARD_SKIN_ID
+            //        && (node.Object as TagChange).Value != 0;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -355,6 +355,7 @@ namespace HearthstoneReplays.Events.Parsers
             // Looks like the enchantment isn't used anymore, at least for the opponent?
             var frostlingBonus = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, currentEntities);
             var piratesPlayedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_PIRATESS_PLAYED_THIS_GAME, currentEntities);
+            var piratesSummonedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_PIRATESS_SUMMONED_THIS_GAME, currentEntities);
             var bloodGemEnchant = currentEntities
                 .Where(entity => entity.GetEffectiveController() == playerId)
                 // Don't use the PLAY zone, as it could cause issues with teammate state in Duos? To be tested
@@ -378,6 +379,7 @@ namespace HearthstoneReplays.Events.Parsers
                 TavernSpellsCastThisGame = tavernSpellsCastThisGame,
                 UndeadAttackBonus = undeadAttackBonus,
                 FrostlingBonus = frostlingBonus,
+                PiratesSummonedThisGame = piratesSummonedThisGame,
                 AstralAutomatonsSummonedThisGame = astralAutomatonBonus,
                 PiratesPlayedThisGame = piratesPlayedThisGame,
                 BloodGemAttackBonus = bloodGemAttackBonus,
@@ -453,15 +455,25 @@ namespace HearthstoneReplays.Events.Parsers
 
         internal static FullEntity EnhanceLovesickBalladist(FullEntity entity, StateFacade StateFacade)
         {
-            var buffEnchantmentValue = StateFacade.GsState.Replay.Games[StateFacade.GsState.Replay.Games.Count - 1]
+            var serenadedEnchantments = StateFacade.GsState.Replay.Games[StateFacade.GsState.Replay.Games.Count - 1]
                 .FilterGameData(typeof(ShowEntity))
                 .Select(d => d as ShowEntity)
-                .Where(e => e.GetCardType() == (int)CardType.ENCHANTMENT)
-                .Where(e => e.GetTag(GameTag.ATTACHED) > 0)
+                .Where(e => e.CardId == CardIds.LovesickBalladist_SerenadedEnchantment)
                 .Where(e => e.GetTag(GameTag.CREATOR) == entity.Id)
-                .Select(e => e.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1))
-                // Make sure to take the last one so we are not polluted by values from previous fights
-                .LastOrDefault();
+                //.Where(e => e.GetCardType() == (int)CardType.ENCHANTMENT)
+                .Where(e => e.GetTag(GameTag.ATTACHED) > 0)
+                .ToList();
+            // Make sure to take the last one so we are not polluted by values from previous fights
+            var latestEnchantment = serenadedEnchantments.LastOrDefault();
+            var latestEnchantmentId = latestEnchantment?.Entity;
+            if (latestEnchantmentId == null)
+            {
+                return entity;
+            }
+
+
+            var buffEnchantmentValue = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(latestEnchantmentId.Value)
+                ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
             if (buffEnchantmentValue > 0)
             {
                 var baseVale = entity.CardId == LovesickBalladist_BG26_814
@@ -612,6 +624,7 @@ namespace HearthstoneReplays.Events.Parsers
             public int EternalKnightsDeadThisGame { get; set; }
             public int TavernSpellsCastThisGame { get; set; }
             public int PiratesPlayedThisGame { get; set; }
+            public int PiratesSummonedThisGame { get; set; }
             public int UndeadAttackBonus { get; set; }
             public int FrostlingBonus { get; set; }
             public int AstralAutomatonsSummonedThisGame { get; set; }

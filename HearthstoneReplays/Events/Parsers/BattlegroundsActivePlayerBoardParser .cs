@@ -255,6 +255,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var undeadAttackBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, GameState);
                 // Looks like the enchantment isn't used anymore, at least for the opponent?
                 var frostlingBonus = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, GameState);
+                var piratesSummonedThisGame = GetPlayerTag(player.Id, GameTag.BACON_PIRATESS_SUMMONED_THIS_GAME, GameState);
                 var astralAutomatonBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.AstralAutomatonPlayerEnchantDntEnchantment_BG_TTN_401pe, GameState);
                 var bloodGemEnchant = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
@@ -306,6 +307,7 @@ namespace HearthstoneReplays.Events.Parsers
                         TavernSpellsCastThisGame = tavernSpellsCastThisGame,
                         UndeadAttackBonus = undeadAttackBonus,
                         FrostlingBonus = frostlingBonus,
+                        PiratesSummonedThisGame = piratesSummonedThisGame,
                         AstralAutomatonsSummonedThisGame = astralAutomatonBonus,
                         BloodGemAttackBonus = bloodGemAttackBonus,
                         BloodGemHealthBonus = bloodGemHealthBonus,
@@ -331,18 +333,6 @@ namespace HearthstoneReplays.Events.Parsers
             }
             entity.CardId = entityFromTheFuture.CardId;
             return entity;
-        }
-
-        internal static FullEntity EnhanceEntities(FullEntity entity, GameState gameState, StateFacade StateFacade)
-        {
-            switch (entity.CardId)
-            {
-                case LovesickBalladist_BG26_814:
-                case LovesickBalladist_BG26_814_G:
-                    return EnhanceLovesickBalladist(entity, StateFacade);
-                default:
-                    return entity;
-            }
         }
 
         internal static FullEntity EnhanceLovesickBalladist(FullEntity entity, StateFacade StateFacade)
@@ -504,6 +494,8 @@ namespace HearthstoneReplays.Events.Parsers
             public int TavernSpellsCastThisGame { get; set; }
             public int UndeadAttackBonus { get; set; }
             public int FrostlingBonus { get; set; }
+            public int PiratesPlayedThisGame { get; set; }
+            public int PiratesSummonedThisGame { get; set; }
             public int AstralAutomatonsSummonedThisGame { get; set; }
             public int BloodGemAttackBonus { get; set; }
             public int BloodGemHealthBonus { get; set; }
