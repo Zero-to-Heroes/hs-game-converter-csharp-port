@@ -29,7 +29,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return stateType == StateType.PowerTaskList
                 && ParserState.GameState.GetGameEntity() != null
-                && Parser.IsApplyOnNewNode(node);
+                && Parser.IsApplyOnNewNode(node, stateType);
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)

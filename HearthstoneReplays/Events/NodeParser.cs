@@ -127,6 +127,7 @@ namespace HearthstoneReplays.Events
                     new BattlegroundsDuoTeammatePlayerBoardParser(ParserState, StateFacade),
                     new BattlegroundsBattleStartingParser(ParserState, StateFacade),
                     new BattlegroundsActivePlayerBoardParser(ParserState, StateFacade),
+                    new BattlegroundsPlayerBoardParser(ParserState, StateFacade),
                 };
             }
             else

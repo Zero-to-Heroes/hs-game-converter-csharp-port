@@ -439,6 +439,12 @@ namespace HearthstoneReplays.Parser
                 || CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_DUO_FRIENDLY;
         }
 
+        public bool IsBattlegroundsDuos()
+        {
+            return CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_DUO
+                || CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_DUO_FRIENDLY;
+        }
+
         public bool InRecruitPhase()
         {
             return GameState.GetGameEntity().GetTag(GameTag.BOARD_VISUAL_STATE) == 1;
