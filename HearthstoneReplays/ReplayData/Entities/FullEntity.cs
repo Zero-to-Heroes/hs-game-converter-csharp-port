@@ -114,6 +114,11 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 || GetTag(GameTag.CARDTYPE) == (int)CardType.BATTLEGROUND_SPELL;
         }
 
+        internal bool IsLocation()
+        {
+            return GetTag(GameTag.CARDTYPE) == (int)CardType.LOCATION;
+        }
+
         internal int GetZonePosition()
         {
             if (GetTag(GameTag.FAKE_ZONE_POSITION) != -1)

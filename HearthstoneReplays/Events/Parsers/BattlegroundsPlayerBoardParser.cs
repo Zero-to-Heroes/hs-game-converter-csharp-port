@@ -23,7 +23,8 @@ namespace HearthstoneReplays.Events.Parsers
         private BattlegroundsStartOfBattleLegacySnapshot Snapshot;
 
         // Shared between PTL and GS
-        private static bool IsReadyForBattle = true;
+        private static bool IsGSReadyForBattle = false;
+        private static bool IsPTLReadyForBattle = false;
 
         public BattlegroundsPlayerBoardParser(ParserState ParserState, StateFacade helper)
         {
@@ -54,52 +55,46 @@ namespace HearthstoneReplays.Events.Parsers
             // Trying to make this work by postponing the sending of the "BACON_CHOSEN_BOARD_SKIN_ID" log line, so that it arrives
             // between the moment the GameState battle ends and the PTL battle starts
             // In Duos, because of the teammate there can be some more latency between the various steps
-            if (StateFacade.IsBattlegroundsDuos())
+            if (StateFacade.IsBattlegrounds() || StateFacade.IsBattlegroundsDuos())
             {
                 return stateType == StateType.PowerTaskList 
                     && node.Type == typeof(TagChange)
                     && (node.Object as TagChange).Name == (int)GameTag.BG_BATTLE_STARTING
                     && (node.Object as TagChange).Value == 0;
             }
-            // This is unreliable, as the duration of the battle can vary quite a bit.
+            // Other attempt: look for the "battle over" event from GameState, and then start the battle sim on PTL
+            // This caused a lot of sim fails, so it is clearly bugged, but I believe we could investigate why, and 
+            // fix it. Would be nice to have sims run a few seconds early
             //else if (StateFacade.IsBattlegrounds())
             //{
-            //    return StateFacade.IsBattlegrounds()
+            //    DateTime timestamp = DateTime.MinValue;
+            //    var isStartOfBattle = stateType == StateType.PowerTaskList
             //        && node.Type == typeof(TagChange)
             //        && (node.Object as TagChange).Name == (int)GameTag.BACON_CHOSEN_BOARD_SKIN_ID
             //        && (node.Object as TagChange).Value != 0;
-            //} 
-            // Other attempt: look for the "battle over" event from GameState, and then start the battle sim on PTL
-            else if (StateFacade.IsBattlegrounds())
-            {
-                var isStartOfBattle = stateType == StateType.PowerTaskList
-                    && node.Type == typeof(TagChange)
-                    && (node.Object as TagChange).Name == (int)GameTag.BACON_CHOSEN_BOARD_SKIN_ID
-                    && (node.Object as TagChange).Value != 0;
-                if (isStartOfBattle)
-                {
-                    Logger.Log($"[debug] Is Ok for Starting to build player boards? {IsReadyForBattle}", node.CreationLogLine);
-                }
-                if (IsReadyForBattle)
-                {
-                    if (isStartOfBattle)
-                    {
-                        Logger.Log("[debug] Ok for Starting to build player boards", node.CreationLogLine);
-                        IsReadyForBattle = false;
-                        return true;
-                    }
-                }
-                var isGettingReadyForBattle = stateType == StateType.GameState
-                    && node.Type == typeof(TagChange)
-                    && (node.Object as TagChange).Name == (int)GameTag.BOARD_VISUAL_STATE
-                    && (node.Object as TagChange).Value == 1;
-                if (isGettingReadyForBattle)
-                {
-                    Logger.Log($"[debug] Getting ready for battle {IsReadyForBattle}", node.CreationLogLine);
-                    IsReadyForBattle = true;
-                    return false;
-                }
-            }
+            //    if (isStartOfBattle)
+            //    {
+            //        timestamp = (node.Object as TagChange).TimeStamp;
+            //        Logger.Log($"[debug] {timestamp} IsPTLReadyForBattle? {IsPTLReadyForBattle}", node.CreationLogLine);
+            //        IsPTLReadyForBattle = true;
+            //    }
+
+            //    var isGettingReadyForBattle = stateType == StateType.GameState
+            //        && node.Type == typeof(TagChange)
+            //        && (((node.Object as TagChange).Name == (int)GameTag.BOARD_VISUAL_STATE && (node.Object as TagChange).Value == 1)
+            //            || ((node.Object as TagChange).Name == (int)GameTag.STATE && (node.Object as TagChange).Value == (int)State.COMPLETE));
+            //    if (isGettingReadyForBattle)
+            //    {
+            //        timestamp = (node.Object as TagChange).TimeStamp;
+            //        Logger.Log($"[debug] {timestamp} IsGSReadyForBattle? {IsGSReadyForBattle}", node.CreationLogLine);
+            //        IsGSReadyForBattle = true;
+            //    }
+
+            //    if (IsGSReadyForBattle && IsPTLReadyForBattle)
+            //    {
+            //        return true;
+            //    }
+            //}
             return false;
         }
 
@@ -110,7 +105,9 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            Logger.Log("Starting to build player boards", node.CreationLogLine);
+            IsPTLReadyForBattle = false;
+            IsGSReadyForBattle = false;
+            Logger.Log("[debug] Starting to build player boards", node.CreationLogLine);
             var tagChange = node.Object as TagChange;
             var opponent = StateFacade.OpponentPlayer;
             var player = StateFacade.LocalPlayer;

@@ -212,6 +212,7 @@ namespace HearthstoneReplays.Events
                     new HeroChangedParser(ParserState, StateFacade),
                     new WeaponEquippedParser(ParserState, StateFacade),
                     new WeaponDestroyedParser(ParserState, StateFacade),
+                    new LocationDestroyedParser(ParserState, StateFacade),
 
                     new BattlegroundsPlayerTechLevelUpdatedParser(ParserState, StateFacade),
                     new BattlegroundsBuddyGainedParser(ParserState, StateFacade),
