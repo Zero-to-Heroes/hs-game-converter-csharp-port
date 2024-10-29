@@ -19,6 +19,7 @@ namespace HearthstoneReplays.Events
         public int Index { get; set; }
         public GameEvent GameEvent { get; private set; }
         public object Props { get; set; }
+        public int WaitFor {  get; set; }
 
         public static GameEventProvider Create(
             DateTime originalTimestamp,
@@ -26,9 +27,10 @@ namespace HearthstoneReplays.Events
             Func<GameEvent> eventProvider,
             bool needMetaData,
             Node node,
-            object props = null)
+            object props = null,
+            int waitFor = 0)
         {
-            return Create(originalTimestamp, eventName, eventProvider, (a) => false, needMetaData, node, props);
+            return Create(originalTimestamp, eventName, eventProvider, (a) => false, needMetaData, node, props, waitFor);
         }
 
         public static GameEventProvider Create(
@@ -38,7 +40,8 @@ namespace HearthstoneReplays.Events
             Func<GameEventProvider, bool> isDuplicatePredicate,
             bool needMetaData,
             Node node,
-            object props = null)
+            object props = null,
+            int waitFor = 0)
         {
             string creationLogLine = node.CreationLogLine;
             int index = node.Index;
@@ -52,6 +55,7 @@ namespace HearthstoneReplays.Events
                 NeedMetaData = needMetaData,
                 CreationLogLine = creationLogLine?.Trim(),
                 Props = props,
+                WaitFor = waitFor
             };
             return result;
         }

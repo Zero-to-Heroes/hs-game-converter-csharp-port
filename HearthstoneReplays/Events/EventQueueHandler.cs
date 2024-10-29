@@ -145,6 +145,11 @@ namespace HearthstoneReplays.Events
                         }
                         waitingForMetaData = false;
                     }
+                    if (provider.WaitFor != 0)
+                    {
+                        await Task.Delay(provider.WaitFor);
+                    }
+
                     lock (listLock)
                     {
                         ProcessGameEvent(provider);

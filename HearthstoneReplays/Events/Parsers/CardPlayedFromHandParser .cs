@@ -6,6 +6,7 @@ using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -90,14 +91,11 @@ namespace HearthstoneReplays.Events.Parsers
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "CARD_PLAYED",
-                    GameEvent.CreateProvider(
-                        "CARD_PLAYED",
-                        cardId,
-                        controllerId,
-                        entity.Id,
-                        StateFacade,
-                        gameState,
-                        new {
+                    // Only compute additional props when providing the event, so that some "on play" effects have time to trigger 
+                    // (like Corridor's Creeper "start dormant")
+                    () =>
+                    {
+                        var additionalProps = new {
                             TargetEntityId = targetId,
                             TargetCardId = targetCardId,
                             Attack = entity.GetTag(GameTag.ATK, 0),
@@ -107,11 +105,28 @@ namespace HearthstoneReplays.Events.Parsers
                             Dormant = entity.GetTag(GameTag.DORMANT) == 1,
                             Cost = entity.GetTag(GameTag.COST, 0),
                             Magnetized = magnetized,
-                        },
-                        preprocess
-                    ),
+                        };
+                        return new GameEvent
+                        {
+                            Type = "CARD_PLAYED",
+                            Value = new
+                            {
+                                CardId = cardId,
+                                ControllerId = controllerId,
+                                LocalPlayer = StateFacade.LocalPlayer,
+                                OpponentPlayer = StateFacade.OpponentPlayer,
+                                EntityId = entity.Id,
+                                GameState = gameState, //fullGameState.BuildGameStateReport(),// gameState,
+                                AdditionalProps = additionalProps
+                            }
+                        };
+                    },
                     true,
-                    node) };
+                    node,
+                    null,
+                    // Wait for a short while to give "on play" effects time to resolve, like Corridor's Creeper "go dormant"
+                    100
+                )};
             }
             return null;
         }
