@@ -21155,6 +21155,7 @@
         public const string InsatiableDevourer_SatiatedEnchantment = "REV_017e";
         public const string InsatiableDevourer_InsatiableDevourerToken = "REV_017t";
         public const string PrinceRenathal = "REV_018";
+        public const string PrinceRenathal_CORE_REV_018 = "CORE_REV_018";
         public const string FamishedFool = "REV_019";
         public const string FamishedFool_FamishedFoolToken = "REV_019t";
         public const string DinnerPerformer = "REV_020";

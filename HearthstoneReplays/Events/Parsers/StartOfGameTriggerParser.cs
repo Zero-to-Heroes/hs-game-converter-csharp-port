@@ -12,7 +12,7 @@ namespace HearthstoneReplays.Events.Parsers
 {
     public class StartOfGameTriggerParser : ActionParser
     {
-        private static List<string> FORCE_START_OF_GAME_POWERS = new List<string>() { CardIds.PrinceRenathal };
+        private static List<string> FORCE_START_OF_GAME_POWERS = new List<string>() { CardIds.PrinceRenathal, CardIds.PrinceRenathal_CORE_REV_018 };
 
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
