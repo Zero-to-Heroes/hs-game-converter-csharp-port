@@ -579,6 +579,19 @@ namespace HearthstoneReplays.Events
                         return null;
 
                     // Multiple known cards
+                    case XortothBreakerOfStars_GDB_118:
+                        return AddMultipleKnownCards(gameState, node, new List<string>()
+                            {
+                                XortothBreakerOfStars_StarOfConclusionToken_GDB_118t2,
+                                XortothBreakerOfStars_StarOfOriginationToken_GDB_118t,
+                            });
+                    case YrelBeaconOfHope_GDB_141:
+                        return AddMultipleKnownCards(gameState, node, new List<string>()
+                            {
+                                LibramOfWisdom_BT_025,
+                                LibramOfHope,
+                                LibramOfJustice_BT_011,
+                            });
                     case TheReplicatorInator_MIS_025:
                         return AddMultipleKnownCards(gameState, node, new List<string>()
                             {

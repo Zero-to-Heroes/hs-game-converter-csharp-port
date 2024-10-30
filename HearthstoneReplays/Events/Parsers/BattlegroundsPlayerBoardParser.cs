@@ -406,8 +406,8 @@ namespace HearthstoneReplays.Events.Parsers
             var astralAutomatonBonus = GetPlayerEnchantmentValue(playerId, CardIds.AstralAutomatonPlayerEnchantDntEnchantment_BG_TTN_401pe, currentEntities);
             // Looks like the enchantment isn't used anymore, at least for the opponent?
             var frostlingBonus = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, currentEntities);
-            var piratesPlayedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_PIRATESS_PLAYED_THIS_GAME, currentEntities);
-            var piratesSummonedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_PIRATESS_SUMMONED_THIS_GAME, currentEntities);
+            var piratesPlayedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_PIRATES_PLAYED_THIS_GAME, currentEntities);
+            var piratesSummonedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_PIRATES_SUMMONED_THIS_GAME, currentEntities);
             var bloodGemEnchant = currentEntities
                 .Where(entity => entity.GetEffectiveController() == playerId)
                 // Don't use the PLAY zone, as it could cause issues with teammate state in Duos? To be tested

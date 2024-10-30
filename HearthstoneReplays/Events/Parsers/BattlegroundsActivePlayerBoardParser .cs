@@ -255,7 +255,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var undeadAttackBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, GameState);
                 // Looks like the enchantment isn't used anymore, at least for the opponent?
                 var frostlingBonus = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, GameState);
-                var piratesSummonedThisGame = GetPlayerTag(player.Id, GameTag.BACON_PIRATESS_SUMMONED_THIS_GAME, GameState);
+                var piratesSummonedThisGame = GetPlayerTag(player.Id, GameTag.BACON_PIRATES_SUMMONED_THIS_GAME, GameState);
                 var astralAutomatonBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.AstralAutomatonPlayerEnchantDntEnchantment_BG_TTN_401pe, GameState);
                 var bloodGemEnchant = GameState.CurrentEntities.Values
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)

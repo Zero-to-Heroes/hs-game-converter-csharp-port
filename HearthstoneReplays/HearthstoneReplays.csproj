@@ -116,6 +116,7 @@
     <Compile Include="Events\Parsers\AbstractBasicTagChangeParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsTrinketSelectionParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsTrinketSelectedParser.cs" />
+    <Compile Include="Events\Parsers\TouristRevealedParser.cs" />
     <Compile Include="Events\Parsers\LocationUsedParser.cs" />
     <Compile Include="Events\Parsers\HeroChangedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsExtraGoldNextTurnParser.cs" />
