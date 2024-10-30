@@ -267,6 +267,8 @@ namespace HearthstoneReplays.Events
                     new OverloadedCrystalsParser(ParserState, StateFacade),
                     new CorposesSpentThisGameParser(ParserState, StateFacade),
                     new ConstructedAnomalyParser(ParserState, StateFacade),
+                    new TouristRevealedParser(ParserState, StateFacade),
+
 
                     new CardForgedParser(ParserState, StateFacade),
                     new LocationUsedParser(ParserState, StateFacade),
