@@ -53,7 +53,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             entity.PlayedWhileInHand.Clear();
             if (entity.IsImmolateDiscard())
             {
@@ -78,7 +78,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         RemovedByCardId = removedByCardId,
                         RemovedByEntityId = removedByEntityId,

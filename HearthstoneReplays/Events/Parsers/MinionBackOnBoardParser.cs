@@ -49,7 +49,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
-                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+                //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
                 var creatorCardId = Oracle.GetCreatorFromTags(GameState, entity, node);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
@@ -60,7 +60,7 @@ namespace HearthstoneReplays.Events.Parsers
                         controllerId,
                         entity.Id,
                         StateFacade,
-                        gameState,
+                        //gameState,
                         new {
                             CreatorCardId = creatorCardId,
                         }),

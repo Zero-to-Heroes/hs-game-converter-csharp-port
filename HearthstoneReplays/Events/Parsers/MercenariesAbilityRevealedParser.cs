@@ -82,7 +82,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     fullEntity.Id,
                     StateFacade,
-                    null,
+                    //null,
                     new {
                         AbilityOwnerEntityId = abilityOwner,
                         AbilityCooldownConfig = abilityCooldownConfig == -1 ? (int?)null : abilityCooldownConfig,
@@ -122,7 +122,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     showEntity.Entity,
                     StateFacade,
-                    null,
+                    //null,
                     new {
                         AbilityOwnerEntityId = abilityOwner,
                         AbilityCooldownConfig = abilityCooldownConfig == -1 ? (int?)null : abilityCooldownConfig,

@@ -80,7 +80,7 @@ namespace HearthstoneReplays.Events.Parsers
                     entity.GetEffectiveController(),
                     entity.Id,
                     Helper,
-                    null,
+                    //null,
                     new {
                         DeckId = whizbangDeckId,
                     }),
@@ -112,7 +112,7 @@ namespace HearthstoneReplays.Events.Parsers
                     entity.GetEffectiveController(),
                     entity.Entity,
                     Helper,
-                    null,
+                    //null,
                     new {
                         DeckId = whizbangDeckId,
                     }),
@@ -150,7 +150,7 @@ namespace HearthstoneReplays.Events.Parsers
                     playerEntity.GetEffectiveController(),
                     playerEntity.Id,
                     Helper,
-                    null,
+                    //null,
                     new {
                         DeckId = whizbangDeckId,
                     }),

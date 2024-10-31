@@ -67,7 +67,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
@@ -78,7 +78,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         RemovedByCardId = removedByCardId,
                         RemovedByEntityId = removedByEntityId,

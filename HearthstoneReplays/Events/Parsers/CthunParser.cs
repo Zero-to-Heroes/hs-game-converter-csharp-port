@@ -55,7 +55,7 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "CTHUN",
@@ -65,7 +65,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         CthuAtk = tagChange.Name == (int)GameTag.CTHUN_ATTACK_BUFF ? tagChange.Value as int? : null,
                         CthuHealth = tagChange.Name == (int)GameTag.CTHUN_HEALTH_BUFF ? tagChange.Value as int? : null,

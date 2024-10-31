@@ -21,6 +21,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
+            return false;
             return stateType == StateType.PowerTaskList
                 && !StateFacade.IsBattlegrounds()
                 && node.Type == typeof(TagChange) 
@@ -30,6 +31,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
+            return false;
             return stateType == StateType.PowerTaskList
                 && !StateFacade.IsBattlegrounds()
                 && node.Type == typeof(Parser.ReplayData.GameActions.Action);

@@ -13,6 +13,8 @@ using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using HearthstoneReplays.Parser;
 using HearthstoneReplays.Events;
+using System.Xml.Linq;
+using System.Diagnostics.Eventing;
 
 #endregion
 
@@ -142,6 +144,30 @@ namespace HearthstoneReplays.Parser
             //    State.FullLog += line + "\n";
             //}
 
+        }
+
+        public void AskForGameStateUpdate()
+        {
+            //Logger.Log("askForGameStateUpdate", "Parser");
+            var gameState = GameEvent.BuildGameState(State.PTLState, State.StateFacade, State.PTLState.GameState, null, null);
+            Func<GameEvent> eventSupplier = () =>
+            {
+                //Logger.Log("Returning new event", "GAME_STATE_UPDATE");
+                return new GameEvent
+                {
+                    Type = "GAME_STATE_UPDATE",
+                    Value = new { LocalPlayer = State.StateFacade.LocalPlayer, OpponentPlayer = State.StateFacade.OpponentPlayer, GameState = gameState, }
+                };
+            };
+            var provider = GameEventProvider.Create(
+                DateTime.Now,
+                "GAME_STATE_UPDATE",
+                eventSupplier,
+                true,
+                null
+            );
+            //Logger.Log("askForGameStateUpdate", "built provider");
+            State.PTLState.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { provider });
         }
 
         private void AddData(string timestamp, string method, string data, long gameSeed)

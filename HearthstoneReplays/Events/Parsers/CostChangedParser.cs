@@ -64,7 +64,7 @@ namespace HearthstoneReplays.Events.Parsers
                         controllerId,
                         entity.Id,
                         StateFacade,
-                        null,
+                        //null,
                         new {
                             NewCost = tagChange.Value,
                             AbilityOwnerEntityId = abilityOwner,

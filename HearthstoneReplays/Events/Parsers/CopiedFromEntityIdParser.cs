@@ -54,7 +54,7 @@ namespace HearthstoneReplays.Events.Parsers
             var copiedEntity = GameState.CurrentEntities[tagChange.Value];
             var copiedCardEntityId = tagChange.Value;
             var copiedCardControllerId = copiedEntity.GetController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "COPIED_FROM_ENTITY_ID",
@@ -64,7 +64,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         CopiedCardControllerId = copiedCardControllerId,
                         CopiedCardEntityId = copiedCardEntityId,
@@ -105,7 +105,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    null,
+                    //null,
                     new {
                         CopiedCardControllerId = copiedCardControllerId,
                         CopiedCardEntityId = copiedCardEntityId,

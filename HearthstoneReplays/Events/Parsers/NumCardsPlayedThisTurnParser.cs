@@ -40,7 +40,7 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardsPlayed = tagChange.Value;
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "NUM_CARDS_PLAYED_THIS_TURN",
@@ -50,7 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         NumCardsPlayed = cardsPlayed,
                     }),

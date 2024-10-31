@@ -70,7 +70,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    null,
+                    //null,
                     new {
                         InitialData1 = initialData1,
                         InitialData2 = initialData2,

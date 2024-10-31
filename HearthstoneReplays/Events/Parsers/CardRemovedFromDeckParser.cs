@@ -65,7 +65,7 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
 
             string removedByCardId = null;
             if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
@@ -83,7 +83,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         RemovedByCardId = removedByCardId,
                     }),
@@ -130,7 +130,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "CARD_REMOVED_FROM_DECK",
@@ -140,7 +140,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     showEntity.Entity,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         // Needed to properly remove the Dragons created by Prestor when we play Kazalusan afterwards
                         Cost = showEntity.GetCost(),

@@ -54,7 +54,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     fullEntity.Id,
                     StateFacade,
-                    null,
+                    //null,
                     new {
                         Health = health,
                     }

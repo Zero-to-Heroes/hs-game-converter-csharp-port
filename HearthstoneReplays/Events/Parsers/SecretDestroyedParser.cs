@@ -76,7 +76,7 @@ namespace HearthstoneReplays.Events.Parsers
             var showEntity = node.Object as ShowEntity;
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             var playerClass = showEntity.GetPlayerClass();
             var eventName = showEntity.GetTag(GameTag.SECRET) == 1
                 ? "SECRET_DESTROYED"
@@ -90,7 +90,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     showEntity.Entity,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         PlayerClass = playerClass,
                     }),

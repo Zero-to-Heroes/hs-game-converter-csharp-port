@@ -91,7 +91,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     tagChange.Entity,
                     StateFacade,
-                    null,
+                    //null,
                     new {
                         ExtraGoldNextTurn = extraGoldNextTurnValue,
                         Overconfidences = overconfidentEnchantments.Count(),

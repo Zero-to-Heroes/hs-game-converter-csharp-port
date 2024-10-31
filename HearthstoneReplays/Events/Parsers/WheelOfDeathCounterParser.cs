@@ -55,7 +55,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    null,
+                    //null,
                     new {
                         TurnsBeforeControllerDies = turnsBeforeControllerDies,
                     }
@@ -79,7 +79,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     showEntity.Entity,
                     StateFacade,
-                    null,
+                    //null,
                     new {
                         TurnsBeforeControllerDies = turnsBeforeControllerDies,
                     }

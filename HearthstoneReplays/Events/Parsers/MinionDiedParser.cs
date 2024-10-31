@@ -70,7 +70,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(death => death != null)
                 .ToList();
 
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 action.TimeStamp,
                 "MINIONS_DIED",
@@ -80,7 +80,7 @@ namespace HearthstoneReplays.Events.Parsers
                     -1,
                     -1,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         DeadMinions = deadMinions,
                     }),

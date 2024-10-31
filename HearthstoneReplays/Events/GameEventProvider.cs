@@ -43,8 +43,8 @@ namespace HearthstoneReplays.Events
             object props = null,
             int waitFor = 0)
         {
-            string creationLogLine = node.CreationLogLine;
-            int index = node.Index;
+            string creationLogLine = node?.CreationLogLine;
+            int index = node?.Index ?? 0;
             var result = new GameEventProvider
             {
                 Timestamp = originalTimestamp,

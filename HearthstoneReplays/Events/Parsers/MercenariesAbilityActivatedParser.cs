@@ -57,7 +57,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    null,
+                    //null,
                     new
                     {
                         AbilityOwnerEntityId = abilityOwnerEntityId,

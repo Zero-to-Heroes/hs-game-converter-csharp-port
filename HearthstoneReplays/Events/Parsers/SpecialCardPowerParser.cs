@@ -57,7 +57,7 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[action.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             var relatedEntities = action.Data
                 .Where(data => data is FullEntity)
                 .Select(data => data as FullEntity)
@@ -82,7 +82,7 @@ namespace HearthstoneReplays.Events.Parsers
                         controllerId,
                         entity.Id,
                         StateFacade,
-                        gameState,
+                        //gameState,
                         new {
                             RelatedCards = relatedCards
                         }

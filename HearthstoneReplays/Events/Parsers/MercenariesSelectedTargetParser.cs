@@ -69,7 +69,7 @@ namespace HearthstoneReplays.Events.Parsers
                         controllerId,
                         entity.Id,
                         StateFacade,
-                        null,
+                        //null,
                         new {
                             TargetControllerId = targetControllerId,
                             TargetCardId = targetCardId,

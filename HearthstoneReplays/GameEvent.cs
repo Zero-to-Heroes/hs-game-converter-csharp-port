@@ -29,7 +29,7 @@ namespace HearthstoneReplays
             int controllerId,
             int entityId,
             StateFacade helper,
-            GameStateShort gameState,
+            //GameStateShort gameState,
             object additionalProps = null,
             System.Action preprocess = null)
         {
@@ -54,7 +54,7 @@ namespace HearthstoneReplays
                         // BUT if we compute it now, we have no guarantee that the state matches what 
                         // the state looked like when we built the event, so building it beforehand
                         // is the way to go
-                        GameState = gameState, //fullGameState.BuildGameStateReport(),// gameState,
+                        //GameState = gameState, //fullGameState.BuildGameStateReport(),// gameState,
                         AdditionalProps = additionalProps
                     }
                 };
@@ -67,7 +67,7 @@ namespace HearthstoneReplays
             int controllerId,
             int entityId,
             StateFacade helper,
-            GameStateShort gameState,
+            //GameStateShort gameState,
             Func<object> additionalProsProvider)
         {
             return () =>
@@ -87,7 +87,7 @@ namespace HearthstoneReplays
                         // BUT if we compute it now, we have no guarantee that the state matches what 
                         // the state looked like when we built the event, so building it beforehand
                         // is the way to go
-                        GameState = gameState, //fullGameState.BuildGameStateReport(),// gameState,
+                        //GameState = gameState, //fullGameState.BuildGameStateReport(),// gameState,
                         AdditionalProps = additionalProsProvider.Invoke()
                     }
                 };

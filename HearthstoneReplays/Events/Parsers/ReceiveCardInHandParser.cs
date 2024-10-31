@@ -56,7 +56,7 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             var creator = Oracle.FindCardCreator(GameState, entity, node);
             if (creator?.Item2 != null && (cardId == null || cardId == ""))
             {
@@ -76,7 +76,7 @@ namespace HearthstoneReplays.Events.Parsers
                         controllerId,
                         entity.Id,
                         StateFacade,
-                        gameState,
+                        //gameState,
                         new {
                             CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
                             CreatorEntityId = creator?.Item2,
@@ -109,7 +109,7 @@ namespace HearthstoneReplays.Events.Parsers
             //var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, showEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creator.Item1, creator.Item2, node, showEntity.CardId);
             var controllerId = showEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             var entity = GameState.CurrentEntities[showEntity.Entity];
             entity.PlayedWhileInHand.Clear();
             var dataNum1 = showEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1);
@@ -125,7 +125,7 @@ namespace HearthstoneReplays.Events.Parsers
                         controllerId,
                         showEntity.Entity,
                         StateFacade,
-                        gameState,
+                        //gameState,
                         new {
                             CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
                             CreatorEntityId = creator?.Item2,

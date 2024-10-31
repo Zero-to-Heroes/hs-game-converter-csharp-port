@@ -100,7 +100,7 @@ namespace HearthstoneReplays.Events.Parsers
                             entity.GetController(),
                             entity.Id,
                             StateFacade,
-                            null,
+                            //null,
                             new
                             {
                                 LastInfluencedByCardId = GameState.CurrentEntities[(node.Object as Action).Entity].CardId,
@@ -132,7 +132,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             var entity = GameState.CurrentEntities[showEntity.Entity];
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
 
             var parentNode = node.Parent?.Object;
             if (parentNode?.GetType() == typeof(Action))
@@ -158,7 +158,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 controllerId,
                                 entity.Id,
                                 StateFacade,
-                                gameState,
+                                //gameState,
                                 new {
                                     DredgedByEntityId = parentEntityId,
                                     DredgedByCardId = lastAffectedByEntity?.CardId,
@@ -192,7 +192,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         CreatorCardId = creatorEntityCardId,
                         SubSpell = showEntity.SubSpellInEffect?.Prefab,

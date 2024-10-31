@@ -59,7 +59,7 @@ namespace HearthstoneReplays.Events.Parsers
             // from the LINKED_ENTITY, so we have to keep the same controller.
             // We'll add the LinkedEntityControllerId attribute instead to make the link
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "LINKED_ENTITY",
@@ -69,7 +69,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    gameState, 
+                    //gameState, 
                     new {
                         LinkedEntityId = tagChange.Value,
                         LinkedEntityControllerId = linkedEntity.GetEffectiveController(),

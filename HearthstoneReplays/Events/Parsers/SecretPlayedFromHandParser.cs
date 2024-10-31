@@ -63,7 +63,7 @@ namespace HearthstoneReplays.Events.Parsers
                         eventName = "SECRET_PUT_IN_PLAY";
                     }
                 }
-                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+                //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
                 var playerClass = entity.GetPlayerClass();
                 var creatorEntityId = entity.GetTag(GameTag.CREATOR);
                 var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
@@ -79,7 +79,7 @@ namespace HearthstoneReplays.Events.Parsers
                             controllerId,
                             entity.Id,
                             StateFacade,
-                            gameState,
+                            //gameState,
                             new {
                                 PlayerClass = playerClass,
                                 CreatorCardId = creatorEntityCardId,
@@ -107,7 +107,7 @@ namespace HearthstoneReplays.Events.Parsers
                     {
                         var cardId = showEntity.CardId;
                         var controllerId = showEntity.GetEffectiveController();
-                        var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
+                        //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
                         var playerClass = showEntity.GetPlayerClass();
                         var eventName = showEntity.GetTag(GameTag.SECRET) == 1
                             ? "SECRET_PLAYED"
@@ -123,7 +123,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 controllerId,
                                 showEntity.Entity,
                                 StateFacade,
-                                gameState,
+                                //gameState,
                                 new {
                                     PlayerClass = playerClass,
                                     Cost = showEntity.GetTag(GameTag.COST, 0),

@@ -350,7 +350,7 @@ namespace HearthstoneReplays.Events.Parsers
                             entity.GetEffectiveController(),
                             entity.Entity,
                             StateFacade,
-                            null,
+                            //null,
                             new
                             {
                                 BuffingEntityCardId = bufferCardId,
@@ -389,7 +389,7 @@ namespace HearthstoneReplays.Events.Parsers
                             entity.GetEffectiveController(),
                             entity.Entity,
                             StateFacade,
-                            null,
+                            //null,
                             new
                             {
                                 BuffingEntityCardId = bufferCardId,
@@ -471,7 +471,7 @@ namespace HearthstoneReplays.Events.Parsers
                             entity.GetEffectiveController(),
                             entity.Entity,
                             StateFacade,
-                            null,
+                            //null,
                             new
                             {
                                 BuffingEntityCardId = actionEntity.CardId,

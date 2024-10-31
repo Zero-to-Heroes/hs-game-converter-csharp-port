@@ -88,7 +88,7 @@ namespace HearthstoneReplays.Events.Parsers
                             controllerId,
                             -1,
                             StateFacade,
-                            null,
+                            //null,
                             new
                             {
                                 DeckId = deckId,

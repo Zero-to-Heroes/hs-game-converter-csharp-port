@@ -45,11 +45,11 @@ namespace HearthstoneReplays.Events
             //Logger.Log("[csharp] Enqueueing game event", providers != null ? providers[0].EventName : null);
             lock (listLock)
             {
-                //Logger.Log("Acquierd list lock in queneGameEvent", "");
+                //Logger.Log("Acquierd list lock in queneGameEvent", providers != null ? providers[0].EventName : null);
                 // Remove outstanding events
-                if (providers.Any(provider => provider.CreationLogLine.Contains("CREATE_GAME")) && eventQueue.Count > 0)
+                if (providers.Any(provider => (provider.CreationLogLine?.Contains("CREATE_GAME")) ?? false) && eventQueue.Count > 0)
                 {
-                    Logger.Log("Purging queue of outstanding events", eventQueue.Count);
+                    //Logger.Log("Purging queue of outstanding events", eventQueue.Count);
                     ClearQueue();
                 }
 

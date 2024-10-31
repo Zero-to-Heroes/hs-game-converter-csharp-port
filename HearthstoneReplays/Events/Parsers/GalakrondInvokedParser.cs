@@ -42,7 +42,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "GALAKROND_INVOKED",
@@ -52,7 +52,7 @@ namespace HearthstoneReplays.Events.Parsers
                         controllerId,
                         entity.Id,
                         StateFacade,
-                        gameState,
+                        //gameState,
                         new
                         {
                             TotalInvoke = tagChange.Value,

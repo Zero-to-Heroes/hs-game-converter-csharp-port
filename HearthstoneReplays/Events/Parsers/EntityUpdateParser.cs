@@ -73,7 +73,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var controllerId = showEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             var mercXp = showEntity.GetTag(GameTag.LETTUCE_MERCENARY_EXPERIENCE);
             var mercEquipmentId = showEntity.GetTag(GameTag.LETTUCE_EQUIPMENT_ID);
             var abilityOwner = showEntity.GetTag(GameTag.LETTUCE_ABILITY_OWNER);
@@ -103,7 +103,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     showEntity.Entity,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         MercenariesExperience = mercXp,
                         MercenariesEquipmentId = mercEquipmentId,

@@ -55,7 +55,7 @@ namespace HearthstoneReplays.Events.Parsers
                         controllerId,
                         entity.Id,
                         StateFacade,
-                        gameState,
+                        //gameState,
                         new {
                             CreatorCardId = creatorCardId,
                         }),

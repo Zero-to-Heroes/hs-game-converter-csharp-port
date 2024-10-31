@@ -62,7 +62,7 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = changeEntity.CardId;
             var entity = GameState.CurrentEntities[changeEntity.Entity];
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             var creatorEntityId = changeEntity.GetTag(GameTag.CREATOR);
             var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
                 ? GameState.CurrentEntities[creatorEntityId].CardId
@@ -84,7 +84,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         CreatorCardId = creatorEntityCardId,
                         LastAffectedByEntityId = lastInfluencedByEntityId,

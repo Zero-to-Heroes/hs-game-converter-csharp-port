@@ -55,7 +55,7 @@ namespace HearthstoneReplays.Events.Parsers
             var totalResources = tagChange.Name == (int)GameTag.RESOURCES ? tagChange.Value : entity.GetTag(GameTag.RESOURCES, 0);
             var resourcesLeft = totalResources + tempResources - resourcesUsed;
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "RESOURCES_UPDATED",
@@ -65,7 +65,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         ResourcesTotal = totalResources + tempResources,
                         ResourcesUsed = resourcesUsed,

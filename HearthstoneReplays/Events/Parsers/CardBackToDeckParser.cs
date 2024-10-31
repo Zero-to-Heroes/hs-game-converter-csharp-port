@@ -44,7 +44,7 @@ namespace HearthstoneReplays.Events.Parsers
             var initialZone = ((Zone)zoneInt).ToString();
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
 
             var parentAction = node.Parent?.Object as Action;
             int? influencedByEntityId = null;
@@ -84,7 +84,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         InitialZone = initialZone,
                         InfluencedByEntityId = influencedByEntityId,

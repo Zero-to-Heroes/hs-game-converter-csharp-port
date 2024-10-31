@@ -79,7 +79,7 @@ namespace HearthstoneReplays.Events.Parsers
                         InReactionToEntityId = parentAction.Entity,
                     };
                 }
-                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+                //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
                 return new List<GameEventProvider> {
                     GameEventProvider.Create(
                         action.TimeStamp,
@@ -90,7 +90,7 @@ namespace HearthstoneReplays.Events.Parsers
                             controllerId,
                             entity.Id,
                             StateFacade,
-                            gameState,
+                            //gameState,
                             additionalProps),
                        true,
                        node), 

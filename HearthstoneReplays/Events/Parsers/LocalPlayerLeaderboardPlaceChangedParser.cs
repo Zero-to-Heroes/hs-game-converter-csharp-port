@@ -59,7 +59,7 @@ namespace HearthstoneReplays.Events.Parsers
                         -1,
                         entity.Id,
                         StateFacade,
-                        null,
+                        //null,
                         () =>
                         // Defer it because we need the meta data
                         {

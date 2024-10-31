@@ -63,7 +63,7 @@ namespace HearthstoneReplays.Events.Parsers
                 };
             });
 
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 action.TimeStamp,
                 "MINIONS_WILL_DIE",
@@ -73,7 +73,7 @@ namespace HearthstoneReplays.Events.Parsers
                     -1,
                     -1,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         DeadMinions = deadMinions,
                     }),

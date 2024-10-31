@@ -72,7 +72,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     chosenEntity.Id,
                     StateFacade,
-                    null,
+                    //null,
                     new {
                         OriginalEntityId = originalEntity?.Id,
                         Context = new

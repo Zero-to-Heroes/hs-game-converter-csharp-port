@@ -5,6 +5,8 @@ using HearthstoneReplays.Events;
 using Newtonsoft;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using HearthstoneReplays.Parser.ReplayData.Entities;
+using System.Xml.Linq;
 
 namespace HearthstoneReplays
 {
@@ -88,6 +90,15 @@ namespace HearthstoneReplays
             });
         }
 
+        public void askForGameStateUpdate()
+        {
+            Task.Run(() =>
+            {
+                //Logger.Log("askForGameStateUpdate", "internal");
+                parser.AskForGameStateUpdate();
+            });
+        }
+
         public void triggerGlobalEvent(string first, string second)
         {
             if (onGlobalEvent == null)
@@ -100,18 +111,6 @@ namespace HearthstoneReplays
                 onGlobalEvent(first, second);
             });
         }
-
-        //      public void startDevMode()
-        //      {
-        //          NodeParser.DevMode = true;
-        //	Logger.Log("Setting DevMode", NodeParser.DevMode);
-        //}
-
-        //      public void stopDevMode()
-        //      {
-        //          NodeParser.DevMode = false;
-        //	Logger.Log("Setting DevMode", NodeParser.DevMode);
-        //}
     }
 
 }

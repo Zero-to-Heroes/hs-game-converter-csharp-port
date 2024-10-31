@@ -80,7 +80,7 @@ namespace HearthstoneReplays.Events.Parsers
             var creator = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creator.Item1, creator.Item2, node, showEntity.CardId);
             var controllerId = showEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
@@ -91,7 +91,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     showEntity.Entity,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
                         CreatorEntityId = creator?.Item2 ?? -1,
@@ -124,7 +124,7 @@ namespace HearthstoneReplays.Events.Parsers
                 cardId = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(fullEntity.Id)?.CardId;
             }
             var controllerId = fullEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
@@ -135,7 +135,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     fullEntity.Id,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show "created by ..."
                         CreatorEntityId = creator?.Item2 ?? -1,

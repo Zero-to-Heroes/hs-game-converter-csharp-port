@@ -48,7 +48,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetEffectiveController();
             if (entity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT && entity.GetTag(GameTag.SIGIL) != 1)
             {
-                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+                //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
                 var playerClass = entity.GetPlayerClass();
                 var eventName = GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.SECRET) == 1 
                     ? "SECRET_PLAYED_FROM_DECK"
@@ -62,7 +62,7 @@ namespace HearthstoneReplays.Events.Parsers
                             controllerId,
                             entity.Id,
                             StateFacade,
-                            gameState,
+                            //gameState,
                             new {
                                 PlayerClass = playerClass,
                             }),
@@ -82,7 +82,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             var playerClass = showEntity.GetPlayerClass();
             var eventName = showEntity.GetTag(GameTag.SECRET) == 1 
                 ? "SECRET_PLAYED_FROM_DECK"
@@ -97,7 +97,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     showEntity.Entity,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         PlayerClass = playerClass,
                     }),

@@ -59,7 +59,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    null,
+                    //null,
                     new {
                         CurrentTier = currentExcavateTier,
                         MaxTier = maxExcavateTier,
@@ -88,7 +88,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     playerEntity.Id,
                     StateFacade,
-                    null,
+                    //null,
                     new {
                         CurrentTier = currentExcavateTier,
                         MaxTier = maxExcavateTier,

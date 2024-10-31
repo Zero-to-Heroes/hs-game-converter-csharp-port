@@ -70,7 +70,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
             var cardId = entity?.CardId != null && entity.CardId.Length > 0 ? entity.CardId : showEntity.CardId;
             var controllerId = entity != null ? entity.GetEffectiveController() : -1;
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             entity.PlayedWhileInHand.Clear();
 
             // Felsoul Jailer
@@ -95,7 +95,7 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     showEntity.Entity,
                     StateFacade,
-                    gameState,
+                    //gameState,
                     new {
                         OriginEntityId = parentEntity?.Id,
                     }),
