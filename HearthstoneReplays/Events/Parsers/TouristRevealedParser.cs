@@ -60,7 +60,11 @@ namespace HearthstoneReplays.Events.Parsers
                     touristEntity.GetController(),
                     touristEntity.Id,
                     StateFacade,
-                    null),
+                    null,
+                    new
+                    {
+                        TouristFor = touristEntity.GetTag(GameTag.TOURIST)
+                    }),
                 true,
                 node));
             return result;
