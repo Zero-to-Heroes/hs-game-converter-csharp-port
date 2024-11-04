@@ -43,7 +43,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetEffectiveController();
             if (GameState.CurrentEntities[action.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
-                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+                //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                         action.TimeStamp,
                         "DEATHRATTLE_TRIGGERED",
@@ -52,8 +52,7 @@ namespace HearthstoneReplays.Events.Parsers
                             cardId,
                             controllerId,
                             entity.Id,
-                            StateFacade,
-                            gameState),
+                            StateFacade),
                        true,
                        node) };
             }
@@ -75,7 +74,7 @@ namespace HearthstoneReplays.Events.Parsers
                     {
                         var cardId = showEntity.CardId;
                         var controllerId = showEntity.GetEffectiveController();
-                        var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
+                        //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
                         // For now there can only be one card played per block
                         return new List<GameEventProvider> { GameEventProvider.Create(
                             action.TimeStamp,
@@ -85,8 +84,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 cardId,
                                 controllerId,
                                 showEntity.Entity,
-                                StateFacade,
-                                gameState),
+                                StateFacade),
                             true,
                             node) };
                     }

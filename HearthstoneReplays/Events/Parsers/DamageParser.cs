@@ -69,7 +69,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
             var previousDamage = impactedEntity.GetTag(GameTag.DAMAGE, 0);
-            var gameState = GameEvent.BuildGameState(ParserState, Helper, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, Helper, GameState, tagChange, null);
             var targetEntityId = impactedEntity?.Entity;
             var actualDamage = Math.Max(0, tagChange.Value - previousDamage - impactedEntity.GetTag(GameTag.ARMOR, 0));
             // If there is a META block with the same info, this means the event will already be sent
@@ -110,7 +110,7 @@ namespace HearthstoneReplays.Events.Parsers
                             Targets = damages,
                             LocalPlayer = Helper.LocalPlayer,
                             OpponentPlayer = Helper.OpponentPlayer,
-                            GameState = gameState,
+                            //GameState = gameState,
                         }
                     },
                     true,
@@ -130,7 +130,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .Select((meta) => meta as MetaData)
                 .Where((meta) => meta.Meta == (int)MetaDataType.DAMAGE);
             Dictionary<string, Dictionary<string, DamageInternal>> totalDamages = new Dictionary<string, Dictionary<string, DamageInternal>>();
-            var gameState = GameEvent.BuildGameState(ParserState, Helper, GameState, null, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, Helper, GameState, null, null);
             foreach (var damageTag in damageTags)
             {
                 foreach (var info in damageTag.MetaInfo)
@@ -218,7 +218,7 @@ namespace HearthstoneReplays.Events.Parsers
                             Targets = targets,
                             LocalPlayer = Helper.LocalPlayer,
                             OpponentPlayer = Helper.OpponentPlayer,
-                            GameState = gameState,
+                            //GameState = gameState,
                         }
                     },
                     true,

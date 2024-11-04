@@ -149,7 +149,7 @@ namespace HearthstoneReplays.Parser
         public void AskForGameStateUpdate()
         {
             //Logger.Log("askForGameStateUpdate", "Parser");
-            var gameState = GameEvent.BuildGameState(State.PTLState, State.StateFacade, State.PTLState.GameState, null, null);
+            var gameState = GameEvent.BuildGameState(State.PTLState, State.StateFacade, State.PTLState.GameState);
             Func<GameEvent> eventSupplier = () =>
             {
                 //Logger.Log("Returning new event", "GAME_STATE_UPDATE");

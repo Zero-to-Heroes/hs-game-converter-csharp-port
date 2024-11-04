@@ -66,7 +66,7 @@ namespace HearthstoneReplays.Events.Parsers
 
 
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             // If we compute this when triggering the event, we will get a "gift" icon because the 
             // card is already in hand
             var wasInDeck = entity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
@@ -85,11 +85,13 @@ namespace HearthstoneReplays.Events.Parsers
             var parentAction = node.Parent.Object.GetType() == typeof(Action) ? node.Parent.Object as Action : null;
             // Useful for Finley
             string drawnByCardId = null;
+            int? drawnByEntityId = null;
             if (parentAction != null)
             {
                 var drawerEntityId = parentAction.Entity;
                 var drawerEntity = GameState.CurrentEntities.GetValueOrDefault(drawerEntityId);
                 drawnByCardId = drawerEntity?.CardId;
+                drawnByEntityId = parentAction.Entity;
             }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
@@ -125,14 +127,16 @@ namespace HearthstoneReplays.Events.Parsers
                             LocalPlayer = StateFacade.LocalPlayer,
                             OpponentPlayer = StateFacade.OpponentPlayer,
                             EntityId = entity.Id,
-                            GameState = gameState,
+                            //GameState = gameState,
                             AdditionalProps = new {
                                 IsPremium = shouldObfuscate ? false : entity.GetTag(GameTag.PREMIUM) == 1,
                                 CreatorCardId = shouldObfuscate ? null : creator?.Item1,
+                                CreatorEntityId = shouldObfuscate ? null : creator?.Item2,
                                 LastInfluencedByCardId = shouldObfuscate ? null : lastInfluencedByCardId,
                                 DataTag1 = shouldObfuscate ? 0 : dataTag1,
                                 Cost = shouldObfuscate ? 0 : cost,
-                                DrawnByCardId = drawnByCardId
+                                DrawnByCardId = drawnByCardId,
+                                DrawnByEntityId = drawnByEntityId,
                             }
                         }
                     };
@@ -159,12 +163,23 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetEffectiveController();
             var entity = GameState.CurrentEntities[showEntity.Entity];
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             var wasInDeck = entity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
             var isBeforeMulligan = GameState.GetGameEntity().GetTag(GameTag.NEXT_STEP) == -1;
 
             var dataTag1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
             var cost = showEntity.GetCost();
+            var parentAction = node.Parent.Object.GetType() == typeof(Action) ? node.Parent.Object as Action : null;
+            // Useful for Finley
+            string drawnByCardId = null;
+            int? drawnByEntityId = null;
+            if (parentAction != null)
+            {
+                var drawerEntityId = parentAction.Entity;
+                var drawerEntity = GameState.CurrentEntities.GetValueOrDefault(drawerEntityId);
+                drawnByCardId = drawerEntity?.CardId;
+                drawnByEntityId = parentAction.Entity;
+            }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -190,13 +205,16 @@ namespace HearthstoneReplays.Events.Parsers
                             LocalPlayer = StateFacade.LocalPlayer,
                             OpponentPlayer = StateFacade.OpponentPlayer,
                             EntityId = showEntity.Entity,
-                            GameState = gameState,
+                            //GameState = gameState,
                             AdditionalProps = new {
                                 IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1,
-                                CreatorCardId = creatorCardId,
+                                CreatorCardId = creatorCardId?.Item1,
+                                CreatorEntityId = creatorCardId?.Item2,
                                 LastInfluencedByCardId = lastInfluencedByCardId?.Item1,
                                 DataTag1 = dataTag1,
                                 Cost = cost,
+                                DrawnByCardId = drawnByCardId,
+                                DrawnByEntityId = drawnByEntityId,
                             }
                         }
                     };
@@ -209,7 +227,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             var wasInDeck = fullEntity.GetTag(GameTag.ZONE) == (int)Zone.DECK;
             // Because Encumbered Pack Mule reveals itself if drawn during mulligan, we need to 
             // have a special rule
@@ -221,6 +239,17 @@ namespace HearthstoneReplays.Events.Parsers
 
             var dataTag1 = fullEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
             var cost = fullEntity.GetCost();
+            var parentAction = node.Parent.Object.GetType() == typeof(Action) ? node.Parent.Object as Action : null;
+            // Useful for Finley
+            string drawnByCardId = null;
+            int? drawnByEntityId = null;
+            if (parentAction != null)
+            {
+                var drawerEntityId = parentAction.Entity;
+                var drawerEntity = GameState.CurrentEntities.GetValueOrDefault(drawerEntityId);
+                drawnByCardId = drawerEntity?.CardId;
+                drawnByEntityId = parentAction.Entity;
+            }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -240,13 +269,16 @@ namespace HearthstoneReplays.Events.Parsers
                             LocalPlayer = StateFacade.LocalPlayer,
                             OpponentPlayer = StateFacade.OpponentPlayer,
                             EntityId = fullEntity.Entity,
-                            GameState = gameState,
+                            //GameState = gameState,
                             AdditionalProps = new {
                                 IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1 || fullEntity.GetTag(GameTag.PREMIUM) == 1,
                                 CreatorCardId = creator?.Item1,
+                                CreatorEntityId = creator?.Item2,
                                 LastInfluencedByCardId = lastInfluencedByCardId,
                                 DataTag1 = dataTag1,
                                 Cost = cost,
+                                DrawnByCardId = drawnByCardId,
+                                DrawnByEntityId = drawnByEntityId,
                             }
                         }
                     };

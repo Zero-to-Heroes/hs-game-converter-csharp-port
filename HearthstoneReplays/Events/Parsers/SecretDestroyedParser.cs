@@ -52,7 +52,7 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             var eventName = entity.GetTag(GameTag.SECRET) == 1
                 ? "SECRET_DESTROYED"
                 : "QUEST_DESTROYED";
@@ -64,8 +64,7 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     entity.Id,
-                    StateFacade,
-                    gameState),
+                    StateFacade),
                 true,
                 node) };
         }

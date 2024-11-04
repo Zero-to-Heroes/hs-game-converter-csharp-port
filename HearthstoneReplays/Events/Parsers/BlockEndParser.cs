@@ -40,7 +40,7 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var element = node.Object as TagChange;
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, element, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, element, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 element.TimeStamp,
                 "GAME_STATE_UPDATE",
@@ -49,8 +49,8 @@ namespace HearthstoneReplays.Events.Parsers
                     null,
                     -1,
                     -1,
-                    StateFacade,
-                    gameState
+                    StateFacade
+                    //gameState
                 ),
                 true,
                 node
@@ -60,7 +60,7 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var element = node.Object as Parser.ReplayData.GameActions.Action;
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             var lastElement = element.Data.Count > 0 ? element.Data[element.Data.Count - 1] : element;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 lastElement.TimeStamp,
@@ -70,8 +70,8 @@ namespace HearthstoneReplays.Events.Parsers
                     null,
                     -1,
                     -1,
-                    StateFacade,
-                    gameState
+                    StateFacade
+                    //gameState
                 ),
                 true,
                 node

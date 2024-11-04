@@ -47,7 +47,7 @@ namespace HearthstoneReplays.Events.Parsers
             if (ParserState.GetTag(entity.Tags, GameTag.DUNGEON_PASSIVE_BUFF) == 1 
                 && ParserState.GetTag(entity.Tags, GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
-                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+                //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "PASSIVE_BUFF",
@@ -56,8 +56,7 @@ namespace HearthstoneReplays.Events.Parsers
                         cardId,
                         controllerId,
                         entity.Id,
-                        StateFacade,
-                        gameState),
+                        StateFacade),
                     true,
                     node) };
             }
@@ -69,7 +68,7 @@ namespace HearthstoneReplays.Events.Parsers
             var showEntity = node.Object as ShowEntity;
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "PASSIVE_BUFF",
@@ -78,8 +77,7 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     showEntity.Entity,
-                    StateFacade,
-                    gameState),
+                    StateFacade),
                 true,
                 node) };
         }

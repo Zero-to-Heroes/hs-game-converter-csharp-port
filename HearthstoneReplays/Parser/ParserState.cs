@@ -156,7 +156,7 @@ namespace HearthstoneReplays.Parser
             value.IsMainPlayer = false;
             var playerEntity = getPlayers().Find(player => player.PlayerId == value.PlayerId);
             playerEntity.IsMainPlayer = value.IsMainPlayer;
-            var gameState = GameEvent.BuildGameState(this, StateFacade, GameState, null, null);
+            //var gameState = GameEvent.BuildGameState(this, StateFacade, GameState, null, null);
             if (sendEvent)
             {
                 NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
@@ -167,7 +167,7 @@ namespace HearthstoneReplays.Parser
                         Type = "OPPONENT_PLAYER",
                         Value = new {
                             OpponentPlayer = this._opponentPlayer,
-                            GameState = gameState,
+                            //GameState = gameState,
                         }
                     },
                     false,

@@ -79,7 +79,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var creatorCardId = creator != -1 && GameState.CurrentEntities.ContainsKey(creator)
                     ? GameState.CurrentEntities[creator].CardId
                     : null;
-                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+                //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
 
                 // Detect whether we are magnetizing
                 var magnetizedTo = this.StateFacade.GsState.GameState.CurrentEntities.Values
@@ -105,6 +105,7 @@ namespace HearthstoneReplays.Events.Parsers
                             Dormant = entity.GetTag(GameTag.DORMANT) == 1,
                             Cost = entity.GetTag(GameTag.COST, 0),
                             Magnetized = magnetized,
+                            Tags = entity.Tags,
                         };
                         return new GameEvent
                         {
@@ -116,7 +117,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 LocalPlayer = StateFacade.LocalPlayer,
                                 OpponentPlayer = StateFacade.OpponentPlayer,
                                 EntityId = entity.Id,
-                                GameState = gameState, //fullGameState.BuildGameStateReport(),// gameState,
+                                //GameState = gameState, //fullGameState.BuildGameStateReport(),// gameState,
                                 AdditionalProps = additionalProps
                             }
                         };
@@ -189,6 +190,7 @@ namespace HearthstoneReplays.Events.Parsers
                             TransientCard = isOhMyYogg,
                             Immune = showEntity.GetTag(GameTag.IMMUNE) == 1,
                             Magnetized = magnetized,
+                            Tags = showEntity.Tags,
                         },
                         preprocess),
                     true,

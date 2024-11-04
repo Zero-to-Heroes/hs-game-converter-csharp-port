@@ -52,7 +52,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
-                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+                //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
                 var zone = entity.GetZone();
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
@@ -71,7 +71,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 LocalPlayer = StateFacade.LocalPlayer,
                                 OpponentPlayer = StateFacade.OpponentPlayer,
                                 EntityId = entity.Id,
-                                GameState = gameState,
+                                //GameState = gameState,
                                 AdditionalProps = new {
                                     newControllerId = tagChange.Value,
                                     zone = zone,

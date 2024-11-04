@@ -95,7 +95,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             FullEntity fullEntity = node.Object as FullEntity;
             var controllerId = fullEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             var entityFromGameState = GameState.CurrentEntities.GetValueOrDefault(fullEntity.Entity);
             var debug = true;
 
@@ -152,7 +152,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 LocalPlayer = StateFacade.LocalPlayer,
                                 OpponentPlayer = StateFacade.OpponentPlayer,
                                 EntityId = fullEntity.Id,
-                                GameState = gameState,
+                                //GameState = gameState,
                                 AdditionalProps = new {
                                     CreatorCardId = creatorCardId,
                                     ShouldRemoveFromInitialDeck = shouldRemoveFromInitialDeck,

@@ -56,7 +56,7 @@ namespace HearthstoneReplays.Events.Parsers
             var newTurnValue = tagChange.Name == (int)GameTag.TURN ? (int)tagChange.Value : GameState.CurrentTurn + 1;
             GameState.CurrentTurn = newTurnValue;
             //GameState.StartTurn();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             var result = new List<GameEventProvider>();
             // This event system is sometimes a mess - in some cases we want to reset the info when the event is sent
             // and in others we want to reset the game state, so as it is processed
@@ -107,7 +107,7 @@ namespace HearthstoneReplays.Events.Parsers
                            {
                                Turn = newTurnValue,
                                ActivePlayerId = currentPlayer,
-                               GameState = gameState,
+                               //GameState = gameState,
                                LocalPlayer = StateFacade.LocalPlayer,
                                OpponentPlayer = StateFacade.OpponentPlayer,
                                Timestamp = timestamp,

@@ -43,7 +43,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "LOCATION_DESTROYED",
@@ -52,8 +52,7 @@ namespace HearthstoneReplays.Events.Parsers
                     entity.CardId,
                     entity.GetController(),
                     entity.Entity,
-                    StateFacade,
-                    gameState),
+                    StateFacade),
                 true,
                 node) };
         }

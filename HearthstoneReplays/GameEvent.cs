@@ -95,7 +95,7 @@ namespace HearthstoneReplays
         }
 
         // It needs to be built beforehand, as the game state we pass is not immutable
-        public static GameStateShort BuildGameState(ParserState parserState, StateFacade helper, GameState gameState, TagChange tagChange, ShowEntity showEntity)
+        public static GameStateShort BuildGameState(ParserState parserState, StateFacade helper, GameState gameState)
         {
             if (parserState == null || helper.LocalPlayer == null || helper.OpponentPlayer == null)
             {
@@ -103,40 +103,41 @@ namespace HearthstoneReplays
                 return new GameStateShort();
             }
 
+            var allEntities = gameState.CurrentEntities.Values.ToList();
             var result = new GameStateShort()
             {
                 ActivePlayerId = gameState.GetActivePlayerId(),
                 Player = new GameStateShortPlayer()
                 {
-                    Hero = GameEvent.BuildHero(gameState, parserState.Options, helper.LocalPlayer.PlayerId, tagChange, showEntity),
-                    Weapon = GameEvent.BuildWeapon(gameState, parserState.Options, helper.LocalPlayer.PlayerId, tagChange, showEntity),
-                    Hand = GameEvent.BuildZone(gameState, parserState.Options, Zone.HAND, helper.LocalPlayer.PlayerId, tagChange, showEntity),
-                    Board = GameEvent.BuildBoard(gameState, parserState.Options, helper.LocalPlayer.PlayerId, tagChange, showEntity),
-                    Deck = GameEvent.BuildZone(gameState, parserState.Options, Zone.DECK, helper.LocalPlayer.PlayerId, tagChange, showEntity),
-                    LettuceAbilities = GameEvent.BuildZone(gameState, parserState.Options, Zone.LETTUCE_ABILITY, helper.LocalPlayer.PlayerId, tagChange, showEntity),
+                    Hero = GameEvent.BuildHero(allEntities, parserState.Options, helper.LocalPlayer.PlayerId),
+                    Weapon = GameEvent.BuildWeapon(allEntities, parserState.Options, helper.LocalPlayer.PlayerId),
+                    Hand = GameEvent.BuildZone(allEntities, parserState.Options, Zone.HAND, helper.LocalPlayer.PlayerId),
+                    Board = GameEvent.BuildBoard(allEntities, parserState.Options, helper.LocalPlayer.PlayerId),
+                    Deck = GameEvent.BuildZone(allEntities, parserState.Options, Zone.DECK, helper.LocalPlayer.PlayerId),
+                    LettuceAbilities = GameEvent.BuildZone(allEntities, parserState.Options, Zone.LETTUCE_ABILITY, helper.LocalPlayer.PlayerId),
                 },
                 Opponent = new GameStateShortPlayer()
                 {
-                    Hero = GameEvent.BuildHero(gameState, parserState.Options, helper.OpponentPlayer.PlayerId, tagChange, showEntity),
-                    Weapon = GameEvent.BuildWeapon(gameState, parserState.Options, helper.OpponentPlayer.PlayerId, tagChange, showEntity),
-                    Hand = GameEvent.BuildZone(gameState, parserState.Options, Zone.HAND, helper.OpponentPlayer.PlayerId, tagChange, showEntity),
-                    Board = GameEvent.BuildBoard(gameState, parserState.Options, helper.OpponentPlayer.PlayerId, tagChange, showEntity),
-                    Deck = GameEvent.BuildZone(gameState, parserState.Options, Zone.DECK, helper.OpponentPlayer.PlayerId, tagChange, showEntity),
-                    LettuceAbilities = GameEvent.BuildZone(gameState, parserState.Options, Zone.LETTUCE_ABILITY, helper.OpponentPlayer.PlayerId, tagChange, showEntity),
+                    Hero = GameEvent.BuildHero(allEntities, parserState.Options, helper.OpponentPlayer.PlayerId),
+                    Weapon = GameEvent.BuildWeapon(allEntities, parserState.Options, helper.OpponentPlayer.PlayerId),
+                    Hand = GameEvent.BuildZone(allEntities, parserState.Options, Zone.HAND, helper.OpponentPlayer.PlayerId),
+                    Board = GameEvent.BuildBoard(allEntities, parserState.Options, helper.OpponentPlayer.PlayerId),
+                    Deck = GameEvent.BuildZone(allEntities, parserState.Options, Zone.DECK, helper.OpponentPlayer.PlayerId),
+                    LettuceAbilities = GameEvent.BuildZone(allEntities, parserState.Options, Zone.LETTUCE_ABILITY, helper.OpponentPlayer.PlayerId),
                 }
             };
             return result;
         }
 
-        private static GameStateShortSmallEntity BuildHero(GameState gameState, Options options, int playerId, TagChange tagChange, ShowEntity showEntity)
+        private static GameStateShortSmallEntity BuildHero(List<FullEntity> allEntities, Options options, int playerId)
         {
             try
             {
-                var hero = gameState.CurrentEntities.Values
+                var hero = allEntities
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetEffectiveController() == playerId)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || PutInPlay(entity, tagChange, showEntity))
-                    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .Select(entity => BuildSmallEntity(entity, options))
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .FirstOrDefault();
                 return hero ?? new GameStateShortSmallEntity();
@@ -144,75 +145,56 @@ namespace HearthstoneReplays
             catch (Exception e)
             {
                 Logger.Log("Warning: issue when trying to build hero " + e.Message, e.StackTrace);
-                return BuildHero(gameState, options, playerId, tagChange, showEntity);
+                return BuildHero(allEntities, options, playerId);
             }
         }
 
-        private static GameStateShortSmallEntity BuildWeapon(GameState gameState, Options options, int playerId, TagChange tagChange, ShowEntity showEntity)
+        private static GameStateShortSmallEntity BuildWeapon(List<FullEntity> allEntities, Options options, int playerId)
         {
             try
             {
-                //var debug = gameState.CurrentEntities.Values
-                //    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
-                //    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                //    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.WEAPON)
-                //    .Where(entity => entity.GetEffectiveController() == playerId)
-                //    .ToList();
-                var weapon = gameState.CurrentEntities.Values
+                var weapon = allEntities
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.WEAPON)
                     .Where(entity => entity.GetEffectiveController() == playerId)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY || PutInPlay(entity, tagChange, showEntity))
-                    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .Select(entity => BuildSmallEntity(entity, options))
                     .LastOrDefault();
                 return weapon ?? new GameStateShortSmallEntity();
             }
             catch (Exception e)
             {
                 Logger.Log("Warning: issue when trying to build weapon " + e.Message, e.StackTrace);
-                return BuildWeapon(gameState, options, playerId, tagChange, showEntity);
+                return BuildWeapon(allEntities, options, playerId);
             }
         }
 
-        private static List<GameStateShortSmallEntity> BuildZone(GameState gameState, Options options, Zone zone, int playerId, TagChange tagChange, ShowEntity showEntity)
+        private static List<GameStateShortSmallEntity> BuildZone(List<FullEntity> allEntities, Options options, Zone zone, int playerId)
         {
             try
             {
-                var entityToConsiderTC = tagChange?.Name == (int)GameTag.ZONE && tagChange?.Value == (int)zone ? tagChange.Entity : -1;
-                entityToConsiderTC = entityToConsiderTC != -1 && gameState.CurrentEntities[entityToConsiderTC]?.GetEffectiveController() == playerId
-                    ? entityToConsiderTC
-                    : -1;
-                var entityToConsiderSE = showEntity?.GetTag(GameTag.ZONE) == (int)zone ? showEntity.Entity : -1;
-                entityToConsiderSE = entityToConsiderSE != -1 && gameState.CurrentEntities[entityToConsiderSE]?.GetEffectiveController() == playerId
-                    ? entityToConsiderSE
-                    : -1;
-                var entityToExcludeTC = tagChange?.Name == (int)GameTag.ZONE && tagChange?.Value != (int)zone ? tagChange.Entity : -1;
-                var entityToExcludeSE = showEntity?.GetTag(GameTag.ZONE) > 0 && showEntity?.GetTag(GameTag.ZONE) != (int)zone ? showEntity.Entity : -1;
-                return gameState.CurrentEntities.Values
-                    .Where(entity => entityToExcludeSE != entity.Entity
-                        && entityToExcludeTC != entity.Entity
-                        && (entity.GetTag(GameTag.ZONE) == (int)zone || entity.Entity == entityToConsiderTC || entity.Entity == entityToConsiderSE))
-                    .Where(entity => entity.GetEffectiveController() == playerId || entity.Entity == entityToConsiderTC || entity.Entity == entityToConsiderSE)
+                return allEntities
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)zone)
+                    .Where(entity => entity.GetEffectiveController() == playerId)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION) == -1 ? 99 : entity.GetTag(GameTag.ZONE_POSITION))
-                    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity))
+                    .Select(entity => BuildSmallEntity(entity, options))
                     .ToList();
             }
             catch (Exception e)
             {
                 Logger.Log("Warning: issue when trying to build zone " + e.Message, e.StackTrace);
-                return BuildZone(gameState, options, zone, playerId, tagChange, showEntity);
+                return BuildZone(allEntities, options, zone, playerId);
             }
         }
 
-        private static List<GameStateShortSmallEntity> BuildBoard(GameState gameState, Options options, int playerId, TagChange tagChange, ShowEntity showEntity)
+        private static List<GameStateShortSmallEntity> BuildBoard(List<FullEntity> allEntities, Options options, int playerId)
         {
             try
             {
-                return gameState.CurrentEntities.Values
-                    .Where(entity => (entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY && !RemovedFromPlay(entity, tagChange, showEntity))
-                        || PutInPlay(entity, tagChange, showEntity))
+                return allEntities
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetEffectiveController() == playerId)
                     .Where(entity => entity.IsMinionLike())
-                    .Select(entity => BuildSmallEntity(entity, options, tagChange, showEntity, gameState.CurrentEntities.Values.ToList()))
+                    .Select(entity => BuildSmallEntity(entity, options, allEntities))
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .ToList();
             }
@@ -256,21 +238,19 @@ namespace HearthstoneReplays
             return valueTC || valueSE;
         }
 
-        private static GameStateShortSmallEntity BuildSmallEntity(BaseEntity entity, Options options, TagChange tagChange, ShowEntity showEntity, List<FullEntity> fullEntities = null)
+        private static GameStateShortSmallEntity BuildSmallEntity(BaseEntity entity, Options options, List<FullEntity> fullEntities = null)
         {
             string cardId = null;
             if (entity.GetType() == typeof(FullEntity))
             {
                 cardId = (entity as FullEntity).CardId;
             }
-            var newTags = tagChange != null && tagChange.Entity == entity.Id ? entity.GetTagsCopy(tagChange) : entity.GetTagsCopy();
+            var newTags = entity.GetTagsCopy();
             return new GameStateShortSmallEntity()
             {
                 entityId = entity.Id,
                 cardId = cardId,
-                attack = tagChange?.Name == (int)GameTag.ATK && tagChange?.Entity == entity.Id
-                    ? tagChange.Value
-                    : entity.GetTag(GameTag.ATK),
+                attack = entity.GetTag(GameTag.ATK),
                 health = entity.GetTag(GameTag.HEALTH),
                 durability = entity.GetTag(GameTag.DURABILITY) == -1 ? entity.GetTag(GameTag.HEALTH) : entity.GetTag(GameTag.DURABILITY),
                 // Doesn't work because we get the options after the game state

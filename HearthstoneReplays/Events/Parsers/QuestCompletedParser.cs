@@ -46,7 +46,7 @@ namespace HearthstoneReplays.Events.Parsers
             if (GameState.CurrentEntities[action.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
                 var parentAction = (node.Parent.Object as Parser.ReplayData.GameActions.Action);
-                var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+                //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
                 return new List<GameEventProvider> {
                     GameEventProvider.Create(
                         action.TimeStamp,
@@ -56,8 +56,7 @@ namespace HearthstoneReplays.Events.Parsers
                             cardId,
                             controllerId,
                             entity.Id,
-                            StateFacade,
-                            gameState),
+                            StateFacade),
                        true,
                        node) 
                 };

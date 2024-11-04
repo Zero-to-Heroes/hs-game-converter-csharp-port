@@ -77,7 +77,7 @@ namespace HearthstoneReplays.Events.Parsers
             var defenderCardId = defender.CardId;
             var attackerControllerId = attacker.GetEffectiveController();
             var defenderControllerId = defender.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 eventType,

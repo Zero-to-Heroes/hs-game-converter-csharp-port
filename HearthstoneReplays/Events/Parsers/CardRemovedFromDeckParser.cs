@@ -169,7 +169,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetEffectiveController();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CARD_REMOVED_FROM_DECK",
@@ -178,8 +178,9 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     fullEntity.Id,
-                    StateFacade,
-                    gameState),
+                    StateFacade
+                    //gameState
+                    ),
                 true,
                 node) };
         }

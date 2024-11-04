@@ -50,7 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
             Logger.Log("XML converted", "");
             var gameStateReport = GameState.BuildGameStateReport(StateFacade);
             Logger.Log("gameStateReport built", "");
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             Logger.Log("Enqueuing GAME_END event", "");
             ParserState.EndCurrentGame();
             return new List<GameEventProvider> { GameEventProvider.Create(
