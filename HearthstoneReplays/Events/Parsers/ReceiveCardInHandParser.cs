@@ -187,7 +187,7 @@ namespace HearthstoneReplays.Events.Parsers
             var dataNum1 = fullEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1);
             var dataNum2 = fullEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2);
             var position = fullEntity.GetZonePosition();
-            var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     fullEntity.TimeStamp,
                     "RECEIVE_CARD_IN_HAND",
@@ -232,10 +232,11 @@ namespace HearthstoneReplays.Events.Parsers
                                 LocalPlayer = StateFacade.LocalPlayer,
                                 OpponentPlayer = StateFacade.OpponentPlayer,
                                 EntityId = fullEntity.Id,
-                                GameState = gameState,
+                                //GameState = gameState,
                                 AdditionalProps = new {
-                                    CreatorCardId = creatorCardId,
-                                    CreatorEntityId = creatorEntityId,
+                                    // For the initial coin
+                                    CreatorCardId = creatorCardId ?? (fullEntity.GetTag(GameTag.CREATOR) > 0 ? "Unknown" : null),
+                                    CreatorEntityId = creatorEntityId ?? fullEntity.GetTag(GameTag.CREATOR),
                                     IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1,
                                     BuffingEntityCardId = buffingCardEntityCardId,
                                     BuffCardId = buffCardId,
