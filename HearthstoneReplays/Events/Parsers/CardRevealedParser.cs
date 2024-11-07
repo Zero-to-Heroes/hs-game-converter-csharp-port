@@ -77,9 +77,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 var parentAction = node.Parent.Object as Action;
                 var parentEntityId = parentAction.Entity;
-                var parentEntity = GameState.CurrentEntities.ContainsKey(parentEntityId)
-                    ? GameState.CurrentEntities[parentEntityId]
-                    : null;
+                var parentEntity = GameState.CurrentEntities.GetValueOrDefault(parentAction.Entity);
                 // Check that 3 options were provided
                 var totalOptions = parentAction.Data
                     .Where(data => data is FullEntity)
@@ -93,6 +91,10 @@ namespace HearthstoneReplays.Events.Parsers
                 if (parentEntity?.HasDredge() ?? false)
                 {
                     revealedFromBlock = "DREDGE";
+                }
+                if (parentEntity?.CardId == CardIds.Kiljaeden_KiljaedensPortalEnchantment_GDB_145e)
+                {
+                    cardId = "";
                 }
             }
 

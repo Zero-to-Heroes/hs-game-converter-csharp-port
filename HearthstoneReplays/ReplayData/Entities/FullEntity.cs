@@ -206,5 +206,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 ? GetTag(GameTag.PLAYER_LEADERBOARD_PLACE) * 2 - GetTag(GameTag.BACON_DUO_PLAYER_FIGHTS_FIRST_NEXT_COMBAT, 0)
                 : GetTag(GameTag.PLAYER_LEADERBOARD_PLACE);
         }
+
+        internal bool IsStarshipPiece()
+        {
+            return GetTag(GameTag.STARSHIP_PIECE) == 1;
+        }
     }
 }

@@ -5,6 +5,7 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -70,6 +71,16 @@ namespace HearthstoneReplays.Events.Parsers
             if (showEntity.IsImmolateDiscard())
             {
                 cardId = "";
+            }
+            // Info leak
+            if (node.Parent?.Object is Action)
+            {
+                var parentAction = node.Parent.Object as Action;
+                var parentEntity = GameState.CurrentEntities.GetValueOrDefault(parentAction.Entity);
+                if (parentEntity?.CardId == CardIds.Kiljaeden_KiljaedensPortalEnchantment_GDB_145e)
+                {
+                    cardId = "";
+                }
             }
 
             var controllerId = showEntity.GetEffectiveController();

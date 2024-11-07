@@ -10,6 +10,7 @@ using HearthstoneReplays.Parser.ReplayData.Meta;
 using System.Linq;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 using Newtonsoft.Json.Linq;
+using HearthstoneReplays.Events.Cards;
 
 namespace HearthstoneReplays.Events
 {
@@ -149,12 +150,31 @@ namespace HearthstoneReplays.Events
             return null;
         }
 
+
+        public static List<Tag> GuessTags(
+            GameState gameState,
+            string creatorCardId,
+            int creatorEntityId,
+            Node node,
+            string inputCardId = null,
+            StateFacade stateFacade = null,
+            int? createdEntityId = null)
+        {
+            switch (creatorCardId)
+            {
+                case DeepSpaceCurator_GDB_311:
+                    return DeepSpaceCurator.GuessTags(gameState, creatorCardId, creatorEntityId, node, stateFacade);
+                default:
+                    return null;
+            }
+        }
+
         public static string PredictCardId(
-            GameState gameState, 
-            string creatorCardId, 
-            int creatorEntityId, 
-            Node node, 
-            string inputCardId = null, 
+            GameState gameState,
+            string creatorCardId,
+            int creatorEntityId,
+            Node node,
+            string inputCardId = null,
             StateFacade stateFacade = null,
             int? createdEntityId = null)
         {
@@ -845,7 +865,6 @@ namespace HearthstoneReplays.Events
                             ? gameState.CurrentEntities[action.Entity]
                             : null;
 
-
                     if (actionEntity.CardId == SonyaWaterdancer_TOY_515)
                     {
                         if (node.Parent.Parent?.Type == typeof(Action))
@@ -864,7 +883,7 @@ namespace HearthstoneReplays.Events
                             .FirstOrDefault();
                         var entity = gameState.CurrentEntities.GetValueOrDefault(entityId);
                         return entity?.CardId;
-                    } 
+                    }
                     else if (actionEntity?.CardId == RatSensei_WON_013)
                     {
                         return new[] {
@@ -896,7 +915,7 @@ namespace HearthstoneReplays.Events
                             return copiedEntity?.CardId;
                         }
                     }
-                    else if (actionEntity?.CardId == ElixirOfVigor_ElixirOfVigorPlayerTavernBrawlEnchantment 
+                    else if (actionEntity?.CardId == ElixirOfVigor_ElixirOfVigorPlayerTavernBrawlEnchantment
                         || actionEntity?.CardId == ElixirOfVigor_ElixirOfVigorPlayerEnchantment)
                     {
                         var entity = node.Type == typeof(FullEntity) ? node.Object as FullEntity : null;
@@ -912,12 +931,13 @@ namespace HearthstoneReplays.Events
                                     continue;
                                 }
                                 Action playAction = playActionNode.Object as Action;
-                                if (playAction.Type != (int)BlockType.PLAY) { 
+                                if (playAction.Type != (int)BlockType.PLAY)
+                                {
                                     continue;
                                 }
                                 var playedEntityId = playAction.Entity;
                                 var playedEntity = gameState.CurrentEntities.GetValueOrDefault(playedEntityId);
-                                return playedEntity?.CardId;                                
+                                return playedEntity?.CardId;
                             }
                         }
                     }
@@ -984,7 +1004,7 @@ namespace HearthstoneReplays.Events
                     }
 
                     // Plagiarize
-                    if (action.TriggerKeyword == (int)GameTag.SECRET && actionEntity != null && actionEntity.KnownEntityIds.Count > 0 
+                    if (action.TriggerKeyword == (int)GameTag.SECRET && actionEntity != null && actionEntity.KnownEntityIds.Count > 0
                         && (actionEntity.CardId == PlagiarizeCore || actionEntity.CardId == Plagiarize))
                     {
                         var plagiarizeController = actionEntity.GetEffectiveController();
@@ -1127,6 +1147,33 @@ namespace HearthstoneReplays.Events
                         return null;
                     }
 
+                    if (actionEntity.CardId == TheExodar_GDB_120)
+                    {
+                        var tagChangeEntities = action.Data
+                            .Where(d => d is TagChange)
+                            .Select(d => d as TagChange)
+                            .Where(t => t.Name == (int)GameTag.PARENT_CARD && t.Value == 0)
+                            .Select(t => gameState.CurrentEntities.GetValueOrDefault(t.Entity))
+                            .Where(e => e.IsStarshipPiece())
+                            .Select(e => e.CardId)
+                            .ToList();
+                        if (tagChangeEntities.Count == 0)
+                        {
+                            return null;
+                        }
+                        if (actionEntity.CardIdsToCreate.Count == 0)
+                        {
+                            actionEntity.CardIdsToCreate = tagChangeEntities;
+                        }
+                        if (actionEntity.CardIdsToCreate.Count > 0)
+                        {
+                            var cardId = actionEntity.CardIdsToCreate[0];
+                            actionEntity.CardIdsToCreate.RemoveAt(0);
+                            return cardId;
+                        }
+
+                    }
+
                     if (actionEntity.CardId == SymphonyOfSins)
                     {
                         // The original card is updated right before this one is updated. Not really robust, 
@@ -1258,7 +1305,7 @@ namespace HearthstoneReplays.Events
                         return cardDrawn != null ? gameState.CurrentEntities.GetValueOrDefault(cardDrawn.Entity)?.CardId : null;
                     }
                     // Vanessa VanCleed
-                    else if (actionEntity.CardId == VanessaVancleef_CORE_CS3_005 
+                    else if (actionEntity.CardId == VanessaVancleef_CORE_CS3_005
                         || actionEntity.CardId == VanessaVancleefLegacy
                         || actionEntity.CardId == FateSplitter)
                     {

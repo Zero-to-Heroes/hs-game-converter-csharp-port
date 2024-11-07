@@ -80,7 +80,17 @@ namespace HearthstoneReplays.Events.Parsers
             var creator = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creator.Item1, creator.Item2, node, showEntity.CardId);
             var controllerId = showEntity.GetEffectiveController();
-            //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
+            // Info leak
+            if (node.Parent?.Object is Action)
+            {
+                var parentAction = node.Parent.Object as Action;
+                var parentEntity = GameState.CurrentEntities.GetValueOrDefault(parentAction.Entity);
+                if (parentEntity?.CardId == CardIds.Kiljaeden_KiljaedensPortalEnchantment_GDB_145e)
+                {
+                    cardId = null;
+                }
+            }
+
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
@@ -117,6 +127,14 @@ namespace HearthstoneReplays.Events.Parsers
 
             var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node, fullEntity.CardId, null, fullEntity.Entity);
+            // The timing for this is super weird, as the entity is created in deck before the Portal triggers
+            // Also, according to the devs, it shouldn't even be able to create itself
+            // https://x.com/MyntyPhresh/status/1845246521916391798
+            if (creator.Item1 == CardIds.Kiljaeden_GDB_145)
+            {
+                return null;
+            }
+
             if (cardId == null)
             {
                 // Check the GameState in case we know the id, which is typically useful when the card is created empty, then 

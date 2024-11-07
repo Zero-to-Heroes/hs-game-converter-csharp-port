@@ -42,21 +42,25 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var zoneInt = entity.GetTag(GameTag.ZONE) == -1 ? 0 : entity.GetTag(GameTag.ZONE);
             var initialZone = ((Zone)zoneInt).ToString();
-            var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
 
             var parentAction = node.Parent?.Object as Action;
             int? influencedByEntityId = null;
             string influencedByCardId = null;
+            var cardId = entity.CardId;
             if (parentAction != null && 
-                (parentAction.Type == (int)BlockType.POWER 
                 // Bottomfeeder uses TRIGGER
-                || parentAction.Type == (int)BlockType.TRIGGER))
+                (parentAction.Type == (int)BlockType.POWER || parentAction.Type == (int)BlockType.TRIGGER))
             {
                 var influenceEntity = GameState.CurrentEntities[parentAction.Entity];
                 influencedByEntityId = influenceEntity?.Entity;
                 influencedByCardId = influenceEntity?.CardId;
+                // Info leak
+                if (influencedByCardId == CardIds.Kiljaeden_KiljaedensPortalEnchantment_GDB_145e)
+                {
+                    cardId = null;
+                }
             }
 
             if (cardId == null || cardId.Length == 0)
@@ -75,11 +79,12 @@ namespace HearthstoneReplays.Events.Parsers
                 cardId = "";
             }
 
+            var eventName = zoneInt == (int)Zone.SETASIDE ? "CREATE_CARD_IN_DECK" : "CARD_BACK_TO_DECK";
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
-                zoneInt == (int)Zone.SETASIDE ? "CREATE_CARD_IN_DECK" : "CARD_BACK_TO_DECK",
+                eventName,
                 GameEvent.CreateProvider(
-                    zoneInt == (int)Zone.SETASIDE ? "CREATE_CARD_IN_DECK" : "CARD_BACK_TO_DECK",
+                    eventName,
                     cardId,
                     controllerId,
                     entity.Id,
@@ -89,6 +94,8 @@ namespace HearthstoneReplays.Events.Parsers
                         InitialZone = initialZone,
                         InfluencedByEntityId = influencedByEntityId,
                         InfluencedByCardId = influencedByCardId,
+                        CreatorCardId = eventName == "CREATE_CARD_IN_DECK" ? influencedByCardId : null,
+                        CreatorEntityId = eventName == "CREATE_CARD_IN_DECK" ? influencedByEntityId : null,
                     }),
                 true,
                 node) };

@@ -58,9 +58,11 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetEffectiveController();
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             var creator = Oracle.FindCardCreator(GameState, entity, node);
+            List<Tag> guessedTags = null;
             if (creator?.Item2 != null && (cardId == null || cardId == ""))
             {
                 cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node, null, StateFacade);
+                guessedTags = Oracle.GuessTags(GameState, creator?.Item1, creator?.Item2 ?? -1, node, null, StateFacade);
             }
 
             var lastInfluencedByCardId = GameState.CurrentEntities.GetValueOrDefault((node.Parent?.Object as Action)?.Entity ?? -1)?.CardId;
@@ -83,6 +85,7 @@ namespace HearthstoneReplays.Events.Parsers
                             LastInfluencedByCardId = lastInfluencedByCardId,
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
                             Position = position,
+                            GuessedTags = guessedTags,
                         }),
                     true,
                     node) };
@@ -219,9 +222,8 @@ namespace HearthstoneReplays.Events.Parsers
                         }
                         var buffingCardEntityCardId = Oracle.GetBuffingCardCardId(creator?.Item2 ?? -1, creatorCardId);
                         var buffCardId = Oracle.GetBuffCardId(creator?.Item2 ?? -1, creatorCardId);
-                        //var a = "t";
-                        //Oracle.FindCardCreatorCardId(GameState, fullEntity, node);
-                        //Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, fullEntity.CardId);
+
+                        List<Tag> guessedTags = Oracle.GuessTags(GameState, creator?.Item1, creator?.Item2 ?? -1, node, null, StateFacade);
                         return new GameEvent
                         {
                             Type =  "RECEIVE_CARD_IN_HAND",
@@ -244,7 +246,8 @@ namespace HearthstoneReplays.Events.Parsers
                                     DataNum1 = dataNum1,
                                     DataNum2 = dataNum2,
                                     Position = position,
-                                    ReferencedCardIds = referencedCardIds
+                                    ReferencedCardIds = referencedCardIds,
+                                    GuessedTags = guessedTags
                                 }
                             }
                         };
