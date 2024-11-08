@@ -128,7 +128,9 @@ namespace HearthstoneReplays.Events.Parsers
                 removedByCardId = GameState.CurrentEntities.GetValueOrDefault(act.Entity)?.CardId;
             }
 
-            var cardId = showEntity.CardId;
+            var cardId = showEntity.GetTag(GameTag.SUPPRESS_MILL_ANIMATION) == 1 && showEntity.GetTag(GameTag.IGNORE_SUPPRESS_MILL_ANIMATION) <= 0 
+                ? null 
+                : showEntity.CardId;
             var controllerId = showEntity.GetEffectiveController();
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             return new List<GameEventProvider> { GameEventProvider.Create(
@@ -167,7 +169,9 @@ namespace HearthstoneReplays.Events.Parsers
                 }
             }
 
-            var cardId = fullEntity.CardId;
+            var cardId = fullEntity.GetTag(GameTag.SUPPRESS_MILL_ANIMATION) == 1 && fullEntity.GetTag(GameTag.IGNORE_SUPPRESS_MILL_ANIMATION) <= 0
+                ? null
+                : fullEntity.CardId;
             var controllerId = fullEntity.GetEffectiveController();
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
