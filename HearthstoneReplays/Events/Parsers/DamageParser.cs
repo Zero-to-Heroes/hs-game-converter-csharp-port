@@ -110,6 +110,7 @@ namespace HearthstoneReplays.Events.Parsers
                             Targets = damages,
                             LocalPlayer = Helper.LocalPlayer,
                             OpponentPlayer = Helper.OpponentPlayer,
+                            ActivePlayerId = GameState.GetActivePlayerId(),
                             //GameState = gameState,
                         }
                     },

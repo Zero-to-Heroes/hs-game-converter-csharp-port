@@ -83,6 +83,7 @@ namespace HearthstoneReplays.Events.Parsers
                     //gameState,
                     new {
                         DeadMinions = deadMinions,
+                        ActivePlayerId = GameState.GetActivePlayerId(),
                     }),
                 true,
                 node) };

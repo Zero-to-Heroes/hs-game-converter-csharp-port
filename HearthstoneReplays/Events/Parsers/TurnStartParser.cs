@@ -182,6 +182,7 @@ namespace HearthstoneReplays.Events.Parsers
                             LocalPlayer = StateFacade.LocalPlayer,
                             OpponentPlayer = StateFacade.OpponentPlayer,
                             Timestamp = timestamp,
+                            ActivePlayerId = GameState.GetActivePlayerId(),
                         }
                     };
                 },
