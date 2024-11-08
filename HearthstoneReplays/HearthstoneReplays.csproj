@@ -109,12 +109,14 @@
   <ItemGroup>
     <Compile Include="Enums.cs" />
     <Compile Include="Events\AbstractActionParser.cs" />
+    <Compile Include="Events\Cards\Triangulate.cs" />
     <Compile Include="Events\Cards\DeepSpaceCurator.cs" />
     <Compile Include="Events\GameMetaData.cs" />
     <Compile Include="Events\EventQueueHandler.cs" />
     <Compile Include="Events\GameStateShort.cs" />
     <Compile Include="Events\Obfuscator.cs" />
     <Compile Include="Events\Parsers\AbstractBasicTagChangeParser.cs" />
+    <Compile Include="Events\Parsers\ParentCardChangedParser.cs" />
     <Compile Include="Events\Parsers\HeroEnchantmentDetachedParser .cs" />
     <Compile Include="Events\Parsers\HeroEnchantmentAttachedParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsTrinketSelectionParser.cs" />

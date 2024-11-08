@@ -270,6 +270,7 @@ namespace HearthstoneReplays.Events
                     new CorposesSpentThisGameParser(ParserState, StateFacade),
                     new ConstructedAnomalyParser(ParserState, StateFacade),
                     new TouristRevealedParser(ParserState, StateFacade),
+                    new ParentCardChangedParser(ParserState, StateFacade),
 
 
                     new CardForgedParser(ParserState, StateFacade),
