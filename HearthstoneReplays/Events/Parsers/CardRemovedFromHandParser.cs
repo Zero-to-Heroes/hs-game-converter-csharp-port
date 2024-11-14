@@ -9,11 +9,17 @@ using System.Collections.Generic;
 namespace HearthstoneReplays.Events.Parsers
 {
     // Like Bombs that explode when you draw them
+    // TODO: Cast when Drawn are also handled as "cards_played_by_effect" and should not appear here
     public class CardRemovedFromHandParser : ActionParser
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
         private StateFacade StateFacade { get; set; }
+
+        private List<string> CastWhenDrawnTransformers = new List<string>()
+        {
+            CardIds.RunicAdornment_JotunsHasteEnchantment,
+        };
 
         public CardRemovedFromHandParser(ParserState ParserState, StateFacade facade)
         {
@@ -60,6 +66,11 @@ namespace HearthstoneReplays.Events.Parsers
                 cardId = null;
             }
 
+            if (entity.GetTag(GameTag.CASTS_WHEN_DRAWN) == 1)
+            {
+                return null;
+            }
+
             string removedByCardId = null;
             int? removedByEntityId = null;
             if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
@@ -67,6 +78,11 @@ namespace HearthstoneReplays.Events.Parsers
                 var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
                 removedByCardId = GameState.CurrentEntities.GetValueOrDefault(act.Entity)?.CardId;
                 removedByEntityId = act.Entity;
+            }
+
+            if (CastWhenDrawnTransformers.Contains(removedByCardId)) 
+            {
+                return null;
             }
 
             return new List<GameEventProvider> { GameEventProvider.Create(

@@ -5,6 +5,7 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -24,11 +25,13 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            var isPowerPhase = (node.Parent == null
+            var isPowerPhase = node.Parent == null
                        || node.Parent.Type != typeof(Parser.ReplayData.GameActions.Action)
-                       || (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.POWER);
+                       || (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.POWER
+                       // Scenic Vista uses a TRIGGER block
+                       || (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.TRIGGER;
 
-            TagChange tagChange;
+            TagChange tagChange = null;
             FullEntity tagChangeEntity = null;
             bool cardPlayed = node.Type == typeof(TagChange)
                 && (tagChange = node.Object as TagChange).Name == (int)GameTag.ZONE
@@ -36,9 +39,13 @@ namespace HearthstoneReplays.Events.Parsers
                 && ((tagChangeEntity = GameState.CurrentEntities[(node.Object as TagChange).Entity]).GetTag(GameTag.ZONE) == (int)Zone.SETASIDE
                     // For Nagaling
                     || tagChangeEntity.GetZone() == (int)Zone.REMOVEDFROMGAME);
+
+            Action action = null;
+            bool castWhenDrawn = node.Type == typeof(Action)
+                && (action = node.Object as Action).Type == (int)BlockType.TRIGGER
+                && (action.TriggerKeyword == (int)GameTag.CASTS_WHEN_DRAWN || action.TriggerKeyword == (int)GameTag.TOPDECK);
             return stateType == StateType.PowerTaskList
-                && isPowerPhase
-                && cardPlayed;
+                && ((isPowerPhase && cardPlayed) || castWhenDrawn);
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -49,7 +56,7 @@ namespace HearthstoneReplays.Events.Parsers
                        || (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.POWER);
 
             ShowEntity fullEntity = null;
-            bool cardPlayed = node.Type == typeof(ShowEntity)
+            bool cardPlayed = node.Type == typeof(ShowEntity) 
                 && (fullEntity = node.Object as ShowEntity).GetZone() == (int)Zone.PLAY;
             return stateType == StateType.PowerTaskList
                 && isPowerPhase
@@ -57,6 +64,18 @@ namespace HearthstoneReplays.Events.Parsers
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
+        {
+            if (node.Type == typeof(TagChange))
+            {
+                return CreateGameEventProviderFromTagChange(node);
+            }
+            else
+            {
+                return CreateGameEventProviderFromCastsWhenDrawnAction(node);
+            }
+        }
+
+        private List<GameEventProvider> CreateGameEventProviderFromTagChange(Node node)
         {
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
@@ -98,6 +117,48 @@ namespace HearthstoneReplays.Events.Parsers
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
+        {
+            if (node.Type == typeof(ShowEntity))
+            {
+                return CreateGameEventProviderFromShowEntity(node);
+            }
+            return null;
+        }
+
+        private List<GameEventProvider> CreateGameEventProviderFromCastsWhenDrawnAction(Node node)
+        {
+            var action = node.Object as Action;
+            var entity = GameState.CurrentEntities.GetValueOrDefault(action.Entity);
+            var cardId = entity?.CardId;
+            var controllerId = entity.GetEffectiveController();
+            var targetId = action?.Target ?? 0;
+            string targetCardId = targetId > 0 ? GameState.CurrentEntities.GetValueOrDefault(targetId)?.CardId : null;
+            var creator = entity.GetTag(GameTag.CREATOR);
+            var creatorCardId = creator != -1 && GameState.CurrentEntities.ContainsKey(creator)
+                ? GameState.CurrentEntities[creator].CardId
+                : null;
+
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                    action.TimeStamp,
+                    "CARD_PLAYED_BY_EFFECT",
+                    GameEvent.CreateProvider(
+                        "CARD_PLAYED_BY_EFFECT",
+                        cardId,
+                        controllerId,
+                        entity.Entity,
+                        StateFacade,
+                        new {
+                            TargetEntityId = targetId,
+                            TargetCardId = targetCardId,
+                            CreatorCardId = creatorCardId,
+                            CastWhenDrawn = true,
+                        }
+                    ),
+                    true,
+                    node) };
+        }
+
+        private List<GameEventProvider> CreateGameEventProviderFromShowEntity(Node node)
         {
             var entity = node.Object as ShowEntity;
             var cardId = entity.CardId;

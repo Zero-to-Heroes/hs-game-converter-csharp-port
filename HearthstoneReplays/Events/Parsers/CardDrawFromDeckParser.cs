@@ -110,7 +110,7 @@ namespace HearthstoneReplays.Events.Parsers
                     var predictedCardId = Oracle.PredictCardId(GameState, creator?.Item1, -1, node, cardId, StateFacade);
                     // Issue: if a card creates a card and draws one, this will flag them both (while the draw could be something else)
                     // This was introduced to flag the cards created by the Suspicious* cards
-                    if (SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW.Contains(lastInfluencedByCardId))
+                    if (SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW.Contains(lastInfluencedByCardId)) 
                     {
                         predictedCardId = predictedCardId ?? Oracle.PredictCardId(GameState, lastInfluencedByCardId, lastInfluencedByCard?.Item2 ?? -1, node, cardId);
                     }
