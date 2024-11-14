@@ -44,11 +44,15 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var action = node.Object as Action;
-            var touristEntity = action.Data
+            var touristEntity = action?.Data
                 .Where(d => d is FullEntity)
                 .Select(d => d as FullEntity)
                 .Where(e => e.GetTag(GameTag.TOURIST) > 0)
                 .FirstOrDefault();
+            if (touristEntity == null)
+            {
+                return null;
+            }
 
             List<GameEventProvider> result = new List<GameEventProvider>();
             result.Add(GameEventProvider.Create(
