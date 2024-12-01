@@ -126,7 +126,7 @@ namespace HearthstoneReplays.Events.Parsers
             bool createdByJoust = parentAction?.Type == (int)BlockType.JOUST;
 
             var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
-            var cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node, fullEntity.CardId, null, fullEntity.Entity);
+            var cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node, fullEntity.CardId, this.StateFacade, fullEntity.Entity);
             // The timing for this is super weird, as the entity is created in deck before the Portal triggers
             // Also, according to the devs, it shouldn't even be able to create itself
             // https://x.com/MyntyPhresh/status/1845246521916391798

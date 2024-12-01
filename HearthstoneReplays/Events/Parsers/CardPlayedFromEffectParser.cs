@@ -80,6 +80,11 @@ namespace HearthstoneReplays.Events.Parsers
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
+            if (cardId == null)
+            {
+                return null;
+            }
+
             var controllerId = entity.GetEffectiveController();
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) == (int)CardType.ENCHANTMENT)
             {

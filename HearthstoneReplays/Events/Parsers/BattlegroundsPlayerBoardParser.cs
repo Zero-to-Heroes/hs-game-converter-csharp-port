@@ -57,7 +57,7 @@ namespace HearthstoneReplays.Events.Parsers
             // In Duos, because of the teammate there can be some more latency between the various steps
             if (StateFacade.IsBattlegrounds() || StateFacade.IsBattlegroundsDuos())
             {
-                return stateType == StateType.PowerTaskList 
+                return stateType == StateType.PowerTaskList
                     && node.Type == typeof(TagChange)
                     && (node.Object as TagChange).Name == (int)GameTag.BG_BATTLE_STARTING
                     && (node.Object as TagChange).Value == 0;
@@ -122,7 +122,8 @@ namespace HearthstoneReplays.Events.Parsers
             result.Add(GameEventProvider.Create(
                    tagChange.TimeStamp,
                    "BATTLEGROUNDS_PLAYER_BOARD",
-                   () => {
+                   () =>
+                   {
                        Logger.Log("Providing player board events", node.CreationLogLine);
                        return new GameEvent
                        {
@@ -404,6 +405,8 @@ namespace HearthstoneReplays.Events.Parsers
             // Includes Anub'arak, Nerubian Deathswarmer
             var undeadAttackBonus = GetPlayerEnchantmentValue(playerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, currentEntities);
             var astralAutomatonBonus = GetPlayerEnchantmentValue(playerId, CardIds.AstralAutomatonPlayerEnchantDntEnchantment_BG_TTN_401pe, currentEntities);
+            var beetleArmy = GetTupleEnchantmentValue(playerId, CardIds.BeetleArmyPlayerEnchantDntEnchantment_BG31_808pe, currentEntities);
+            var mutatedLasherBonus = GetTupleEnchantmentValue(playerId, CardIds.MutatedLasher_MutatedLasherPlayerEnchDntEnchantment_BG31_852e, currentEntities);
             // Looks like the enchantment isn't used anymore, at least for the opponent?
             var frostlingBonus = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, currentEntities);
             var piratesPlayedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_PIRATES_PLAYED_THIS_GAME, currentEntities);
@@ -438,6 +441,10 @@ namespace HearthstoneReplays.Events.Parsers
                 BloodGemHealthBonus = bloodGemHealthBonus,
                 ChoralAttackBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0,
                 ChoralHealthBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0,
+                BeetleAttackBuff = beetleArmy.Item1,
+                BeetleHealthBuff = beetleArmy.Item2,
+                MutatedLasherAttackBuff = mutatedLasherBonus.Item1,
+                MutatedLasherHealthBuff = mutatedLasherBonus.Item2,
             };
         }
 
@@ -596,6 +603,16 @@ namespace HearthstoneReplays.Events.Parsers
                 ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
         }
 
+        internal static Tuple<int, int> GetTupleEnchantmentValue(int playerId, string enchantment, List<FullEntity> currentEntities)
+        {
+            var ench = currentEntities
+                .Where(entity => entity.GetEffectiveController() == playerId)
+                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                .Where(entity => entity.CardId == enchantment)
+                .FirstOrDefault();
+            return new Tuple<int, int>(ench?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0, ench?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2) ?? 0);
+        }
+
         internal static int GetPlayerTag(int playerEntityId, GameTag tag, List<FullEntity> currentEntities)
         {
             return currentEntities.Find(e => e.Entity == playerEntityId)?.GetTag(tag, 0) ?? 0;
@@ -684,6 +701,10 @@ namespace HearthstoneReplays.Events.Parsers
             public int BloodGemHealthBonus { get; set; }
             public int ChoralHealthBuff { get; set; }
             public int ChoralAttackBuff { get; set; }
+            public int BeetleAttackBuff { get; set; }
+            public int BeetleHealthBuff { get; set; }
+            public int MutatedLasherAttackBuff { get; set; }
+            public int MutatedLasherHealthBuff { get; set; }
         }
 
         internal class QuestReward

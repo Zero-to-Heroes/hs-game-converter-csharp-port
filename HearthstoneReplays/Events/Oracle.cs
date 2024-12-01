@@ -605,13 +605,13 @@ namespace HearthstoneReplays.Events
                                 XortothBreakerOfStars_StarOfConclusionToken_GDB_118t2,
                                 XortothBreakerOfStars_StarOfOriginationToken_GDB_118t,
                             });
-                    case YrelBeaconOfHope_GDB_141:
-                        return AddMultipleKnownCards(gameState, node, new List<string>()
-                            {
-                                LibramOfWisdom_BT_025,
-                                LibramOfHope,
-                                LibramOfJustice_BT_011,
-                            });
+                    //case YrelBeaconOfHope_GDB_141:
+                    //    return AddMultipleKnownCards(gameState, node, new List<string>()
+                    //        {
+                    //            LibramOfHope,
+                    //            LibramOfWisdom_BT_025,
+                    //            LibramOfJustice_BT_011,
+                    //        });
                     case TheReplicatorInator_MIS_025:
                         return AddMultipleKnownCards(gameState, node, new List<string>()
                             {
@@ -662,6 +662,8 @@ namespace HearthstoneReplays.Events
 
                     case Triangulate_GDB_451:
                         return Triangulate.PredctCardId(gameState, creatorCardId, creatorEntityId, node, stateFacade);
+                    case CardIds.RunicAdornment:
+                        return Cards.RunicAdornment.PredctCardId(gameState, creatorCardId, creatorEntityId, node, stateFacade);
                     case AugmentedElekk:
                         // The parent action is Augmented Elekk trigger, which is not the one we're interested in
                         // Its parent is the one that created the new entity

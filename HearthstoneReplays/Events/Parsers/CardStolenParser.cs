@@ -5,6 +5,7 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -52,8 +53,15 @@ namespace HearthstoneReplays.Events.Parsers
 
             if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT)
             {
-                //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
                 var zone = entity.GetZone();
+                string stolenByCardId = null;
+                int? stolenByEntityId = null;
+                if (node.Parent?.Type == typeof(Action))
+                {
+                    Action parentAction = node.Parent.Object as Action;
+                    stolenByEntityId = parentAction.Entity;
+                    stolenByCardId = GameState.CurrentEntities.GetValueOrDefault(parentAction.Entity)?.CardId;
+                }
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "CARD_STOLEN",
@@ -75,6 +83,8 @@ namespace HearthstoneReplays.Events.Parsers
                                 AdditionalProps = new {
                                     newControllerId = tagChange.Value,
                                     zone = zone,
+                                    StolenByCardId = stolenByCardId,
+                                    StolenByEntityId = stolenByEntityId,
                                 }
                             }
                         };

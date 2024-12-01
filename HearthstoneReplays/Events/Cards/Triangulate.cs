@@ -26,6 +26,14 @@ namespace HearthstoneReplays.Events.Cards
                 return null;
             }
 
+            var actionEntity = gameState.CurrentEntities.GetValueOrDefault(act.Entity);
+            var controller = actionEntity.GetController();
+            // Avoid info leaks, as the card is revealed in the logs
+            if (controller != stateFacade.LocalPlayer.PlayerId)
+            {
+                return null;
+            }
+
             var triggerAction = act.Data
                 .Where(d => d is Action)
                 .Select(d => d as Action)

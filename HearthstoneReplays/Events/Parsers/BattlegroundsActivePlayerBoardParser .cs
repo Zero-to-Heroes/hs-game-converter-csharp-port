@@ -89,11 +89,12 @@ namespace HearthstoneReplays.Events.Parsers
             var hero = potentialHeroes.FirstOrDefault()?.Clone();
             var cardId = hero?.CardId;
             int playerId = hero?.GetTag(GameTag.PLAYER_ID) ?? player.PlayerId;
+            var currentEntities = GameState.CurrentEntities.Values.ToList();
 
             if (hero == null || hero.IsBaconGhost() || hero?.GetTag(GameTag.BACON_BOB_SKIN) == 1)
             {
                 // Finding the one that is flagged as the player's NEXT_OPPONENT
-                var playerEntity = GameState.CurrentEntities.Values
+                var playerEntity = currentEntities
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
@@ -104,7 +105,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .LastOrDefault();
                 var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
 
-                var nextOpponentCandidates = GameState.CurrentEntities.Values
+                var nextOpponentCandidates = currentEntities
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                     .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
                     .Where(entity => !entity.IsBaconBartender()
@@ -123,7 +124,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 var activePlayer = GameState.CurrentEntities[StateFacade.LocalPlayer.Id];
                 var opponentPlayerId = activePlayer.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
-                hero = GameState.CurrentEntities.Values
+                hero = currentEntities
                     .Where(data => data.GetTag(GameTag.PLAYER_ID) == opponentPlayerId)
                     .FirstOrDefault()
                     ?.Clone();
@@ -140,7 +141,7 @@ namespace HearthstoneReplays.Events.Parsers
             if (cardId != null)
             {
                 // We don't use the game state builder here because we really need the full entities
-                var board = GameState.CurrentEntities.Values
+                var board = currentEntities
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     // Because when the opponent is the ghost, we don't always know which ones are actually attached to it
                     // Also, when reconnecting, we sometimes get artifacts for the opponent's board, so restricting the list
@@ -152,7 +153,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Select(entity => entity.Clone())
                     .Select(entity => EnhanceEntities(entity, GameState, StateFacade))
                     .ToList();
-                var secrets = GameState.CurrentEntities.Values
+                var secrets = currentEntities
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
                     .Where(entity => entity.GetTag(GameTag.BACON_IS_BOB_QUEST) != 1)
@@ -162,7 +163,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Select(entity => entity.Clone())
                     .Select(entity => BuildEntityWithCardIdFromTheFuture(entity, StateFacade.GsState.GameState))
                     .ToList();
-                var hand = GameState.CurrentEntities.Values
+                var hand = currentEntities
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.HAND)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
@@ -196,10 +197,10 @@ namespace HearthstoneReplays.Events.Parsers
                     //    .ToList();
                     hand = revealedHand;
                 }
-                var debug = GameState.CurrentEntities.Values
+                var debug = currentEntities
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .ToList();
-                var heroPower = GameState.CurrentEntities.Values
+                var heroPower = currentEntities
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER)
@@ -217,7 +218,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Logger.Log("Too many entities on board", "");
                 }
 
-                var questRewardRawEntities = GameState.CurrentEntities.Values
+                var questRewardRawEntities = currentEntities
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.BATTLEGROUND_QUEST_REWARD)
@@ -235,7 +236,7 @@ namespace HearthstoneReplays.Events.Parsers
                         ScriptDataNum1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0)
                     })
                     .ToList();
-                var questEntities = GameState.CurrentEntities.Values
+                var questEntities = currentEntities
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
                     .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.SPELL)
@@ -257,7 +258,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var frostlingBonus = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, GameState);
                 var piratesSummonedThisGame = GetPlayerTag(player.Id, GameTag.BACON_PIRATES_SUMMONED_THIS_GAME, GameState);
                 var astralAutomatonBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.AstralAutomatonPlayerEnchantDntEnchantment_BG_TTN_401pe, GameState);
-                var bloodGemEnchant = GameState.CurrentEntities.Values
+                var bloodGemEnchant = currentEntities
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Where(entity => entity.CardId == CardIds.BloodGemPlayerEnchantEnchantment)
@@ -268,6 +269,8 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
                     .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)));
                 var choralEnchantment = choralEnchantments.FirstOrDefault();
+                var beetleArmy = GetTupleEnchantmentValue(playerId, CardIds.BeetleArmyPlayerEnchantDntEnchantment_BG31_808pe, currentEntities);
+                var mutatedLasherBonus = GetTupleEnchantmentValue(playerId, CardIds.MutatedLasher_MutatedLasherPlayerEnchDntEnchantment_BG31_852e, currentEntities);
 
                 var trinkets = BattlegroundsPlayerBoardParser.BuildTrinkets(player.PlayerId, GameState);
 
@@ -314,6 +317,10 @@ namespace HearthstoneReplays.Events.Parsers
                         // TODO: always show the base version, even for golden
                         ChoralAttackBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0,
                         ChoralHealthBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0,
+                        BeetleAttackBuff = beetleArmy.Item1,
+                        BeetleHealthBuff = beetleArmy.Item2,
+                        MutatedLasherAttackBuff = mutatedLasherBonus.Item1,
+                        MutatedLasherHealthBuff = mutatedLasherBonus.Item2,
                     }
                 };
             }
@@ -501,6 +508,10 @@ namespace HearthstoneReplays.Events.Parsers
             public int BloodGemHealthBonus { get; set; }
             public int ChoralHealthBuff { get; set; }
             public int ChoralAttackBuff { get; set; }
+            public int BeetleAttackBuff { get; set; }
+            public int BeetleHealthBuff { get; set; }
+            public int MutatedLasherAttackBuff { get; set; }
+            public int MutatedLasherHealthBuff { get; set; }
         }
 
         internal class QuestReward

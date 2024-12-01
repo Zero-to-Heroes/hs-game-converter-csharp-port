@@ -53,7 +53,8 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
-            var entity = GameState.CurrentEntities[tagChange.Entity];
+            var entityId = tagChange.Entity;
+            var entity = GameState.CurrentEntities[entityId];
             var cardId = entity.CardId;
             // When a card is sent back to the deck using tradeable, we know its card ID
             // We can't simply remove the card ID when the card is sent back to the deck, because this would lead to
@@ -97,7 +98,6 @@ namespace HearthstoneReplays.Events.Parsers
                 tagChange.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
                 () => {
-                    var entityId = tagChange.Entity;
                     // We do it here because of Keymaster Alabaster - we need to know the last card
                     // that has been drawn
                     // TODO: this was true when relying on the GS logs. Now that we use PTL, maybe we can move this back? Or maybe we 
