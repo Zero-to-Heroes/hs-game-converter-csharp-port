@@ -63,7 +63,10 @@ namespace HearthstoneReplays.Events.Parsers
                            Type = "BATTLEGROUNDS_HERO_SELECTION",
                            Value = new
                            {
-                               CardIds = fullEntities.Select(entity => entity.CardId).ToList()
+                               Options = fullEntities.Select(entity => new {
+                                   CardId = entity.CardId,
+                                   EntityId = entity.Id,
+                               }).ToList(),
                            }
                        };
                    },

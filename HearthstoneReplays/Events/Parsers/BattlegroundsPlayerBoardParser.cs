@@ -107,7 +107,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             IsPTLReadyForBattle = false;
             IsGSReadyForBattle = false;
-            Logger.Log("[debug] Starting to build player boards", node.CreationLogLine);
+            Logger.Log("Starting to build player boards", node.CreationLogLine);
             var tagChange = node.Object as TagChange;
             var opponent = StateFacade.OpponentPlayer;
             var player = StateFacade.LocalPlayer;
@@ -419,10 +419,12 @@ namespace HearthstoneReplays.Events.Parsers
                 .LastOrDefault();
             var bloodGemAttackBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0;
             var bloodGemHealthBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0;
+            var debug2 = board.Any(e => e.Entity == 7656);
+            var battlecriesTriggeredThisGame = GetPlayerTag(playerEntityId, GameTag.BATTLECRIES_TRIGGERED_THIS_GAME, currentEntities);
+            var friendlyMinionsDeadLastCombat = GetPlayerTag(playerEntityId, GameTag.NUM_FRIENDLY_MINIONS_THAT_DIED_LAST_TURN, currentEntities);
             //var debugList = currentEntitiesGs
             //    .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
             //    .ToList();
-            var debug = GameState.CurrentEntities.GetValueOrDefault(14758);
             var choralEnchantments = currentEntitiesGs
                 .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
                 .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)))
@@ -443,8 +445,8 @@ namespace HearthstoneReplays.Events.Parsers
                 ChoralHealthBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0,
                 BeetleAttackBuff = beetleArmy.Item1,
                 BeetleHealthBuff = beetleArmy.Item2,
-                MutatedLasherAttackBuff = mutatedLasherBonus.Item1,
-                MutatedLasherHealthBuff = mutatedLasherBonus.Item2,
+                BattlecriesTriggeredThisGame = battlecriesTriggeredThisGame,
+                FriendlyMinionsDeadLastCombat = friendlyMinionsDeadLastCombat,
             };
         }
 
@@ -703,8 +705,8 @@ namespace HearthstoneReplays.Events.Parsers
             public int ChoralAttackBuff { get; set; }
             public int BeetleAttackBuff { get; set; }
             public int BeetleHealthBuff { get; set; }
-            public int MutatedLasherAttackBuff { get; set; }
-            public int MutatedLasherHealthBuff { get; set; }
+            public int BattlecriesTriggeredThisGame { get; set; }
+            public int FriendlyMinionsDeadLastCombat { get; set; }
         }
 
         internal class QuestReward

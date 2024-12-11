@@ -29,9 +29,6 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
-            var debug = node.Type == typeof(SubSpell)
-                    && (node.Object as SubSpell).Prefab.StartsWith("ReuseFX_Generic_OverrideSpawn_FromPortal_Super_Random_SuppressPlaySounds");
-            var subSpell = debug ? node.Object as SubSpell : null;
             return stateType == StateType.GameState
                     && StateFacade.IsBattlegrounds()
                     && GameState.GetGameEntity()?.GetTag(GameTag.BOARD_VISUAL_STATE) == 2

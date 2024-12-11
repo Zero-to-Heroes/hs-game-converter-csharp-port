@@ -270,7 +270,8 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)));
                 var choralEnchantment = choralEnchantments.FirstOrDefault();
                 var beetleArmy = GetTupleEnchantmentValue(playerId, CardIds.BeetleArmyPlayerEnchantDntEnchantment_BG31_808pe, currentEntities);
-                var mutatedLasherBonus = GetTupleEnchantmentValue(playerId, CardIds.MutatedLasher_MutatedLasherPlayerEnchDntEnchantment_BG31_852e, currentEntities);
+                var battlecriesTriggeredThisGame = GetPlayerTag(player.Id, GameTag.BATTLECRIES_TRIGGERED_THIS_GAME, GameState);
+                var friendlyMinionsDeadLastCombat = GetPlayerTag(player.Id, GameTag.NUM_FRIENDLY_MINIONS_THAT_DIED_LAST_TURN, GameState);
 
                 var trinkets = BattlegroundsPlayerBoardParser.BuildTrinkets(player.PlayerId, GameState);
 
@@ -319,8 +320,8 @@ namespace HearthstoneReplays.Events.Parsers
                         ChoralHealthBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0,
                         BeetleAttackBuff = beetleArmy.Item1,
                         BeetleHealthBuff = beetleArmy.Item2,
-                        MutatedLasherAttackBuff = mutatedLasherBonus.Item1,
-                        MutatedLasherHealthBuff = mutatedLasherBonus.Item2,
+                        BattlecriesTriggeredThisGame = battlecriesTriggeredThisGame,
+                        FriendlyMinionsDeadLastCombat = friendlyMinionsDeadLastCombat,
                     }
                 };
             }
@@ -510,8 +511,8 @@ namespace HearthstoneReplays.Events.Parsers
             public int ChoralAttackBuff { get; set; }
             public int BeetleAttackBuff { get; set; }
             public int BeetleHealthBuff { get; set; }
-            public int MutatedLasherAttackBuff { get; set; }
-            public int MutatedLasherHealthBuff { get; set; }
+            public int BattlecriesTriggeredThisGame { get; set; }
+            public int FriendlyMinionsDeadLastCombat { get; set; }
         }
 
         internal class QuestReward

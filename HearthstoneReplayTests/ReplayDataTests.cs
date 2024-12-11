@@ -91,7 +91,6 @@ namespace HearthstoneReplayTests
             HearthstoneReplay replay = parser.FromString(logFile);
             Thread.Sleep(5000);
             //string xml = new ReplayConverter().xmlFromReplay(replay);
-            //Thread.Sleep(5000);
             //Console.Write(xml);
         }
 

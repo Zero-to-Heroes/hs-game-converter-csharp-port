@@ -13,12 +13,13 @@ namespace HearthstoneReplays.Events.Parsers.Controls
             typeof(MinionsWillDieParser),
             typeof(CardRevealedParser),
             typeof(EntityUpdateParser),
-            typeof(DataScriptChangedParser),
+            //typeof(DataScriptChangedParser), // Needed for gold enchantments
             typeof(CostChangedParser),
             typeof(MinionOnBoardAttackUpdatedParser),
             //typeof(MinionSummonedParser), // Needed for minions highlights
             typeof(LinkedEntityParser),
             typeof(CopiedFromEntityIdParser),
+            typeof(ParentCardChangedParser),
             // SubSpell is hard-coded in DataHandler
         };
     }

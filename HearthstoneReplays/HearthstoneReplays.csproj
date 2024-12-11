@@ -117,6 +117,10 @@
     <Compile Include="Events\GameStateShort.cs" />
     <Compile Include="Events\Obfuscator.cs" />
     <Compile Include="Events\Parsers\AbstractBasicTagChangeParser.cs" />
+    <Compile Include="Events\Parsers\TotalMagnetizeChangedParser.cs" />
+    <Compile Include="Events\Parsers\BattlegroundsHeroRerollParser.cs" />
+    <Compile Include="Events\Parsers\BallerBuffChangedParser .cs" />
+    <Compile Include="Events\Parsers\BeetleArmyChangedParser.cs" />
     <Compile Include="Events\Parsers\ParentCardChangedParser.cs" />
     <Compile Include="Events\Parsers\HeroEnchantmentDetachedParser .cs" />
     <Compile Include="Events\Parsers\HeroEnchantmentAttachedParser.cs" />

@@ -27,6 +27,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
+            //return false;
             var correctMode = stateType == StateType.PowerTaskList && StateFacade.IsBattlegrounds() && node.Type == typeof(TagChange);
             if (!correctMode)
             {
@@ -39,18 +40,19 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var tagChange = (node.Object as TagChange);
-            var isExtraGoldNextTurn = tagChange.Name == (int)GameTag.TAG_SCRIPT_DATA_NUM_1
-                && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity)?.CardId == CardIds.SouthseaBusker_ExtraGoldNextTurnDntEnchantment;
-            var isExtraGoldNextTurnRemoved = tagChange.Name == (int)GameTag.ZONE
-                && tagChange.Value == (int)Zone.GRAVEYARD
-                && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity)?.CardId == CardIds.SouthseaBusker_ExtraGoldNextTurnDntEnchantment;
-            var isOverconfidence = tagChange.Name == (int)GameTag.ZONE
-                //&& tagChange.Value == (int)Zone.PLAY
-                && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity)?.CardId == CardIds.Overconfidence_OverconfidentDntEnchantment_BG28_884e;
+            //var isExtraGoldNextTurn = tagChange.Name == (int)GameTag.TAG_SCRIPT_DATA_NUM_1
+            //    && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity)?.CardId == CardIds.SouthseaBusker_ExtraGoldNextTurnDntEnchantment;
+            //var isExtraGoldNextTurnRemoved = tagChange.Name == (int)GameTag.ZONE
+            //    && tagChange.Value == (int)Zone.GRAVEYARD
+            //    && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity)?.CardId == CardIds.SouthseaBusker_ExtraGoldNextTurnDntEnchantment;
+            //var isOverconfidence = tagChange.Name == (int)GameTag.ZONE
+            //    //&& tagChange.Value == (int)Zone.PLAY
+            //    && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity)?.CardId == CardIds.Overconfidence_OverconfidentDntEnchantment_BG28_884e;
             var isNewTurn = tagChange.Name == (int)GameTag.BOARD_VISUAL_STATE;
             //var isCardUpdated = tagChange.Name == (int)GameTag.ZONE 
             //    && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity)?.GetController() == StateFacade.LocalPlayer.PlayerId;
-            return isExtraGoldNextTurn || isOverconfidence || isExtraGoldNextTurnRemoved || isNewTurn;
+            //return isExtraGoldNextTurn || isOverconfidence || isExtraGoldNextTurnRemoved || isNewTurn;
+            return isNewTurn;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -64,21 +66,21 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity);
             var controllerId = entity.GetController();
 
-            var extraGoldNextTurnValue = entity.CardId == CardIds.SouthseaBusker_ExtraGoldNextTurnDntEnchantment && tagChange.Name == (int)GameTag.TAG_SCRIPT_DATA_NUM_1
-                ? tagChange.Value
-                : entity.CardId == CardIds.SouthseaBusker_ExtraGoldNextTurnDntEnchantment && tagChange.Name == (int)GameTag.ZONE && tagChange.Value == (int)Zone.GRAVEYARD
-                ? 0
-                : GameState.CurrentEntities.Values
-                    .Where(e => e.CardId == CardIds.SouthseaBusker_ExtraGoldNextTurnDntEnchantment)
-                    .Where(e => e.IsInPlay())
-                    .FirstOrDefault()
-                    ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1)
-                    ?? 0;
+            //var extraGoldNextTurnValue = entity.CardId == CardIds.SouthseaBusker_ExtraGoldNextTurnDntEnchantment && tagChange.Name == (int)GameTag.TAG_SCRIPT_DATA_NUM_1
+            //    ? tagChange.Value
+            //    : entity.CardId == CardIds.SouthseaBusker_ExtraGoldNextTurnDntEnchantment && tagChange.Name == (int)GameTag.ZONE && tagChange.Value == (int)Zone.GRAVEYARD
+            //    ? 0
+            //    : GameState.CurrentEntities.Values
+            //        .Where(e => e.CardId == CardIds.SouthseaBusker_ExtraGoldNextTurnDntEnchantment)
+            //        .Where(e => e.IsInPlay())
+            //        .FirstOrDefault()
+            //        ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1)
+            //        ?? 0;
 
-            var overconfidentEnchantments = GameState.CurrentEntities.Values
-                .Where(e => e.CardId == CardIds.Overconfidence_OverconfidentDntEnchantment_BG28_884e)
-                .Where(e => e.IsInPlay(tagChange))
-                .ToList();
+            //var overconfidentEnchantments = GameState.CurrentEntities.Values
+            //    .Where(e => e.CardId == CardIds.Overconfidence_OverconfidentDntEnchantment_BG28_884e)
+            //    .Where(e => e.IsInPlay(tagChange))
+            //    .ToList();
 
             var boardAndEnchantments = BuildBoardAndEnchantmentCardIds(tagChange);
 
@@ -93,8 +95,8 @@ namespace HearthstoneReplays.Events.Parsers
                     StateFacade,
                     //null,
                     new {
-                        ExtraGoldNextTurn = extraGoldNextTurnValue,
-                        Overconfidences = overconfidentEnchantments.Count(),
+                        //ExtraGoldNextTurn = extraGoldNextTurnValue,
+                        //Overconfidences = overconfidentEnchantments.Count(),
                         BoardAndEnchantments = boardAndEnchantments,
                     }),
                 true,

@@ -44,8 +44,11 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity);
+            var creatorEntityId = entity?.GetTag(GameTag.CREATOR) ?? -1;
+            var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creatorEntityId);
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
+            var tags = entity.GetTagsCopy();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                  "ENCHANTMENT_ATTACHED",
@@ -57,6 +60,9 @@ namespace HearthstoneReplays.Events.Parsers
                     StateFacade,
                     new {
                         AttachedTo = entity.GetTag(GameTag.ATTACHED),
+                        Tags = tags,
+                        CreatorEntityId = creatorEntity?.Entity,
+                        CreatorCardId = creatorEntity?.CardId,
                     }),
                 true,
                 node) };
@@ -67,8 +73,11 @@ namespace HearthstoneReplays.Events.Parsers
             var showEntity = node.Object as ShowEntity;
             var attachedTo = showEntity.GetTag(GameTag.ATTACHED);
             var attachedToEntity = GameState.CurrentEntities.GetValueOrDefault(attachedTo);
+            var creatorEntityId = showEntity.GetTag(GameTag.CREATOR);
+            var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creatorEntityId);
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetEffectiveController();
+            var tags = showEntity.GetTagsCopy();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                  "ENCHANTMENT_ATTACHED",
@@ -80,6 +89,9 @@ namespace HearthstoneReplays.Events.Parsers
                     StateFacade,
                     new {
                         AttachedTo = attachedTo,
+                        Tags = tags,
+                        CreatorEntityId = creatorEntityId,
+                        CreatorCardId = creatorEntity?.CardId,
                     }),
                 true,
                 node) };
