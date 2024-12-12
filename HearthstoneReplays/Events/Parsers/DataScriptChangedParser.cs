@@ -42,6 +42,12 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
+            // In BG, we need this only for enchantments
+            if (StateFacade.IsBattlegrounds() && entity.GetCardType() != (int)CardType.ENCHANTMENT) 
+            {
+                return null;
+            }
+
             var initialData1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
             var initialData2 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0);
             int newData1 = initialData1;

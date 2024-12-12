@@ -48,6 +48,16 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creatorEntityId);
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
+            var attachedToEntityId = entity.GetTag(GameTag.ATTACHED);
+            var attachedToEntity = GameState.CurrentEntities.GetValueOrDefault(attachedToEntityId);
+            if (attachedToEntityId != StateFacade.LocalPlayer.Id 
+                && attachedToEntityId != StateFacade.OpponentPlayer.Id
+                && attachedToEntity.GetCardType() != (int)CardType.HERO
+                && attachedToEntity.GetCardType() != (int)CardType.HERO_POWER)
+            {
+                return null;
+            }
+
             var tags = entity.GetTagsCopy();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
@@ -59,7 +69,7 @@ namespace HearthstoneReplays.Events.Parsers
                     entity.Entity,
                     StateFacade,
                     new {
-                        AttachedTo = entity.GetTag(GameTag.ATTACHED),
+                        AttachedTo = attachedToEntityId,
                         Tags = tags,
                         CreatorEntityId = creatorEntity?.Entity,
                         CreatorCardId = creatorEntity?.CardId,
@@ -77,6 +87,14 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creatorEntityId);
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetEffectiveController();
+            if (attachedTo != StateFacade.LocalPlayer.Id
+                && attachedTo != StateFacade.OpponentPlayer.Id
+                && attachedToEntity.GetCardType() != (int)CardType.HERO
+                && attachedToEntity.GetCardType() != (int)CardType.HERO_POWER)
+            {
+                return null;
+            }
+
             var tags = showEntity.GetTagsCopy();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
