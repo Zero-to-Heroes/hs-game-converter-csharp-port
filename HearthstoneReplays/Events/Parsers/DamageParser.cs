@@ -98,6 +98,7 @@ namespace HearthstoneReplays.Events.Parsers
                 Damage = actualDamage,
                 Timestamp = tagChange.TimeStamp,
             };
+            var activePlayerId = GameState.GetActivePlayerId();
             return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "DAMAGE",
@@ -110,8 +111,7 @@ namespace HearthstoneReplays.Events.Parsers
                             Targets = damages,
                             LocalPlayer = Helper.LocalPlayer,
                             OpponentPlayer = Helper.OpponentPlayer,
-                            ActivePlayerId = GameState.GetActivePlayerId(),
-                            //GameState = gameState,
+                            ActivePlayerId = activePlayerId,
                         }
                     },
                     true,
@@ -204,6 +204,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var timestamp = totalDamages[damageSource].First().Value.Timestamp;
                 var sourceEntityId = totalDamages[damageSource].First().Value.SourceEntityId;
                 var sourceControllerId = totalDamages[damageSource].First().Value.SourceControllerId;
+                var activePlayerId = GameState.GetActivePlayerId();
                 result.Add(GameEventProvider.Create(
                     timestamp,
                     "DAMAGE",
@@ -219,7 +220,7 @@ namespace HearthstoneReplays.Events.Parsers
                             Targets = targets,
                             LocalPlayer = Helper.LocalPlayer,
                             OpponentPlayer = Helper.OpponentPlayer,
-                            //GameState = gameState,
+                            ActivePlayerId = activePlayerId,
                         }
                     },
                     true,
