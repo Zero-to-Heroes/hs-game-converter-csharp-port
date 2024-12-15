@@ -406,7 +406,7 @@ namespace HearthstoneReplays.Events.Parsers
             var undeadAttackBonus = GetPlayerEnchantmentValue(playerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, currentEntities);
             var astralAutomatonBonus = GetPlayerEnchantmentValue(playerId, CardIds.AstralAutomatonPlayerEnchantDntEnchantment_BG_TTN_401pe, currentEntities);
             var beetleArmy = GetTupleEnchantmentValue(playerId, CardIds.BeetleArmyPlayerEnchantDntEnchantment_BG31_808pe, currentEntities);
-            var mutatedLasherBonus = GetTupleEnchantmentValue(playerId, CardIds.MutatedLasher_MutatedLasherPlayerEnchDntEnchantment_BG31_852e, currentEntities);
+            var sanlyanScribesDeadThisGame = GetTupleEnchantmentValue(playerId, CardIds.SanlaynScribePlayerEnchantDntEnchantment_BGDUO31_208pe, currentEntities);
             // Looks like the enchantment isn't used anymore, at least for the opponent?
             var frostlingBonus = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, currentEntities);
             var piratesPlayedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_PIRATES_PLAYED_THIS_GAME, currentEntities);
@@ -447,6 +447,7 @@ namespace HearthstoneReplays.Events.Parsers
                 BeetleHealthBuff = beetleArmy.Item2,
                 BattlecriesTriggeredThisGame = battlecriesTriggeredThisGame,
                 FriendlyMinionsDeadLastCombat = friendlyMinionsDeadLastCombat,
+                SanlaynScribesDeadThisGame = sanlyanScribesDeadThisGame?.Item1 ?? 0,
             };
         }
 
@@ -707,6 +708,7 @@ namespace HearthstoneReplays.Events.Parsers
             public int BeetleHealthBuff { get; set; }
             public int BattlecriesTriggeredThisGame { get; set; }
             public int FriendlyMinionsDeadLastCombat { get; set; }
+            public int SanlaynScribesDeadThisGame { get; set; }
         }
 
         internal class QuestReward

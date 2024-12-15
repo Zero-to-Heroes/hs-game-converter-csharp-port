@@ -270,6 +270,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)));
                 var choralEnchantment = choralEnchantments.FirstOrDefault();
                 var beetleArmy = GetTupleEnchantmentValue(playerId, CardIds.BeetleArmyPlayerEnchantDntEnchantment_BG31_808pe, currentEntities);
+                var sanlaynScribesDeadThisGame = GetTupleEnchantmentValue(playerId, CardIds.SanlaynScribePlayerEnchantDntEnchantment_BGDUO31_208pe, currentEntities);
                 var battlecriesTriggeredThisGame = GetPlayerTag(player.Id, GameTag.BATTLECRIES_TRIGGERED_THIS_GAME, GameState);
                 var friendlyMinionsDeadLastCombat = GetPlayerTag(player.Id, GameTag.NUM_FRIENDLY_MINIONS_THAT_DIED_LAST_TURN, GameState);
 
@@ -322,6 +323,7 @@ namespace HearthstoneReplays.Events.Parsers
                         BeetleHealthBuff = beetleArmy.Item2,
                         BattlecriesTriggeredThisGame = battlecriesTriggeredThisGame,
                         FriendlyMinionsDeadLastCombat = friendlyMinionsDeadLastCombat,
+                        SanlaynScribesDeadThisGame = sanlaynScribesDeadThisGame?.Item1 ?? 0,
                     }
                 };
             }
@@ -496,24 +498,24 @@ namespace HearthstoneReplays.Events.Parsers
             public BgsPlayerGlobalInfo GlobalInfo { get; set; }
         }
 
-        internal class BgsPlayerGlobalInfo
-        {
-            public int EternalKnightsDeadThisGame { get; set; }
-            public int TavernSpellsCastThisGame { get; set; }
-            public int UndeadAttackBonus { get; set; }
-            public int FrostlingBonus { get; set; }
-            public int PiratesPlayedThisGame { get; set; }
-            public int PiratesSummonedThisGame { get; set; }
-            public int AstralAutomatonsSummonedThisGame { get; set; }
-            public int BloodGemAttackBonus { get; set; }
-            public int BloodGemHealthBonus { get; set; }
-            public int ChoralHealthBuff { get; set; }
-            public int ChoralAttackBuff { get; set; }
-            public int BeetleAttackBuff { get; set; }
-            public int BeetleHealthBuff { get; set; }
-            public int BattlecriesTriggeredThisGame { get; set; }
-            public int FriendlyMinionsDeadLastCombat { get; set; }
-        }
+        //internal class BgsPlayerGlobalInfo
+        //{
+        //    public int EternalKnightsDeadThisGame { get; set; }
+        //    public int TavernSpellsCastThisGame { get; set; }
+        //    public int UndeadAttackBonus { get; set; }
+        //    public int FrostlingBonus { get; set; }
+        //    public int PiratesPlayedThisGame { get; set; }
+        //    public int PiratesSummonedThisGame { get; set; }
+        //    public int AstralAutomatonsSummonedThisGame { get; set; }
+        //    public int BloodGemAttackBonus { get; set; }
+        //    public int BloodGemHealthBonus { get; set; }
+        //    public int ChoralHealthBuff { get; set; }
+        //    public int ChoralAttackBuff { get; set; }
+        //    public int BeetleAttackBuff { get; set; }
+        //    public int BeetleHealthBuff { get; set; }
+        //    public int BattlecriesTriggeredThisGame { get; set; }
+        //    public int FriendlyMinionsDeadLastCombat { get; set; }
+        //}
 
         internal class QuestReward
         {
