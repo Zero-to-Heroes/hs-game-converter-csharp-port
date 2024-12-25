@@ -246,6 +246,7 @@ namespace HearthstoneReplays.Events
                     case BlackSoulstone: return BlackSoulstone;
                     case BlessingOfTheAncients_DAL_351: return BlessingOfTheAncients_DAL_351ts;
                     case BloodsailFlybooter: return BloodsailFlybooter_SkyPirateToken;
+                    case BobTheBartender_RecruitAMinionToken_BG31_BOBt2: return TheCoinCore;
                     case BoneBaron_CORE_ICC_065: return GrimNecromancer_SkeletonToken;
                     case BoneBaron_ICC_065: return GrimNecromancer_SkeletonToken;
                     case BookOfWonders: return DeckOfWonders_ScrollOfWonderToken;
