@@ -50,7 +50,8 @@ namespace HearthstoneReplays.Events.Parsers
             var opponent = StateFacade.OpponentPlayer;
             var player = StateFacade.LocalPlayer;
 
-            var playerBoard = BattlegroundsPlayerBoardParser.CreateProviderFromAction(player.PlayerId, player.Id, false, player, GameState, StateFacade);
+            // This event is in fact only used to give the app a timing to snapshot the teams
+            //var playerBoard = BattlegroundsPlayerBoardParser.CreateProviderFromAction(player.PlayerId, player.Id, false, player, GameState, StateFacade);
 
             GameState.BgsHasSentNextOpponent = false;
 
@@ -63,7 +64,7 @@ namespace HearthstoneReplays.Events.Parsers
                        Type = "BATTLEGROUNDS_ACTIVE_PLAYER_BOARD",
                        Value = new
                        {
-                           PlayerBoard = playerBoard,
+                           //PlayerBoard = playerBoard,
                        }
                    },
                    true,
