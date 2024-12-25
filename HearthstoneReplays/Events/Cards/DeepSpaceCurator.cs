@@ -33,7 +33,10 @@ namespace HearthstoneReplays.Events.Cards
                 .Where(e => e.Entity == playedEntityId)
                 .FirstOrDefault();
             var guessedTags = new List<Tag>();
-            guessedTags.Add(new Tag() { Name = (int)GameTag.COST, Value = showEntity.GetTag(GameTag.COST) });
+            if (showEntity != null)
+            {
+                guessedTags.Add(new Tag() { Name = (int)GameTag.COST, Value = showEntity.GetTag(GameTag.COST) });
+            }
             return guessedTags;
         }
     }
