@@ -150,6 +150,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var potentialHeroes = GameState.CurrentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                // Issue: when the player is a ghost, it can be in the REMOVEDFROMGAME zone
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 .Where(entity => entity.GetEffectiveController() == playerPlayerId)
                 // Here we accept to face the ghost
@@ -163,32 +164,21 @@ namespace HearthstoneReplays.Events.Parsers
 
             if (BgsUtils.IsBaconGhost(cardId) || (hero?.IsBaconBartender() ?? false))
             {
-                var linkedEntityId = hero.GetTag(GameTag.LINKED_ENTITY);
-                var linkedEntity = GameState.CurrentEntities.GetValueOrDefault(linkedEntityId);
+                // This can be weird. If we're in Duos, and the active fighter (our teammate) is a ghost, the LINKED_ENTITY links back
+                // to our own player entity, and not the teammate's??
+                //var linkedEntityId = hero.GetTag(GameTag.LINKED_ENTITY);
+                //var linkedEntity = GameState.CurrentEntities.GetValueOrDefault(linkedEntityId);
+                var heroesForTargetPlayerId = GameState.CurrentEntities.Values
+                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                    .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == playerId)
+                    .Where(entity => !entity.IsBaconBartender() && !entity.IsBaconEnchantment() && !entity.IsBaconGhost())
+                    .ToList();
+                var linkedEntity = heroesForTargetPlayerId.LastOrDefault();
                 if (linkedEntity != null)
                 {
-                    if (!linkedEntity.IsBaconBartender() && !linkedEntity.IsBaconGhost())
-                    {
-                        hero = linkedEntity;
-                        cardId = hero.CardId;
-                        playerId = hero.GetTag(GameTag.PLAYER_ID);
-                    }
-                    else
-                    {
-                        var heroesForTargetPlayerId = GameState.CurrentEntities.Values
-                            .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                            .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == playerId)
-                            .Where(entity => !entity.IsBaconBartender() && !entity.IsBaconEnchantment() && !entity.IsBaconGhost())
-                            .ToList();
-                        var candidate = heroesForTargetPlayerId.LastOrDefault();
-                        if (candidate != null)
-                        {
-                            hero = candidate;
-                            cardId = candidate.CardId;
-                            playerId = candidate.GetTag(GameTag.PLAYER_ID);
-                        }
-
-                    }
+                    hero = linkedEntity;
+                    cardId = hero.CardId;
+                    playerId = hero.GetTag(GameTag.PLAYER_ID);
                 }
                 //if (linkedEntityId == -1)
                 //{
