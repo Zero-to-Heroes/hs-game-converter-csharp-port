@@ -981,6 +981,33 @@ namespace HearthstoneReplays.Events
                         var result = plagueActionEntity?.CardId;
                         return result;
                     }
+                    // FateSplitter was implemented in POWER, but at least now (2025-01-06), it is in TRIGGER
+                    else if (actionEntity.CardId == VanessaVancleef_CORE_CS3_005
+                        || actionEntity.CardId == VanessaVancleefLegacy
+                        || actionEntity.CardId == FateSplitter)
+                    {
+                        var vanessaControllerId = gameState.CurrentEntities.GetValueOrDefault(actionEntity.Entity)?.GetController();
+                        var playerIds = gameState.CardsPlayedByPlayerEntityIdByTurn.Keys;
+                        foreach (var playerId in playerIds)
+                        {
+                            if (playerId != vanessaControllerId)
+                            {
+                                var cardsPlayedByOpponentByTurn = gameState.CardsPlayedByPlayerEntityIdByTurn[playerId];
+                                if (cardsPlayedByOpponentByTurn == null || cardsPlayedByOpponentByTurn.Count == 0)
+                                {
+                                    return null;
+                                }
+                                var cardsPlayedByOpponent = cardsPlayedByOpponentByTurn.SelectMany(entry => entry.Value).ToList();
+                                if (cardsPlayedByOpponent == null || cardsPlayedByOpponent.Count == 0)
+                                {
+                                    return null;
+                                }
+                                var lastCardPlayedByOpponentEntityId = cardsPlayedByOpponent.Last();
+                                var lastCardPlayedByOpponent = gameState.CurrentEntities.GetValueOrDefault(lastCardPlayedByOpponentEntityId);
+                                return lastCardPlayedByOpponent?.CardId;
+                            }
+                        }
+                    }
 
                     // Tamsin Roana
                     if (actionEntity != null && actionEntity.CardId == TamsinRoame_BAR_918)

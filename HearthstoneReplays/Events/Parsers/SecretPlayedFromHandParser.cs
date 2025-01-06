@@ -69,7 +69,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var creatorEntityCardId = GameState.CurrentEntities.ContainsKey(creatorEntityId)
                     ? GameState.CurrentEntities[creatorEntityId].CardId
                     : null;
-                System.Action preprocess = () => GameState.OnCardPlayed(tagChange.Entity);
+                GameState.OnCardPlayed(tagChange.Entity);
                 return new List<GameEventProvider> { GameEventProvider.Create(
                         tagChange.TimeStamp,
                         eventName,
@@ -84,8 +84,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 PlayerClass = playerClass,
                                 CreatorCardId = creatorEntityCardId,
                                 Cost = entity.GetTag(GameTag.COST, 0),
-                            },
-                            preprocess),
+                            }),
                        true,
                        node) };
             }
@@ -112,7 +111,7 @@ namespace HearthstoneReplays.Events.Parsers
                         var eventName = showEntity.GetTag(GameTag.SECRET) == 1
                             ? "SECRET_PLAYED"
                             : "QUEST_PLAYED";
-                        System.Action preprocess = () => GameState.OnCardPlayed(showEntity.Entity);
+                        GameState.OnCardPlayed(showEntity.Entity);
                         // For now there can only be one card played per block
                         return new List<GameEventProvider> { GameEventProvider.Create(
                             action.TimeStamp,
@@ -127,8 +126,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 new {
                                     PlayerClass = playerClass,
                                     Cost = showEntity.GetTag(GameTag.COST, 0),
-                                },
-                                preprocess),
+                                }),
                             true,
                             node) };
                     }
