@@ -134,6 +134,11 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var action = node.Object as Action;
             var entity = GameState.CurrentEntities.GetValueOrDefault(action.Entity);
+            // Time-Lost Protodrake is a Casts When Drawn minion...
+            if (entity.IsMinion())
+            {
+                return null;
+            }
             var cardId = entity?.CardId;
             var controllerId = entity.GetEffectiveController();
             var targetId = action?.Target ?? 0;
