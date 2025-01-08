@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Parser.ReplayData.Meta.Options;
 using HearthstoneReplays.Events;
+using HearthstoneReplays.Events.Parsers;
 
 namespace HearthstoneReplays
 {
@@ -103,12 +104,13 @@ namespace HearthstoneReplays
                 return new GameStateShort();
             }
 
-            var allEntities = gameState.CurrentEntities.Values.ToList();
+            var allEntities = gameState.CurrentEntities.Values.ToList();            
             var result = new GameStateShort()
             {
                 ActivePlayerId = gameState.GetActivePlayerId(),
                 Player = new GameStateShortPlayer()
                 {
+                    PlayerEntity = GameEvent.BuildPlayerEntity(parserState.getPlayers(), allEntities, parserState.Options, helper.LocalPlayer.PlayerId, gameState.CurrentEntities),
                     Hero = GameEvent.BuildHero(allEntities, parserState.Options, helper.LocalPlayer.PlayerId, gameState.CurrentEntities),
                     Weapon = GameEvent.BuildWeapon(allEntities, parserState.Options, helper.LocalPlayer.PlayerId, gameState.CurrentEntities),
                     Hand = GameEvent.BuildZone(allEntities, parserState.Options, Zone.HAND, helper.LocalPlayer.PlayerId, gameState.CurrentEntities),
@@ -118,6 +120,7 @@ namespace HearthstoneReplays
                 },
                 Opponent = new GameStateShortPlayer()
                 {
+                    PlayerEntity = GameEvent.BuildPlayerEntity(parserState.getPlayers(), allEntities, parserState.Options, helper.OpponentPlayer.PlayerId, gameState.CurrentEntities),
                     Hero = GameEvent.BuildHero(allEntities, parserState.Options, helper.OpponentPlayer.PlayerId, gameState.CurrentEntities),
                     Weapon = GameEvent.BuildWeapon(allEntities, parserState.Options, helper.OpponentPlayer.PlayerId, gameState.CurrentEntities),
                     Hand = GameEvent.BuildZone(allEntities, parserState.Options, Zone.HAND, helper.OpponentPlayer.PlayerId, gameState.CurrentEntities),
@@ -127,6 +130,19 @@ namespace HearthstoneReplays
                 }
             };
             return result;
+        }
+
+        private static GameStateShortSmallEntity BuildPlayerEntity(List<PlayerEntity> playerEntities, List<FullEntity> allEntities, Options options, int playerId, Dictionary<int, FullEntity> fullEntitiesMap)
+        {
+            var playerEntityId = playerEntities
+                .FirstOrDefault(e => e.PlayerId == playerId)
+                ?.GetTag(GameTag.ENTITY_ID);
+            var player = allEntities
+                .Where(e => e.Entity == playerEntityId)
+                .Select(entity => BuildSmallEntity(entity, options, fullEntitiesMap, allEntities))
+                .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
+                .FirstOrDefault();
+            return player ?? new GameStateShortSmallEntity();
         }
 
         private static GameStateShortSmallEntity BuildHero(List<FullEntity> allEntities, Options options, int playerId, Dictionary<int, FullEntity> fullEntitiesMap)

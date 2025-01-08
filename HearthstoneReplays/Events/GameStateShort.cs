@@ -17,6 +17,7 @@ namespace HearthstoneReplays.Events
 
     public class GameStateShortPlayer
     {
+        public GameStateShortSmallEntity PlayerEntity { get; set; }
         public GameStateShortSmallEntity Hero { get; set; }
         public GameStateShortSmallEntity Weapon { get; set; }
         public List<GameStateShortSmallEntity> Hand { get; set; }
