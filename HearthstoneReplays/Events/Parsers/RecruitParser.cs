@@ -57,7 +57,10 @@ namespace HearthstoneReplays.Events.Parsers
                         cardId,
                         controllerId,
                         entity.Id,
-                        StateFacade),
+                        StateFacade,
+                        new {
+                            Tags = entity.Tags,
+                        }),
                     true,
                     node) };
             }
@@ -78,7 +81,10 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId,
                     controllerId,
                     showEntity.Entity,
-                    StateFacade),
+                    StateFacade,
+                    new {
+                        Tags = showEntity.Tags,
+                    }),
                 true,
                 node) };
         }
