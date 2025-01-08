@@ -3,6 +3,7 @@ using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using HearthstoneReplays.Parser.ReplayData.Meta;
+using System.Runtime.Remoting.Messaging;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -33,6 +34,7 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var choice = node.Object as Choice;
+            // Why use Ptl here? 
             var ptlState = StateFacade.PtlState.GameState;
             var keyInGS = GameState.CurrentEntities.ContainsKey(choice.Entity);
             // Special case for Sphere of Sapience, as the corresponding block is not properly closed
@@ -51,36 +53,51 @@ namespace HearthstoneReplays.Events.Parsers
             var originalEntity = isCopy ? ptlState.CurrentEntities[chosenEntity.GetTag(GameTag.LINKED_ENTITY)] : null;
             var controllerId = chosenEntity.GetEffectiveController();
 
-            var creatorEntityId = chosenEntity.GetTag(GameTag.CREATOR);
-            var creatorEntity = ptlState.CurrentEntities.ContainsKey(creatorEntityId) ? ptlState.CurrentEntities[creatorEntityId] : null;
-            var creatorCardId = creatorEntity?.CardId;
-
-            if (creatorCardId == CardIds.SuspiciousPirate 
-                || creatorCardId == CardIds.SuspiciousAlchemist 
-                || creatorCardId == CardIds.SuspiciousUsher 
-                || creatorCardId == CardIds.SuspiciousPeddler)
-            {
-                creatorEntity.KnownEntityIds.Add(chosenEntity.Id);
-            }
-
             return new List<GameEventProvider> { GameEventProvider.Create(
                 choice.TimeStamp,
                 "ENTITY_CHOSEN",
-                GameEvent.CreateProvider(
-                    "ENTITY_CHOSEN",
-                    chosenEntity.CardId,
-                    controllerId,
-                    chosenEntity.Id,
-                    StateFacade,
-                    //null,
-                    new {
-                        OriginalEntityId = originalEntity?.Id,
-                        Context = new
+                () =>
+                {
+                    var gsChosenEntity = GameState.CurrentEntities.GetValueOrDefault(choice.Entity);
+                    // Because when the opponent Discovers, the CREATOR tag is set right AFTER the discover, so we need to wait a little bit
+                    var creatorEntityId = gsChosenEntity.GetTag(GameTag.CREATOR);
+                    // When opponent discovers
+                    if (creatorEntityId == -1)
+                    {
+                        creatorEntityId = gsChosenEntity.GetTag(GameTag.DISPLAYED_CREATOR);
+                    }
+                    var creatorEntity = ptlState.CurrentEntities.ContainsKey(creatorEntityId) ? ptlState.CurrentEntities[creatorEntityId] : null;
+                    var creatorCardId = creatorEntity?.CardId;
+
+                    if (creatorCardId == CardIds.SuspiciousPirate
+                        || creatorCardId == CardIds.SuspiciousAlchemist
+                        || creatorCardId == CardIds.SuspiciousUsher
+                        || creatorCardId == CardIds.SuspiciousPeddler)
+                    {
+                        creatorEntity.KnownEntityIds.Add(chosenEntity.Id);
+                    }
+
+                    return new GameEvent
+                    {
+                        Type = "ENTITY_CHOSEN",
+                        Value = new
                         {
-                            CreatorEntityId = creatorEntityId,
-                            CreatorCardId = creatorCardId,
+                            CardId = chosenEntity.CardId,
+                            ControllerId = controllerId,
+                            LocalPlayer = StateFacade.LocalPlayer,
+                            OpponentPlayer = StateFacade.OpponentPlayer,
+                            EntityId = chosenEntity.Id,
+                            AdditionalProps =  new {
+                                OriginalEntityId = originalEntity?.Id,
+                                Context = new
+                                {
+                                    CreatorEntityId = creatorEntityId,
+                                    CreatorCardId = creatorCardId,
+                                }
+                            }
                         }
-                    }),
+                    };
+                },
                 true,
                 node) };
         }
