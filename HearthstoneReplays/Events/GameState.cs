@@ -426,7 +426,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             //return activePlayerEntity?.PlayerId ?? -1;
         }
 
-        public void OnCardPlayed(int entityId, int? targetEntityId = null)
+        public void OnCardPlayed(int entityId, int? targetEntityId = null, FullEntity fullEntity = null)
         {
             LastCardPlayedEntityId = entityId;
             if (CurrentEntities.ContainsKey(entityId))
@@ -435,7 +435,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 var currentEntitiesCopy = new List<FullEntity>(CurrentEntities.Values);
 
                 // Add it to each owner
-                var playedEntity = CurrentEntities[entityId];
+                var playedEntity = fullEntity ?? CurrentEntities[entityId];
 
                 // Populate the list of each card played by each player, for each turn
                 var cardsForPlayerByTurn = !CardsPlayedByPlayerEntityIdByTurn.ContainsKey(playedEntity.GetController())

@@ -275,6 +275,7 @@ namespace HearthstoneReplays.Events
                     new ConstructedAnomalyParser(ParserState, StateFacade),
                     new TouristRevealedParser(ParserState, StateFacade),
                     new ParentCardChangedParser(ParserState, StateFacade),
+                    new StarshipLaunchedParser(ParserState, StateFacade),
 
 
                     new CardForgedParser(ParserState, StateFacade),

@@ -211,5 +211,15 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         {
             return GetTag(GameTag.STARSHIP_PIECE) == 1;
         }
+
+        internal static FullEntity FromShowEntity(ShowEntity showEntity)
+        {
+            return new FullEntity()
+            {
+                CardId = showEntity.CardId,
+                Entity = showEntity.Entity,
+                Tags = showEntity.Tags,
+            };
+        }
     }
 }

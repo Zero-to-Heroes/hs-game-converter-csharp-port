@@ -170,8 +170,8 @@ namespace HearthstoneReplays.Events.Parsers
                     .FirstOrDefault(e => e.GetTag(GameTag.CREATOR) == showEntity.Entity && e.GetTag(GameTag.MAGNETIC) == 1);
                 var magnetized = magnetizedTo != null;
 
-
-                GameState.OnCardPlayed(showEntity.Entity, targetId);
+                FullEntity fullEntity = FullEntity.FromShowEntity(showEntity);
+                GameState.OnCardPlayed(showEntity.Entity, targetId, fullEntity: fullEntity);
                 // For now there can only be one card played per block
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,

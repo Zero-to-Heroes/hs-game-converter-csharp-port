@@ -310,6 +310,7 @@ namespace HearthstoneReplays.Events
                     case EliteTaurenChampion_MoltenPickOfRockToken: return EliteTaurenChampion_MoltenPickOfRockToken;
                     case EliteTaurenChampion: return EliteTaurenChampion_MoltenPickOfRockToken;
                     case EncumberedPackMule: return EncumberedPackMule;
+                    case Roach_SC_012: return Roach_SC_012;
                     case ExcavatedEvil: return ExcavatedEvil;
                     case ExploreUngoro: return ExploreUngoro_ChooseYourPathToken;
                     case ExtraArms: return ExtraArms_MoreArmsToken;
@@ -483,6 +484,7 @@ namespace HearthstoneReplays.Events
                     case SoulShear_SCH_701: return SchoolSpirits_SoulFragmentToken;
                     case SparkDrill_BOT_102: return SparkDrill_SparkToken;
                     case SparkEngine: return SparkDrill_SparkToken;
+                    case SpawningPool_SC_000: return Zergling_SC_010;
                     case SpiritJailer_SCH_700: return SchoolSpirits_SoulFragmentToken;
                     case SpiritOfTheBadlands_WW_337: return SpiritOfTheBadlands_MirageToken_WW_337t;
                     case Springpaw_CORE_TRL_348: return Springpaw_LynxToken;
