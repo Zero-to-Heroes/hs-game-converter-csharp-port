@@ -255,6 +255,7 @@ namespace HearthstoneReplays.Events
                     case BoomWrench_TOY_604: return BoomWrench_BoomWrenchToken_TOY_604t;
                     case BountyWrangler_WW_363: return TheCoinCore;
                     case BringOnRecruitsTavernBrawl: return SilverHandRecruitLegacyToken;
+                    case BroodQueen_SC_003: return BroodQueen_LarvaToken_SC_003t;
                     case BronzeHerald: return BronzeHerald_BronzeDragonToken;
                     case BuildASnowman_BuildASnowbruteToken: return BuildASnowman_BuildASnowgreToken;
                     case BuildASnowman: return BuildASnowman_BuildASnowbruteToken;
