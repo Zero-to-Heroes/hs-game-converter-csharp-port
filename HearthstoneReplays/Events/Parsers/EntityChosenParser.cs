@@ -4,6 +4,7 @@ using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using HearthstoneReplays.Parser.ReplayData.Meta;
 using System.Runtime.Remoting.Messaging;
+using System.Linq;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -60,11 +61,11 @@ namespace HearthstoneReplays.Events.Parsers
                 {
                     var gsChosenEntity = GameState.CurrentEntities.GetValueOrDefault(choice.Entity);
                     // Because when the opponent Discovers, the CREATOR tag is set right AFTER the discover, so we need to wait a little bit
-                    var creatorEntityId = gsChosenEntity.GetTag(GameTag.CREATOR);
+                    var creatorEntityId = gsChosenEntity?.GetTag(GameTag.CREATOR) ?? -1;
                     // When opponent discovers
                     if (creatorEntityId == -1)
                     {
-                        creatorEntityId = gsChosenEntity.GetTag(GameTag.DISPLAYED_CREATOR);
+                        creatorEntityId = gsChosenEntity?.GetTag(GameTag.DISPLAYED_CREATOR) ?? -1;
                     }
                     var creatorEntity = ptlState.CurrentEntities.ContainsKey(creatorEntityId) ? ptlState.CurrentEntities[creatorEntityId] : null;
                     var creatorCardId = creatorEntity?.CardId;
@@ -99,7 +100,9 @@ namespace HearthstoneReplays.Events.Parsers
                     };
                 },
                 true,
-                node) };
+                node, 
+                null,
+                waitFor: 400) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
