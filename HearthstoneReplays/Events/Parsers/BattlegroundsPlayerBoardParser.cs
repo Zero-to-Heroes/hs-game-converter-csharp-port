@@ -265,6 +265,8 @@ namespace HearthstoneReplays.Events.Parsers
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
                     .ToList();
+                var shouldStop = hand.Any(e => e.Entity == 25265);
+                var previousHand = hand;
                 if (isOpponent)
                 {
                     // Look for all the cards that are in hand at the start of the fight, and that are "copied" by bassgil
@@ -280,22 +282,7 @@ namespace HearthstoneReplays.Events.Parsers
                         .ToList();
                     hand = revealedHand;
                 }
-                var debug = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetEffectiveController() == playerPlayerId)
-                    .ToList();
-                var heroPower = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetEffectiveController() == playerPlayerId)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER)
-                    .Select(entity => entity.Clone())
-                    .FirstOrDefault();
-                if (heroPower == null)
-                {
-                    var debugHP = hero.Entity == 12613;
-                    Logger.Log("WARNING: could not find hero power", "");
-                }
-                var heroPowerUsed = heroPower?.GetTag(GameTag.BACON_HERO_POWER_ACTIVATED) == 1;
-                string heroPowerCreatedEntity = null;
+
                 var finalBoard = board.Select(entity => AddEchantments(GameState.CurrentEntities, entity)).ToList();
                 if (finalBoard.Count > 7)
                 {
@@ -337,16 +324,48 @@ namespace HearthstoneReplays.Events.Parsers
 
                 BgsPlayerGlobalInfo globalInfo = BuildGlobalInfo(playerPlayerId, playerEntityId, finalBoard, GameState, StateFacade);
 
+
+                var heroPowerEntities = GameState.CurrentEntities.Values
+                    .Where(entity => entity.GetEffectiveController() == playerPlayerId)
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER)
+                    .Select(entity => entity.Clone())
+                    .ToList();
+                //.FirstOrDefault();
+                if (heroPowerEntities.Count == 0)
+                {
+                    Logger.Log("WARNING: could not find hero power", "");
+                }
+                List<BgsHeroPower> heroPowers = heroPowerEntities
+                    .Select(hp => new BgsHeroPower()
+                    {
+                        CardId = hp?.CardId,
+                        EntityId = hp?.Entity ?? -1,
+                        Used = hp?.GetTag(GameTag.BACON_HERO_POWER_ACTIVATED) == 1,
+                        Info = hp?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0,
+                        Info2 = hp?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2) ?? 0,
+                        CreatedEntity = null,
+                    })
+                    .ToList();
+                var heroPower = heroPowerEntities.FirstOrDefault();
+
+                var heroPowerUsed = heroPower?.GetTag(GameTag.BACON_HERO_POWER_ACTIVATED) == 1;
+                string heroPowerCreatedEntity = null;
                 // String or int
                 dynamic heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
                 var heroPowerInfo2 = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2) ?? 0;
-                UpdateEmbraceYourRageTarget(StateFacade, heroPowerUsed, heroPower?.CardId, heroPower?.Entity, (newValue) => heroPowerInfo = newValue);
                 int heroPowerInfoAsInt = heroPowerInfo is int intValue ? intValue : 0;
-                UpdateRebornRitesTarget(StateFacade, heroPowerUsed, heroPower?.CardId, heroPower?.Entity, heroPowerInfoAsInt, (newValue) => heroPowerInfo = newValue);
+
+                var currentEntities = GameState.CurrentEntities.Values.ToList();
+
+                var debug = finalBoard.Any(e => e.Entity == 11974);
+                UpdateEmbraceYourRageTarget(StateFacade, heroPowers);
+                UpdateRebornRitesTarget(StateFacade, heroPowers);
 
                 return new PlayerBoard()
                 {
                     Hero = hero,
+                    HeroPowers = heroPowers,
                     HeroPowerCardId = heroPower?.CardId,
                     HeroPowerEntityId = heroPower?.Entity ?? -1,
                     HeroPowerUsed = heroPowerUsed,
@@ -401,6 +420,8 @@ namespace HearthstoneReplays.Events.Parsers
             var frostlingBonus = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, currentEntities);
             var piratesPlayedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_PIRATES_PLAYED_THIS_GAME, currentEntities);
             var piratesSummonedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_PIRATES_SUMMONED_THIS_GAME, currentEntities);
+            var beastsSummonedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_BEASTS_SUMMONED_THIS_GAME, currentEntities);
+            var magnetizedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_NUM_MAGNETIZE_THIS_GAME, currentEntities);
             var bloodGemEnchant = currentEntities
                 .Where(entity => entity.GetEffectiveController() == playerId)
                 // Don't use the PLAY zone, as it could cause issues with teammate state in Duos? To be tested
@@ -427,6 +448,8 @@ namespace HearthstoneReplays.Events.Parsers
                 UndeadAttackBonus = undeadAttackBonus,
                 FrostlingBonus = frostlingBonus,
                 PiratesSummonedThisGame = piratesSummonedThisGame,
+                BeastsSummonedThisGame = beastsSummonedThisGame,
+                MagnetizedThisGame = magnetizedThisGame,
                 AstralAutomatonsSummonedThisGame = astralAutomatonBonus,
                 PiratesPlayedThisGame = piratesPlayedThisGame,
                 BloodGemAttackBonus = bloodGemAttackBonus,
@@ -441,38 +464,47 @@ namespace HearthstoneReplays.Events.Parsers
             };
         }
 
-        internal static void UpdateEmbraceYourRageTarget(
-            StateFacade stateFacade, bool heroPowerUsed, string heroPowerCardId, int? heroPowerEntityId, Action<dynamic> assignHeroPowerInfo)
+        internal static void UpdateEmbraceYourRageTarget(StateFacade stateFacade, List<BgsHeroPower> heroPowers)
         {
-            if (heroPowerUsed && heroPowerCardId == CardIds.EmbraceYourRage)
+            foreach (var heroPower in heroPowers)
             {
-                var createdEntity = stateFacade.GsState.GameState.CurrentEntities.Values
-                    .Where(e => e.GetTag(GameTag.CREATOR) == heroPowerEntityId)
-                    .Where(e => e.GetCardType() == (int)CardType.MINION)
-                    .Reverse()
-                    .FirstOrDefault();
-                assignHeroPowerInfo.Invoke(createdEntity?.CardId);
+                bool heroPowerUsed = heroPower.Used;
+                string heroPowerCardId = heroPower.CardId;
+                int? heroPowerEntityId = heroPower.EntityId;
+                if (heroPowerUsed && heroPowerCardId == CardIds.EmbraceYourRage)
+                {
+                    var createdEntity = stateFacade.GsState.GameState.CurrentEntities.Values
+                        .Where(e => e.GetTag(GameTag.CREATOR) == heroPowerEntityId)
+                        .Where(e => e.GetCardType() == (int)CardType.MINION)
+                        .Reverse()
+                        .FirstOrDefault();
+                    heroPower.Info = createdEntity?.CardId;
+                    return;
+                }
             }
         }
 
-        internal static void UpdateRebornRitesTarget(
-            StateFacade stateFacade, bool heroPowerUsed, string heroPowerCardId, int? heroPowerEntityId, int heroPowerInfo, Action<dynamic> assignHeroPowerInfo)
+        internal static void UpdateRebornRitesTarget(StateFacade stateFacade, List<BgsHeroPower> heroPowers)
         {
-            if (heroPowerUsed && heroPowerCardId == CardIds.RebornRites && heroPowerInfo <= 0)
+            foreach (var heroPower in heroPowers)
             {
-                Action lastActionTrigger = stateFacade.GsState.CurrentGame
-                    .GetLastAction(action => action.Type == (int)BlockType.TRIGGER && action.Entity == heroPowerEntityId);
-                //Action lastActionTrigger = stateFacade.GsState.CurrentGame.FilterGameData(typeof(Action))
-                //    .Select(action => action as Action)
-                //    .Where(action => action.Type == (int)BlockType.TRIGGER && action.Entity == heroPowerEntityId)
-                //    .LastOrDefault();
-                if (lastActionTrigger != null)
+                bool heroPowerUsed = heroPower.Used;
+                string heroPowerCardId = heroPower.CardId;
+                int? heroPowerEntityId = heroPower.EntityId;
+                int heroPowerInfo = heroPower.Info is int intValue ? intValue : 0;
+                if (heroPowerUsed && heroPowerCardId == CardIds.RebornRites && heroPowerInfo <= 0)
                 {
-                    var metaBlock = lastActionTrigger.Data.Where(d => d is MetaData).Select(m => m as MetaData).FirstOrDefault();
-                    var targetEntityId = metaBlock?.MetaInfo?.FirstOrDefault()?.Entity;
-                    if (targetEntityId != null && targetEntityId > 0)
+                    var heroPowerEntity = stateFacade.PtlState.GameState.CurrentEntities.GetValueOrDefault(heroPowerEntityId ?? -1);
+                    if (heroPowerEntity == null)
                     {
-                        assignHeroPowerInfo.Invoke(targetEntityId);
+                        return;
+                    }
+
+                    var targetEntityId = heroPowerEntity.GetTag(GameTag.CARD_TARGET);
+                    if (targetEntityId > 0)
+                    {
+                        heroPower.Info = targetEntityId;
+                        return;
                     }
                 }
             }
@@ -569,6 +601,8 @@ namespace HearthstoneReplays.Events.Parsers
             OverrideTagWithHistory(clone, GameTag.ATK);
             OverrideTagWithHistory(clone, GameTag.LITERALLY_UNPLAYABLE);
             OverrideTagWithHistory(clone, GameTag.UNPLAYABLE_VISUALS);
+            OverrideTagWithHistory(clone, GameTag.DIVINE_SHIELD);
+            OverrideTagWithHistory(clone, GameTag.VENOMOUS);
 
             var enchantments = StateFacade.GsState.GameState.CurrentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.ATTACHED) == id)
@@ -651,6 +685,7 @@ namespace HearthstoneReplays.Events.Parsers
         internal class PlayerBoard
         {
             public FullEntity Hero { get; set; }
+            public List<BgsHeroPower> HeroPowers { get; set; }
             public string HeroPowerCardId { get; set; }
             public int HeroPowerEntityId { get; set; }
             public bool HeroPowerUsed { get; set; }
@@ -671,6 +706,16 @@ namespace HearthstoneReplays.Events.Parsers
             public BgsPlayerGlobalInfo GlobalInfo { get; set; }
         }
 
+        internal class BgsHeroPower
+        {
+            public string CardId { get; set; }
+            public int EntityId { get; set; }
+            public bool Used { get; set; }
+            public dynamic Info { get; set; }
+            public int Info2 { get; set; }
+            public string CreatedEntity { get; set; }
+        }
+
         internal class BgsPlayerBoardEntity
         {
             public string CardId;
@@ -687,6 +732,7 @@ namespace HearthstoneReplays.Events.Parsers
             public int TavernSpellsCastThisGame { get; set; }
             public int PiratesPlayedThisGame { get; set; }
             public int PiratesSummonedThisGame { get; set; }
+            public int BeastsSummonedThisGame { get; set; }
             public int UndeadAttackBonus { get; set; }
             public int FrostlingBonus { get; set; }
             public int AstralAutomatonsSummonedThisGame { get; set; }
@@ -698,6 +744,7 @@ namespace HearthstoneReplays.Events.Parsers
             public int BeetleHealthBuff { get; set; }
             public int BattlecriesTriggeredThisGame { get; set; }
             public int FriendlyMinionsDeadLastCombat { get; set; }
+            public int MagnetizedThisGame { get; set; }
             public int SanlaynScribesDeadThisGame { get; set; }
         }
 

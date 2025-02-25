@@ -258,6 +258,8 @@ namespace HearthstoneReplays.Events.Parsers
                 // Looks like the enchantment isn't used anymore, at least for the opponent?
                 var frostlingBonus = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, GameState);
                 var piratesSummonedThisGame = GetPlayerTag(player.Id, GameTag.BACON_PIRATES_SUMMONED_THIS_GAME, GameState);
+                var beastsSummonedThisGame = GetPlayerTag(player.Id, GameTag.BACON_BEASTS_SUMMONED_THIS_GAME, GameState);
+                var magnetizedThisGame = GetPlayerTag(player.Id, GameTag.BACON_NUM_MAGNETIZE_THIS_GAME, GameState);
                 var astralAutomatonBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.AstralAutomatonPlayerEnchantDntEnchantment_BG_TTN_401pe, GameState);
                 var bloodGemEnchant = currentEntities
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
@@ -314,6 +316,8 @@ namespace HearthstoneReplays.Events.Parsers
                         UndeadAttackBonus = undeadAttackBonus,
                         FrostlingBonus = frostlingBonus,
                         PiratesSummonedThisGame = piratesSummonedThisGame,
+                        BeastsSummonedThisGame = beastsSummonedThisGame,
+                        MagnetizedThisGame = magnetizedThisGame,
                         AstralAutomatonsSummonedThisGame = astralAutomatonBonus,
                         BloodGemAttackBonus = bloodGemAttackBonus,
                         BloodGemHealthBonus = bloodGemHealthBonus,
@@ -452,7 +456,6 @@ namespace HearthstoneReplays.Events.Parsers
 
         internal static List<Enchantment> BuildAdditionalEnchantments(FullEntity fullEntity, List<FullEntity> enchantmentEntities, Dictionary<int, FullEntity> currentEntities)
         {
-            var debug = fullEntity.Entity == 8608;
             return enchantmentEntities
                 .Where(e => e.CardId == PolarizingBeatboxer_PolarizedEnchantment || e.CardId == ClunkerJunker_ClunkyEnchantment_BG29_503e)
                 .Select(e =>
