@@ -265,7 +265,8 @@ namespace HearthstoneReplays.Events.Parsers
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
                     .ToList();
-                var shouldStop = hand.Any(e => e.Entity == 25265);
+                var debugEntity = GameState.CurrentEntities.GetValueOrDefault(25377);
+                var debugHero = GameState.CurrentEntities.GetValueOrDefault(25812);
                 var previousHand = hand;
                 if (isOpponent)
                 {
@@ -473,7 +474,8 @@ namespace HearthstoneReplays.Events.Parsers
                 int? heroPowerEntityId = heroPower.EntityId;
                 if (heroPowerUsed && heroPowerCardId == CardIds.EmbraceYourRage)
                 {
-                    var createdEntity = stateFacade.GsState.GameState.CurrentEntities.Values
+                    var entities = stateFacade.GsState.GameState.CurrentEntities.Values.ToList();
+                    var createdEntity = entities
                         .Where(e => e.GetTag(GameTag.CREATOR) == heroPowerEntityId)
                         .Where(e => e.GetCardType() == (int)CardType.MINION)
                         .Reverse()

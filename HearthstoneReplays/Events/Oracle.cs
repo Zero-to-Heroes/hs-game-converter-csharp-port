@@ -486,11 +486,12 @@ namespace HearthstoneReplays.Events
                     case SparkDrill_BOT_102: return SparkDrill_SparkToken;
                     case SparkEngine: return SparkDrill_SparkToken;
                     case SpawningPool_SC_000: return Zergling_SC_010;
+                    case SpiritGatherer_EDR_871: return WispToken_EDR_851t;
                     case SpiritJailer_SCH_700: return SchoolSpirits_SoulFragmentToken;
                     case SpiritOfTheBadlands_WW_337: return SpiritOfTheBadlands_MirageToken_WW_337t;
                     case Springpaw_CORE_TRL_348: return Springpaw_LynxToken;
                     case Springpaw_TRL_348: return Springpaw_LynxToken;
-                    case StaffOfAmmunae_ULDA_041: return StaffOfAmmunae_ULDA_041ts;
+                    case StaffOfAmmunae_ULDA_041: return StaffOfAmmunae_ULDA_041ts; 
                     case Starseeker_ULDA_Elise_HP3: return MoonfireLegacy;
                     case Starshooter_WW_813: return ArcaneShotLegacy_DS1_185;
                     case SteamSurger: return FlameGeyser;
@@ -608,6 +609,12 @@ namespace HearthstoneReplays.Events
                             {
                                 XortothBreakerOfStars_StarOfConclusionToken_GDB_118t2,
                                 XortothBreakerOfStars_StarOfOriginationToken_GDB_118t,
+                            });
+                    case StellarBalance_EDR_874:
+                        return AddMultipleKnownCards(gameState, node, new List<string>()
+                            {
+                                MoonfireLegacy,
+                                StarfireLegacy,
                             });
                     //case YrelBeaconOfHope_GDB_141:
                     //    return AddMultipleKnownCards(gameState, node, new List<string>()

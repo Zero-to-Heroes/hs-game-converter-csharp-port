@@ -6,6 +6,7 @@ using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -50,6 +51,10 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities[tagChange.Entity];
+            if (entity.GetTag(GameTag.SECRET_HAS_TRIGGERED) == 1)
+            {
+                return null;
+            }
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
@@ -73,6 +78,12 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
             var showEntity = node.Object as ShowEntity;
+            var entity = GameState.CurrentEntities.GetValueOrDefault(showEntity.Entity);
+            if (entity == null || entity.GetTag(GameTag.SECRET_HAS_TRIGGERED) == 1)
+            {
+                return null;
+            }
+
             var cardId = showEntity.CardId;
             var controllerId = showEntity.GetTag(GameTag.CONTROLLER);
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);

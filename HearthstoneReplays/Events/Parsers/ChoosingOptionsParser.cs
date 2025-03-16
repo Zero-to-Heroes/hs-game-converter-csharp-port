@@ -39,10 +39,30 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return null;
             }
+            // Dark gifts show the "dark gift" as the source of the choices, instead of the entity that triggers the choices
+            var isDarkGift = sourceEntity.CardId == CardIds.DarkGiftToken_EDR_102t;
+            if (isDarkGift)
+            {
+                var creatorEntityId = sourceEntity.GetTag(GameTag.CREATOR);
+                var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creatorEntityId);
+                if (creatorEntity != null)
+                {
+                    sourceEntity = creatorEntity;
+                }
+            }
 
             var controllerId = sourceEntity.GetEffectiveController();
             var options = choices.ChoiceList?.Select(c => {
                 var optionEntity = GameState.CurrentEntities.GetValueOrDefault(c.Entity);
+                // Dark gift
+                if (isDarkGift && optionEntity.GetTag(GameTag.TAG_SCRIPT_DATA_ENT_1) != -1)
+                {
+                    var referencedEntity = GameState.CurrentEntities.GetValueOrDefault(optionEntity.GetTag(GameTag.TAG_SCRIPT_DATA_ENT_1));
+                    if (referencedEntity != null)
+                    {
+                        optionEntity = referencedEntity;
+                    }
+                }
                 var rewardEntityId = optionEntity.GetTag(GameTag.TAG_SCRIPT_DATA_ENT_1);
                 var rewardEntity = GameState.CurrentEntities.GetValueOrDefault(rewardEntityId);
                 var rewardCardId = rewardEntity?.CardId;

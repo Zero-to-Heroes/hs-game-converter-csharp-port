@@ -199,6 +199,7 @@ namespace HearthstoneReplays.Events
                     new SecretCreatedInGameParser(ParserState, StateFacade),
                     new SecretDestroyedParser(ParserState, StateFacade),
                     new ArmorChangeParser(ParserState, StateFacade),
+                    new MaxResourcesChangedParser(ParserState, StateFacade),
                     new ExcavateTierChangedParser(ParserState, StateFacade),
                     new CardStolenParser(ParserState, StateFacade),
                     new SecretTriggeredParser(ParserState, StateFacade),

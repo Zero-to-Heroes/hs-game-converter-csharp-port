@@ -37,6 +37,8 @@ namespace HearthstoneReplays.Parser
 
         private DateTime previousTimestamp;
 
+        private List<string> processedLines = new List<string>();
+
         public ReplayParser()
         {
             State = new CombinedState();
@@ -91,6 +93,7 @@ namespace HearthstoneReplays.Parser
 
         public void ReadLine(string line, long gameSeed)
         {
+            //processedLines.Add(line);
             // Ignore timestamps when catching up with past events
             //if (line == "START_CATCHING_UP")
             //{

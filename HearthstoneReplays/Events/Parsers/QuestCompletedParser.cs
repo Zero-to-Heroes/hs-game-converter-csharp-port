@@ -47,6 +47,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 var parentAction = (node.Parent.Object as Parser.ReplayData.GameActions.Action);
                 //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
+                entity.SetTag(GameTag.SECRET_HAS_TRIGGERED, 1);
                 return new List<GameEventProvider> {
                     GameEventProvider.Create(
                         action.TimeStamp,
