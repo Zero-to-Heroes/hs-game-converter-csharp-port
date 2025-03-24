@@ -77,6 +77,7 @@ namespace HearthstoneReplays
             {
                 try
                 {
+                    // If we have a "create_game" log and no game seed, we defer
                     var gameSeed = parser.ExtractGameSeed(logLines);
                     Array.ForEach(logLines, logLine => parser.ReadLine(logLine, gameSeed));
                     callback(null);

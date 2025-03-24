@@ -38,6 +38,7 @@ namespace HearthstoneReplays.Parser
         private DateTime previousTimestamp;
 
         private List<string> processedLines = new List<string>();
+        private long CurrentGameSeed;
 
         public ReplayParser()
         {
@@ -77,9 +78,14 @@ namespace HearthstoneReplays.Parser
             {
                 string[] processedLines = lines.ToList().GetRange(i, Math.Min(chunkSize, lines.Length - i)).ToArray();
                 var gameSeed = ExtractGameSeed(processedLines);
+                Logger.Log($"Extracted game seed = {gameSeed}", "");
+                if (gameSeed > 0)
+                {
+                    this.CurrentGameSeed = gameSeed;
+                }
                 foreach (var line in processedLines)
                 {
-                    ReadLine(line, gameSeed);
+                    ReadLine(line, this.CurrentGameSeed);
                 }
             }
         }
@@ -93,6 +99,10 @@ namespace HearthstoneReplays.Parser
 
         public void ReadLine(string line, long gameSeed)
         {
+            if (gameSeed != 0)
+            {
+                this.CurrentGameSeed = gameSeed;
+            }
             //processedLines.Add(line);
             // Ignore timestamps when catching up with past events
             //if (line == "START_CATCHING_UP")
@@ -267,17 +277,38 @@ namespace HearthstoneReplays.Parser
         public long ExtractGameSeed(string[] lines)
         {
             string pattern = @"tag=GAME_SEED value=(\d+)";
-            var firstLines = lines.Take(40).ToArray();
+            var firstLines = lines
+                //.Take(40)
+                .ToArray();
+            var lastLine = firstLines.Last();
+            bool isGameCreation = false;
+            //Logger.Log($"Last line for seed extraction", lastLine);
             foreach (var line in firstLines)
             {
+                if (line.Contains("CREATE_GAME"))
+                {
+                    isGameCreation = true;
+                }
+                if (!line.Contains("GAME_SEED"))
+                {
+                    continue;
+                }
+
                 Match match = Regex.Match(line, pattern);
                 if (match.Success)
                 {
                     string someValue = match.Groups[1].Value;
+                    Logger.Log($"Extracted seed", someValue);
                     return long.Parse(someValue);
                 }
             }
-            return 0;
+            // Special status if this includes a CREATE_GAME log but doesn't have the game seed, because
+            // this will cause issues when trying to spot a reconnect
+            if (isGameCreation)
+            {
+                Logger.Log($"CREATE_GAME without seed", lastLine);
+            }
+            return isGameCreation ? -1 : 0;
         }
     }
 }

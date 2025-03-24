@@ -119,6 +119,7 @@ namespace HearthstoneReplays.Events.Parsers
             // This seems the most reliable way to have the combat_start event as soon as possible
             if (StateFacade.IsBattlegrounds())
             {
+                var visualBoardState = GameState.GetGameEntity()?.GetTag(GameTag.BOARD_VISUAL_STATE);
                 if (newTurnValue % 2 == 0)
                 {
                     GameState.BattleResultSent = false;
@@ -133,6 +134,7 @@ namespace HearthstoneReplays.Events.Parsers
                             {
                                 Turn = newTurnValue,
                                 Heroes = heroes,
+                                VisualBoardState = visualBoardState,
                             }
                         },
                         false,
@@ -151,6 +153,7 @@ namespace HearthstoneReplays.Events.Parsers
                             {
                                 Turn = newTurnValue,
                                 Heroes = heroes,
+                                VisualBoardState = visualBoardState,
                             }
                         },
                         false,
@@ -190,6 +193,50 @@ namespace HearthstoneReplays.Events.Parsers
                 // game client-side) is processed
                 StateFacade.Spectating,
                 node));
+            // This seems the most reliable way to have the combat_start event as soon as possible
+            if (StateFacade.IsBattlegrounds())
+            {
+                var visualBoardState = GameState.GetGameEntity()?.GetTag(GameTag.BOARD_VISUAL_STATE);
+                if (currentTurn % 2 == 0)
+                {
+                    GameState.BattleResultSent = false;
+                    var heroes = BuildHeroes(GameState);
+                    result.Add(GameEventProvider.Create(
+                        gameEntity.TimeStamp,
+                        "BATTLEGROUNDS_COMBAT_START",
+                        () => new GameEvent
+                        {
+                            Type = "BATTLEGROUNDS_COMBAT_START",
+                            Value = new
+                            {
+                                Turn = currentTurn,
+                                Heroes = heroes,
+                                VisualBoardState = visualBoardState,
+                            }
+                        },
+                        false,
+                        node));
+                }
+                else
+                {
+                    var heroes = BuildHeroes(GameState);
+                    result.Add(GameEventProvider.Create(
+                        gameEntity.TimeStamp,
+                        "BATTLEGROUNDS_RECRUIT_PHASE",
+                        () => new GameEvent
+                        {
+                            Type = "BATTLEGROUNDS_RECRUIT_PHASE",
+                            Value = new
+                            {
+                                Turn = currentTurn,
+                                Heroes = heroes,
+                                VisualBoardState = visualBoardState,
+                            }
+                        },
+                        false,
+                        node));
+                }
+            }
             return result;
         }
 

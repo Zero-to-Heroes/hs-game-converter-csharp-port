@@ -148,6 +148,10 @@ namespace HearthstoneReplays.Events.Parsers
 
         internal static PlayerBoard CreateProviderFromAction(int playerPlayerId, int playerEntityId, bool isOpponent, Player mainPlayer, GameState GameState, StateFacade StateFacade)
         {
+            if (isOpponent)
+            {
+                Logger.Log($"Building opponent board for playerPlayerId={playerPlayerId}, playerEntityId={playerEntityId}", "");
+            }
             var potentialHeroes = GameState.CurrentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
                 // Issue: when the player is a ghost, it can be in the REMOVEDFROMGAME zone
@@ -156,7 +160,8 @@ namespace HearthstoneReplays.Events.Parsers
                 // Here we accept to face the ghost
                 .Where(entity => !entity.IsBaconBartender() && !entity.IsBaconEnchantment())
                 .ToList();
-            var hero = potentialHeroes.FirstOrDefault()?.Clone();
+            // When reconnecting, sometimes we have multiple heroes in play
+            var hero = potentialHeroes.LastOrDefault()?.Clone();
             var cardId = hero?.CardId;
             // We do this, otherwise we always have the same playerId, which is either the "main player" or the "opponent player" defined
             // at the start. However, we are interested in getting the actual player

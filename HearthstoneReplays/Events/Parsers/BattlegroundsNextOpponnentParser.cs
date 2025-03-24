@@ -31,8 +31,8 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var isPlayerNode = node.Type == typeof(Player);
             return stateType == StateType.PowerTaskList
-                && node.Type == typeof(PlayerEntity)
-                && (node.Object as PlayerEntity).Tags.Find(tag => tag.Name == (int)GameTag.NEXT_OPPONENT_PLAYER_ID) != null;
+                && ((node.Type == typeof(PlayerEntity) && (node.Object as PlayerEntity).Tags.Find(tag => tag.Name == (int)GameTag.NEXT_OPPONENT_PLAYER_ID) != null)
+                    || (node.Type == typeof(FullEntity) && (node.Object as FullEntity).Tags.Find(tag => tag.Name == (int)GameTag.NEXT_OPPONENT_PLAYER_ID) != null));
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -89,13 +89,45 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
         {
+            var tags = node.Type == typeof(PlayerEntity) ? (node.Object as PlayerEntity).Tags : (node.Object as FullEntity).Tags;
+            var timestamp = node.Type == typeof(PlayerEntity) ? (node.Object as PlayerEntity).TimeStamp : (node.Object as FullEntity).TimeStamp;
+            var nextOpponentPlayerId = tags.Find(tag => tag.Name == (int)GameTag.NEXT_OPPONENT_PLAYER_ID).Value;
+            var heroes = GameState.CurrentEntities.Values
+                .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
+                .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
+                .Where(entity => !entity.IsBaconBartender()
+                    && !entity.IsBaconGhost()
+                    && !entity.IsBaconEnchantment())
+                .ToList();
+            var hero = heroes == null || heroes.Count == 0 ? null : heroes[0];
+            GameState.NextBgsOpponentPlayerId = nextOpponentPlayerId;
+            GameState.BgsHasSentNextOpponent = true;
+            if (hero?.CardId != null && !hero.IsBaconBartender())
+            {
+                return new List<GameEventProvider> {
+                    GameEventProvider.Create(
+                        timestamp,
+                        "BATTLEGROUNDS_NEXT_OPPONENT",
+                        () => new GameEvent
+                        {
+                            Type = "BATTLEGROUNDS_NEXT_OPPONENT",
+                            Value = new
+                            {
+                                CardId = hero.CardId,
+                                OpponentPlayerId = nextOpponentPlayerId,
+                            }
+                        },
+                        true,
+                        node)
+                };
+            }
+            return null;
             // Because the first player is handled differently than the rest, we kind of hack our way
             // there
-            GameState.NextBgsOpponentPlayerId = (node.Object as PlayerEntity).Tags
-                .Find(tag => tag.Name == (int)GameTag.NEXT_OPPONENT_PLAYER_ID)
-                .Value;
-            GameState.BgsHasSentNextOpponent = true;
-            return null;
+            //GameState.NextBgsOpponentPlayerId = nextOpponentPlayerId;
+            //GameState.BgsHasSentNextOpponent = true;
+            // This is also how the next opponent is conveyed when reconnecting (sometimes), so
+            // we need to emit an event here
         }
     }
 }
