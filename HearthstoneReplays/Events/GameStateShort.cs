@@ -22,6 +22,7 @@ namespace HearthstoneReplays.Events
         public GameStateShortSmallEntity Weapon { get; set; }
         public List<GameStateShortSmallEntity> Hand { get; set; }
         public List<GameStateShortSmallEntity> Board { get; set; }
+        public List<GameStateShortSmallEntity> Secrets { get; set; }
         public List<GameStateShortSmallEntity> Deck { get; set; }
         public List<GameStateShortSmallEntity> LettuceAbilities { get; set; }
     }

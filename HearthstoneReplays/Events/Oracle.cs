@@ -11,6 +11,7 @@ using System.Linq;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 using Newtonsoft.Json.Linq;
 using HearthstoneReplays.Events.Cards;
+using HearthstoneReplays.Parser.ReplayData.Meta.Options;
 
 namespace HearthstoneReplays.Events
 {
@@ -176,7 +177,9 @@ namespace HearthstoneReplays.Events
             Node node,
             string inputCardId = null,
             StateFacade stateFacade = null,
-            int? createdEntityId = null)
+            int? createdEntityId = null,
+            SubSpell subSpellInEffect = null
+        )
         {
             if (inputCardId != null && inputCardId.Length > 0)
             {
@@ -194,6 +197,8 @@ namespace HearthstoneReplays.Events
                     isFunkyDeathrattleEffect = true;
                 }
             }
+
+            var creatorEntity = gameState.CurrentEntities.GetValueOrDefault(creatorEntityId);
             if (!isFunkyDeathrattleEffect)
             {
                 switch (creatorCardId)
@@ -212,6 +217,7 @@ namespace HearthstoneReplays.Events
                     case AngryMob: return CrazedMob;
                     case ArcaneWyrm: return ArcaneBolt;
                     case ArchmageAntonidas: return FireballCore_CORE_CS2_029;
+                    case ArchmageAntonidas_CORE_EX1_559: return FireballCore_CORE_CS2_029;
                     case ArchmageAntonidasLegacy: return FireballCore_CORE_CS2_029;
                     case ArchmageAntonidasVanilla: return FireballCore_CORE_CS2_029;
                     case ArchsporeMsshifn: return ArchsporeMsshifn_MsshifnPrimeToken;
@@ -246,7 +252,6 @@ namespace HearthstoneReplays.Events
                     case BlackSoulstone: return BlackSoulstone;
                     case BlessingOfTheAncients_DAL_351: return BlessingOfTheAncients_DAL_351ts;
                     case BloodsailFlybooter: return BloodsailFlybooter_SkyPirateToken;
-                    case BobTheBartender_RecruitAMinionToken_BG31_BOBt2: return TheCoinCore;
                     case BoneBaron_CORE_ICC_065: return GrimNecromancer_SkeletonToken;
                     case BoneBaron_ICC_065: return GrimNecromancer_SkeletonToken;
                     case BookOfWonders: return DeckOfWonders_ScrollOfWonderToken;
@@ -536,6 +541,7 @@ namespace HearthstoneReplays.Events
                     case UnleashTheBeast_DAL_378: return UnleashTheBeast_DAL_378ts;
                     case UrzulHorror: return UrzulHorror_LostSoulToken;
                     case VioletSpellwing: return ArcaneMissilesLegacy;
+                    case VioletSpellwing_CORE_DRG_107: return ArcaneMissilesLegacy;
                     case Wanted: return Coin;
                     case Waxadred: return Waxadred_WaxadredsCandleToken;
                     case WeaselTunneler: return WeaselTunneler;
@@ -596,6 +602,22 @@ namespace HearthstoneReplays.Events
                         {
                             var act = node.Parent.Object as Action;
                             var target = gameState.CurrentEntities.GetValueOrDefault(act.Target);
+                            if (target != null)
+                            {
+                                return target.CardId;
+                            }
+                        }
+                        return null;
+
+                    case BobTheBartender_BG31_BOB:
+                        if (subSpellInEffect?.Prefab == "ReuseFX_Generic_SpawnToHand_GoldCoins_Super")
+                        {
+                            return TheCoinCore;
+                        }
+                        else if (subSpellInEffect?.Parent?.Prefab == "ReuseFX_Sneaky_Missile_Smoke_Sap_Super_WithIdle")
+                        {
+                            var targetEntityId = subSpellInEffect.Parent.Targets[0];
+                            var target = gameState.CurrentEntities.GetValueOrDefault(targetEntityId);
                             if (target != null)
                             {
                                 return target.CardId;
@@ -864,7 +886,6 @@ namespace HearthstoneReplays.Events
                 }
 
                 // Handle echo
-                var creatorEntity = gameState.CurrentEntities.GetValueOrDefault(creatorEntityId);
                 if (creatorEntity?.GetTag(GameTag.ECHO) == 1 || creatorEntity?.GetTag(GameTag.NON_KEYWORD_ECHO) == 1)
                 {
                     return creatorCardId;

@@ -50,6 +50,11 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetEffectiveController();
             var attachedToEntityId = entity.GetTag(GameTag.ATTACHED);
             var attachedToEntity = GameState.CurrentEntities.GetValueOrDefault(attachedToEntityId);
+            if (attachedToEntity == null)
+            {
+                return null;
+            }
+
             if (attachedToEntityId != StateFacade.LocalPlayer.Id 
                 && attachedToEntityId != StateFacade.OpponentPlayer.Id
                 && attachedToEntity.GetCardType() != (int)CardType.HERO

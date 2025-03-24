@@ -115,6 +115,7 @@ namespace HearthstoneReplays
                     Weapon = GameEvent.BuildWeapon(allEntities, parserState.Options, helper.LocalPlayer.PlayerId, gameState.CurrentEntities),
                     Hand = GameEvent.BuildZone(allEntities, parserState.Options, Zone.HAND, helper.LocalPlayer.PlayerId, gameState.CurrentEntities),
                     Board = GameEvent.BuildBoard(allEntities, parserState.Options, helper.LocalPlayer.PlayerId, gameState.CurrentEntities),
+                    Secrets = GameEvent.BuildSecrets(allEntities, parserState.Options, helper.LocalPlayer.PlayerId, gameState.CurrentEntities),
                     Deck = GameEvent.BuildZone(allEntities, parserState.Options, Zone.DECK, helper.LocalPlayer.PlayerId, gameState.CurrentEntities),
                     LettuceAbilities = GameEvent.BuildZone(allEntities, parserState.Options, Zone.LETTUCE_ABILITY, helper.LocalPlayer.PlayerId, gameState.CurrentEntities),
                 },
@@ -125,6 +126,7 @@ namespace HearthstoneReplays
                     Weapon = GameEvent.BuildWeapon(allEntities, parserState.Options, helper.OpponentPlayer.PlayerId, gameState.CurrentEntities),
                     Hand = GameEvent.BuildZone(allEntities, parserState.Options, Zone.HAND, helper.OpponentPlayer.PlayerId, gameState.CurrentEntities),
                     Board = GameEvent.BuildBoard(allEntities, parserState.Options, helper.OpponentPlayer.PlayerId, gameState.CurrentEntities),
+                    Secrets = GameEvent.BuildSecrets(allEntities, parserState.Options, helper.OpponentPlayer.PlayerId, gameState.CurrentEntities),
                     Deck = GameEvent.BuildZone(allEntities, parserState.Options, Zone.DECK, helper.OpponentPlayer.PlayerId, gameState.CurrentEntities),
                     LettuceAbilities = GameEvent.BuildZone(allEntities, parserState.Options, Zone.LETTUCE_ABILITY, helper.OpponentPlayer.PlayerId, gameState.CurrentEntities),
                 }
@@ -199,6 +201,24 @@ namespace HearthstoneReplays
             {
                 Logger.Log("Warning: issue when trying to build zone " + e.Message, e.StackTrace);
                 return BuildZone(allEntities, options, zone, playerId, fullEntitiesMap);
+            }
+        }
+
+        private static List<GameStateShortSmallEntity> BuildSecrets(List<FullEntity> allEntities, Options options, int playerId, Dictionary<int, FullEntity> fullEntitiesMap)
+        {
+            try
+            {
+                return allEntities
+                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
+                    .Where(entity => entity.GetEffectiveController() == playerId)
+                    .Select(entity => BuildSmallEntity(entity, options, fullEntitiesMap, allEntities))
+                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
+                    .ToList();
+            }
+            catch (Exception e)
+            {
+                Logger.Log("Warning: issue when trying to build secrets " + e.Message, e.StackTrace);
+                return new List<GameStateShortSmallEntity>();
             }
         }
 
