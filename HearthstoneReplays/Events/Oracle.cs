@@ -697,6 +697,10 @@ namespace HearthstoneReplays.Events
                         return Triangulate.PredctCardId(gameState, creatorCardId, creatorEntityId, node, stateFacade);
                     case CardIds.RunicAdornment:
                         return Cards.RunicAdornment.PredctCardId(gameState, creatorCardId, creatorEntityId, node, stateFacade);
+                    case CardIds.RazaTheResealed_TOY_383:
+                        return Cards.RazaTheResealed.PredctCardId(gameState, creatorCardId, creatorEntityId, node, stateFacade);
+                    case CardIds.Mimicry_EDR_522:
+                        return Cards.Mimicry.PredctCardId(gameState, createdEntityId ?? -1, creatorEntityId, node, stateFacade);
                     case AugmentedElekk:
                         // The parent action is Augmented Elekk trigger, which is not the one we're interested in
                         // Its parent is the one that created the new entity

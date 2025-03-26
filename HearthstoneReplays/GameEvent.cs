@@ -5,12 +5,9 @@ using HearthstoneReplays.Parser.ReplayData.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Parser.ReplayData.Meta.Options;
 using HearthstoneReplays.Events;
-using HearthstoneReplays.Events.Parsers;
 
 namespace HearthstoneReplays
 {
@@ -117,6 +114,10 @@ namespace HearthstoneReplays
                     Board = GameEvent.BuildBoard(allEntities, parserState.Options, helper.LocalPlayer.PlayerId, gameState.CurrentEntities),
                     Secrets = GameEvent.BuildSecrets(allEntities, parserState.Options, helper.LocalPlayer.PlayerId, gameState.CurrentEntities),
                     Deck = GameEvent.BuildZone(allEntities, parserState.Options, Zone.DECK, helper.LocalPlayer.PlayerId, gameState.CurrentEntities),
+                    AllEntities = allEntities
+                        .Where(entity => entity.GetEffectiveController() == helper.LocalPlayer.PlayerId)
+                        .Select(entity => BuildSmallEntity(entity, parserState.Options, gameState.CurrentEntities, allEntities))
+                        .ToList(),
                     LettuceAbilities = GameEvent.BuildZone(allEntities, parserState.Options, Zone.LETTUCE_ABILITY, helper.LocalPlayer.PlayerId, gameState.CurrentEntities),
                 },
                 Opponent = new GameStateShortPlayer()
@@ -128,6 +129,10 @@ namespace HearthstoneReplays
                     Board = GameEvent.BuildBoard(allEntities, parserState.Options, helper.OpponentPlayer.PlayerId, gameState.CurrentEntities),
                     Secrets = GameEvent.BuildSecrets(allEntities, parserState.Options, helper.OpponentPlayer.PlayerId, gameState.CurrentEntities),
                     Deck = GameEvent.BuildZone(allEntities, parserState.Options, Zone.DECK, helper.OpponentPlayer.PlayerId, gameState.CurrentEntities),
+                    AllEntities = allEntities
+                        .Where(entity => entity.GetEffectiveController() == helper.OpponentPlayer.PlayerId)
+                        .Select(entity => BuildSmallEntity(entity, parserState.Options, gameState.CurrentEntities, allEntities))
+                        .ToList(),
                     LettuceAbilities = GameEvent.BuildZone(allEntities, parserState.Options, Zone.LETTUCE_ABILITY, helper.OpponentPlayer.PlayerId, gameState.CurrentEntities),
                 }
             };

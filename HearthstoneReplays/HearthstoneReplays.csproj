@@ -109,6 +109,8 @@
   <ItemGroup>
     <Compile Include="Enums.cs" />
     <Compile Include="Events\AbstractActionParser.cs" />
+    <Compile Include="Events\Cards\Mimicry.cs" />
+    <Compile Include="Events\Cards\RazaTheResealed.cs" />
     <Compile Include="Events\Cards\RunicAdornment.cs" />
     <Compile Include="Events\Cards\Triangulate.cs" />
     <Compile Include="Events\Cards\DeepSpaceCurator.cs" />

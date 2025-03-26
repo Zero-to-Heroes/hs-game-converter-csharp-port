@@ -14,6 +14,7 @@ namespace HearthstoneReplays.Events.Parsers
         private static List<string> SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW = new List<string>() { 
             CardIds.SuspiciousAlchemist_AMysteryEnchantment,
             CardIds.DeathBlossomWhomper,
+            CardIds.Mimicry_EDR_522,
         };
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
@@ -112,7 +113,8 @@ namespace HearthstoneReplays.Events.Parsers
                     // This was introduced to flag the cards created by the Suspicious* cards
                     if (SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW.Contains(lastInfluencedByCardId)) 
                     {
-                        predictedCardId = predictedCardId ?? Oracle.PredictCardId(GameState, lastInfluencedByCardId, lastInfluencedByCard?.Item2 ?? -1, node, cardId);
+                        predictedCardId = predictedCardId 
+                            ?? Oracle.PredictCardId(GameState, lastInfluencedByCardId, lastInfluencedByCard?.Item2 ?? -1, node, cardId, StateFacade, entityId);
                     }
                     GameState.OnCardDrawn(entity.Entity);
                     var finalCardId = cardId != null && cardId.Length > 0 ? cardId : predictedCardId;
