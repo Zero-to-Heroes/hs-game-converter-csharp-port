@@ -22,19 +22,20 @@ namespace HearthstoneReplays.Events.Cards
 
             var act = node.Parent.Object as Action;
             var actionEntity = gameState.CurrentEntities.GetValueOrDefault(act.Entity);
-            if (actionEntity.CardIdsToCreate.Count == 0)
+            var createdEntity = gameState.CurrentEntities.GetValueOrDefault(entityId);
+
+            var transformedEntity1 = gameState.CurrentEntities.GetValueOrDefault(actionEntity.GetTag(GameTag.TAG_SCRIPT_DATA_ENT_1));
+            if (transformedEntity1?.GetController() == createdEntity.GetController())
             {
-                var linkedEntities = new List<int>() { actionEntity.GetTag(GameTag.TAG_SCRIPT_DATA_ENT_1), actionEntity.GetTag(GameTag.TAG_SCRIPT_DATA_ENT_2) };
-                actionEntity.CardIdsToCreate = linkedEntities
-                    .Select(id => gameState.CurrentEntities.GetValueOrDefault(id)?.CardId)
-                    .ToList();
+                var dbfId = actionEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1);
+                return "" + dbfId;
             }
 
-            if (actionEntity.CardIdsToCreate.Count > 0)
+            var transformedEntity2 = gameState.CurrentEntities.GetValueOrDefault(actionEntity.GetTag(GameTag.TAG_SCRIPT_DATA_ENT_2));
+            if (transformedEntity2?.GetController() == createdEntity.GetController())
             {
-                var result = actionEntity.CardIdsToCreate[0];
-                actionEntity.CardIdsToCreate.RemoveAt(0);
-                return result;
+                var dbfId = actionEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2);
+                return "" + dbfId;
             }
             return null;
         }

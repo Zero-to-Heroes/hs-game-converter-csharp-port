@@ -61,7 +61,7 @@ namespace HearthstoneReplays.Events.Parsers
             List<Tag> guessedTags = null;
             if (creator?.Item2 != null && (cardId == null || cardId == ""))
             {
-                cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node, null, StateFacade);
+                cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node, null, StateFacade, tagChange.Entity);
                 guessedTags = Oracle.GuessTags(GameState, creator?.Item1, creator?.Item2 ?? -1, node, null, StateFacade);
             }
 
