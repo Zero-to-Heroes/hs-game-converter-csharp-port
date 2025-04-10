@@ -12,7 +12,7 @@ namespace HearthstoneReplays.Parser
 
         public static readonly Regex EntityWithNameAndId = new Regex(@"\[entityName=(.+) id=(\d+) .*\]", RegexOptions.Compiled);
         public static readonly Regex PowerlogLineRegex = new Regex(@"^D ([\d:.]+) ([^(]+)\(\) - (.+)$", RegexOptions.Compiled);
-		public static readonly Regex OutputlogLineRegex = new Regex(@"\[Power\] ()([^(]+)\(\) - (.+)$", RegexOptions.Compiled);
+		//public static readonly Regex OutputlogLineRegex = new Regex(@"\[Power\] ()([^(]+)\(\) - (.+)$", RegexOptions.Compiled);
 		public static readonly Regex EntityRegex = new Regex(@"\[.*\s*id=(\d+)\s*.*\]", RegexOptions.Compiled);
 
 		//public static readonly Regex ChoicesChoiceRegex_OLD =
@@ -26,10 +26,10 @@ namespace HearthstoneReplays.Parser
 		public static readonly Regex ActionCreategameRegex = new Regex(@"GameEntity EntityID=(\d+)", RegexOptions.Compiled);
 		public static readonly Regex ActionCreategamePlayerRegex =
 			new Regex(@"Player EntityID=(\d+) PlayerID=(\d+) GameAccountId=\[hi=(\d+) lo=(\d+)\]$", RegexOptions.Compiled);
-		public static readonly Regex ActionStartRegex_8_4 =
-			new Regex(string.Format(@"BLOCK_START (?:SubType|BlockType)=(\w+) Entity={0} EffectCardId=(.*) EffectIndex=(-1|\d+) Target={0}$", Entity), RegexOptions.Compiled);
-		public static readonly Regex ActionStartRegex_Short =
-			new Regex(string.Format(@"BLOCK_START (?:SubType|BlockType)=(\w+) Entity={0} EffectCardId=(.*) EffectIndex=(-1|\d+) Target={0} SubOption={0}$", Entity), RegexOptions.Compiled);
+		//public static readonly Regex ActionStartRegex_8_4 =
+		//	new Regex(string.Format(@"BLOCK_START (?:SubType|BlockType)=(\w+) Entity={0} EffectCardId=(.*) EffectIndex=(-1|\d+) Target={0}$", Entity), RegexOptions.Compiled);
+		//public static readonly Regex ActionStartRegex_Short =
+		//	new Regex(string.Format(@"BLOCK_START (?:SubType|BlockType)=(\w+) Entity={0} EffectCardId=(.*) EffectIndex=(-1|\d+) Target={0} SubOption={0}$", Entity), RegexOptions.Compiled);
 		public static readonly Regex ActionStartRegex =
 			new Regex(string.Format(@"BLOCK_START (?:SubType|BlockType)=(\w+) Entity={0} EffectCardId=(.*) EffectIndex=(-1|\d+) Target={0} SubOption={0} TriggerKeyword={0}$", Entity), RegexOptions.Compiled);
 

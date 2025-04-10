@@ -118,26 +118,24 @@ namespace HearthstoneReplays.Parser
             //    //Logger.Log("Setting Stop DevMode", NodeParser.DevMode);
 
             //}
-            Match match;
-            Regex logTypeRegex = null;
-            if (logTypeRegex == null)
-            {
-                match = Regexes.PowerlogLineRegex.Match(line);
-                if (match.Success)
-                {
-                    logTypeRegex = Regexes.PowerlogLineRegex;
-                }
-                else
-                {
-                    match = Regexes.OutputlogLineRegex.Match(line);
-                    if (match.Success)
-                    {
-                        logTypeRegex = Regexes.OutputlogLineRegex;
-                    }
-                }
-            }
-            else
-                match = logTypeRegex.Match(line);
+            Match match = Regexes.PowerlogLineRegex.Match(line);
+            //if (logTypeRegex == null)
+            //{
+            //    match = Regexes.PowerlogLineRegex.Match(line);
+            //    if (match.Success)
+            //    {
+            //        logTypeRegex = Regexes.PowerlogLineRegex;
+            //    }
+            //    else
+            //    {
+            //        match = Regexes.OutputlogLineRegex.Match(line);
+            //        if (match.Success)
+            //        {
+            //            logTypeRegex = Regexes.OutputlogLineRegex;
+            //        }
+            //    }
+            //}
+            //else
 
             if (!match.Success)
             {
@@ -145,6 +143,7 @@ namespace HearthstoneReplays.Parser
                 {
                     AddData(null, "Spectator", line, gameSeed);
                 }
+                Logger.Log("No match", line);
                 return;
             }
 
