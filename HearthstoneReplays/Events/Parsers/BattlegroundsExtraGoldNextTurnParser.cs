@@ -12,6 +12,7 @@ using System.ComponentModel;
 
 namespace HearthstoneReplays.Events.Parsers
 {
+    // Deactivated
     public class BattlegroundsExtraGoldNextTurnParser : ActionParser
     {
         private GameState GameState { get; set; }

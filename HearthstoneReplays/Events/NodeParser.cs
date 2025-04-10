@@ -243,7 +243,7 @@ namespace HearthstoneReplays.Events
                     new BeetleArmyChangedParser(ParserState, StateFacade),
                     new BallerBuffChangedParser(ParserState, StateFacade),
                     new TotalMagnetizeChangedParser(ParserState, StateFacade),
-                    new BattlegroundsExtraGoldNextTurnParser(ParserState, StateFacade),
+                    //new BattlegroundsExtraGoldNextTurnParser(ParserState, StateFacade),
                     new BattlegroundsTrinketSelectedParser(ParserState, StateFacade),
                     new BattlegroundsTrinketSelectionParser(ParserState, StateFacade),
 
