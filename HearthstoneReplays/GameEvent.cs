@@ -302,7 +302,7 @@ namespace HearthstoneReplays
                 //    : false,
                 tags = newTags,
                 enchantments = fullEntities
-                    ?.Where(e => e.GetTag(GameTag.ATTACHED) == entity.Id)
+                    ?.Where(e => e.GetTagSecure(GameTag.ATTACHED) == entity.Id)
                     ?.Where(e => e.GetZone() == (int)Zone.PLAY)
                     .Select(e => {
                         var enchantmentCardId = e.CardId == CardIds.PolarizingBeatboxer_PolarizedEnchantment
