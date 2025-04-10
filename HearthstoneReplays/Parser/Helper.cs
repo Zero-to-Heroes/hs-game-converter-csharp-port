@@ -22,9 +22,6 @@ namespace HearthstoneReplays.Parser
             "โรงเตี๊ยมของบ็อบ", "鲍勃的酒馆", "鮑伯的旅店"};
         public static readonly List<string> mercBotNames = new List<string>() { "QuirkyTurtle", "CrazyCat", "华丽之虎", "隱祕束褲" };
 
-
-
-
         private readonly Dictionary<GameTag, Type> TagTypes = new Dictionary<GameTag, Type>
         {
             {GameTag.CARDTYPE, typeof(CardType)},
@@ -62,8 +59,20 @@ namespace HearthstoneReplays.Parser
             return GetPlayerIdFromName(data);
         }
 
+        private static readonly Dictionary<string, int> _playerIdCache = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        public void NewGame()
+        {
+            _playerIdCache.Clear();
+        }
+
         public int GetPlayerIdFromName(string data)
         {
+            if (_playerIdCache.TryGetValue(data, out var cachedId))
+            {
+                return cachedId;
+            }
+
             var state = State.GSState;
 
             var validPlayers = state.CurrentGame.Data.Where(x => (x is PlayerEntity)).Select(d => d as PlayerEntity).ToList();
@@ -89,22 +98,23 @@ namespace HearthstoneReplays.Parser
                 validPlayers = initialValidPlayers;
             }
 
+            var firstPlayer = validPlayers.FirstOrDefault(x => x.Id == state.FirstPlayerEntityId)
+                ?? throw new Exception("Could not find first player " + data);
 
-            var firstPlayer = validPlayers.FirstOrDefault(x => x.Id == state.FirstPlayerEntityId);
-            if (firstPlayer == null) throw new Exception("Could not find first player " + data);
+            var secondPlayer = validPlayers.FirstOrDefault(x => x.Id != state.FirstPlayerEntityId)
+                ?? throw new Exception("Could not find second player " + data);
 
-            var secondPlayer = validPlayers.FirstOrDefault(x => x.Id != state.FirstPlayerEntityId);
-            if (secondPlayer == null) throw new Exception("Could not find second player " + data);
+            int result = -1;
 
-            if (firstPlayer.Name == data) return firstPlayer.Id;
-            if (secondPlayer.Name == data) return secondPlayer.Id;
-
-            //if (state.IsMercenaries() && !mercBotNames.Contains(data) && !data.Contains("#")) {
-            //	return 0;
-            //         }
-
-
-            if (string.IsNullOrEmpty(firstPlayer.Name))
+            if (firstPlayer.Name == data)
+            {
+                result = firstPlayer.Id;
+            }
+            else if (secondPlayer.Name == data)
+            {
+                result = secondPlayer.Id;
+            }
+            else if (string.IsNullOrEmpty(firstPlayer.Name))
             {
                 if (firstPlayer.AccountHi == "0" && firstPlayer.AccountLo == "0" && State.GSState.IsBattlegrounds())
                 {
@@ -121,13 +131,19 @@ namespace HearthstoneReplays.Parser
                     : mercBotNames.Contains(data)
                     ? mercBotNames[0]
                     : data;
-                return firstPlayer.Id;
+                result = firstPlayer.Id;
             }
             // Sometimes we register the player name with the full battletag, 
             // and get only the short name afterwards
-            if (firstPlayer.Name.IndexOf(data) != -1) return firstPlayer.Id;
-            if (data != null && data.IndexOf(firstPlayer.Name) != -1) return firstPlayer.Id;
-            if (string.IsNullOrEmpty(secondPlayer.Name))
+            else if (firstPlayer.Name.IndexOf(data) != -1)
+            {
+                result = firstPlayer.Id;
+            }
+            else if (data != null && data.IndexOf(firstPlayer.Name) != -1)
+            {
+                result = firstPlayer.Id;
+            }
+            else if (string.IsNullOrEmpty(secondPlayer.Name))
             {
                 secondPlayer.Name = data;
                 secondPlayer.InitialName = innkeeperNames.Contains(data)
@@ -137,18 +153,23 @@ namespace HearthstoneReplays.Parser
                     : mercBotNames.Contains(data)
                     ? mercBotNames[0]
                     : data;
-                return secondPlayer.Id;
+                result = secondPlayer.Id;
             }
             // And the opposite
-            if (secondPlayer.Name.IndexOf(data) != -1) return secondPlayer.Id;
-            if (data != null && data.IndexOf(secondPlayer.Name) != -1) return secondPlayer.Id;
-
+            else if (secondPlayer.Name.IndexOf(data) != -1)
+            {
+                result = secondPlayer.Id;
+            }
+            else if (data != null && data.IndexOf(secondPlayer.Name) != -1)
+            {
+                result = secondPlayer.Id;
+            }
             // Because there are 3 players in mercenaries, and we hardcode the player names for now
             // so this case should never happen in that mode
             // If we leave it like that, it will assign the player name to the first Innkeeper. This is 
             // somewhat ok, because the first innkeeper seems to be the player themselves, but then it 
             // creates wrong assignments to player IDs
-            if ((firstPlayer.Name == "UNKNOWN HUMAN PLAYER"
+            else if ((firstPlayer.Name == "UNKNOWN HUMAN PLAYER"
                 || innkeeperNames.Select(x => x.ToLower()).Contains(firstPlayer.Name.ToLower())
                 || innkeeperNames.Select(x => x.ToLower()).Contains(firstPlayer.InitialName.ToLower())
                 || bobTavernNames.Select(x => x.ToLower()).Contains(firstPlayer.Name.ToLower())
@@ -157,9 +178,9 @@ namespace HearthstoneReplays.Parser
                 || mercBotNames.Select(x => x.ToLower()).Contains(firstPlayer.InitialName.ToLower()))
             {
                 firstPlayer.Name = data;
-                return firstPlayer.Id;
+                result = firstPlayer.Id;
             }
-            if ((secondPlayer.Name == "UNKNOWN HUMAN PLAYER"
+            else if ((secondPlayer.Name == "UNKNOWN HUMAN PLAYER"
                 || innkeeperNames.Select(x => x.ToLower()).Contains(secondPlayer.Name.ToLower())
                 || innkeeperNames.Select(x => x.ToLower()).Contains(secondPlayer.InitialName.ToLower())
                 || bobTavernNames.Select(x => x.ToLower()).Contains(secondPlayer.Name.ToLower())
@@ -168,39 +189,47 @@ namespace HearthstoneReplays.Parser
                 || mercBotNames.Select(x => x.ToLower()).Contains(secondPlayer.InitialName.ToLower()))
             {
                 secondPlayer.Name = data;
-                return secondPlayer.Id;
+                result = secondPlayer.Id;
             }
-            // Case where the entity itself is replaced by a new hero, like in the Crooked Pete / Beastly Pete case
-            var idFromState = State.GSState.GameState.PlayerIdFromEntityName(data);
-            if (idFromState != 0)
+            else
             {
-                return idFromState;
-            }
-            // Fringe case, but I saw it happen from time to time
-            // We assume this happens in a game vs AI, so the human player is always the first
-            // and if that's not the case, then we have no way to know which unknown human player this is
-            if (data == "UNKNOWN HUMAN PLAYER")
-            {
-                return firstPlayer.Id;
-            }
-
-            // In BG, it happens (under what circumstances?) that the current opponent's name is shown instead of 
-            // the generic Bartender Bob name.
-            // Eg BLOCK_START BlockType=TRIGGER Entity=dobroeytro EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=-1 Target=0 SubOption=-1 TriggerKeyword=TAG_NOT_SET
-            // Sometimes, this is even the first time we even see this name
-            // In this case, we default to the Bartender Bob entity
-            if (State.GSState.IsBattlegrounds())
-            {
-                //Logger.Log("Could not find player for " + data, "Defaulting to Bartender Bob instead of crashing");
-                var bob = firstPlayer.AccountHi == "0" ? firstPlayer : secondPlayer.AccountHi == "0" ? secondPlayer : null;
-                if (bob != null)
+                // Case where the entity itself is replaced by a new hero, like in the Crooked Pete / Beastly Pete case
+                var idFromState = State.GSState.GameState.PlayerIdFromEntityName(data);
+                if (idFromState != 0)
                 {
-                    return bob.Id;
+                    result = idFromState;
+                }
+                // Fringe case, but I saw it happen from time to time
+                // We assume this happens in a game vs AI, so the human player is always the first
+                // and if that's not the case, then we have no way to know which unknown human player this is
+                else if (data == "UNKNOWN HUMAN PLAYER")
+                {
+                    result = firstPlayer.Id;
+                }
+                // In BG, it happens (under what circumstances?) that the current opponent's name is shown instead of 
+                // the generic Bartender Bob name.
+                // Eg BLOCK_START BlockType=TRIGGER Entity=dobroeytro EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=-1 Target=0 SubOption=-1 TriggerKeyword=TAG_NOT_SET
+                // Sometimes, this is even the first time we even see this name
+                // In this case, we default to the Bartender Bob entity
+                else if (State.GSState.IsBattlegrounds())
+                {
+                    //Logger.Log("Could not find player for " + data, "Defaulting to Bartender Bob instead of crashing");
+                    var bob = firstPlayer.AccountHi == "0" ? firstPlayer : secondPlayer.AccountHi == "0" ? secondPlayer : null;
+                    if (bob != null)
+                    {
+                        result = bob.Id;
+                    }
                 }
             }
 
-            throw new Exception("Could not get id from player name: " + data
-                + " // " + firstPlayer.Name + " // " + firstPlayer.InitialName + " // " + secondPlayer.Name + " // " + secondPlayer.InitialName);
+            if (result == -1)
+            {
+                throw new Exception("Could not get id from player name: " + data
+                    + " // " + firstPlayer.Name + " // " + firstPlayer.InitialName + " // " + secondPlayer.Name + " // " + secondPlayer.InitialName);
+            }
+
+            _playerIdCache[data] = result;
+            return result;
         }
 
         public void setName(ParserState state, int playerId, String playerName)

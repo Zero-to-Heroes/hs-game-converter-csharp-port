@@ -16,7 +16,7 @@ namespace HearthstoneReplays.Parser.Handlers
     {
         public static bool HandleCreateGame(DateTime timestamp, string data, ParserState state, int indentLevel)
         {
-            var match = Regexes.ActionCreategameRegex.Match(data);
+            var match = Regexes.GameEntityRegex.Match(data);
             if (match.Success)
             {
                 var id = match.Groups[1].Value;

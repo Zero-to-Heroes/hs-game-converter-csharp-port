@@ -2,8 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.Entities;
@@ -20,49 +18,75 @@ namespace HearthstoneReplays.Parser.Handlers
 {
     public class DataHandler
     {
-        private Helper helper;
-        private GameMetaData metadata = new GameMetaData();
+        private readonly Helper helper;
+        private readonly GameMetaData metadata = new GameMetaData();
 
+        // Dictionary to map keywords to their respective handlers
+        private readonly Dictionary<string, Func<DateTime, string, ParserState, StateType, StateFacade, int, bool>> handlers;
 
         public DataHandler(Helper helper)
         {
             this.helper = helper;
+
+            // Initialize the handler dictionary
+            handlers = new Dictionary<string, Func<DateTime, string, ParserState, StateType, StateFacade, int, bool>>
+            {
+                { "GameEntity EntityID=", (timestamp, data, state, stateType, facade, indent) => CreateGameHandler.HandleCreateGame(timestamp, data, state, indent) },
+                { "PlayerID=", (timestamp, data, state, stateType, facade, indent) => PlayerNameHandler.HandlePlayerName(timestamp, data, state, stateType) },
+                { "Player EntityID=", (timestamp, data, state, stateType, facade, indent) => CreatePlayerHandler.HandleCreatePlayer(data, state, facade, indent) },
+                { "Begin Spectating", (timestamp, data, state, stateType, facade, indent) => SpectatorHandler.HandleSpectator(timestamp, data, state, facade) },
+                { "End Spectator Mode", (timestamp, data, state, stateType, facade, indent) => SpectatorHandler.HandleSpectator(timestamp, data, state, facade) },
+                { "BLOCK_START", (timestamp, data, state, stateType, facade, indent) => BlockStartHandler.HandleBlockStart(timestamp, data, state, indent, helper) },
+                { "BLOCK_END", (timestamp, data, state, stateType, facade, indent) => BlockEndHandler.HandleBlockEnd(data, state) },
+                { "BuildNumber=", (timestamp, data, state, stateType, facade, indent) => MetaDataHandler.HandleMetaData(timestamp, data, state, stateType, metadata, helper) },
+                { "GameType=", (timestamp, data, state, stateType, facade, indent) => MetaDataHandler.HandleMetaData(timestamp, data, state, stateType, metadata, helper) },
+                { "FormatType=", (timestamp, data, state, stateType, facade, indent) => MetaDataHandler.HandleMetaData(timestamp, data, state, stateType, metadata, helper) },
+                { "ScenarioID=", (timestamp, data, state, stateType, facade, indent) => MetaDataHandler.HandleMetaData(timestamp, data, state, stateType, metadata, helper) },
+                { "TAG_CHANGE", (timestamp, data, state, stateType, facade, indent) => TagChangeHandler.HandleTagChange(timestamp, data, state, stateType, facade, indent, helper) },
+                { "tag=", (timestamp, data, state, stateType, facade, indent) => TagHandler.HandleTag(timestamp, data, state, helper) },
+                { "SHUFFLE_DECK", (timestamp, data, state, stateType, facade, indent) => ShuffleDeckHandler.HandleShuffleDeck(timestamp, data, state, indent) },
+                { "FULL_ENTITY", (timestamp, data, state, stateType, facade, indent) => FullEntityHandler.HandleFullEntity(timestamp, data, state, indent, helper) },
+                { "SHOW_ENTITY", (timestamp, data, state, stateType, facade, indent) => ShowEntityHandler.HandleShowEntity(timestamp, data, state, indent, helper) },
+                { "CHANGE_ENTITY", (timestamp, data, state, stateType, facade, indent) => ChangeEntityHandler.HandleChangeEntity(timestamp, data, state, indent, helper) },
+                { "HIDE_ENTITY", (timestamp, data, state, stateType, facade, indent) => HideEntityHandler.HandleHideEntity(timestamp, data, state, indent, helper) },
+                { "SUB_SPELL_START", (timestamp, data, state, stateType, facade, indent) => SubSpellHandler.HandleSubSpell(timestamp, data, state, stateType, facade, helper) },
+                { "Source =", (timestamp, data, state, stateType, facade, indent) => SubSpellHandler.HandleSubSpell(timestamp, data, state, stateType, facade, helper) },
+                { "Targets", (timestamp, data, state, stateType, facade, indent) => SubSpellHandler.HandleSubSpell(timestamp, data, state, stateType, facade, helper) },
+                { "SUB_SPELL_END", (timestamp, data, state, stateType, facade, indent) => SubSpellHandler.HandleSubSpell(timestamp, data, state, stateType, facade, helper) },
+                { "META_DATA", (timestamp, data, state, stateType, facade, indent) => ActionMetadataHandler.HandleActionMetaData(timestamp, data, state, indent, helper) },
+                { "Info", (timestamp, data, state, stateType, facade, indent) => ActionMetadataInfoHandler.HandleActionMetaDataInfo(timestamp, data, state, indent, helper) },
+            };
         }
 
         public void Handle(DateTime timestamp, string data, ParserState state, StateType stateType, DateTime previousTimestamp, StateFacade stateFacade, long currentGameSeed)
         {
-
             var trimmed = data.Trim();
             var indentLevel = data.Length - trimmed.Length;
             data = trimmed;
-            bool isApplied = false;
-            isApplied = isApplied || NewGameHandler.HandleNewGame(timestamp, data, state, previousTimestamp, stateType, stateFacade, currentGameSeed, metadata);
-            isApplied = isApplied || SpectatorHandler.HandleSpectator(timestamp, data, state, stateFacade);
 
-            // When catching up with some log lines, sometimes we get some leftover from a previous game.
-            // Only checking the state does not account for these, and parsing fails because there is no
-            // game to parse, and Reset() has not been called to initialize everything
-            if (state.Ended || state.CurrentGame == null)
+            // Additional handlers for specific cases
+            if (NewGameHandler.HandleNewGame(timestamp, data, state, previousTimestamp, stateType, stateFacade, currentGameSeed, metadata, helper))
             {
                 return;
             }
 
-            isApplied = isApplied || CreateGameHandler.HandleCreateGame(timestamp, data, state, indentLevel);
-            isApplied = isApplied || PlayerNameHandler.HandlePlayerName(timestamp, data, state, stateType);
-            isApplied = isApplied || BlockStartHandler.HandleBlockStart(timestamp, data, state, indentLevel, helper);
-            isApplied = isApplied || BlockEndHandler.HandleBlockEnd(data, state);
-            isApplied = isApplied || MetaDataHandler.HandleMetaData(timestamp, data, state, stateType, metadata, helper);
-            isApplied = isApplied || CreatePlayerHandler.HandleCreatePlayer(data, state, stateFacade, indentLevel);
-            isApplied = isApplied || ActionMetadataHandler.HandleActionMetaData(timestamp, data, state, indentLevel, helper);
-            isApplied = isApplied || ActionMetadataInfoHandler.HandleActionMetaDataInfo(timestamp, data, state, indentLevel, helper);
-            isApplied = isApplied || SubSpellHandler.HandleSubSpell(timestamp, data, state, stateType, stateFacade, helper);
-            isApplied = isApplied || ShowEntityHandler.HandleShowEntity(timestamp, data, state, indentLevel, helper);
-            isApplied = isApplied || ChangeEntityHandler.HandleChangeEntity(timestamp, data, state, indentLevel, helper);
-            isApplied = isApplied || HideEntityHandler.HandleHideEntity(timestamp, data, state, indentLevel, helper);
-            isApplied = isApplied || FullEntityHandler.HandleFullEntity(timestamp, data, state, indentLevel, helper);
-            isApplied = isApplied || TagChangeHandler.HandleTagChange(timestamp, data, state, stateType, stateFacade, indentLevel, helper);
-            isApplied = isApplied || TagHandler.HandleTag(timestamp, data, state, helper);
-            isApplied = isApplied || ShuffleDeckHandler.HandleShuffleDeck(timestamp, data, state, indentLevel);
+            // Pre-filter lines using string operations
+            foreach (var handler in handlers)
+            {
+                if (data.StartsWith(handler.Key))
+                {
+                    if (handler.Value(timestamp, data, state, stateType, stateFacade, indentLevel))
+                    {
+                        return;
+                    }
+                }
+            }
+
+            // Handle fallback cases
+            if (state.Ended || state.CurrentGame == null)
+            {
+                return;
+            }
         }
     }
 }

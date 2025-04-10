@@ -23,7 +23,7 @@ namespace HearthstoneReplays.Parser
 		public static readonly Regex ChoicesEntitiesRegex = new Regex(@"Entities\[(\d+)\]=(\[.+\])$", RegexOptions.Compiled);
 		public static readonly Regex ChoicesWaitingForInput = new Regex(@"id=(\d+) BEGIN$", RegexOptions.Compiled);
 
-		public static readonly Regex ActionCreategameRegex = new Regex(@"GameEntity EntityID=(\d+)", RegexOptions.Compiled);
+		public static readonly Regex GameEntityRegex = new Regex(@"GameEntity EntityID=(\d+)", RegexOptions.Compiled);
 		public static readonly Regex ActionCreategamePlayerRegex =
 			new Regex(@"Player EntityID=(\d+) PlayerID=(\d+) GameAccountId=\[hi=(\d+) lo=(\d+)\]$", RegexOptions.Compiled);
 		//public static readonly Regex ActionStartRegex_8_4 =
@@ -33,7 +33,7 @@ namespace HearthstoneReplays.Parser
 		public static readonly Regex ActionStartRegex =
 			new Regex(string.Format(@"BLOCK_START (?:SubType|BlockType)=(\w+) Entity={0} EffectCardId=(.*) EffectIndex=(-1|\d+) Target={0} SubOption={0} TriggerKeyword={0}$", Entity), RegexOptions.Compiled);
 
-        public static readonly Regex PlayerNameAssignment = new Regex(@"PlayerID=(\d), PlayerName=(.+)", RegexOptions.Compiled);
+        public static readonly Regex PlayerNameAssignment = new Regex(@"PlayerID=(\d+), PlayerName=(.+)", RegexOptions.Compiled);
 
 		public static readonly Regex BuildNumber = new Regex(@"BuildNumber=(\d+)", RegexOptions.Compiled);
 		public static readonly Regex GameType = new Regex(@"GameType=(\w+)", RegexOptions.Compiled);

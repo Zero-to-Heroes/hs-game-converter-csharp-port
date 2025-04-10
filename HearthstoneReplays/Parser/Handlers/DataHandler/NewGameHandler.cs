@@ -16,7 +16,7 @@ namespace HearthstoneReplays.Parser.Handlers
     internal class NewGameHandler
     {
         public static bool HandleNewGame(
-            DateTime timestamp, string data, ParserState state, DateTime previousTimestamp, StateType stateType, StateFacade gameInfoHelper, long currentGameSeed, GameMetaData metadata)
+            DateTime timestamp, string data, ParserState state, DateTime previousTimestamp, StateType stateType, StateFacade gameInfoHelper, long currentGameSeed, GameMetaData metadata, Helper helper)
         {
             if (data == "CREATE_GAME")
             {
@@ -66,6 +66,7 @@ namespace HearthstoneReplays.Parser.Handlers
                     return true;
                 }
 
+                helper.NewGame();
                 if (stateType == StateType.GameState)
                 {
                     metadata.BuildNumber = -1;

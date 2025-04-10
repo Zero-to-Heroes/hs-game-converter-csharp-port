@@ -15,6 +15,7 @@ using HearthstoneReplays.Parser;
 using HearthstoneReplays.Events;
 using System.Xml.Linq;
 using System.Diagnostics.Eventing;
+using System.Globalization;
 
 #endregion
 
@@ -103,40 +104,7 @@ namespace HearthstoneReplays.Parser
             {
                 this.CurrentGameSeed = gameSeed;
             }
-            //processedLines.Add(line);
-            // Ignore timestamps when catching up with past events
-            //if (line == "START_CATCHING_UP")
-            //{
-            //    State.StartDevMode();
-            //    return;
-            //}
-            //if (line == "END_CATCHING_UP")
-            //{
-            //    State.NodeParser.StopDevMode();
-            //    return;
-            //    //NodeParser.DevMode = false;
-            //    //Logger.Log("Setting Stop DevMode", NodeParser.DevMode);
-
-            //}
             Match match = Regexes.PowerlogLineRegex.Match(line);
-            //if (logTypeRegex == null)
-            //{
-            //    match = Regexes.PowerlogLineRegex.Match(line);
-            //    if (match.Success)
-            //    {
-            //        logTypeRegex = Regexes.PowerlogLineRegex;
-            //    }
-            //    else
-            //    {
-            //        match = Regexes.OutputlogLineRegex.Match(line);
-            //        if (match.Success)
-            //        {
-            //            logTypeRegex = Regexes.OutputlogLineRegex;
-            //        }
-            //    }
-            //}
-            //else
-
             if (!match.Success)
             {
                 if (line.Contains("End Spectator Mode") || (line.Contains("Begin Spectating") && !line.Contains("2nd")))
@@ -147,15 +115,7 @@ namespace HearthstoneReplays.Parser
                 return;
             }
 
-            //State.FullLog += line + "\n";
-            //Logger.Log("Processing new line", line);
             AddData(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value, gameSeed);
-            // New game
-            //if (State.FullLog.Length == 0)
-            //{
-            //    State.FullLog += line + "\n";
-            //}
-
         }
 
         public void AskForGameStateUpdate()
@@ -262,16 +222,12 @@ namespace HearthstoneReplays.Parser
                 return default;
             }
 
-            var logDateTime = DateTime.Parse(timestamp);
-            // This means we got back in time, which is not possible, so it means we have gone to the next day
-            // This won't work if we have sessions that span more than one day, but I think it's ok
-            if (logDateTime < start)
-            {
-                logDateTime = logDateTime.AddDays(1);
-                //Logger.Log("Adding a day to timestamp ", logDateTime + " // " + start + " // " + timestamp + " // " + logDateTime);
-            }
-            return logDateTime;
-        } 
+            // Use DateTime.ParseExact for faster parsing with a known format
+            var logDateTime = DateTime.ParseExact(timestamp, "HH:mm:ss.fffffff", null);
+
+            // Avoid unnecessary comparison if the timestamp is already valid
+            return logDateTime < start ? logDateTime.AddDays(1) : logDateTime;
+        }
 
         public long ExtractGameSeed(string[] lines)
         {
