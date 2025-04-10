@@ -99,6 +99,9 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorCardId = creator != -1 && GameState.CurrentEntities.ContainsKey(creator)
                 ? GameState.CurrentEntities[creator].CardId
                 : null;
+            var creatorEntityId = creator != -1 && GameState.CurrentEntities.ContainsKey(creator)
+                ? GameState.CurrentEntities[creator].Entity
+                : -1;
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
 
             return new List<GameEventProvider> { GameEventProvider.Create(
@@ -115,6 +118,7 @@ namespace HearthstoneReplays.Events.Parsers
                             TargetEntityId = targetId,
                             TargetCardId = targetCardId,
                             CreatorCardId = creatorCardId,
+                            CreatorEntityId = creatorEntityId,
                         }
                     ),
                     true,
@@ -147,6 +151,9 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorCardId = creator != -1 && GameState.CurrentEntities.ContainsKey(creator)
                 ? GameState.CurrentEntities[creator].CardId
                 : null;
+            var creatorEntityId = creator != -1 && GameState.CurrentEntities.ContainsKey(creator)
+                ? GameState.CurrentEntities[creator].Entity
+                : -1;
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                     action.TimeStamp,
@@ -161,6 +168,7 @@ namespace HearthstoneReplays.Events.Parsers
                             TargetEntityId = targetId,
                             TargetCardId = targetCardId,
                             CreatorCardId = creatorCardId,
+                            CreatorEntityId = creatorEntityId,
                             CastWhenDrawn = true,
                         }
                     ),
@@ -186,6 +194,9 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorCardId = creator != -1 && GameState.CurrentEntities.ContainsKey(creator)
                 ? GameState.CurrentEntities[creator].CardId
                 : null;
+            var creatorEntityId = creator != -1 && GameState.CurrentEntities.ContainsKey(creator)
+                ? GameState.CurrentEntities[creator].Entity
+                : -1;
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, entity);
 
             return new List<GameEventProvider> { GameEventProvider.Create(
@@ -202,6 +213,7 @@ namespace HearthstoneReplays.Events.Parsers
                             TargetEntityId = targetId,
                             TargetCardId = targetCardId,
                             CreatorCardId = creatorCardId,
+                            CreatorEntityId = creatorEntityId,
                         }
                     ),
                     true,
