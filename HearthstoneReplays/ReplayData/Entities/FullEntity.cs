@@ -65,14 +65,16 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         internal FullEntity Clone()
         {
-            DataContractSerializer dcSer = new DataContractSerializer(this.GetType());
-            MemoryStream memoryStream = new MemoryStream();
+            string serializedObject = Newtonsoft.Json.JsonConvert.SerializeObject(this);
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<FullEntity>(serializedObject);
+            //DataContractSerializer dcSer = new DataContractSerializer(this.GetType());
+            //MemoryStream memoryStream = new MemoryStream();
 
-            dcSer.WriteObject(memoryStream, this);
-            memoryStream.Position = 0;
+            //dcSer.WriteObject(memoryStream, this);
+            //memoryStream.Position = 0;
 
-            FullEntity newObject = (FullEntity)dcSer.ReadObject(memoryStream);
-            return newObject;
+            //FullEntity newObject = (FullEntity)dcSer.ReadObject(memoryStream);
+            //return newObject;
         }
 
         public string GetPlayerClass()

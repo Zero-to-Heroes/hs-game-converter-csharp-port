@@ -152,14 +152,19 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 Logger.Log($"Building opponent board for playerPlayerId={playerPlayerId}, playerEntityId={playerEntityId}", "");
             }
-            var potentialHeroes = GameState.CurrentEntities.Values
-                .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                // Issue: when the player is a ghost, it can be in the REMOVEDFROMGAME zone
-                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                .Where(entity => entity.GetEffectiveController() == playerPlayerId)
-                // Here we accept to face the ghost
-                .Where(entity => !entity.IsBaconBartender() && !entity.IsBaconEnchantment())
+
+            var currentEntities = GameState.CurrentEntities.Values;
+
+            var potentialHeroes = currentEntities
+                .Where(entity => 
+                    entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO &&
+                    // Issue: when the player is a ghost, it can be in the REMOVEDFROMGAME zone
+                    entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
+                    entity.GetEffectiveController() == playerPlayerId &&
+                    // Here we accept to face the ghost
+                    !entity.IsBaconBartender() && !entity.IsBaconEnchantment())
                 .ToList();
+
             // When reconnecting, sometimes we have multiple heroes in play
             var hero = potentialHeroes.LastOrDefault()?.Clone();
             var cardId = hero?.CardId;
@@ -173,11 +178,15 @@ namespace HearthstoneReplays.Events.Parsers
                 // to our own player entity, and not the teammate's??
                 //var linkedEntityId = hero.GetTag(GameTag.LINKED_ENTITY);
                 //var linkedEntity = GameState.CurrentEntities.GetValueOrDefault(linkedEntityId);
-                var heroesForTargetPlayerId = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                    .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == playerId)
-                    .Where(entity => !entity.IsBaconBartender() && !entity.IsBaconEnchantment() && !entity.IsBaconGhost())
+                var heroesForTargetPlayerId = currentEntities
+                    .Where(entity => 
+                        entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO &&
+                        entity.GetTag(GameTag.PLAYER_ID) == playerId &&
+                        !entity.IsBaconBartender() &&
+                        !entity.IsBaconEnchantment() &&
+                        !entity.IsBaconGhost())
                     .ToList();
+
                 var linkedEntity = heroesForTargetPlayerId.LastOrDefault();
                 if (linkedEntity != null)
                 {
@@ -185,39 +194,6 @@ namespace HearthstoneReplays.Events.Parsers
                     cardId = hero.CardId;
                     playerId = hero.GetTag(GameTag.PLAYER_ID);
                 }
-                //if (linkedEntityId == -1)
-                //{
-                //    // Finding the one that is flagged as the player's NEXT_OPPONENT
-                //    // FIXME: not applicable in Duos
-                //    var candidates = GameState.CurrentEntities.Values
-                //        .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                //        .Where(entity => entity.GetEffectiveController() == mainPlayer.PlayerId)
-                //        .Where(entity => !entity.IsBaconBartender() && !entity.IsBaconGhost() && !entity.IsBaconEnchantment())
-                //        .ToList();
-                //    var playerEntity = candidates
-                //            .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                //            .OrderBy(entity => entity.Id)
-                //            .LastOrDefault()
-                //        ?? candidates.OrderBy(entity => entity.Id).LastOrDefault();
-                //    // FIXME: this doesn't work in Duos, as the ghost might be the partner
-                //    var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
-
-                //    // FIXME: this doesn't work, at least in Duos, as the candidates are the heroes that weren't picked during
-                //    // hero selection
-                //    var nextOpponentCandidates = GameState.CurrentEntities.Values
-                //        .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
-                //        .Where(entity => entity.GetTag(GameTag.PLAYER_ID) == nextOpponentPlayerId)
-                //        .Where(entity => !entity.IsBaconBartender()
-                //            && !entity.IsBaconGhost()
-                //            && !entity.IsBaconEnchantment())
-                //        .ToList();
-                //    var nextOpponent = nextOpponentCandidates == null || nextOpponentCandidates.Count == 0 ? null : nextOpponentCandidates[0];
-
-                //    hero = nextOpponent;
-                //    cardId = nextOpponent?.CardId;
-                //    playerId = nextOpponent?.GetTag(GameTag.PLAYER_ID) ?? playerId;
-                //}
-
             }
 
             // Happens in the first encounter
@@ -225,9 +201,8 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 var activePlayer = GameState.CurrentEntities[StateFacade.LocalPlayer.Id];
                 var opponentPlayerId = activePlayer.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID);
-                hero = GameState.CurrentEntities.Values
-                    .Where(data => data.GetTag(GameTag.PLAYER_ID) == opponentPlayerId)
-                    .FirstOrDefault()
+                hero = currentEntities
+                    .FirstOrDefault(data => data.GetTag(GameTag.PLAYER_ID) == opponentPlayerId)
                     ?.Clone();
                 cardId = hero?.CardId;
                 playerId = hero?.GetTag(GameTag.PLAYER_ID) ?? playerId;
@@ -242,37 +217,36 @@ namespace HearthstoneReplays.Events.Parsers
             if (cardId != null)
             {
                 // We don't use the game state builder here because we really need the full entities
-                var board = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetEffectiveController() == playerPlayerId)
-                    // Because when the opponent is the ghost, we don't always know which ones are actually attached to it
-                    // Also, when reconnecting, we sometimes get artifacts for the opponent's board, so restricting the list
-                    // to the ones who only just appeared removes a lot of issues
-                    .Where(entity => isOpponent ? entity.GetTag(GameTag.NUM_TURNS_IN_PLAY) <= 1 : true)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.TakesBoardSpace())
+                var board = currentEntities
+                    .Where(entity => 
+                        entity.GetEffectiveController() == playerPlayerId &&
+                        entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
+                        entity.TakesBoardSpace() &&
+                        // Because when the opponent is the ghost, we don't always know which ones are actually attached to it
+                        // Also, when reconnecting, we sometimes get artifacts for the opponent's board, so restricting the list
+                        // to the ones who only just appeared removes a lot of issues
+                        (!isOpponent || entity.GetTag(GameTag.NUM_TURNS_IN_PLAY) <= 1))
+                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
+                    .Select(entity => EnhanceEntities(entity.Clone(), GameState, StateFacade))
+                    .ToList();
+                var secrets = currentEntities
+                    .Where(entity => 
+                        entity.GetEffectiveController() == playerPlayerId &&
+                        entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET &&
+                        entity.GetTag(GameTag.BACON_IS_BOB_QUEST) != 1 &&
+                        entity.GetTag(GameTag.QUEST) != 1 &&
+                        entity.GetTag(GameTag.SIDE_QUEST) != 1)
+                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
+                    .Select(entity => BuildEntityWithCardIdFromTheFuture(entity.Clone(), StateFacade.GsState.GameState))
+                    .ToList();
+                var hand = currentEntities
+                    .Where(entity => 
+                        entity.GetEffectiveController() == playerPlayerId &&
+                        entity.GetTag(GameTag.ZONE) == (int)Zone.HAND)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
-                    .Select(entity => EnhanceEntities(entity, GameState, StateFacade))
                     .ToList();
-                var secrets = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetEffectiveController() == playerPlayerId)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
-                    .Where(entity => entity.GetTag(GameTag.BACON_IS_BOB_QUEST) != 1)
-                    .Where(entity => entity.GetTag(GameTag.QUEST) != 1)
-                    .Where(entity => entity.GetTag(GameTag.SIDE_QUEST) != 1)
-                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
-                    .Select(entity => entity.Clone())
-                    .Select(entity => BuildEntityWithCardIdFromTheFuture(entity, StateFacade.GsState.GameState))
-                    .ToList();
-                var hand = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetEffectiveController() == playerPlayerId)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.HAND)
-                    .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
-                    .Select(entity => entity.Clone())
-                    .ToList();
-                var debugEntity = GameState.CurrentEntities.GetValueOrDefault(25377);
-                var debugHero = GameState.CurrentEntities.GetValueOrDefault(25812);
-                var previousHand = hand;
+
                 if (isOpponent)
                 {
                     // Look for all the cards that are in hand at the start of the fight, and that are "copied" by bassgil
@@ -280,13 +254,12 @@ namespace HearthstoneReplays.Events.Parsers
                     // the fight
                     // We might be able to simply remove the damage, and use the buffed stats as the base stats. It won't be 
                     // perfect, but probably good enough
-                    var boardCardIds = board.Select(e => e.CardId).ToList();
-                    var handEntityIds = hand.Select(e => e.Id).ToList();
-                    var revealedHand = hand
+                    //var boardCardIds = board.Select(e => e.CardId).ToList();
+                    //var handEntityIds = hand.Select(e => e.Id).ToList();
+                    hand = hand
                         .Select(e => GetEntitySpawnedFromHand(e.Id, board, StateFacade) ?? e)
                         .Select(e => e.SetTag(GameTag.DAMAGE, 0).SetTag(GameTag.ZONE, (int)Zone.HAND) as FullEntity)
                         .ToList();
-                    hand = revealedHand;
                 }
 
                 var finalBoard = board.Select(entity => AddEchantments(GameState.CurrentEntities, entity)).ToList();
@@ -295,12 +268,12 @@ namespace HearthstoneReplays.Events.Parsers
                     Logger.Log("Too many entities on board", "");
                 }
 
-                var questRewardRawEntities = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetEffectiveController() == playerPlayerId)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.BATTLEGROUND_QUEST_REWARD)
-                    .Select(entity => entity.Clone())
-                    .ToList();
+                var questRewardRawEntities = currentEntities
+                    .Where(entity =>
+                        entity.GetEffectiveController() == playerPlayerId &&
+                        entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
+                        entity.GetTag(GameTag.CARDTYPE) == (int)CardType.BATTLEGROUND_QUEST_REWARD)
+                    .Select(entity => entity.Clone());
                 var questRewards = questRewardRawEntities
                     .Select(entity => entity.CardId)
                     .ToList();
@@ -313,11 +286,12 @@ namespace HearthstoneReplays.Events.Parsers
                         ScriptDataNum1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0)
                     })
                     .ToList();
-                var questEntities = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetEffectiveController() == playerPlayerId)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET)
-                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.SPELL)
-                    .Where(entity => entity.GetTag(GameTag.QUEST) == 1)
+                var questEntities = currentEntities
+                    .Where(entity => 
+                        entity.GetEffectiveController() == playerPlayerId &&
+                        entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET &&
+                        entity.GetTag(GameTag.CARDTYPE) == (int)CardType.SPELL &&
+                        entity.GetTag(GameTag.QUEST) == 1)
                     .Select(entity => new QuestEntity
                     {
                         CardId = entity.CardId,
@@ -326,22 +300,24 @@ namespace HearthstoneReplays.Events.Parsers
                         ProgressTotal = entity.GetTag(GameTag.QUEST_PROGRESS_TOTAL, 0),
                     })
                     .ToList();
+
                 List<TrinketEntity> trinkets = BuildTrinkets(playerPlayerId, GameState);
 
                 BgsPlayerGlobalInfo globalInfo = BuildGlobalInfo(playerPlayerId, playerEntityId, finalBoard, GameState, StateFacade);
 
 
-                var heroPowerEntities = GameState.CurrentEntities.Values
-                    .Where(entity => entity.GetEffectiveController() == playerPlayerId)
-                    .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .Where(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER)
+                var heroPowerEntities = currentEntities
+                    .Where(entity => 
+                        entity.GetEffectiveController() == playerPlayerId &&
+                        entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
+                        entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER)
                     .Select(entity => entity.Clone())
                     .ToList();
-                //.FirstOrDefault();
                 if (heroPowerEntities.Count == 0)
                 {
                     Logger.Log("WARNING: could not find hero power", "");
                 }
+
                 List<BgsHeroPower> heroPowers = heroPowerEntities
                     .Select(hp => new BgsHeroPower()
                     {
@@ -353,18 +329,7 @@ namespace HearthstoneReplays.Events.Parsers
                         CreatedEntity = null,
                     })
                     .ToList();
-                var heroPower = heroPowerEntities.FirstOrDefault();
 
-                var heroPowerUsed = heroPower?.GetTag(GameTag.BACON_HERO_POWER_ACTIVATED) == 1;
-                string heroPowerCreatedEntity = null;
-                // String or int
-                dynamic heroPowerInfo = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
-                var heroPowerInfo2 = heroPower?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2) ?? 0;
-                int heroPowerInfoAsInt = heroPowerInfo is int intValue ? intValue : 0;
-
-                var currentEntities = GameState.CurrentEntities.Values.ToList();
-
-                var debug = finalBoard.Any(e => e.Entity == 11974);
                 UpdateEmbraceYourRageTarget(StateFacade, heroPowers);
                 UpdateRebornRitesTarget(StateFacade, heroPowers);
 
@@ -372,12 +337,12 @@ namespace HearthstoneReplays.Events.Parsers
                 {
                     Hero = hero,
                     HeroPowers = heroPowers,
-                    HeroPowerCardId = heroPower?.CardId,
-                    HeroPowerEntityId = heroPower?.Entity ?? -1,
-                    HeroPowerUsed = heroPowerUsed,
-                    HeroPowerInfo = heroPowerInfo,
-                    HeroPowerInfo2 = heroPowerInfo2,
-                    HeroPowerCreatedEntity = heroPowerCreatedEntity,
+                    HeroPowerCardId = heroPowerEntities.FirstOrDefault()?.CardId,
+                    HeroPowerEntityId = heroPowerEntities.FirstOrDefault()?.Entity ?? -1,
+                    HeroPowerUsed = heroPowerEntities.FirstOrDefault()?.GetTag(GameTag.BACON_HERO_POWER_ACTIVATED) == 1,
+                    HeroPowerInfo = heroPowerEntities.FirstOrDefault()?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0,
+                    HeroPowerInfo2 = heroPowerEntities.FirstOrDefault()?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2) ?? 0,
+                    HeroPowerCreatedEntity = null,
                     CardId = cardId,
                     PlayerId = playerId,
                     PlayerEntityId = playerEntityId,
@@ -397,9 +362,10 @@ namespace HearthstoneReplays.Events.Parsers
         public static List<TrinketEntity> BuildTrinkets(int playerPlayerId, GameState gameState)
         {
             return gameState.CurrentEntities.Values
-                .Where(entity => entity.GetEffectiveController() == playerPlayerId)
-                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                .Where(entity => entity.GetCardType() == (int)CardType.BATTLEGROUND_TRINKET)
+                .Where(entity => 
+                    entity.GetEffectiveController() == playerPlayerId &&
+                    entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
+                    entity.GetCardType() == (int)CardType.BATTLEGROUND_TRINKET)
                 .Select(entity => new TrinketEntity
                 {
                     cardId = entity.CardId,
@@ -429,22 +395,19 @@ namespace HearthstoneReplays.Events.Parsers
             var beastsSummonedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_BEASTS_SUMMONED_THIS_GAME, currentEntities);
             var magnetizedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_NUM_MAGNETIZE_THIS_GAME, currentEntities);
             var bloodGemEnchant = currentEntities
-                .Where(entity => entity.GetEffectiveController() == playerId)
-                // Don't use the PLAY zone, as it could cause issues with teammate state in Duos? To be tested
-                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                .Where(entity => entity.CardId == CardIds.BloodGemPlayerEnchantEnchantment)
+                .Where(entity => 
+                    entity.GetEffectiveController() == playerId &&
+                    // Don't use the PLAY zone, as it could cause issues with teammate state in Duos? To be tested
+                    entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
+                    entity.CardId == CardIds.BloodGemPlayerEnchantEnchantment)
                 .LastOrDefault();
             var bloodGemAttackBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0;
             var bloodGemHealthBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0;
             var debug2 = board.Any(e => e.Entity == 7656);
             var battlecriesTriggeredThisGame = GetPlayerTag(playerEntityId, GameTag.BATTLECRIES_TRIGGERED_THIS_GAME, currentEntities);
             var friendlyMinionsDeadLastCombat = GetPlayerTag(playerEntityId, GameTag.NUM_FRIENDLY_MINIONS_THAT_DIED_LAST_TURN, currentEntities);
-            //var debugList = currentEntitiesGs
-            //    .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
-            //    .ToList();
             var choralEnchantments = currentEntitiesGs
-                .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
-                .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)))
+                .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment && board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)))
                 .ToList();
             var choralEnchantment = choralEnchantments.FirstOrDefault();
             return new BgsPlayerGlobalInfo()
@@ -481,8 +444,7 @@ namespace HearthstoneReplays.Events.Parsers
                 {
                     var entities = stateFacade.GsState.GameState.CurrentEntities.Values.ToList();
                     var createdEntity = entities
-                        .Where(e => e.GetTag(GameTag.CREATOR) == heroPowerEntityId)
-                        .Where(e => e.GetCardType() == (int)CardType.MINION)
+                        .Where(e => e.GetTag(GameTag.CREATOR) == heroPowerEntityId && e.GetCardType() == (int)CardType.MINION)
                         .Reverse()
                         .FirstOrDefault();
                     heroPower.Info = createdEntity?.CardId;
@@ -549,10 +511,10 @@ namespace HearthstoneReplays.Events.Parsers
             var serenadedEnchantments = StateFacade.GsState.Replay.Games[StateFacade.GsState.Replay.Games.Count - 1]
                 .FilterGameData(typeof(ShowEntity))
                 .Select(d => d as ShowEntity)
-                .Where(e => e.CardId == CardIds.LovesickBalladist_SerenadedEnchantment)
-                .Where(e => e.GetTag(GameTag.CREATOR) == entity.Id)
-                //.Where(e => e.GetCardType() == (int)CardType.ENCHANTMENT)
-                .Where(e => e.GetTag(GameTag.ATTACHED) > 0)
+                .Where(e => 
+                    e.CardId == CardIds.LovesickBalladist_SerenadedEnchantment &&
+                    e.GetTag(GameTag.CREATOR) == entity.Id &&
+                    e.GetTag(GameTag.ATTACHED) > 0)
                 .ToList();
             // Make sure to take the last one so we are not polluted by values from previous fights
             var latestEnchantment = serenadedEnchantments.LastOrDefault();
@@ -612,10 +574,10 @@ namespace HearthstoneReplays.Events.Parsers
             OverrideTagWithHistory(clone, GameTag.VENOMOUS);
 
             var enchantments = StateFacade.GsState.GameState.CurrentEntities.Values
-                .Where(entity => entity.GetTag(GameTag.ATTACHED) == id)
+                .Where(entity => entity.GetTag(GameTag.ATTACHED) == id);
                 // Not sure why it can be REMOVEDFROMGAME
                 //.Where(entity => entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME)
-                .ToList();
+                //.ToList();
             //var debug = StateFacade.GsState.GameState.CurrentEntities.Values
             //    .Where(entity => entity.GetTag(GameTag.ATTACHED) == id)
             //    .ToList();
@@ -630,9 +592,10 @@ namespace HearthstoneReplays.Events.Parsers
         internal static int GetPlayerEnchantmentValue(int playerId, string enchantment, List<FullEntity> currentEntities)
         {
             return currentEntities
-                .Where(entity => entity.GetEffectiveController() == playerId)
-                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                .Where(entity => entity.CardId == enchantment)
+                .Where(entity => 
+                    entity.GetEffectiveController() == playerId &&
+                    entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
+                    entity.CardId == enchantment)
                 .FirstOrDefault()
                 ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
         }
@@ -640,9 +603,10 @@ namespace HearthstoneReplays.Events.Parsers
         internal static Tuple<int, int> GetTupleEnchantmentValue(int playerId, string enchantment, List<FullEntity> currentEntities)
         {
             var ench = currentEntities
-                .Where(entity => entity.GetEffectiveController() == playerId)
-                .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                .Where(entity => entity.CardId == enchantment)
+                .Where(entity => 
+                    entity.GetEffectiveController() == playerId &&
+                    entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
+                    entity.CardId == enchantment)
                 .FirstOrDefault();
             return new Tuple<int, int>(ench?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0, ench?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2) ?? 0);
         }
@@ -672,9 +636,8 @@ namespace HearthstoneReplays.Events.Parsers
         private static List<Enchantment> BuildEnchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
         {
             var enchantmentEntities = currentEntities.Values
-                            .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id)
-                            .Where(entity => entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME)
-                            .ToList();
+                .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id && entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME)
+                .ToList();
             var enchantments = enchantmentEntities
                 .Select(entity => new Enchantment
                 {

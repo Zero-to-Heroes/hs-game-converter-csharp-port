@@ -74,14 +74,15 @@ namespace HearthstoneReplays
 
         public void realtimeLogProcessing(string[] logLines, Action<object> callback)
         {
+            //Logger.Log("running async task", "");
             Task.Run(() =>
             {
                 try
                 {
                     // If we have a "create_game" log and no game seed, we defer
-                    Logger.Log("computing game seed", parser.State?.GSState == null);
-                    var gameSeed = parser.ExtractGameSeed(logLines, 0, logLines.Length);
-                    Logger.Log("realtimeLogProcessing", parser.State?.GSState == null);
+                    //Logger.Log("computing game seed", parser.State?.GSState == null);
+                    var gameSeed = parser.ExtractGameSeed(logLines);
+                    //Logger.Log("realtimeLogProcessing", parser.State?.GSState == null);
                     Array.ForEach(logLines, logLine => parser.ReadLine(logLine, gameSeed));
                     callback(null);
                 }

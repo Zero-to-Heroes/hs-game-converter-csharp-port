@@ -75,24 +75,22 @@ namespace HearthstoneReplays.Parser
         {
             Init();
             // Use chunks to recompute the game seed when parsing multiple games at the same time
-            int chunkSize = 500;
-            int totalLines = lines.Length;
+            //int chunkSize = 500;
+            //int totalLines = lines.Length;
 
-            for (int i = 0; i < totalLines; i += chunkSize)
+            long gameSeed = ExtractGameSeed(lines);
+            Logger.Log($"Extracted game seed = {gameSeed}", "");
+            if (gameSeed > 0)
             {
-                int currentChunkSize = Math.Min(chunkSize, totalLines - i);
-                var gameSeed = ExtractGameSeed(lines, i, currentChunkSize);
-                Logger.Log($"Extracted game seed = {gameSeed}", "");
+                this.CurrentGameSeed = gameSeed;
+            }
 
-                if (gameSeed > 0)
-                {
-                    this.CurrentGameSeed = gameSeed;
-                }
-
-                for (int j = 0; j < currentChunkSize; j++)
-                {
-                    ReadLine(lines[i + j], this.CurrentGameSeed);
-                }
+            for (int i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i];
+                //var debug = line.Contains("D 12:50:21.9664526 PowerTaskList.DebugPrintPower() -     TAG_CHANGE Entity=[entityName=Molten Rock id=524 zone=PLAY zonePos=1 cardId=BGS_127 player=12] tag=ZONE value=GRAVEYARD");
+                var debug = i == 7975;
+                ReadLine(line, this.CurrentGameSeed);
             }
         }
 
@@ -234,11 +232,11 @@ namespace HearthstoneReplays.Parser
             return logDateTime < start ? logDateTime.AddDays(1) : logDateTime;
         }
 
-        public long ExtractGameSeed(string[] lines, int startIndex, int count)
+        public long ExtractGameSeed(string[] lines)
         {
             string pattern = @"tag=GAME_SEED value=(\d+)";
             bool isGameCreation = false;
-            for (int i = startIndex; i < startIndex + count; i++)
+            for (int i = 0; i < lines.Length; i++)
             {
                 var line = lines[i];
                 if (line.Contains("CREATE_GAME"))

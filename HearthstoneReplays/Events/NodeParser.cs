@@ -35,7 +35,8 @@ namespace HearthstoneReplays.Events
                     // For NEW_GAME event
                     return BuildActionParsers(ParserState, StateType);
                 }
-                this._parsers = BuildActionParsers(ParserState, StateType)
+                var allParsers = BuildActionParsers(ParserState, StateType);
+                this._parsers = allParsers
                     .Where(p => Controller.Applies(p))
                     .ToList();
                 return this._parsers;

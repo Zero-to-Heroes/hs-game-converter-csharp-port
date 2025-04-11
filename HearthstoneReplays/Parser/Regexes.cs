@@ -31,7 +31,7 @@ namespace HearthstoneReplays.Parser
 		//public static readonly Regex ActionStartRegex_Short =
 		//	new Regex(string.Format(@"BLOCK_START (?:SubType|BlockType)=(\w+) Entity={0} EffectCardId=(.*) EffectIndex=(-1|\d+) Target={0} SubOption={0}$", Entity), RegexOptions.Compiled);
 		public static readonly Regex ActionStartRegex =
-			new Regex(string.Format(@"BLOCK_START (?:SubType|BlockType)=(\w+) Entity={0} EffectCardId=(.*) EffectIndex=(-1|\d+) Target={0} SubOption={0} TriggerKeyword={0}$", Entity), RegexOptions.Compiled);
+			new Regex(string.Format(@"BLOCK_START (?:SubType|BlockType)=(\w+) Entity={0} EffectCardId=(.*) EffectIndex=(-1|\d+) Target={0} SubOption=(-1|\d+)(?: TriggerKeyword=(.*))?$", Entity), RegexOptions.Compiled);
 
         public static readonly Regex PlayerNameAssignment = new Regex(@"PlayerID=(\d+), PlayerName=(.+)", RegexOptions.Compiled);
 

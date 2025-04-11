@@ -45,11 +45,11 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
             var entity = GameState.CurrentEntities[tagChange.Entity];
-            if (entity.GetTag(GameTag.ZONE) != (int)Zone.PLAY)
+            if (!entity.IsMinionLike())
             {
                 return null;
             }
-            if (!entity.IsMinionLike())
+            if (entity.GetTag(GameTag.ZONE) != (int)Zone.PLAY)
             {
                 return null;
             }

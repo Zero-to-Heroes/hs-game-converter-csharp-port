@@ -16,7 +16,7 @@ namespace HearthstoneReplays.Parser.Handlers
     {
         public static bool HandleBlockEnd(string data, ParserState state)
         {
-            if (data == "BLOCK_END")
+            if (data == "BLOCK_END") 
             {
                 if (state.Node.Type != typeof(Game))
                 {
