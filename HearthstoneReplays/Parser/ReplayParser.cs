@@ -26,7 +26,7 @@ namespace HearthstoneReplays.Parser
     {
         public static DateTime start; // The log is not aware of absolute time, time zones, etc. So we just represent it based on the user's computer
 
-        private CombinedState State;
+        public CombinedState State;
         //private ParserState State;
         private DataHandler dataHandler;
         private PowerDataHandler powerDataHandler;
@@ -54,6 +54,7 @@ namespace HearthstoneReplays.Parser
             powerProcessorHandler = new PowerProcessorHandler(helper);
             previousTimestamp = default;
             start = DateTime.Now; // Don't use UTC, otherwise it won't match with the log info
+            Logger.Log("ReplayParser constructor over", State.GSState == null);
         }
 
         public HearthstoneReplay FromString(IEnumerable<string> lines, params GameType[] gameTypes)

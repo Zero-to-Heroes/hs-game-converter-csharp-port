@@ -84,8 +84,8 @@ namespace HearthstoneReplayTests
                 }
             };
             List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
-            logFile.Insert(0, "START_CATCHING_UP");
-            logFile.Add("END_CATCHING_UP");
+            //logFile.Insert(0, "START_CATCHING_UP");
+            //logFile.Add("END_CATCHING_UP");
             var parser = new ReplayParser();
 
             HearthstoneReplay replay = parser.FromString(logFile);
@@ -114,8 +114,8 @@ namespace HearthstoneReplayTests
                 eventsCount[type] = count;
             };
             List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
-            logFile.Insert(0, "START_CATCHING_UP");
-            logFile.Add("END_CATCHING_UP");
+            //logFile.Insert(0, "START_CATCHING_UP");
+            //logFile.Add("END_CATCHING_UP");
             var parser = new ReplayParser();
             HearthstoneReplay replay = parser.FromString(logFile); 
 
@@ -139,8 +139,8 @@ namespace HearthstoneReplayTests
             //};
 
             List<string> logFile = TestDataReader.GetInputFile("bugs.txt");
-            logFile.Insert(0, "START_CATCHING_UP");
-            logFile.Add("END_CATCHING_UP");
+            //logFile.Insert(0, "START_CATCHING_UP");
+            //logFile.Add("END_CATCHING_UP");
             var parser = new ReplayParser();
 
             for (var i = 0; i < numberOfLoops; i++)
@@ -162,8 +162,8 @@ namespace HearthstoneReplayTests
             GC.Collect();
             GC.WaitForPendingFinalizers();
             GC.Collect();
-            logsForGame.Insert(0, "START_CATCHING_UP");
-            logsForGame.Add("END_CATCHING_UP");
+            //logsForGame.Insert(0, "START_CATCHING_UP");
+            //logsForGame.Add("END_CATCHING_UP");
             var logsArray = logsForGame.ToArray();
             var result = PluginProcessingAsync(plugin, logsArray).Result;
             Thread.Sleep(3000);

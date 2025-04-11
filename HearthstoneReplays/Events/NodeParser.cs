@@ -32,7 +32,8 @@ namespace HearthstoneReplays.Events
                 }
                 if (StateFacade?.GsState?.CurrentGame?.GameType == null || StateFacade?.GsState?.CurrentGame?.GameType == -1)
                 {
-                    return new List<ActionParser>();
+                    // For NEW_GAME event
+                    return BuildActionParsers(ParserState, StateType);
                 }
                 this._parsers = BuildActionParsers(ParserState, StateType)
                     .Where(p => Controller.Applies(p))

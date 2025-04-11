@@ -40,48 +40,46 @@ namespace HearthstoneReplays.Events
 
         public void EnqueueGameEvent(List<GameEventProvider> providers)
         {
+            if (providers == null || providers.Count == 0)
+            {
+                return;
+            }
+
             providers = providers.Where(provider => provider != null).ToList();
-            //Logger.Log("[csharp] Enqueueing game event", providers != null ? providers[0].CreationLogLine : null);
-            //Logger.Log("[csharp] Enqueueing game event", providers != null ? providers[0].EventName : null);
+
             lock (listLock)
             {
-                //Logger.Log("Acquierd list lock in queneGameEvent", providers != null ? providers[0].EventName : null);
                 // Remove outstanding events
                 if (providers.Any(provider => (provider.CreationLogLine?.Contains("CREATE_GAME")) ?? false) && eventQueue.Count > 0)
                 {
-                    //Logger.Log("Purging queue of outstanding events", eventQueue.Count);
                     ClearQueue();
                 }
 
-                var shouldUnqueuePredicates = providers
-                    .Select(provider => provider.isDuplicatePredicate)
-                    .ToList();
                 // Remove duplicate events
                 // As we process the queue when the animation is ready, we should not have a race condition 
                 // here, but it's still risky (vs preventing the insertion if a future event is a duplicate, but 
                 // which requires a lot of reengineering of the loop)
-                if (eventQueue != null
-                    && eventQueue.Count > 0
-                    && shouldUnqueuePredicates != null
-                    && shouldUnqueuePredicates.Count > 0)
+                if (eventQueue != null && eventQueue.Count > 0)
                 {
-                    //Logger.Log("Before culling dupes", eventQueue.Count);
-                    eventQueue = eventQueue
-                        .Where(queued => queued != null)
-                        .Where((queued) => !shouldUnqueuePredicates.Any((predicate) => predicate(queued)))
+                    var shouldUnqueuePredicates = providers
+                        .Where(provider => provider.isDuplicatePredicate != null)
+                        .Select(provider => provider.isDuplicatePredicate)
                         .ToList();
-                    //Logger.Log("After culling dupes", eventQueue.Count);
+
+                    if (shouldUnqueuePredicates.Count > 0)
+                    {
+                        eventQueue = eventQueue
+                            .Where(queued => queued != null && !shouldUnqueuePredicates.Any(predicate => predicate(queued)))
+                            .ToList();
+                    }
                 }
+
                 eventQueue.AddRange(providers);
-                // Don't touch the start/stop dev mode processors
-                //var startDevModeIndex = eventQueue.FindIndex(item => item is StartDevModeProvider);
-                //var stopDevModeIndex = eventQueue.FindIndex(item => item is StopDevModeProvider);
-                //Logger.Log("Found start and dev mode index", startDevModeIndex + " // " + stopDevModeIndex);
-                eventQueue = eventQueue
-                    .OrderBy(p => p.Timestamp)
-                    .ThenBy(p => p.Index)
-                    .ToList();
-                //Logger.Log("Enqueued game event", providers != null ? providers[0].CreationLogLine : null);
+                eventQueue.Sort((a, b) =>
+                {
+                    int timestampComparison = a.Timestamp.CompareTo(b.Timestamp);
+                    return timestampComparison != 0 ? timestampComparison : a.Index.CompareTo(b.Index);
+                });
             }
         }
 

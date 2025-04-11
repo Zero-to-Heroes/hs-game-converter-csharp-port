@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Xml.Linq;
+using HearthstoneReplays.Enums;
 
 namespace HearthstoneReplays
 {
@@ -78,7 +79,9 @@ namespace HearthstoneReplays
                 try
                 {
                     // If we have a "create_game" log and no game seed, we defer
+                    Logger.Log("computing game seed", parser.State?.GSState == null);
                     var gameSeed = parser.ExtractGameSeed(logLines, 0, logLines.Length);
+                    Logger.Log("realtimeLogProcessing", parser.State?.GSState == null);
                     Array.ForEach(logLines, logLine => parser.ReadLine(logLine, gameSeed));
                     callback(null);
                 }
