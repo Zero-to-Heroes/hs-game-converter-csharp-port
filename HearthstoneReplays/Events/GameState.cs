@@ -313,42 +313,33 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             //    Logger.Log($"After ChangeEntity {entity.CardId}, existingZone={CurrentEntities[entity.Entity].GetZone()}", "");
             //}
         }
-
         public void TagChange(TagChange tagChange, string defChange)
         {
-            if (!CurrentEntities.ContainsKey(tagChange.Entity))
+            if (!CurrentEntities.TryGetValue(tagChange.Entity, out var fullEntity))
             {
                 return;
             }
 
-            var fullEntity = CurrentEntities[tagChange.Entity];
-
-            //if (tagChange.Name == (int)GameTag.ZONE)
-            //{
-            //    if (this.ParserState.StateType == StateType.PowerTaskList)
-            //    {
-            //        Logger.Log($"Zone TAG_CHANGE, cardId={CurrentEntities[tagChange.Entity].CardId}, " +
-            //        $"newZone={tagChange.Value}, " +
-            //        $"existingZone={CurrentEntities[tagChange.Entity].Tags.Find((t) => tagChange.Name == t.Name)?.Value}", "");
-            //    }
-            //}
             var newTags = fullEntity.GetTagsCopy();
-            var existingTag = newTags.Find((tag) => tag.Name == tagChange.Name);
+            var existingTag = newTags.FirstOrDefault(tag => tag.Name == tagChange.Name);
+
             if (existingTag == null)
             {
-                newTags.Add(new Tag() { Name = tagChange.Name });
+                newTags.Add(new Tag { Name = tagChange.Name, Value = tagChange.Value });
             }
-            var tagsAfterUpdate = newTags
-                .Select(tag => tag.Name == tagChange.Name ? new Tag() { Name = tag.Name, Value = tagChange.Value } : tag)
-                .ToList();
-            var debug = tagChange.Entity == 12791 && tagChange.Name == (int)GameTag.ATK;
-            fullEntity.Tags = tagsAfterUpdate;
-            fullEntity.TagsHistory.Add(new Tag() { Name = tagChange.Name, Value = tagChange.Value });
-            // Keep a history of things. This is useful when we use the "future game state" to know some information, but 
-            // by the time we process it the informtion has already been reset in the real tags
+            else
+            {
+                existingTag.Value = tagChange.Value;
+            }
+
+            // Update tags and history
+            fullEntity.Tags = newTags;
+            fullEntity.TagsHistory.Add(new Tag { Name = tagChange.Name, Value = tagChange.Value });
+
+            // Keep a history of previous tags
             if (existingTag != null)
             {
-                fullEntity.AllPreviousTags.Add(new Tag() { Name = existingTag.Name, Value = existingTag.Value });
+                fullEntity.AllPreviousTags.Add(new Tag { Name = existingTag.Name, Value = existingTag.Value });
             }
         }
 

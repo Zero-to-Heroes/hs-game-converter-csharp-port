@@ -9,7 +9,8 @@ namespace HearthstoneReplays.Events.Parsers.Controls
 {
     internal class BattlegroundsControls
     {
-        public static Type[] EXCLUDED_PARSERS = {
+        public static HashSet<Type> EXCLUDED_PARSERS = new HashSet<Type>
+        {
             typeof(MinionsWillDieParser),
             typeof(CardRevealedParser),
             typeof(EntityUpdateParser),

@@ -75,18 +75,22 @@ namespace HearthstoneReplays.Parser
             Init();
             // Use chunks to recompute the game seed when parsing multiple games at the same time
             int chunkSize = 500;
-            for (var i = 0; i < lines.Length; i += chunkSize)
+            int totalLines = lines.Length;
+
+            for (int i = 0; i < totalLines; i += chunkSize)
             {
-                string[] processedLines = lines.ToList().GetRange(i, Math.Min(chunkSize, lines.Length - i)).ToArray();
-                var gameSeed = ExtractGameSeed(processedLines);
+                int currentChunkSize = Math.Min(chunkSize, totalLines - i);
+                var gameSeed = ExtractGameSeed(lines, i, currentChunkSize);
                 Logger.Log($"Extracted game seed = {gameSeed}", "");
+
                 if (gameSeed > 0)
                 {
                     this.CurrentGameSeed = gameSeed;
                 }
-                foreach (var line in processedLines)
+
+                for (int j = 0; j < currentChunkSize; j++)
                 {
-                    ReadLine(line, this.CurrentGameSeed);
+                    ReadLine(lines[i + j], this.CurrentGameSeed);
                 }
             }
         }
@@ -229,17 +233,13 @@ namespace HearthstoneReplays.Parser
             return logDateTime < start ? logDateTime.AddDays(1) : logDateTime;
         }
 
-        public long ExtractGameSeed(string[] lines)
+        public long ExtractGameSeed(string[] lines, int startIndex, int count)
         {
             string pattern = @"tag=GAME_SEED value=(\d+)";
-            var firstLines = lines
-                //.Take(40)
-                .ToArray();
-            var lastLine = firstLines.Last();
             bool isGameCreation = false;
-            //Logger.Log($"Last line for seed extraction", lastLine);
-            foreach (var line in firstLines)
+            for (int i = startIndex; i < startIndex + count; i++)
             {
+                var line = lines[i];
                 if (line.Contains("CREATE_GAME"))
                 {
                     isGameCreation = true;
@@ -261,7 +261,7 @@ namespace HearthstoneReplays.Parser
             // this will cause issues when trying to spot a reconnect
             if (isGameCreation)
             {
-                Logger.Log($"CREATE_GAME without seed", lastLine);
+                Logger.Log($"CREATE_GAME without seed", lines[lines.Length - 1]);
             }
             return isGameCreation ? -1 : 0;
         }

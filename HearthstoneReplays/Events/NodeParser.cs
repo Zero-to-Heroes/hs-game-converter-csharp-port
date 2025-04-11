@@ -18,10 +18,28 @@ namespace HearthstoneReplays.Events
     {
         private EventQueueHandler QueueHandler { get; set; }
         private StateFacade StateFacade { get; set; }
+        private ParserState ParserState { get; set; }
         private StateType StateType { get; set; }
 
         private ControlsManager Controller { get; set; }
-        private List<ActionParser> parsers;
+
+        private List<ActionParser> _parsers;
+        private List<ActionParser> parsers { 
+            get {
+                if (_parsers != null)
+                {
+                    return _parsers;
+                }
+                if (StateFacade?.GsState?.CurrentGame?.GameType == null || StateFacade?.GsState?.CurrentGame?.GameType == -1)
+                {
+                    return new List<ActionParser>();
+                }
+                this._parsers = BuildActionParsers(ParserState, StateType)
+                    .Where(p => Controller.Applies(p))
+                    .ToList();
+                return this._parsers;
+            } 
+        }
 
         // Feed it the PTL parser, as it's the latest one to get the meta data
         public NodeParser(EventQueueHandler queueHandler, StateFacade stateFacade, StateType stateType)
@@ -34,9 +52,10 @@ namespace HearthstoneReplays.Events
 
         public void Reset(ParserState ParserState, StateFacade helper)
         {
-            StateFacade = helper;
-            QueueHandler.Reset(StateFacade);
-            parsers = BuildActionParsers(ParserState, StateType);
+            this.StateFacade = helper;
+            this.ParserState = ParserState;
+            this.QueueHandler.Reset(StateFacade);
+            this._parsers = null;
         }
 
         public void NewNode(Node node, StateType stateType)
@@ -47,7 +66,7 @@ namespace HearthstoneReplays.Events
             }
             foreach (ActionParser parser in parsers)
             {
-                if (Controller.Applies(parser) && parser.AppliesOnNewNode(node, stateType))
+                if (parser.AppliesOnNewNode(node, stateType))
                 {
                     try
                     {
@@ -75,7 +94,7 @@ namespace HearthstoneReplays.Events
             }
             foreach (ActionParser parser in parsers)
             {
-                if (!node.Closed && Controller.Applies(parser) && parser.AppliesOnCloseNode(node, stateType))
+                if (!node.Closed && parser.AppliesOnCloseNode(node, stateType))
                 {
                     try
                     {

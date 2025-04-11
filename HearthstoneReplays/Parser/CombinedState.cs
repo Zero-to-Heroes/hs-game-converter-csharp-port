@@ -10,10 +10,10 @@ namespace HearthstoneReplays.Parser
     public class CombinedState
     {
         // The "future" state, before the animations happen
-        public ParserState GSState { get; private set; }
+        public ParserState GSState;
         // The "real-time" state
-        public ParserState PTLState { get; private set; }
-        public StateFacade StateFacade { get; private set; }
+        public ParserState PTLState;
+        public StateFacade StateFacade;
 
         public CombinedState()
         {

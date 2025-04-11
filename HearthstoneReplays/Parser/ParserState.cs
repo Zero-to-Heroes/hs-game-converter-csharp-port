@@ -200,6 +200,8 @@ namespace HearthstoneReplays.Parser
             //FullLog = "";
             NumberOfCreates = 0;
             Logger.Log($"resetting game state, ended is now Ended={Ended}", this.StateType);
+
+            _isBattlegrounds = null;
         }
 
         public void CreateNewNode(Node newNode)
@@ -431,12 +433,22 @@ namespace HearthstoneReplays.Parser
                 .FirstOrDefault();
         }
 
+        private bool? _isBattlegrounds = null;
         public bool IsBattlegrounds()
         {
-            return CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
+            if (_isBattlegrounds != null)
+            {
+                return this._isBattlegrounds.Value;
+            }
+            if (CurrentGame.GameType == -1)
+            {
+                return false;
+            }
+            this._isBattlegrounds = CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS
                 || CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_FRIENDLY
                 || CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_DUO
                 || CurrentGame.GameType == (int)GameType.GT_BATTLEGROUNDS_DUO_FRIENDLY;
+            return this._isBattlegrounds.Value;
         }
 
         public bool IsBattlegroundsDuos()

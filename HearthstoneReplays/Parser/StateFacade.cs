@@ -10,7 +10,7 @@ namespace HearthstoneReplays.Parser
 {
     public class StateFacade
     {
-        private CombinedState State { get; set; }
+        private CombinedState State;
 
         private string _lastProcessedGSLine;
         private string _lastProcessedPTLLine;
