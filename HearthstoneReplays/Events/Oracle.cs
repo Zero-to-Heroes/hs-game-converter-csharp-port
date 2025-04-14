@@ -43,7 +43,7 @@ namespace HearthstoneReplays.Events
             return creatorCardId;
         }
 
-        public static Tuple<string, int> FindCardCreator(GameState GameState, FullEntity entity, Node node, bool getLastInfluencedBy = true)
+        public static Tuple<string, int> FindCardCreator(GameState GameState, FullEntity entity, Node node, bool getLastInfluencedBy = true, StateFacade stateFacade = null)
         {
             // If the card is already present in the deck, and was not created explicitely, there is no creator
             if (!getLastInfluencedBy
@@ -55,12 +55,25 @@ namespace HearthstoneReplays.Events
                 return null;
             }
 
-            var creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.CREATOR), node);
-            if (creatorCardId == null)
+            var creatorTuple = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.CREATOR), node);
+            if (creatorTuple == null)
             {
-                creatorCardId = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.DISPLAYED_CREATOR), node);
+                creatorTuple = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.DISPLAYED_CREATOR), node);
             }
-            return creatorCardId;
+            if (creatorTuple?.Item1 == CardIds.DarkGiftToken_EDR_102t)
+            {
+                var futureEntity = stateFacade?.GsState.GameState.CurrentEntities.GetValueOrDefault(entity.Id);
+                if (futureEntity != null)
+                {
+                    var realGiftCreatorEntityId = futureEntity.TagsHistory.LastOrDefault(t => t.Name == (int)GameTag.TAG_SCRIPT_DATA_ENT_1 && t.Value > 0)?.Value ?? 0;
+                    var realGiftCreator = stateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(realGiftCreatorEntityId);
+                    if (realGiftCreator != null)
+                    {
+                        creatorTuple = new Tuple<string, int>(realGiftCreator.CardId, realGiftCreatorEntityId);
+                    }
+                }
+            }
+            return creatorTuple;
         }
 
         public static Tuple<string, int> FindCardCreatorCardId(GameState GameState, ShowEntity entity, Node node)

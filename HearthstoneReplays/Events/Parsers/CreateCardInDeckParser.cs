@@ -125,7 +125,20 @@ namespace HearthstoneReplays.Events.Parsers
             var parentAction = node.Parent?.Object as Action;
             bool createdByJoust = parentAction?.Type == (int)BlockType.JOUST;
 
-            var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
+            var creator = Oracle.FindCardCreator(GameState, fullEntity, node, true, StateFacade);
+            if (creator?.Item1 == CardIds.DarkGiftToken_EDR_102t)
+            {
+                var futureEntity = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(fullEntity.Id);
+                if (fullEntity != null)
+                {
+                    var realGiftCreatorEntityId = futureEntity.TagsHistory.LastOrDefault(t => t.Name == (int)GameTag.TAG_SCRIPT_DATA_ENT_1 && t.Value > 0)?.Value ?? 0;
+                    var realGiftCreator = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(realGiftCreatorEntityId);
+                    if (realGiftCreator != null)
+                    {
+                        creator = new Tuple<string, int>(realGiftCreator.CardId, realGiftCreatorEntityId);
+                    }
+                }
+            }
             var cardId = Oracle.PredictCardId(GameState, creator?.Item1, creator?.Item2 ?? -1, node, fullEntity.CardId, this.StateFacade, fullEntity.Entity);
             // The timing for this is super weird, as the entity is created in deck before the Portal triggers
             // Also, according to the devs, it shouldn't even be able to create itself
