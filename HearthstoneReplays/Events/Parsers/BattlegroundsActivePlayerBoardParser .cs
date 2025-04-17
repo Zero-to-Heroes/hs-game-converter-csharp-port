@@ -31,7 +31,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool IsApplyOnNewNode(Node node)
         {
-            return StateFacade.IsBattlegrounds()
+            return StateFacade.IsBattlegroundsDuos()
                     && node.Type == typeof(TagChange)
                     // Seems to happen a bit too frequently
                     && (node.Object as TagChange).Name == (int)GameTag.STEP
@@ -57,19 +57,19 @@ namespace HearthstoneReplays.Events.Parsers
 
             var result = new List<GameEventProvider>();
             result.Add(GameEventProvider.Create(
-                   tagChange.TimeStamp,
-                   "BATTLEGROUNDS_ACTIVE_PLAYER_BOARD",
-                   () => new GameEvent
-                   {
-                       Type = "BATTLEGROUNDS_ACTIVE_PLAYER_BOARD",
-                       Value = new
-                       {
-                           //PlayerBoard = playerBoard,
-                       }
-                   },
-                   true,
-                   node
-               ));
+                tagChange.TimeStamp,
+                "BATTLEGROUNDS_ACTIVE_PLAYER_BOARD",
+                () => new GameEvent
+                {
+                    Type = "BATTLEGROUNDS_ACTIVE_PLAYER_BOARD",
+                    Value = new
+                    {
+                        //PlayerBoard = playerBoard,
+                    }
+                },
+                true,
+                node
+            ));
             return result;
         }
 
