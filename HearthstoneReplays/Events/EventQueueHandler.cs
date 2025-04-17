@@ -40,6 +40,7 @@ namespace HearthstoneReplays.Events
 
         public void EnqueueGameEvent(List<GameEventProvider> providers)
         {
+            //Logger.Log("Enqueuing game event", "");
             if (providers == null || providers.Count == 0)
             {
                 return;
@@ -85,6 +86,7 @@ namespace HearthstoneReplays.Events
 
         public void ClearQueue()
         {
+            // Logger.Log("Clearing queue", "");
             lock (listLock)
             {
                 //Logger.Log("Acquierd list lock in clearqueue", "");
@@ -99,69 +101,72 @@ namespace HearthstoneReplays.Events
         private bool processing;
         private async void ProcessGameEventQueue(Object source, ElapsedEventArgs e)
         {
-            if (processing)
+            _ = Task.Run(async () =>
             {
-                return;
-            }
-
-            while (IsEventToProcess())
-            {
-                processing = true;
-                //Logger.Log("[csharp] Event to process", "");
-                GameEventProvider provider = null;
-
-                try
+                if (processing)
                 {
-                    lock (listLock)
-                    {
-                        if (eventQueue.Count == 0)
-                        {
-                            //Logger.Log("No event", "");
-                            processing = false;
-                            return;
-                        }
-
-                        if (waitingForMetaData)
-                        {
-                            Logger.Log("Waiting for metadata", "");
-                            processing = false;
-                            return;
-                        }
-
-                        provider = eventQueue[0];
-                        eventQueue.RemoveAt(0);
-                    }
-                    if (provider.NeedMetaData)
-                    {
-                        waitingForMetaData = true;
-                        // Wait until we have all the necessary data
-                        while (!Helper.HasMetaData())
-                        {
-                            Logger.Log($"Awaiting metadata {Helper.GsState.CurrentGame.FormatType}, {Helper.GsState.CurrentGame.GameType}," +
-                                $"{Helper.LocalPlayer}", provider.EventName);
-                            await Task.Delay(100);
-                        }
-                        waitingForMetaData = false;
-                    }
-                    if (provider.WaitFor != 0)
-                    {
-                        await Task.Delay(provider.WaitFor);
-                    }
-
-                    lock (listLock)
-                    {
-                        ProcessGameEvent(provider);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("Exception while parsing event " + provider?.EventName, provider?.CreationLogLine);
-                    Logger.Log("Exception while parsing event queue " + ex.Message, ex.StackTrace);
-                    processing = false;
                     return;
                 }
-            }
-            processing = false;
+
+                while (IsEventToProcess())
+                {
+                    processing = true;
+                    //Logger.Log("[csharp] Event to process", "");
+                    GameEventProvider provider = null;
+
+                    try
+                    {
+                        lock (listLock)
+                        {
+                            if (eventQueue.Count == 0)
+                            {
+                                //Logger.Log("No event", "");
+                                processing = false;
+                                return;
+                            }
+
+                            if (waitingForMetaData)
+                            {
+                                Logger.Log("Waiting for metadata", "");
+                                processing = false;
+                                return;
+                            }
+
+                            provider = eventQueue[0];
+                            eventQueue.RemoveAt(0);
+                        }
+                        if (provider.NeedMetaData)
+                        {
+                            waitingForMetaData = true;
+                            // Wait until we have all the necessary data
+                            while (!Helper.HasMetaData())
+                            {
+                                Logger.Log($"Awaiting metadata {Helper.GsState.CurrentGame.FormatType}, {Helper.GsState.CurrentGame.GameType}," +
+                                    $"{Helper.LocalPlayer}", provider.EventName);
+                                await Task.Delay(100);
+                            }
+                            waitingForMetaData = false;
+                        }
+                        if (provider.WaitFor != 0)
+                        {
+                            await Task.Delay(provider.WaitFor);
+                        }
+
+                        lock (listLock)
+                        {
+                            ProcessGameEvent(provider);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log("Exception while parsing event " + provider?.EventName, provider?.CreationLogLine);
+                        Logger.Log("Exception while parsing event queue " + ex.Message, ex.StackTrace);
+                        processing = false;
+                        return;
+                    }
+                }
+                processing = false;
+            });
         }
 
         private void ProcessGameEvent(GameEventProvider provider)
