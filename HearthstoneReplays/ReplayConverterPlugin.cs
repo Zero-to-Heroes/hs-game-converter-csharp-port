@@ -57,19 +57,30 @@ namespace HearthstoneReplays
 
         public void initRealtimeLogConversion(Action<object> callback)
         {
-            Logger.Log = onGlobalEvent;
-            GameEventHandler.EventProvider = (GameEvent gameEvent) => onGameEvent(JsonConvert.SerializeObject(gameEvent, new JsonSerializerSettings()
+            Task.Run(() =>
             {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            }));
-            // The goal here is to make sure the order is kept while in Dev mode, where events are very rapidly firing
-            GameEventHandler.EventProviderAll = (IList<GameEvent> gameEvents) => onGameEvent(JsonConvert.SerializeObject(gameEvents, new JsonSerializerSettings()
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            }));
-            parser = new ReplayParser();
-            parser.Init();
-            callback?.Invoke(null);
+                try
+                {
+                    Logger.Log = onGlobalEvent;
+                    GameEventHandler.EventProvider = (GameEvent gameEvent) => onGameEvent(JsonConvert.SerializeObject(gameEvent, new JsonSerializerSettings()
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                    }));
+                    // The goal here is to make sure the order is kept while in Dev mode, where events are very rapidly firing
+                    GameEventHandler.EventProviderAll = (IList<GameEvent> gameEvents) => onGameEvent(JsonConvert.SerializeObject(gameEvents, new JsonSerializerSettings()
+                    {
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                    }));
+                    parser = new ReplayParser();
+                    parser.Init();
+                    callback?.Invoke(null);
+                }
+                catch (Exception e)
+                {
+                    Logger.Log("Exception in initRealtimeLogConversion " + e?.GetBaseException(), "");
+                    callback(null);
+                }
+            });
         }
 
         public void realtimeLogProcessing(string[] logLines, Action<object> callback)
