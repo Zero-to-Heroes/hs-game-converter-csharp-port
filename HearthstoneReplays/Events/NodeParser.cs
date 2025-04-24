@@ -30,7 +30,11 @@ namespace HearthstoneReplays.Events
                 {
                     return _parsers;
                 }
-                if (StateFacade?.GsState?.CurrentGame?.GameType == null || StateFacade?.GsState?.CurrentGame?.GameType == -1)
+                if (ParserState == null)
+                {
+                    return new List<ActionParser>();
+                }
+                if (StateFacade?.GsState?.CurrentGame?.GameType == null || ParserState == null || StateFacade?.GsState?.CurrentGame?.GameType == -1)
                 {
                     // For NEW_GAME event
                     return BuildActionParsers(ParserState, StateType);
@@ -277,7 +281,7 @@ namespace HearthstoneReplays.Events
                     new GalakrondInvokedParser(ParserState, StateFacade),
                     new CardBuffedInHandParser(ParserState, StateFacade),
                     new MinionGoDormantParser(ParserState, StateFacade),
-                    new BlockEndParser(ParserState, StateFacade),
+                    //new BlockEndParser(ParserState, StateFacade),
                     new JadeGolemParser(ParserState, StateFacade),
                     new CthunParser(ParserState, StateFacade),
                     new EntityUpdateParser(ParserState, StateFacade),

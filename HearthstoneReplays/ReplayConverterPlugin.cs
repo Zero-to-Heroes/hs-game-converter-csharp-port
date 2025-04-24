@@ -85,7 +85,7 @@ namespace HearthstoneReplays
 
         public void realtimeLogProcessing(string[] logLines, Action<object> callback)
         {
-            Logger.Log("[debug] running async task", "");
+            //Logger.Log("[debug] running async task", "");
             Task.Run(() =>
             {
                 try
