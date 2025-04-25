@@ -17,9 +17,10 @@ namespace HearthstoneReplays.Parser.Handlers
     {
         public static bool HandleSpectator(DateTime timestamp, string data, ParserState state, StateFacade stateFacade)
         {
-            // Only trigger the reset when spectator mode happens for the first time
+            // Only trigger the reset when spectator mode happens for the first time 
             if (data.Contains("Begin Spectating") && !data.Contains("2nd"))
             {
+                Logger.Log("Will handle spectate log", data);
                 state.Reset(stateFacade);
                 state.Spectating = true;
                 state.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { GameEventProvider.Create(
@@ -42,6 +43,7 @@ namespace HearthstoneReplays.Parser.Handlers
             }
             if (data.Contains("End Spectator Mode"))
             {
+                Logger.Log("Will handle end of spectate", data);
                 if (stateFacade?.LocalPlayer == null)
                 {
                     return false;

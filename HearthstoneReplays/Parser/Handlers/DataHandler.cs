@@ -34,8 +34,6 @@ namespace HearthstoneReplays.Parser.Handlers
                 { "GameEntity EntityID=", (timestamp, data, state, stateType, facade, indent) => CreateGameHandler.HandleCreateGame(timestamp, data, state, indent) },
                 { "PlayerID=", (timestamp, data, state, stateType, facade, indent) => PlayerNameHandler.HandlePlayerName(timestamp, data, state, stateType) },
                 { "Player EntityID=", (timestamp, data, state, stateType, facade, indent) => CreatePlayerHandler.HandleCreatePlayer(data, state, facade, indent) },
-                { "Begin Spectating", (timestamp, data, state, stateType, facade, indent) => SpectatorHandler.HandleSpectator(timestamp, data, state, facade) },
-                { "End Spectator Mode", (timestamp, data, state, stateType, facade, indent) => SpectatorHandler.HandleSpectator(timestamp, data, state, facade) },
                 { "BLOCK_START", (timestamp, data, state, stateType, facade, indent) => BlockStartHandler.HandleBlockStart(timestamp, data, state, indent, helper) },
                 { "BLOCK_END", (timestamp, data, state, stateType, facade, indent) => BlockEndHandler.HandleBlockEnd(data, state) },
                 { "BuildNumber=", (timestamp, data, state, stateType, facade, indent) => MetaDataHandler.HandleMetaData(timestamp, data, state, stateType, metadata, helper) },
@@ -61,12 +59,18 @@ namespace HearthstoneReplays.Parser.Handlers
         public void Handle(DateTime timestamp, string data, ParserState state, StateType stateType, DateTime previousTimestamp, StateFacade stateFacade, long currentGameSeed)
         {
             var trimmed = data.Trim();
+            //Logger.Log("trimmed", trimmed);
             var indentLevel = data.Length - trimmed.Length;
             data = trimmed;
 
             // Additional handlers for specific cases
             if (NewGameHandler.HandleNewGame(timestamp, data, state, previousTimestamp, stateType, stateFacade, currentGameSeed, metadata, helper))
             {
+                return;
+            }
+            else if (data.Contains("Begin Spectating") || data.Contains("End Spectator Mode"))
+            {
+                SpectatorHandler.HandleSpectator(timestamp, data, state, stateFacade);
                 return;
             }
 

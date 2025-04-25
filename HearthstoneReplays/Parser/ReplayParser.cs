@@ -114,7 +114,10 @@ namespace HearthstoneReplays.Parser
                 {
                     AddData(null, "Spectator", line, gameSeed);
                 }
-                Logger.Log("No match", line);
+                else
+                {
+                    Logger.Log("No match", line);
+                }
                 return;
             }
 
