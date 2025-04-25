@@ -202,6 +202,7 @@ namespace HearthstoneReplays.Parser
             Logger.Log($"resetting game state, ended is now Ended={Ended}", this.StateType);
 
             _isBattlegrounds = null;
+            _cachedPlayers = new List<PlayerEntity>();
         }
 
         public void CreateNewNode(Node newNode)
@@ -230,13 +231,24 @@ namespace HearthstoneReplays.Parser
                 Node = Node.Parent;
         }
 
+        private List<PlayerEntity> _cachedPlayers = new List<PlayerEntity>();
         public List<PlayerEntity> getPlayers()
         {
+            if (_cachedPlayers.Count > 0)
+            {
+                return _cachedPlayers;
+            }
             List<PlayerEntity> players = new List<PlayerEntity>();
-            foreach (GameData x in CurrentGame.Data)
+            var dataCopy = CurrentGame.Data.ToList();
+            foreach (GameData x in dataCopy)
             {
                 if (x is PlayerEntity) players.Add((PlayerEntity)x);
             }
+            // Not yet, need further testing to make sure it doesn't break anything
+            //if (players.Count > 0)
+            //{
+            //    _cachedPlayers = players;
+            //}
             return players;
         }
 

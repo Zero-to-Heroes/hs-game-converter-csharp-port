@@ -124,7 +124,16 @@ namespace HearthstoneReplays.Parser
         public void AskForGameStateUpdate()
         {
             //Logger.Log("askForGameStateUpdate", "Parser");
-            var gameState = GameEvent.BuildGameState(State.PTLState, State.StateFacade, State.PTLState.GameState);
+            GameStateShort gameState = null;
+            try
+            {
+                gameState = GameEvent.BuildGameState(State.PTLState, State.StateFacade, State.PTLState.GameState);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("askForGameStateUpdate", $"Could not create game state: {ex.ToString()}");
+            }
+            //Logger.Log("askForGameStateUpdate", "Built game state");
             Func<GameEvent> eventSupplier = () =>
             {
                 //Logger.Log("Returning new event", "GAME_STATE_UPDATE");
