@@ -394,6 +394,8 @@ namespace HearthstoneReplays.Events.Parsers
             var piratesSummonedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_PIRATES_SUMMONED_THIS_GAME, currentEntities);
             var beastsSummonedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_BEASTS_SUMMONED_THIS_GAME, currentEntities);
             var magnetizedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_NUM_MAGNETIZE_THIS_GAME, currentEntities);
+            var elementalHealthBuff = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTAL_BUFFHEALTHVALUE, currentEntities);
+            var elementalAttackBuff = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTAL_BUFFATKVALUE, currentEntities);
             var bloodGemEnchant = currentEntities
                 .Where(entity => 
                     entity.GetEffectiveController() == playerId &&
@@ -427,6 +429,8 @@ namespace HearthstoneReplays.Events.Parsers
                 ChoralHealthBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0,
                 BeetleAttackBuff = beetleArmy.Item1,
                 BeetleHealthBuff = beetleArmy.Item2,
+                ElementalHealthBuff = elementalHealthBuff,
+                ElementalAttackBuff = elementalAttackBuff,
                 BattlecriesTriggeredThisGame = battlecriesTriggeredThisGame,
                 FriendlyMinionsDeadLastCombat = friendlyMinionsDeadLastCombat,
                 SanlaynScribesDeadThisGame = sanlyanScribesDeadThisGame?.Item1 ?? 0,
@@ -712,6 +716,8 @@ namespace HearthstoneReplays.Events.Parsers
             public int ChoralAttackBuff { get; set; }
             public int BeetleAttackBuff { get; set; }
             public int BeetleHealthBuff { get; set; }
+            public int ElementalHealthBuff { get; set; }
+            public int ElementalAttackBuff { get; set; }
             public int BattlecriesTriggeredThisGame { get; set; }
             public int FriendlyMinionsDeadLastCombat { get; set; }
             public int MagnetizedThisGame { get; set; }
