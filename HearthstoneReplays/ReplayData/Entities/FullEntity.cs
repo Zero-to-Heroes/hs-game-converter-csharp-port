@@ -63,10 +63,17 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 			return !string.IsNullOrEmpty(CardId);
 		}
 
+        private Newtonsoft.Json.JsonSerializerSettings _serializationSettings = new Newtonsoft.Json.JsonSerializerSettings
+        {
+            ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace,
+            DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Include,
+            ContractResolver = new IncludeJsonIgnoreContractResolver() // Use the custom resolver
+        };
+
         internal FullEntity Clone()
         {
-            string serializedObject = Newtonsoft.Json.JsonConvert.SerializeObject(this);
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<FullEntity>(serializedObject);
+            string serializedObject = Newtonsoft.Json.JsonConvert.SerializeObject(this, _serializationSettings);
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<FullEntity>(serializedObject, _serializationSettings);
             //DataContractSerializer dcSer = new DataContractSerializer(this.GetType());
             //MemoryStream memoryStream = new MemoryStream();
 
