@@ -83,12 +83,12 @@ namespace HearthstoneReplays.Events.Parsers
             return new AttackOnBoard()
             {
                 Player = BuildAttackOnBoardForPlayer(
-                    StateFacade.LocalPlayer.PlayerId, 
-                    GameState.CurrentEntities.GetValueOrDefault(StateFacade.LocalPlayer.Id), 
+                    StateFacade.LocalPlayer.PlayerId,
+                    GameState.CurrentEntities.GetValueOrDefault(StateFacade.LocalPlayer.Id),
                     allEntities),
                 Opponent = BuildAttackOnBoardForPlayer(
-                    StateFacade.OpponentPlayer.PlayerId, 
-                    GameState.CurrentEntities.GetValueOrDefault(StateFacade.OpponentPlayer.Id), 
+                    StateFacade.OpponentPlayer.PlayerId,
+                    GameState.CurrentEntities.GetValueOrDefault(StateFacade.OpponentPlayer.Id),
                     allEntities),
             };
         }
@@ -105,13 +105,17 @@ namespace HearthstoneReplays.Events.Parsers
             int totalAttackOnBoard = entitiesOnBoardThatCanAttack.Select(e => GetAttack(e)).Sum();
 
             // Hero
-            var weapon = entitiesForPlayer.FirstOrDefault(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.WEAPON);
-            var baseHeroAttack = isActivePlayer ? hero.GetTag(GameTag.ATK, 0) : (weapon?.GetTag(GameTag.ATK) ?? 0);
-            var windfuryMultiplier = GetWindfuryMultiplier(hero);
-            var attacksForWeapon = (weapon?.GetTag(GameTag.HEALTH) ?? 1) - (weapon?.GetTag(GameTag.DAMAGE, 0) ?? 0);
-            var maxAttacks = Math.Min(windfuryMultiplier, attacksForWeapon);
-            var attacksLeft = maxAttacks - hero.GetTag(GameTag.NUM_ATTACKS_THIS_TURN, 0);
-            var heroAttack = CanAttack(hero, isActivePlayer, true) ? attacksLeft * baseHeroAttack : 0;
+            int heroAttack = 0;
+            if (hero != null)
+            {
+                var weapon = entitiesForPlayer.FirstOrDefault(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.WEAPON);
+                var baseHeroAttack = isActivePlayer ? hero.GetTag(GameTag.ATK, 0) : (weapon?.GetTag(GameTag.ATK) ?? 0);
+                var windfuryMultiplier = GetWindfuryMultiplier(hero);
+                var attacksForWeapon = (weapon?.GetTag(GameTag.HEALTH) ?? 1) - (weapon?.GetTag(GameTag.DAMAGE, 0) ?? 0);
+                var maxAttacks = Math.Min(windfuryMultiplier, attacksForWeapon);
+                var attacksLeft = maxAttacks - hero.GetTag(GameTag.NUM_ATTACKS_THIS_TURN, 0);
+                heroAttack = CanAttack(hero, isActivePlayer, true) ? attacksLeft * baseHeroAttack : 0;
+            }
             return new AttackOnBoardForPlayer()
             {
                 Board = totalAttackOnBoard,
