@@ -50,6 +50,12 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             var match = Tags.FirstOrDefault(t => t.Name == (int)tag);
             return match == null ? defaultValue : match.Value;
         }
+        public bool HasTag(GameTag tag)
+        {
+            // Prevent concurrent access, though this does seem to be expensive...
+            var match = Tags.FirstOrDefault(t => t.Name == (int)tag);
+            return match == null ? false : match.Value > 0;
+        }
 
         public int GetTagSecure(GameTag tag, int defaultValue = -1)
         {

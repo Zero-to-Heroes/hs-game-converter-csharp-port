@@ -281,7 +281,7 @@ namespace HearthstoneReplays.Events
                     new GalakrondInvokedParser(ParserState, StateFacade),
                     new CardBuffedInHandParser(ParserState, StateFacade),
                     new MinionGoDormantParser(ParserState, StateFacade),
-                    //new BlockEndParser(ParserState, StateFacade),
+                    new AttackOnBoardParser(ParserState, StateFacade),
                     new JadeGolemParser(ParserState, StateFacade),
                     new CthunParser(ParserState, StateFacade),
                     new EntityUpdateParser(ParserState, StateFacade),

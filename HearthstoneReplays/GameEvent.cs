@@ -162,7 +162,7 @@ namespace HearthstoneReplays
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .Select(entity => BuildSmallEntity(entity, options, fullEntitiesMap, allEntities))
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
-                    .FirstOrDefault();
+                    .FirstOrDefault(); 
                 return hero ?? new GameStateShortSmallEntity();
             }
             catch (Exception e)

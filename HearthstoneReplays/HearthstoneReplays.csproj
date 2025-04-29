@@ -217,7 +217,7 @@
     <Compile Include="Events\Parsers\CthunParser.cs" />
     <Compile Include="Events\Parsers\JadeGolemParser.cs" />
     <Compile Include="Events\Parsers\BattlegroundsTriplesCountUpdatedParser.cs" />
-    <Compile Include="Events\Parsers\BlockEndParser.cs" />
+    <Compile Include="Events\Parsers\AttackOnBoardParser.cs" />
     <Compile Include="Events\Parsers\WeaponDestroyedParser.cs" />
     <Compile Include="Events\Parsers\WeaponEquippedParser.cs" />
     <Compile Include="Events\Parsers\MinionGoDormantParser.cs" />

@@ -139,6 +139,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 Cost = shouldObfuscate ? 0 : cost,
                                 DrawnByCardId = drawnByCardId,
                                 DrawnByEntityId = drawnByEntityId,
+                                Tags = entity.GetTagsCopy(),
                             }
                         }
                     };
@@ -217,6 +218,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 Cost = cost,
                                 DrawnByCardId = drawnByCardId,
                                 DrawnByEntityId = drawnByEntityId,
+                                Tags = entity.GetTagsCopy(),
                             }
                         }
                     };
@@ -281,6 +283,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 Cost = cost,
                                 DrawnByCardId = drawnByCardId,
                                 DrawnByEntityId = drawnByEntityId,
+                                Tags = fullEntity.GetTagsCopy(),
                             }
                         }
                     };

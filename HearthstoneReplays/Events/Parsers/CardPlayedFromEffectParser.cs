@@ -56,7 +56,7 @@ namespace HearthstoneReplays.Events.Parsers
                        || (node.Parent.Object as Parser.ReplayData.GameActions.Action).Type == (int)BlockType.POWER);
 
             ShowEntity fullEntity = null;
-            bool cardPlayed = node.Type == typeof(ShowEntity) 
+            bool cardPlayed = node.Type == typeof(ShowEntity)
                 && (fullEntity = node.Object as ShowEntity).GetZone() == (int)Zone.PLAY;
             return stateType == StateType.PowerTaskList
                 && isPowerPhase
@@ -119,6 +119,7 @@ namespace HearthstoneReplays.Events.Parsers
                             TargetCardId = targetCardId,
                             CreatorCardId = creatorCardId,
                             CreatorEntityId = creatorEntityId,
+                            Tags = entity.GetTagsCopy(),
                         }
                     ),
                     true,
@@ -170,6 +171,7 @@ namespace HearthstoneReplays.Events.Parsers
                             CreatorCardId = creatorCardId,
                             CreatorEntityId = creatorEntityId,
                             CastWhenDrawn = true,
+                            Tags = entity.GetTagsCopy(),
                         }
                     ),
                     true,
@@ -214,6 +216,7 @@ namespace HearthstoneReplays.Events.Parsers
                             TargetCardId = targetCardId,
                             CreatorCardId = creatorCardId,
                             CreatorEntityId = creatorEntityId,
+                            Tags = entity.GetTagsCopy(),
                         }
                     ),
                     true,

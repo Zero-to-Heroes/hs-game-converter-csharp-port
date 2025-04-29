@@ -86,6 +86,7 @@ namespace HearthstoneReplays.Events.Parsers
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
                             Position = position,
                             GuessedTags = guessedTags,
+                            Tags = entity.GetTagsCopy(),
                         }),
                     true,
                     node) };
@@ -136,6 +137,7 @@ namespace HearthstoneReplays.Events.Parsers
                             DataNum1 = dataNum1,
                             DataNum2 = dataNum2,
                             Position = position,
+                            Tags = entity.GetTagsCopy(),
                         }),
                     true,
                     node) };
@@ -225,6 +227,11 @@ namespace HearthstoneReplays.Events.Parsers
                         var buffCardId = Oracle.GetBuffCardId(creator?.Item2 ?? -1, creatorCardId);
 
                         List<Tag> guessedTags = Oracle.GuessTags(GameState, creator?.Item1, creator?.Item2 ?? -1, node, null, StateFacade);
+                        var tags = fullEntity.GetTagsCopy();
+                        if (guessedTags != null)
+                        {
+                            tags.AddRange(guessedTags);
+                        }
                         return new GameEvent
                         {
                             Type =  "RECEIVE_CARD_IN_HAND",
@@ -248,7 +255,7 @@ namespace HearthstoneReplays.Events.Parsers
                                     DataNum2 = dataNum2,
                                     Position = position,
                                     ReferencedCardIds = referencedCardIds,
-                                    GuessedTags = guessedTags
+                                    GuessedTags = guessedTags,
                                 }
                             }
                         };

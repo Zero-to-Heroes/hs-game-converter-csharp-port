@@ -89,6 +89,7 @@ namespace HearthstoneReplays.Events.Parsers
                         CreatorCardId = creatorEntityCardId,
                         LastAffectedByEntityId = lastInfluencedByEntityId,
                         LastAffectedByCardId = lastAffectedByCardId,
+                        Tags = entity.GetTagsCopy(),
                     }),
                 true,
                 node) };

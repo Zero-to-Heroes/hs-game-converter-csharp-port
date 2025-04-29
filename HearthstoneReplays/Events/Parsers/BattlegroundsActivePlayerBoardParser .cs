@@ -276,8 +276,8 @@ namespace HearthstoneReplays.Events.Parsers
                 var sanlaynScribesDeadThisGame = GetTupleEnchantmentValue(playerId, CardIds.SanlaynScribePlayerEnchantDntEnchantment_BGDUO31_208pe, currentEntities);
                 var battlecriesTriggeredThisGame = GetPlayerTag(player.Id, GameTag.BATTLECRIES_TRIGGERED_THIS_GAME, GameState);
                 var friendlyMinionsDeadLastCombat = GetPlayerTag(player.Id, GameTag.NUM_FRIENDLY_MINIONS_THAT_DIED_LAST_TURN, GameState);
-                var elementalHealthBuff = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTAL_BUFFHEALTHVALUE, currentEntities);
-                var elementalAttackBuff = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTAL_BUFFATKVALUE, currentEntities);
+                var elementalHealthBuff = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTAL_BUFFHEALTHVALUE, GameState);
+                var elementalAttackBuff = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTAL_BUFFATKVALUE, GameState);
 
                 var trinkets = BattlegroundsPlayerBoardParser.BuildTrinkets(player.PlayerId, GameState);
 

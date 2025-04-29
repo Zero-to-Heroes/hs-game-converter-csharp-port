@@ -116,6 +116,7 @@ namespace HearthstoneReplays.Events.Parsers
                         RevealedFromBlock = revealedFromBlock,
                         IndexInBlock = indexInBlock,
                         Cost = fullEntity.GetCost(),
+                        Tags = fullEntity.GetTagsCopy(),
                     }
                 ),
                 true,

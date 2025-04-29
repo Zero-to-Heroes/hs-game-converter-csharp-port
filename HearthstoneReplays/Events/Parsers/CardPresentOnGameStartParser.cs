@@ -65,6 +65,7 @@ namespace HearthstoneReplays.Events.Parsers
                     new {
                         Health = startingHealth,
                         CreatorCardId = creator?.Item1,
+                        Tags = fullEntity.GetTagsCopy(),
                     }),
                 true,
                 node) };
