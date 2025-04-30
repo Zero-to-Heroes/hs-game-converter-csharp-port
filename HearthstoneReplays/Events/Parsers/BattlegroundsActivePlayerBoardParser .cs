@@ -252,7 +252,8 @@ namespace HearthstoneReplays.Events.Parsers
                     .ToList();
 
                 var eternalKnightBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.EternalKnightPlayerEnchantEnchantment, GameState);
-                var tavernSpellsCastThisGame = GameState.CurrentEntities[player.Id]?.GetTag(GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME) ?? 0;
+                var tavernSpellsCastThisGame = GameState.CurrentEntities[player.Id]?.GetTag(GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME, 0) ?? 0;
+                var spellsCastThisGame = GameState.CurrentEntities[player.Id]?.GetTag(GameTag.NUM_SPELLS_PLAYED_THIS_GAME, 0) ?? 0;
                 // Includes Anub'arak, Nerubian Deathswarmer
                 var undeadAttackBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, GameState);
                 // Looks like the enchantment isn't used anymore, at least for the opponent?
@@ -278,6 +279,8 @@ namespace HearthstoneReplays.Events.Parsers
                 var friendlyMinionsDeadLastCombat = GetPlayerTag(player.Id, GameTag.NUM_FRIENDLY_MINIONS_THAT_DIED_LAST_TURN, GameState);
                 var elementalHealthBuff = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTAL_BUFFHEALTHVALUE, GameState);
                 var elementalAttackBuff = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTAL_BUFFATKVALUE, GameState);
+                var tavernSpellHealthBuff = GetPlayerTag(player.Id, GameTag.TAVERN_SPELL_HEALTH_INCREASE, GameState);
+                var tavernSpellAttackBuff = GetPlayerTag(player.Id, GameTag.TAVERN_SPELL_ATTACK_INCREASE, GameState);
 
                 var trinkets = BattlegroundsPlayerBoardParser.BuildTrinkets(player.PlayerId, GameState);
 
@@ -330,8 +333,11 @@ namespace HearthstoneReplays.Events.Parsers
                         BeetleHealthBuff = beetleArmy.Item2,
                         ElementalHealthBuff = elementalHealthBuff,
                         ElementalAttackBuff = elementalAttackBuff,
+                        TavernSpellHealthBuff = tavernSpellHealthBuff,
+                        TavernSpellAttackBuff = tavernSpellAttackBuff,
                         BattlecriesTriggeredThisGame = battlecriesTriggeredThisGame,
                         FriendlyMinionsDeadLastCombat = friendlyMinionsDeadLastCombat,
+                        SpellsCastThisGame = spellsCastThisGame,
                         SanlaynScribesDeadThisGame = sanlaynScribesDeadThisGame?.Item1 ?? 0,
                     }
                 };
@@ -505,25 +511,6 @@ namespace HearthstoneReplays.Events.Parsers
             public List<TrinketEntity> Trinkets { get; set; }
             public BgsPlayerGlobalInfo GlobalInfo { get; set; }
         }
-
-        //internal class BgsPlayerGlobalInfo
-        //{
-        //    public int EternalKnightsDeadThisGame { get; set; }
-        //    public int TavernSpellsCastThisGame { get; set; }
-        //    public int UndeadAttackBonus { get; set; }
-        //    public int FrostlingBonus { get; set; }
-        //    public int PiratesPlayedThisGame { get; set; }
-        //    public int PiratesSummonedThisGame { get; set; }
-        //    public int AstralAutomatonsSummonedThisGame { get; set; }
-        //    public int BloodGemAttackBonus { get; set; }
-        //    public int BloodGemHealthBonus { get; set; }
-        //    public int ChoralHealthBuff { get; set; }
-        //    public int ChoralAttackBuff { get; set; }
-        //    public int BeetleAttackBuff { get; set; }
-        //    public int BeetleHealthBuff { get; set; }
-        //    public int BattlecriesTriggeredThisGame { get; set; }
-        //    public int FriendlyMinionsDeadLastCombat { get; set; }
-        //}
 
         internal class QuestReward
         {
