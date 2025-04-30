@@ -33,19 +33,20 @@ namespace HearthstoneReplays
 		}
 	}
 
-    public class IncludeJsonIgnoreContractResolver : Newtonsoft.Json.Serialization.DefaultContractResolver
-    {
-        protected override IList<Newtonsoft.Json.Serialization.JsonProperty> CreateProperties(Type type, Newtonsoft.Json.MemberSerialization memberSerialization)
-        {
-            var properties = base.CreateProperties(type, memberSerialization);
+	// This is way too slow
+    //public class IncludeJsonIgnoreContractResolver : Newtonsoft.Json.Serialization.DefaultContractResolver
+    //{
+    //    protected override IList<Newtonsoft.Json.Serialization.JsonProperty> CreateProperties(Type type, Newtonsoft.Json.MemberSerialization memberSerialization)
+    //    {
+    //        var properties = base.CreateProperties(type, memberSerialization);
 
-            // Ensure all properties are serialized, even those with [JsonIgnore]
-            foreach (var property in properties)
-            {
-                property.Ignored = false; // Override the Ignored flag
-            }
+    //        // Ensure all properties are serialized, even those with [JsonIgnore]
+    //        foreach (var property in properties)
+    //        {
+    //            property.Ignored = false; // Override the Ignored flag
+    //        }
 
-            return properties;
-        }
-    }
+    //        return properties;
+    //    }
+    //}
 }

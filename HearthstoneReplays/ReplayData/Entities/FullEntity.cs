@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
+using Force.DeepCloner;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Events;
 using HearthstoneReplays.Events.Parsers.Utils;
@@ -14,9 +15,9 @@ using HearthstoneReplays.Parser.ReplayData.GameActions;
 
 namespace HearthstoneReplays.Parser.ReplayData.Entities
 {
-	[XmlRoot("FullEntity")]
-	public class FullEntity : BaseEntity, IEntityData
-	{
+    [XmlRoot("FullEntity")]
+    public class FullEntity : BaseEntity, IEntityData
+    {
         public static IList<string> MANUAL_DREDGE = new List<string>()
         {
             CardIds.FromTheDepths,
@@ -59,29 +60,37 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public SubSpell SubSpellInEffect { get; set; }
 
         public bool ShouldSerializeCardId()
-		{
-			return !string.IsNullOrEmpty(CardId);
-		}
-
-        private Newtonsoft.Json.JsonSerializerSettings _serializationSettings = new Newtonsoft.Json.JsonSerializerSettings
         {
-            ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace,
-            DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Include,
-            ContractResolver = new IncludeJsonIgnoreContractResolver() // Use the custom resolver
-        };
+            return !string.IsNullOrEmpty(CardId);
+        }
+
+        //private Newtonsoft.Json.JsonSerializerSettings _serializationSettings = new Newtonsoft.Json.JsonSerializerSettings
+        //{
+        //    ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace,
+        //    DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Include,
+        //    ContractResolver = new IncludeJsonIgnoreContractResolver() // Use the custom resolver
+        //};
 
         internal FullEntity Clone()
         {
-            string serializedObject = Newtonsoft.Json.JsonConvert.SerializeObject(this, _serializationSettings);
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<FullEntity>(serializedObject, _serializationSettings);
-            //DataContractSerializer dcSer = new DataContractSerializer(this.GetType());
-            //MemoryStream memoryStream = new MemoryStream();
+            try
+            {
+                return this.DeepClone();
+            }
+            catch (Exception e)
+            {
+                Logger.Log("Could not DeepClone", e.ToString());
+                //string serializedObject = Newtonsoft.Json.JsonConvert.SerializeObject(this, _serializationSettings);
+                //return Newtonsoft.Json.JsonConvert.DeserializeObject<FullEntity>(serializedObject, _serializationSettings);
+                DataContractSerializer dcSer = new DataContractSerializer(this.GetType());
+                MemoryStream memoryStream = new MemoryStream();
 
-            //dcSer.WriteObject(memoryStream, this);
-            //memoryStream.Position = 0;
+                dcSer.WriteObject(memoryStream, this);
+                memoryStream.Position = 0;
 
-            //FullEntity newObject = (FullEntity)dcSer.ReadObject(memoryStream);
-            //return newObject;
+                FullEntity newObject = (FullEntity)dcSer.ReadObject(memoryStream);
+                return newObject;
+            }
         }
 
         public string GetPlayerClass()
@@ -108,18 +117,18 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         {
             return GetTag(GameTag.ZONE);
         }
-        
+
         internal int GetZone(TagChange tagChange)
         {
-            return tagChange.Name == (int)GameTag.ZONE && tagChange.Entity == this.Entity 
+            return tagChange.Name == (int)GameTag.ZONE && tagChange.Entity == this.Entity
                 ? tagChange.Value
                 : GetTag(GameTag.ZONE);
         }
 
         internal bool IsMinionLike()
         {
-            return GetTag(GameTag.CARDTYPE) == (int)CardType.MINION 
-                || GetTag(GameTag.CARDTYPE) == (int)CardType.LOCATION 
+            return GetTag(GameTag.CARDTYPE) == (int)CardType.MINION
+                || GetTag(GameTag.CARDTYPE) == (int)CardType.LOCATION
                 || GetTag(GameTag.CARDTYPE) == (int)CardType.BATTLEGROUND_SPELL;
         }
 
@@ -208,7 +217,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         internal object GetLeaderboardPosition(GameType gameType)
         {
-            return gameType == GameType.GT_BATTLEGROUNDS_DUO 
+            return gameType == GameType.GT_BATTLEGROUNDS_DUO
                 || gameType == GameType.GT_BATTLEGROUNDS_DUO_FRIENDLY
                 || gameType == GameType.GT_BATTLEGROUNDS_DUO_AI_VS_AI
                 || gameType == GameType.GT_BATTLEGROUNDS_DUO_VS_AI
