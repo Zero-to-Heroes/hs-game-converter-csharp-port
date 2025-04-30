@@ -70,26 +70,26 @@ namespace HearthstoneReplays.Events.Parsers
             var position = entity.GetZonePosition();
 
             return new List<GameEventProvider> { GameEventProvider.Create(
-                    tagChange.TimeStamp,
+                tagChange.TimeStamp,
+                "RECEIVE_CARD_IN_HAND",
+                GameEvent.CreateProvider(
                     "RECEIVE_CARD_IN_HAND",
-                    GameEvent.CreateProvider(
-                        "RECEIVE_CARD_IN_HAND",
-                        cardId,
-                        controllerId,
-                        entity.Id,
-                        StateFacade,
-                        //gameState,
-                        new {
-                            CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
-                            CreatorEntityId = creator?.Item2,
-                            LastInfluencedByCardId = lastInfluencedByCardId,
-                            IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
-                            Position = position,
-                            GuessedTags = guessedTags,
-                            Tags = entity.GetTagsCopy(),
-                        }),
-                    true,
-                    node) };
+                    cardId,
+                    controllerId,
+                    entity.Id,
+                    StateFacade,
+                    //gameState,
+                    new {
+                        CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
+                        CreatorEntityId = creator?.Item2,
+                        LastInfluencedByCardId = lastInfluencedByCardId,
+                        IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
+                        Position = position,
+                        GuessedTags = guessedTags,
+                        Tags = entity.GetTagsCopy(),
+                    }),
+                true,
+                node) };
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
@@ -255,7 +255,7 @@ namespace HearthstoneReplays.Events.Parsers
                                     DataNum2 = dataNum2,
                                     Position = position,
                                     ReferencedCardIds = referencedCardIds,
-                                    GuessedTags = guessedTags,
+                                    GuessedTags = tags,
                                 }
                             }
                         };
