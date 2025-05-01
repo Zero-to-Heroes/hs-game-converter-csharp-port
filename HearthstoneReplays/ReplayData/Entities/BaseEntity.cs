@@ -7,6 +7,7 @@ using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Enums;
 using System;
 using Newtonsoft.Json;
+using Force.DeepCloner;
 
 #endregion
 
@@ -99,37 +100,26 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public List<Tag> GetTagsCopy(TagChange tagChange = null)
         {
             var tagsCopy = new List<Tag>(this.Tags.Count);
-
+            var processedNewTagName = false;
             foreach (var tag in this.Tags)
             {
                 if (tagChange != null && tagChange.Name == tag.Name)
                 {
-                    tagsCopy.Add(new Tag
-                    {
-                        Name = tag.Name,
-                        Value = tagChange.Value,
-                    });
+                    processedNewTagName = true;
+                    tagsCopy.Add(new Tag { Name = tag.Name, Value = tagChange.Value, });
                 }
                 else
                 {
-                    tagsCopy.Add(new Tag
-                    {
-                        Name = tag.Name,
-                        Value = tag.Value,
-                    });
+                    tagsCopy.Add(new Tag { Name = tag.Name, Value = tag.Value, });
                 }
             }
 
-            if (tagChange != null && !tagsCopy.Any(tag => tag.Name == tagChange.Name))
+            if (tagChange != null && !processedNewTagName)
             {
-                tagsCopy.Add(new Tag
-                {
-                    Name = tagChange.Name,
-                    Value = tagChange.Value,
-                });
+                tagsCopy.Add(new Tag { Name = tagChange.Name, Value = tagChange.Value, });
             }
 
             return tagsCopy;
         }
     }
-}
+} 
