@@ -56,7 +56,8 @@ namespace HearthstoneReplays.Events.Parsers
 
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
-            var controllerId = entity.GetEffectiveController();
+            var controllerId = entity.GetEffectiveController(); 
+            var currentPosition = entity.GetZone();
             var zonePosition = tagChange.Value;
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
@@ -64,15 +65,14 @@ namespace HearthstoneReplays.Events.Parsers
                 "ZONE_POSITION_CHANGED",
                 GameEvent.CreateProvider(
                     "ZONE_POSITION_CHANGED",
-                    cardId,
+                    null,
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    //null,
                     new {
                         ZonePosition = zonePosition,
-                        ZoneUpdates = new List<dynamic>() { 
-                            new { EntityId = entity.Id, ControllerId = controllerId, Zone = entity.GetZone(), NewPosition = zonePosition } 
+                        ZoneUpdates = new List<dynamic>() {
+                            new { CardId = cardId, EntityId = entity.Id, ControllerId = controllerId, Zone = currentPosition, NewPosition = zonePosition }
                         },
                     }
                 ),

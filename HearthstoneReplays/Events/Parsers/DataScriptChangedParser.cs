@@ -76,12 +76,12 @@ namespace HearthstoneReplays.Events.Parsers
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    //null,
                     new {
-                        InitialData1 = initialData1,
-                        InitialData2 = initialData2,
                         DataNum1 = newData1,
                         DataNum2 = newData2,
+                        Updates = new List<dynamic>() {
+                            new { CardId = cardId, EntityId = entity.Id, ControllerId = controllerId, DataNum1 = newData1, DataNum2 = newData2 }
+                        },
                     }),
                 true,
                 node) };
