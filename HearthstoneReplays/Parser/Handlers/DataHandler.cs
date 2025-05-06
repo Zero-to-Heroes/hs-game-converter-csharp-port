@@ -64,6 +64,7 @@ namespace HearthstoneReplays.Parser.Handlers
             data = trimmed;
 
             // Additional handlers for specific cases
+            // Take care of leftover log lines from a possible previous game
             if (NewGameHandler.HandleNewGame(timestamp, data, state, previousTimestamp, stateType, stateFacade, currentGameSeed, metadata, helper))
             {
                 return;
@@ -74,14 +75,17 @@ namespace HearthstoneReplays.Parser.Handlers
                 return;
             }
 
-            // Pre-filter lines using string operations
-            foreach (var handler in handlers)
+            if (state.Node != null)
             {
-                if (data.StartsWith(handler.Key))
+                // Pre-filter lines using string operations
+                foreach (var handler in handlers)
                 {
-                    if (handler.Value(timestamp, data, state, stateType, stateFacade, indentLevel))
+                    if (data.StartsWith(handler.Key))
                     {
-                        return;
+                        if (handler.Value(timestamp, data, state, stateType, stateFacade, indentLevel))
+                        {
+                            return;
+                        }
                     }
                 }
             }
