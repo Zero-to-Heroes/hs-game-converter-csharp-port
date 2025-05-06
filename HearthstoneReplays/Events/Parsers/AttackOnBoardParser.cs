@@ -113,7 +113,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var windfuryMultiplier = GetWindfuryMultiplier(hero);
                 var attacksForWeapon = (weapon?.GetTag(GameTag.HEALTH) ?? 1) - (weapon?.GetTag(GameTag.DAMAGE, 0) ?? 0);
                 var maxAttacks = Math.Min(windfuryMultiplier, attacksForWeapon);
-                var attacksLeft = maxAttacks - hero.GetTag(GameTag.NUM_ATTACKS_THIS_TURN, 0);
+                var attacksLeft = isActivePlayer ? maxAttacks - hero.GetTag(GameTag.NUM_ATTACKS_THIS_TURN, 0) : windfuryMultiplier;
                 heroAttack = CanAttack(hero, isActivePlayer, true) ? attacksLeft * baseHeroAttack : 0;
             }
             return new AttackOnBoardForPlayer()
