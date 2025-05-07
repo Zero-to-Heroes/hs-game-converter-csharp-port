@@ -26,6 +26,12 @@ namespace HearthstoneReplays.Parser.Handlers
                 var isReconnecting = stateType == StateType.GameState ? state.IsReconnecting(currentGameSeed) : gameInfoHelper.GsState.ReconnectionOngoing;
                 if (isReconnecting)
                 {
+                    // Move all entities to REMOVEDFROMGAME. Entities that are not in that zone will (hopefully?) be given
+                    // FullEntity, ShowEntity or TAG_CHANGE actions
+                    foreach (var entity in state.GameState.CurrentEntities.Values)
+                    {
+                        entity.SetTag(GameTag.ZONE, (int)Zone.REMOVEDFROMGAME);
+                    }
                     if (stateType == StateType.GameState)
                     {
                         Logger.Log(
