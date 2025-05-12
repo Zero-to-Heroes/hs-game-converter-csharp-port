@@ -150,7 +150,7 @@ namespace HearthstoneReplays.Events
 
                     new BattlegroundsHeroSelectedParser(ParserState, StateFacade),
                     new BattlegroundsDuoTeammatePlayerBoardParser(ParserState, StateFacade),
-                    new BattlegroundsBattleStartingParser(ParserState, StateFacade),
+                    //new BattlegroundsBattleStartingParser(ParserState, StateFacade),
                     new BattlegroundsActivePlayerBoardParser(ParserState, StateFacade),
                     new BattlegroundsPlayerBoardParser(ParserState, StateFacade),
                 };

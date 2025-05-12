@@ -8,6 +8,7 @@ using HearthstoneReplays.Parser.ReplayData.GameActions;
 
 namespace HearthstoneReplays.Events.Parsers
 {
+    /** Not used at the moment */
     public class BattlegroundsBattleStartingParser : ActionParser
     {
         private GameState GameState { get; set; }
@@ -30,6 +31,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool IsApplyOnNewNode(Node node)
         {
+            return false;
             return StateFacade.IsBattlegrounds()
                     && node.Type == typeof(TagChange)
                     && (node.Object as TagChange).Name == (int)GameTag.MISSION_EVENT
