@@ -76,6 +76,8 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var controllerId = chosenEntity.GetEffectiveController();
+            var playerEntity = GameState.GetController(controllerId);
+            var nextOpponentPlayerId = playerEntity.GetTag(GameTag.NEXT_OPPONENT_PLAYER_ID, 0);
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 choice.TimeStamp,
@@ -100,6 +102,7 @@ namespace HearthstoneReplays.Events.Parsers
                             OpponentPlayer = StateFacade.OpponentPlayer,
                             Health = chosenEntity.GetTag(GameTag.HEALTH),
                             Armor = chosenEntity.GetTag(GameTag.ARMOR, 0),
+                            NextOpponentPlayerId = nextOpponentPlayerId,
                         }
                     };
                 },
