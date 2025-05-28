@@ -153,6 +153,7 @@ namespace HearthstoneReplays.Events.Parsers
                 Logger.Log($"Building opponent board for playerPlayerId={playerPlayerId}, playerEntityId={playerEntityId}", "");
             }
 
+            //Dictionary<int, FullEntity> currentEntitiesCopy = new Dictionary<int, FullEntity>(GameState.CurrentEntities);
             var currentEntities = GameState.CurrentEntities.Values;
 
             var potentialHeroes = currentEntities
@@ -217,6 +218,11 @@ namespace HearthstoneReplays.Events.Parsers
             if (cardId != null)
             {
                 // We don't use the game state builder here because we really need the full entities
+                var debug = currentEntities
+                    .Where(entity =>
+                        entity.GetEffectiveController() == playerPlayerId &&
+                        entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
+                    .ToList();
                 var board = currentEntities
                     .Where(entity => 
                         entity.GetEffectiveController() == playerPlayerId &&
@@ -361,6 +367,13 @@ namespace HearthstoneReplays.Events.Parsers
 
         public static List<TrinketEntity> BuildTrinkets(int playerPlayerId, GameState gameState)
         {
+            var debugTrinkets = gameState.CurrentEntities.Values
+                .Where(entity =>
+                    entity.GetEffectiveController() == playerPlayerId &&
+                    entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
+                    entity.GetCardType() == (int)CardType.BATTLEGROUND_TRINKET)
+                .ToList();
+            var debug = debugTrinkets.Any(t => t.Entity == 9529);
             return gameState.CurrentEntities.Values
                 .Where(entity => 
                     entity.GetEffectiveController() == playerPlayerId &&
@@ -370,8 +383,9 @@ namespace HearthstoneReplays.Events.Parsers
                 {
                     cardId = entity.CardId,
                     entityId = entity.Entity,
-                    scriptDataNum1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1),
-                    scriptDataNum6 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_6),
+                    scriptDataNum1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0),
+                    scriptDataNum2 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0),
+                    scriptDataNum6 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_6, 0),
                 })
                 .OrderBy(trinket => trinket.scriptDataNum6)
                 .ToList();
@@ -382,8 +396,10 @@ namespace HearthstoneReplays.Events.Parsers
             var currentEntities = GameState.CurrentEntities.Values.ToList();
             var currentEntitiesGs = StateFacade.GsState.GameState.CurrentEntities.Values.ToList();
             var eternalKnightBonus = GetPlayerEnchantmentValue(playerId, CardIds.EternalKnightPlayerEnchantEnchantment, currentEntities);
-            var tavernSpellsCastThisGame = GameState.CurrentEntities[playerEntityId]?.GetTag(GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME, 0) ?? 0;
-            var spellsCastThisGame = GameState.CurrentEntities[playerEntityId]?.GetTag(GameTag.NUM_SPELLS_PLAYED_THIS_GAME, 0) ?? 0;
+            var tavernSpellsCastThisGame = GetPlayerTag(playerEntityId, GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME, currentEntities); 
+            //GameState.CurrentEntities[playerEntityId]?.GetTag(GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME, 0) ?? 0;
+            var spellsCastThisGame = GetPlayerTag(playerEntityId, GameTag.NUM_SPELLS_PLAYED_THIS_GAME, currentEntities); 
+            // GameState.CurrentEntities[playerEntityId]?.GetTag(GameTag.NUM_SPELLS_PLAYED_THIS_GAME, 0) ?? 0;
             // Includes Anub'arak, Nerubian Deathswarmer
             var undeadAttackBonus = GetPlayerEnchantmentValue(playerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, currentEntities);
             var astralAutomatonBonus = GetPlayerEnchantmentValue(playerId, CardIds.AstralAutomatonPlayerEnchantDntEnchantment_BG_TTN_401pe, currentEntities);
@@ -582,6 +598,8 @@ namespace HearthstoneReplays.Events.Parsers
             OverrideTagWithHistory(clone, GameTag.UNPLAYABLE_VISUALS);
             OverrideTagWithHistory(clone, GameTag.DIVINE_SHIELD);
             OverrideTagWithHistory(clone, GameTag.VENOMOUS);
+            OverrideTagWithHistory(clone, GameTag.REBORN);
+            OverrideTagWithHistory(clone, GameTag.TAUNT);
 
             var enchantments = StateFacade.GsState.GameState.CurrentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.ATTACHED) == id);
@@ -645,9 +663,8 @@ namespace HearthstoneReplays.Events.Parsers
 
         private static List<Enchantment> BuildEnchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
         {
-            var enchantmentEntities = currentEntities.Values
-                .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id && entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME)
-                .ToList();
+            var debug = fullEntity.Entity == 4331;
+            var enchantmentEntities = BuildEnchantmentEntities(currentEntities, fullEntity);
             var enchantments = enchantmentEntities
                 .Select(entity => new Enchantment
                 {
@@ -660,6 +677,32 @@ namespace HearthstoneReplays.Events.Parsers
             List<Enchantment> additionalEnchantments = BuildAdditionalEnchantments(fullEntity, enchantmentEntities, currentEntities);
             enchantments.AddRange(additionalEnchantments);
             return enchantments;
+        }
+
+        private static List<FullEntity> BuildEnchantmentEntities(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
+        {
+            if (fullEntity == null)
+            {
+                return new List<FullEntity>();
+            }
+
+            var enchantmentEntities = currentEntities.Values
+                .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id && entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME)
+                .ToList();
+            // Recursive enchantments in case of magnetic
+            var newEnchantEntities = new List<FullEntity>();
+            foreach (var enchant in enchantmentEntities)
+            {
+                if (enchant.GetTag(GameTag.MAGNETIC) == 1)
+                {
+                    var subEnchants = BuildEnchantmentEntities(currentEntities, currentEntities.GetValueOrDefault(enchant.GetTag(GameTag.CREATOR)))
+                        .Where(e => e.GetTag(GameTag.MAGNETIC) == 1)
+                        .ToList();
+                    newEnchantEntities.AddRange(subEnchants);
+                }
+            }
+            enchantmentEntities.AddRange(newEnchantEntities);
+            return enchantmentEntities;
         }
 
         internal class PlayerBoard
@@ -754,6 +797,7 @@ namespace HearthstoneReplays.Events.Parsers
             public string cardId;
             public int entityId;
             public int scriptDataNum1;
+            public int scriptDataNum2;
             public int scriptDataNum6;
         }
     }
