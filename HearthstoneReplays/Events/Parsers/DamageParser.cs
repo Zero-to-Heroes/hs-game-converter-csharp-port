@@ -61,8 +61,8 @@ namespace HearthstoneReplays.Events.Parsers
             if (Helper.IsBattlegrounds()
                     && impactedEntity.IsHero()
                     // It seems to be that, if we are in a battle, the "next opponent" damage is the one we will do in battle
-                    && gameEntity.GetTag(GameTag.BOARD_VISUAL_STATE) == 2
-                    && opponentCardId?.CardId == targetCardId)
+                    && (gameEntity.GetTag(GameTag.BOARD_VISUAL_STATE) == 2 || gameEntity.GetTag(GameTag.BOARD_VISUAL_STATE) == -1)
+                    && (opponentCardId?.CardId == targetCardId || opponentCardId?.CardId == "TB_BaconShop_HERO_PH"))
                     //&& impactedEntity.IsInPlay()
                     //&& impactedEntity.GetTag(GameTag.DEFENDING) == 1)
             {
@@ -71,6 +71,10 @@ namespace HearthstoneReplays.Events.Parsers
             var previousDamage = impactedEntity.GetTag(GameTag.DAMAGE, 0);
             //var gameState = GameEvent.BuildGameState(ParserState, Helper, GameState, tagChange, null);
             var targetEntityId = impactedEntity?.Entity;
+            // If the target is a hero card in BG, the controller will refer to Bob, which is not what we want
+            var targetControllerId = impactedEntity.HasTag(GameTag.BACON_HERO_CAN_BE_DRAFTED)
+                ? impactedEntity.GetTag(GameTag.PLAYER_ID)
+                : impactedEntity.GetEffectiveController();
             var actualDamage = Math.Max(0, tagChange.Value - previousDamage - impactedEntity.GetTag(GameTag.ARMOR, 0));
             // If there is a META block with the same info, this means the event will already be sent
             // when parsing that block, with more detailed info (like the source of the damage), so 
@@ -92,7 +96,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 SourceControllerId = -1,
                 SourceEntityId = -1,
-                TargetControllerId = -1,
+                TargetControllerId = targetControllerId,
                 TargetEntityId = tagChange.Entity,
                 TargetCardId = targetCardId,
                 Damage = actualDamage,
@@ -154,11 +158,16 @@ namespace HearthstoneReplays.Events.Parsers
                     // attached cardId
                     var targetEntityId = damageTarget.Id;
                     var targetCardId = GameState.GetCardIdForEntity(damageTarget.Id);
-                    var targetControllerId = damageTarget.GetEffectiveController();
+                    // If the target is a hero card in BG, the controller will refer to Bob, which is not what we want
+                    var targetControllerId = damageTarget.HasTag(GameTag.BACON_HERO_CAN_BE_DRAFTED) 
+                        ? damageTarget.GetTag(GameTag.PLAYER_ID) 
+                        : damageTarget.GetEffectiveController();
                     var damageSource = GetDamageSource(damageTarget, action, damageTag);
                     var sourceEntityId = damageSource.Id;
                     var sourceCardId = GameState.GetCardIdForEntity(damageSource.Id);
-                    var sourceControllerId = damageSource.GetEffectiveController();
+                    var sourceControllerId = damageSource.HasTag(GameTag.BACON_HERO_CAN_BE_DRAFTED)
+                        ? damageSource.GetTag(GameTag.PLAYER_ID)
+                        : damageSource.GetEffectiveController();
                     Dictionary<string, DamageInternal> currentSourceDamages = null;
                     if (totalDamages.ContainsKey(sourceCardId + "-" + sourceEntityId))
                     {
