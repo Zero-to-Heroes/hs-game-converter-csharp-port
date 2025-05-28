@@ -99,7 +99,7 @@ namespace HearthstoneReplays.Events
         }
 
         private bool processing;
-        private async void ProcessGameEventQueue(Object source, ElapsedEventArgs e)
+        private void ProcessGameEventQueue(Object source, ElapsedEventArgs e)
         {
             _ = Task.Run(async () =>
             {
