@@ -45,7 +45,7 @@ namespace HearthstoneReplays.Events.Parsers
                 && (node.Object as Action).Type == (int)BlockType.TRIGGER
                 // Also modify this in trigger-sync KDA
                 // To know the value, look at the ATTACK node in which a hero deals damage to another
-                && (node.Object as Action).EffectIndex == 14; 
+                && (node.Object as Action).EffectIndex == 14;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
@@ -82,6 +82,7 @@ namespace HearthstoneReplays.Events.Parsers
                 opponentPlayerId = nextOpponent?.GetTag(GameTag.PLAYER_ID) ?? 0;
             }
 
+            var debug = opponentCardId == "TB_BaconShop_HERO_27" && opponentPlayerId == 9;
             return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                      "BATTLEGROUNDS_BATTLE_RESULT",
@@ -129,6 +130,18 @@ namespace HearthstoneReplays.Events.Parsers
             var opponentPlayerId = StateFacade.OpponentPlayer.PlayerId;
             if (attackAction == null)
             {
+                var battleResult = "tied";
+                var gsPlayer = StateFacade.GsState.GameState.CurrentEntities[StateFacade.LocalPlayer.Id];
+                // If a player died because of demon health-consuming effects, there is no attack, but the battle isn't tied
+                if (gsPlayer.GetTag(GameTag.PLAYSTATE) == (int)PlayState.LOST)
+                {
+                    battleResult = "lost";
+                }
+                else if (gsPlayer.GetTag(GameTag.PLAYSTATE) == (int)PlayState.WON)
+                {
+                    battleResult = "won";
+                }
+
                 var opponentHero = GameState.CurrentEntities.Values
                     .Where(data => data.GetEffectiveController() == opponentPlayerId)
                     .Where(data => data.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO)
@@ -148,6 +161,8 @@ namespace HearthstoneReplays.Events.Parsers
                         .FirstOrDefault();
                     cardId = opponentHero?.CardId;
                 }
+
+                var debug = cardId == "TB_BaconShop_HERO_27" && opponentPlayerId == 9;
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     action.TimeStamp,
                      "BATTLEGROUNDS_BATTLE_RESULT",
@@ -158,7 +173,7 @@ namespace HearthstoneReplays.Events.Parsers
                         {
                             Opponent = cardId,
                             OpponentPlayerId = opponentPlayerId,
-                            Result = "tied"
+                            Result = battleResult
                         }
                     },
                     true,
