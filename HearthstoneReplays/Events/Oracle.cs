@@ -520,6 +520,7 @@ namespace HearthstoneReplays.Events
                     case SwarmOfLightbugs_WW_052: return SwarmOfLightbugs_BottledLightbugsToken_WW_052t2;
                     case SweetenedSnowflurry_TOY_307: return SweetenedSnowflurry_SweetenedSnowflurryToken_TOY_307t;
                     case TabletopRoleplayer_TOY_915: return TabletopRoleplayer_TabletopRoleplayerToken_TOY_915t;
+                    case Talgath_GDB_472: return BackstabCore;
                     case TentacleGrip_YOG_526: return ChaoticTendril_YOG_514;
                     case TentacleTender_YOG_517: return ChaoticTendril_YOG_514;
                     case TheCandle: return TheCandle;
