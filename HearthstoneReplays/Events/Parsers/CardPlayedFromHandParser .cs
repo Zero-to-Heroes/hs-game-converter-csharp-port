@@ -88,25 +88,28 @@ namespace HearthstoneReplays.Events.Parsers
                 var magnetized = magnetizedTo != null;
 
                 GameState.OnCardPlayed(tagChange.Entity, targetId);
+                var debug = cardId == "DAL_577";
+                // Only compute additional props when providing the event, so that some "on play" effects have time to trigger 
+                // (like Corridor's Creeper "start dormant")
+                // UPDATE 2025-05-25: issue with this is that the cost becomes incorrect if it was reduced before being played
+                var additionalProps = new
+                {
+                    TargetEntityId = targetId,
+                    TargetCardId = targetCardId,
+                    Attack = entity.GetTag(GameTag.ATK, 0),
+                    Health = entity.GetTag(GameTag.HEALTH, 0),
+                    CreatorCardId = creatorCardId,
+                    Immune = entity.GetTag(GameTag.IMMUNE) == 1,
+                    Dormant = entity.GetTag(GameTag.DORMANT) == 1,
+                    Cost = entity.GetTag(GameTag.COST, 0),
+                    Magnetized = magnetized,
+                    Tags = entity.Tags,
+                };
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "CARD_PLAYED",
-                    // Only compute additional props when providing the event, so that some "on play" effects have time to trigger 
-                    // (like Corridor's Creeper "start dormant")
                     () =>
                     {
-                        var additionalProps = new {
-                            TargetEntityId = targetId,
-                            TargetCardId = targetCardId,
-                            Attack = entity.GetTag(GameTag.ATK, 0),
-                            Health = entity.GetTag(GameTag.HEALTH, 0),
-                            CreatorCardId = creatorCardId,
-                            Immune = entity.GetTag(GameTag.IMMUNE) == 1,
-                            Dormant = entity.GetTag(GameTag.DORMANT) == 1,
-                            Cost = entity.GetTag(GameTag.COST, 0),
-                            Magnetized = magnetized,
-                            Tags = entity.Tags,
-                        };
                         return new GameEvent
                         {
                             Type = "CARD_PLAYED",
@@ -172,7 +175,18 @@ namespace HearthstoneReplays.Events.Parsers
 
                 FullEntity fullEntity = FullEntity.FromShowEntity(showEntity);
                 GameState.OnCardPlayed(showEntity.Entity, targetId, fullEntity: fullEntity);
+                var debug = cardId == "DAL_577";
                 // For now there can only be one card played per block
+                var additionalProps = new
+                {
+                    TargetEntityId = targetId,
+                    TargetCardId = targetCardId,
+                    CreatorCardId = creatorCardId,
+                    TransientCard = isOhMyYogg,
+                    Immune = showEntity.GetTag(GameTag.IMMUNE) == 1,
+                    Magnetized = magnetized,
+                    Tags = showEntity.Tags,
+                };
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,
                     "CARD_PLAYED",
@@ -182,16 +196,8 @@ namespace HearthstoneReplays.Events.Parsers
                         controllerId,
                         showEntity.Entity,
                         StateFacade,
-                        //gameState,
-                        new {
-                            TargetEntityId = targetId,
-                            TargetCardId = targetCardId,
-                            CreatorCardId = creatorCardId,
-                            TransientCard = isOhMyYogg,
-                            Immune = showEntity.GetTag(GameTag.IMMUNE) == 1,
-                            Magnetized = magnetized,
-                            Tags = showEntity.Tags,
-                        }),
+                        additionalProps
+                        ),
                     true,
                     node) };
             }
