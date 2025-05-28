@@ -237,11 +237,21 @@ namespace HearthstoneReplays.Parser
                 return default;
             }
 
-            // Use DateTime.ParseExact for faster parsing with a known format
-            var logDateTime = DateTime.ParseExact(timestamp, "HH:mm:ss.fffffff", null);
+            try
+            {
+                // Use DateTime.ParseExact for faster parsing with a known format
+                var logDateTime = DateTime.ParseExact(timestamp, "HH:mm:ss.fffffff", null);
+                // Avoid unnecessary comparison if the timestamp is already valid
+                return logDateTime < start ? logDateTime.AddDays(1) : logDateTime;
+            } 
+            // Sometimes the logs contain some poorly-formatted timestamps (saw that once)
+            catch (Exception e)
+            {
+                var logDateTime = DateTime.Parse(timestamp);
+                // Avoid unnecessary comparison if the timestamp is already valid
+                return logDateTime < start ? logDateTime.AddDays(1) : logDateTime;
+            }
 
-            // Avoid unnecessary comparison if the timestamp is already valid
-            return logDateTime < start ? logDateTime.AddDays(1) : logDateTime;
         }
 
         public long ExtractGameSeed(string[] lines)
