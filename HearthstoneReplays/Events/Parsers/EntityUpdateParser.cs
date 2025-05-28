@@ -68,7 +68,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 cardId = "";
             }
-            if (showEntity.IsImmolateDiscard())
+            if (showEntity.IsImmolateDiscard() && showEntity.GetEffectiveController() != StateFacade.LocalPlayer.PlayerId)
             {
                 cardId = "";
             }
