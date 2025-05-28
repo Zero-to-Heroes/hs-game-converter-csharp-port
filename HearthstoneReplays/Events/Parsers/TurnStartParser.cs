@@ -63,35 +63,6 @@ namespace HearthstoneReplays.Events.Parsers
             GameState.ClearPlagiarize();
             // FIXME?: maybe this should not be inside the event provider, but rather apply on the GameState
             GameState.OnNewTurn();
-            if (StateFacade.IsBattlegrounds())
-            {
-                if (newTurnValue % 2 != 0)
-                {
-                    // When at the top2 stage, the event isn't sent anymore, so we send a default event
-                    // when the turn starts (from what I've seen, the event is always sent before the turn
-                    // starts)
-                    // Do it first so that it happens before the TURN_START event
-                    if (!GameState.BgsHasSentNextOpponent)
-                    {
-                        //Logger.Log("Has not sent next opponent", "");
-                        result.Add(GameEventProvider.Create(
-                            tagChange.TimeStamp,
-                            "BATTLEGROUNDS_NEXT_OPPONENT",
-                            () => new GameEvent
-                            {
-                                Type = "BATTLEGROUNDS_NEXT_OPPONENT",
-                                Value = new
-                                {
-                                    IsSameOpponent = true,
-                                }
-                            },
-                            true,
-                            node)
-                        );
-                        GameState.BgsHasSentNextOpponent = true;
-                    }
-                }
-            }
 
             var timestamp = Utility.GetUtcTimestamp(tagChange.TimeStamp);
             var currentPlayer = GameState.GetActivePlayerId();
@@ -122,6 +93,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var visualBoardState = GameState.GetGameEntity()?.GetTag(GameTag.BOARD_VISUAL_STATE);
                 if (newTurnValue % 2 == 0)
                 {
+                    Logger.Log("Prep BATTLEGROUNDS_COMBAT_START", "");
                     GameState.BattleResultSent = false;
                     var heroes = BuildHeroes(GameState);
                     result.Add(GameEventProvider.Create(
@@ -142,6 +114,7 @@ namespace HearthstoneReplays.Events.Parsers
                 }
                 else
                 {
+                    Logger.Log("Prep BATTLEGROUNDS_RECRUIT_PHASE", "");
                     var heroes = BuildHeroes(GameState);
                     result.Add(GameEventProvider.Create(
                         tagChange.TimeStamp,
@@ -159,6 +132,37 @@ namespace HearthstoneReplays.Events.Parsers
                         false,
                         node));
                 }
+
+                if (newTurnValue % 2 != 0)
+                {
+                    // When at the top2 stage, the event isn't sent anymore, so we send a default event
+                    // when the turn starts (from what I've seen, the event is always sent before the turn
+                    // starts)
+                    // Do it first so that it happens before the TURN_START event
+                    if (!GameState.BgsHasSentNextOpponent)
+                    {
+                        //Logger.Log("Has not sent next opponent", "");
+                        result.Add(GameEventProvider.Create(
+                            tagChange.TimeStamp,
+                            "BATTLEGROUNDS_NEXT_OPPONENT",
+                            () => new GameEvent
+                            {
+                                Type = "BATTLEGROUNDS_NEXT_OPPONENT",
+                                Value = new
+                                {
+                                    IsSameOpponent = true,
+                                }
+                            },
+                            true,
+                            node)
+                        );
+                        GameState.BgsHasSentNextOpponent = true;
+                    }
+                }
+            } 
+            else
+            {
+                //Logger.Log("Not a BG game, not sending combat/recruit event", "");
             }
             return result;
         }
