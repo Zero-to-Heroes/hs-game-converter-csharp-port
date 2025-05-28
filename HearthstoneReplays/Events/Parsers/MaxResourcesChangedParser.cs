@@ -26,7 +26,9 @@ namespace HearthstoneReplays.Events.Parsers
             TagChange tagChange = null;
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(TagChange)
-                && ((tagChange = (node.Object as TagChange)).Name == (int)GameTag.MAXRESOURCES || tagChange.Name == (int)GameTag.HEALTH);
+                && ((tagChange = (node.Object as TagChange)).Name == (int)GameTag.MAXRESOURCES 
+                    || tagChange.Name == (int)GameTag.HEALTH
+                    || tagChange.Name == (int)GameTag.BACON_MAX_RESOURCES);
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -44,6 +46,10 @@ namespace HearthstoneReplays.Events.Parsers
             else if (tagChange.Name == (int)GameTag.HEALTH)
             {
                 return HandleMaxHealth(node);
+            }
+            else if (tagChange.Name == (int)GameTag.BACON_MAX_RESOURCES)
+            {
+                return HandleMaxCoins(node);
             }
             return null;
         }
@@ -106,6 +112,35 @@ namespace HearthstoneReplays.Events.Parsers
                     //null,
                     new {
                         Mana = newMana,
+                    }),
+                true,
+                node) };
+        }
+
+        public List<GameEventProvider> HandleMaxCoins(Node node)
+        {
+            var tagChange = node.Object as TagChange;
+            var entity = GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity);
+            if (entity == null)
+            {
+                return null;
+            }
+
+            var newCoins = tagChange.Name == (int)GameTag.BACON_MAX_RESOURCES ? tagChange.Value : entity.GetTag(GameTag.BACON_MAX_RESOURCES);
+            var cardId = entity.CardId;
+            var controllerId = entity.GetEffectiveController();
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                tagChange.TimeStamp,
+                 "MAX_RESOURCES_UPDATED",
+                GameEvent.CreateProvider(
+                    "MAX_RESOURCES_UPDATED",
+                    cardId,
+                    controllerId,
+                    entity.Id,
+                    StateFacade,
+                    //null,
+                    new {
+                        Coins = newCoins,
                     }),
                 true,
                 node) };
