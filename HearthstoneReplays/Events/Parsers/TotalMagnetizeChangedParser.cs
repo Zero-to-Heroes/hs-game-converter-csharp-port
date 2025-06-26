@@ -38,6 +38,13 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity);
+
+            var controller = entity.GetController();
+            if (controller != StateFacade.LocalPlayer.PlayerId)
+            {
+                return null;
+            }
+
             var newValue = tagChange.Value;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,

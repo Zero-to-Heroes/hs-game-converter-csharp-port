@@ -44,6 +44,12 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
+            var controller = entity.GetController();
+            if (controller != StateFacade.LocalPlayer.PlayerId)
+            {
+                return null;
+            }
+
             var value = tagChange.Value;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,

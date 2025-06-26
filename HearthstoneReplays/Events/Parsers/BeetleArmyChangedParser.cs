@@ -44,6 +44,12 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
+            var controller = entity.GetController();
+            if (controller != StateFacade.LocalPlayer.PlayerId)
+            {
+                return null;
+            }
+
             var atk = tagChange.Name == (int)GameTag.TAG_SCRIPT_DATA_NUM_1 ? tagChange.Value : entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
             var health = tagChange.Name == (int)GameTag.TAG_SCRIPT_DATA_NUM_2 ? tagChange.Value : entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0);
             return new List<GameEventProvider> { GameEventProvider.Create(

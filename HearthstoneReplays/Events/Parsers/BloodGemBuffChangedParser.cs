@@ -43,6 +43,12 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
+            var controller = entity.GetController();
+            if (controller != StateFacade.LocalPlayer.PlayerId)
+            {
+                return null;
+            }
+
             var atk = tagChange.Name == (int)GameTag.BACON_BLOODGEMBUFFATKVALUE ? tagChange.Value : entity.GetTag(GameTag.BACON_BLOODGEMBUFFATKVALUE, 0);
             var health = tagChange.Name == (int)GameTag.BACON_BLOODGEMBUFFHEALTHVALUE ? tagChange.Value : entity.GetTag(GameTag.BACON_BLOODGEMBUFFHEALTHVALUE, 0);
             return new List<GameEventProvider> { GameEventProvider.Create(
