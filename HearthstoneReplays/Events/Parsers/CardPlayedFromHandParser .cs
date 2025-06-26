@@ -88,7 +88,9 @@ namespace HearthstoneReplays.Events.Parsers
                 var magnetized = magnetizedTo != null;
 
                 GameState.OnCardPlayed(tagChange.Entity, targetId);
-                var debug = cardId == "DAL_577";
+                var debug = cardId == "BT_211";
+                // Catch the "starts dormant" cases, where the tag is set after the card is played
+                bool dormant = this.StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(entity.Entity)?.GetTag(GameTag.DORMANT) == 1;
                 // Only compute additional props when providing the event, so that some "on play" effects have time to trigger 
                 // (like Corridor's Creeper "start dormant")
                 // UPDATE 2025-05-25: issue with this is that the cost becomes incorrect if it was reduced before being played
@@ -100,7 +102,7 @@ namespace HearthstoneReplays.Events.Parsers
                     Health = entity.GetTag(GameTag.HEALTH, 0),
                     CreatorCardId = creatorCardId,
                     Immune = entity.GetTag(GameTag.IMMUNE) == 1,
-                    Dormant = entity.GetTag(GameTag.DORMANT) == 1,
+                    Dormant = dormant,
                     Cost = entity.GetTag(GameTag.COST, 0),
                     Magnetized = magnetized,
                     Tags = entity.Tags,
@@ -175,7 +177,7 @@ namespace HearthstoneReplays.Events.Parsers
 
                 FullEntity fullEntity = FullEntity.FromShowEntity(showEntity);
                 GameState.OnCardPlayed(showEntity.Entity, targetId, fullEntity: fullEntity);
-                var debug = cardId == "DAL_577";
+                var debug = cardId == "BT_211";
                 // For now there can only be one card played per block
                 var additionalProps = new
                 {
