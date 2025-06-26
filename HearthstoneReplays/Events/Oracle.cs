@@ -329,6 +329,7 @@ namespace HearthstoneReplays.Events
                     case EliteTaurenChampion_MoltenPickOfRockToken: return EliteTaurenChampion_MoltenPickOfRockToken;
                     case EliteTaurenChampion: return EliteTaurenChampion_MoltenPickOfRockToken;
                     case EncumberedPackMule: return EncumberedPackMule;
+                    case EscapeTheUnderfel_TLC_446: return EscapeTheUnderfel_UnderfelRiftToken_TLC_446t;
                     case Roach_SC_012: return Roach_SC_012;
                     case ExcavatedEvil: return ExcavatedEvil;
                     case ExploreUngoro: return ExploreUngoro_ChooseYourPathToken;
@@ -359,6 +360,7 @@ namespace HearthstoneReplays.Events
                     case GhastlyConjurer_ICC_069: return MirrorImageLegacy_CS2_027;
                     case GiftOfTheHeartTavernBrawlToken: return WildGrowth_ExcessManaLegacyToken;
                     case GildedGargoyle_LOOT_534: return TheCoinCore;
+                    case GladeEcologist_TLC_820: return PurifyingVines_TLC_813;
                     case GreedyPartner_WW_901: return TheCoinCore;
                     case HakkarTheSoulflayer_CorruptedBloodToken: return HakkarTheSoulflayer_CorruptedBloodToken;
                     case HakkarTheSoulflayer: return HakkarTheSoulflayer_CorruptedBloodToken;
@@ -456,6 +458,7 @@ namespace HearthstoneReplays.Events
                     case RayOfFrost_DAL_577: return RayOfFrost_DAL_577ts;
                     case RazorpetalLasher: return RazorpetalVolley_RazorpetalToken;
                     case RazorpetalVolley: return RazorpetalVolley_RazorpetalToken;
+                    case ReanimateTheTerror_TLC_433: return ReanimateTheTerror_TyraxBoneTerrorToken_TLC_433t;
                     case ReliquaryOfSouls: return ReliquaryOfSouls_ReliquaryPrimeToken;
                     case RemoteControlledGolem_SW_097: return RemoteControlledGolem_GolemPartsToken;
                     case Rhonin: return ArcaneMissilesLegacy;
@@ -507,6 +510,7 @@ namespace HearthstoneReplays.Events
                     case SpiritGatherer_EDR_871: return WispToken_EDR_851t;
                     case SpiritJailer_SCH_700: return SchoolSpirits_SoulFragmentToken;
                     case SpiritOfTheBadlands_WW_337: return SpiritOfTheBadlands_MirageToken_WW_337t;
+                    case SpiritOfTheMountain_TLC_229: return SpiritOfTheMountain_AshalonRidgeGuardianToken_TLC_229t14;
                     case Springpaw_CORE_TRL_348: return Springpaw_LynxToken;
                     case Springpaw_TRL_348: return Springpaw_LynxToken;
                     case StaffOfAmmunae_ULDA_041: return StaffOfAmmunae_ULDA_041ts; 
@@ -518,7 +522,7 @@ namespace HearthstoneReplays.Events
                     case SurlyMob: return AngryMob;
                     case SurlyMobTavernBrawl: return SurlyMob_AngryMobTavernBrawl;
                     case SwarmOfLightbugs_WW_052: return SwarmOfLightbugs_BottledLightbugsToken_WW_052t2;
-                    case SweetenedSnowflurry_TOY_307: return SweetenedSnowflurry_SweetenedSnowflurryToken_TOY_307t;
+                    //case SweetenedSnowflurry_TOY_307: return SweetenedSnowflurry_SweetenedSnowflurryToken_TOY_307t;
                     case TabletopRoleplayer_TOY_915: return TabletopRoleplayer_TabletopRoleplayerToken_TOY_915t;
                     case Talgath_GDB_472: return BackstabCore;
                     case TentacleGrip_YOG_526: return ChaoticTendril_YOG_514;
@@ -553,6 +557,7 @@ namespace HearthstoneReplays.Events
                     case UnearthedRaptor_MapToTheGoldenMonkeyToken: return UnearthedRaptor_GoldenMonkeyToken;
                     case UniteTheMurlocs: return UniteTheMurlocs_MegafinToken;
                     case UnleashTheBeast_DAL_378: return UnleashTheBeast_DAL_378ts;
+                    case UnleashTheColossus_TLC_631: return UnleashTheColossus_GorishiColossusToken_TLC_631t;
                     case UrzulHorror: return UrzulHorror_LostSoulToken;
                     case VioletSpellwing: return ArcaneMissilesLegacy;
                     case VioletSpellwing_CORE_DRG_107: return ArcaneMissilesLegacy;
@@ -906,10 +911,11 @@ namespace HearthstoneReplays.Events
                 }
 
                 // Handle echo
-                if (creatorEntity?.GetTag(GameTag.ECHO) == 1 || creatorEntity?.GetTag(GameTag.NON_KEYWORD_ECHO) == 1)
-                {
-                    return creatorCardId;
-                }
+                // This doesn't work for echo cards that create other cards (eg Abduction Ray)
+                //if (creatorEntity?.GetTag(GameTag.ECHO) == 1 || creatorEntity?.GetTag(GameTag.NON_KEYWORD_ECHO) == 1)
+                //{
+                //    return creatorCardId;
+                //}
             }
 
             if (node.Parent != null && node.Parent.Type == typeof(Action))
