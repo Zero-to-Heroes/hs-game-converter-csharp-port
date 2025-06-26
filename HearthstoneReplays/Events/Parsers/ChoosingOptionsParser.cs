@@ -22,8 +22,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return node.Type == typeof(Choices)
-                && ParserState.Choices != null;
+            return node.Type == typeof(Choices) && ParserState.Choices != null;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
