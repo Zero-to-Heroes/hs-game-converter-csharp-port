@@ -374,6 +374,7 @@ namespace HearthstoneReplays.Events
                     case HighPriestessJeklik_TRL_252: return HighPriestessJeklik_TRL_252;
                     case HoardingDragon_LOOT_144: return TheCoinCore;
                     case HolySpringwater_WW_395: return HolySpringwater_BottledSpringwaterToken_WW_395t;
+                    case IdoOfTheThreshfleet_TLC_241: return IdoOfTheThreshfleet_CallTheThreshfleetToken_TLC_241t;
                     case IgneousElemental: return FireFly_FlameElementalToken;
                     case Ignite: return Ignite;
                     case Impbalming: return Impbalming_WorthlessImpToken;
