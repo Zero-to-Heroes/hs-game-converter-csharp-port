@@ -55,10 +55,11 @@ namespace HearthstoneReplays.Events
                 return null;
             }
 
-            var creatorTuple = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.CREATOR), node);
+            // Use DISPLAYED_CREATOR first, as this is the info we have in the UI
+            var creatorTuple = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.DISPLAYED_CREATOR), node);
             if (creatorTuple == null)
             {
-                creatorTuple = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.DISPLAYED_CREATOR), node);
+                creatorTuple = Oracle.FindCardCreatorCardId(GameState, entity.GetTag(GameTag.CREATOR), node);
             }
             if (creatorTuple?.Item1 == CardIds.DarkGiftToken_EDR_102t)
             {
