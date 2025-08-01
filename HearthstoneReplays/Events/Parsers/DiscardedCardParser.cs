@@ -46,6 +46,7 @@ namespace HearthstoneReplays.Events.Parsers
             var controllerId = entity.GetEffectiveController();
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             entity.PlayedWhileInHand.Clear();
+            GameState.OnCardDiscarded(entity.Id, entity.CardId, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "DISCARD_CARD",
@@ -77,14 +78,9 @@ namespace HearthstoneReplays.Events.Parsers
             if (node.Parent?.Object is Action)
             {
                 var parentAction = node.Parent.Object as Action;
-                if (GameState.CurrentEntities.TryGetValue(parentAction.Entity, out parentEntity))
-                {
-                    if (parentEntity.CardId == CardIds.FelsoulJailer || parentEntity.CardId == CardIds.FelsoulJailerLegacy || parentEntity.CardId == CardIds.AmorphousSlime)
-                    {
-                        parentEntity.CardIdsToCreate.Add(cardId);
-                    }
-                }
+                parentEntity = GameState.CurrentEntities.GetValueOrDefault(parentAction.Entity);
             }
+            GameState.OnCardDiscarded(entity.Id, cardId, parentEntity);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "DISCARD_CARD",

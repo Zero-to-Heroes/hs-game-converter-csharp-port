@@ -124,7 +124,9 @@ namespace HearthstoneReplays.Events.Parsers
                    "BATTLEGROUNDS_PLAYER_BOARD",
                    () =>
                    {
-                       Logger.Log("Providing player board events", node.CreationLogLine);
+                       Logger.Log("Providing player board events " + tagChange.TimeStamp + " " + node.CreationLogLine,
+                           $"player: {string.Join("'", playerBoard.Board.Select(e => e.CardId).ToList())} " +
+                           $"opponent: {string.Join("'", opponentBoard.Board.Select(e => e.CardId).ToList())}");
                        return new GameEvent
                        {
                            Type = "BATTLEGROUNDS_PLAYER_BOARD",
@@ -251,6 +253,7 @@ namespace HearthstoneReplays.Events.Parsers
                         entity.GetTag(GameTag.ZONE) == (int)Zone.HAND)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
                     .Select(entity => entity.Clone())
+                    .Select(entity => AddEchantments(GameState.CurrentEntities, entity))
                     .ToList();
 
                 if (isOpponent)
@@ -262,10 +265,7 @@ namespace HearthstoneReplays.Events.Parsers
                     // perfect, but probably good enough
                     //var boardCardIds = board.Select(e => e.CardId).ToList();
                     //var handEntityIds = hand.Select(e => e.Id).ToList();
-                    hand = hand
-                        .Select(e => GetEntitySpawnedFromHand(e.Id, board, StateFacade) ?? e)
-                        .Select(e => e.SetTag(GameTag.DAMAGE, 0).SetTag(GameTag.ZONE, (int)Zone.HAND) as FullEntity)
-                        .ToList();
+                    hand = hand.Select(e => GetEntitySpawnedFromHand(e.Id, board, StateFacade) ?? e).ToList();
                 }
 
                 var finalBoard = board.Select(entity => AddEchantments(GameState.CurrentEntities, entity)).ToList();
@@ -581,7 +581,7 @@ namespace HearthstoneReplays.Events.Parsers
             entity.SetTag(tag, tagInHand ?? entity.GetTag(tag));
         }
 
-        internal static FullEntity GetEntitySpawnedFromHand(int id, List<FullEntity> board, StateFacade StateFacade)
+        internal static BgsPlayerBoardEntity GetEntitySpawnedFromHand(int id, List<FullEntity> board, StateFacade StateFacade)
         {
             var entityInHand = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(id);
             var clone = entityInHand.Clone();
@@ -601,20 +601,26 @@ namespace HearthstoneReplays.Events.Parsers
             OverrideTagWithHistory(clone, GameTag.REBORN);
             OverrideTagWithHistory(clone, GameTag.TAUNT);
 
+            var debug = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(1315);
             var enchantments = StateFacade.GsState.GameState.CurrentEntities.Values
-                .Where(entity => entity.GetTag(GameTag.ATTACHED) == id);
+                .Where(entity => entity.GetTag(GameTag.ATTACHED) == id)
                 // Not sure why it can be REMOVEDFROMGAME
                 //.Where(entity => entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME)
                 //.ToList();
             //var debug = StateFacade.GsState.GameState.CurrentEntities.Values
             //    .Where(entity => entity.GetTag(GameTag.ATTACHED) == id)
-            //    .ToList();
+                .ToList();
             if (enchantments.Any(e => e.CardId == ExpeditionPlans_UnplayableEnchantment))
             {
                 clone.SetTag(GameTag.UNPLAYABLE_VISUALS, 1);
             }
+            clone
+                .SetTag(GameTag.DAMAGE, 0)
+                .SetTag(GameTag.ZONE, (int)Zone.HAND);
 
-            return clone;
+            var withEnchants = AddEchantments(StateFacade.GsState.GameState.CurrentEntities, clone, true);
+
+            return withEnchants;
         }
 
         internal static int GetPlayerEnchantmentValue(int playerId, string enchantment, List<FullEntity> currentEntities)
@@ -644,11 +650,11 @@ namespace HearthstoneReplays.Events.Parsers
             return currentEntities.Find(e => e.Entity == playerEntityId)?.GetTag(tag, 0) ?? 0;
         }
 
-        internal static BgsPlayerBoardEntity AddEchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
+        internal static BgsPlayerBoardEntity AddEchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity, bool allowRemovedFromGame = false)
         {
             var debug = fullEntity.Id == 8608;
             // For some reason, Teron's RapidReanimation enchantment is sometimes in the GRAVEYARD zone
-            List<Enchantment> enchantments = BuildEnchantments(currentEntities, fullEntity);
+            List<Enchantment> enchantments = BuildEnchantments(currentEntities, fullEntity, allowRemovedFromGame);
             BgsPlayerBoardEntity result = new BgsPlayerBoardEntity()
             {
                 CardId = fullEntity.CardId,
@@ -661,10 +667,10 @@ namespace HearthstoneReplays.Events.Parsers
             return result;
         }
 
-        private static List<Enchantment> BuildEnchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
+        private static List<Enchantment> BuildEnchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity, bool allowRemovedFromGame = false)
         {
             var debug = fullEntity.Entity == 4331;
-            var enchantmentEntities = BuildEnchantmentEntities(currentEntities, fullEntity);
+            var enchantmentEntities = BuildEnchantmentEntities(currentEntities, fullEntity, allowRemovedFromGame);
             var enchantments = enchantmentEntities
                 .Select(entity => new Enchantment
                 {
@@ -679,7 +685,7 @@ namespace HearthstoneReplays.Events.Parsers
             return enchantments;
         }
 
-        private static List<FullEntity> BuildEnchantmentEntities(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity)
+        private static List<FullEntity> BuildEnchantmentEntities(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity, bool allowRemovedFromGame = false)
         {
             if (fullEntity == null)
             {
@@ -687,7 +693,8 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var enchantmentEntities = currentEntities.Values
-                .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id && entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME)
+                .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id 
+                    && (allowRemovedFromGame || entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME))
                 .ToList();
             // Recursive enchantments in case of magnetic
             var newEnchantEntities = new List<FullEntity>();
@@ -725,7 +732,7 @@ namespace HearthstoneReplays.Events.Parsers
             public List<BgsPlayerBoardEntity> Board { get; set; }
             public List<FullEntity> Secrets { get; set; }
             public List<TrinketEntity> Trinkets { get; set; }
-            public List<FullEntity> Hand { get; set; }
+            public List<BgsPlayerBoardEntity> Hand { get; set; }
             public BgsPlayerGlobalInfo GlobalInfo { get; set; }
         }
 

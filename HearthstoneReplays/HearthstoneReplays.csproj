@@ -123,7 +123,10 @@
     <Compile Include="Events\GameStateShort.cs" />
     <Compile Include="Events\Obfuscator.cs" />
     <Compile Include="Events\Parsers\AbstractBasicTagChangeParser.cs" />
+    <Compile Include="Events\Parsers\CorpsesChangedParser.cs" />
     <Compile Include="Events\Parsers\CardsShuffledIntoDeckParser.cs" />
+    <Compile Include="Events\Parsers\SpawnTimeCountChangedParser.cs" />
+    <Compile Include="Events\Parsers\ImmolateChangedParser.cs" />
     <Compile Include="Events\Parsers\MaxResourcesChangedParser.cs" />
     <Compile Include="Events\Parsers\StarshipLaunchedParser.cs" />
     <Compile Include="Events\Parsers\TotalMagnetizeChangedParser.cs" />

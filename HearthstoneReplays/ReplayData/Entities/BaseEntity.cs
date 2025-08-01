@@ -82,9 +82,9 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             return this;
         }
 
-        public int GetCost()
+        public int? GetCost()
         {
-            return GetTag(GameTag.COST, 0);
+            return GetTag(GameTag.COST, -1) == -1 ? (int?)null : GetTag(GameTag.COST, 0);
         }
 
         public int GetEffectiveController()

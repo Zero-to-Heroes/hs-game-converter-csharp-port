@@ -18,6 +18,7 @@ namespace HearthstoneReplays.Events.Parsers
             CardIds.LorekeeperPolkelt,
             CardIds.OrderInTheCourt,
             CardIds.SphereOfSapience,
+            CardIds.CityChiefEsho_TLC_110,
         };
 
         private GameState GameState { get; set; }

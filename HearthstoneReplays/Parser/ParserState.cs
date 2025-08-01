@@ -252,6 +252,16 @@ namespace HearthstoneReplays.Parser
             return players;
         }
 
+        public PlayerEntity GetPlayerForController(int controllerId)
+        {
+            var players = getPlayers();
+            foreach (var player in players)
+            {
+                if (player.PlayerId == controllerId) return player;
+            }
+            return null;
+        }
+
         public void TryAssignLocalPlayer(DateTime timestamp, string data)
         {
 

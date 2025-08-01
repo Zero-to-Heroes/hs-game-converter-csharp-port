@@ -331,6 +331,7 @@ namespace HearthstoneReplays.Events
                     case EliteTaurenChampion: return EliteTaurenChampion_MoltenPickOfRockToken;
                     case EncumberedPackMule: return EncumberedPackMule;
                     case EscapeTheUnderfel_TLC_446: return EscapeTheUnderfel_UnderfelRiftToken_TLC_446t;
+                    case DopEmergencyEnchant2Enchantment_DOP_002e: return EverburningPhoenix_FIR_919;
                     case Roach_SC_012: return Roach_SC_012;
                     case ExcavatedEvil: return ExcavatedEvil;
                     case ExploreUngoro: return ExploreUngoro_ChooseYourPathToken;
@@ -362,6 +363,7 @@ namespace HearthstoneReplays.Events
                     case GiftOfTheHeartTavernBrawlToken: return WildGrowth_ExcessManaLegacyToken;
                     case GildedGargoyle_LOOT_534: return TheCoinCore;
                     case GladeEcologist_TLC_820: return PurifyingVines_TLC_813;
+                    case GorishiWasp_TLC_630: return GorishiWasp_GorishiStingerToken_TLC_630t;
                     case GreedyPartner_WW_901: return TheCoinCore;
                     case HakkarTheSoulflayer_CorruptedBloodToken: return HakkarTheSoulflayer_CorruptedBloodToken;
                     case HakkarTheSoulflayer: return HakkarTheSoulflayer_CorruptedBloodToken;
@@ -382,6 +384,7 @@ namespace HearthstoneReplays.Events
                     case ImpCredibleTrousers_ImpCredibleTrousersTavernBrawlEnchantment: return DreadlichTamsin_FelRiftToken;
                     case ImpCredibleTrousersTavernBrawl: return DreadlichTamsin_FelRiftToken;
                     case InfernalStrikeTavernBrawl: return TwinSlice_SecondSliceToken;
+                    case Infestation_TLC_902: return GorishiWasp_GorishiStingerToken_TLC_630t;
                     case InfestedGoblin: return WrappedGolem_ScarabToken;
                     case InfestedWatcher_YOG_523: return ChaoticTendril_YOG_514;
                     case InfinitizeTheMaxitude_InfinitizeTheMaxitudeEnchantment: return InfinitizeTheMaxitude;
@@ -462,6 +465,8 @@ namespace HearthstoneReplays.Events
                     case RazorpetalVolley: return RazorpetalVolley_RazorpetalToken;
                     case ReanimateTheTerror_TLC_433: return ReanimateTheTerror_TyraxBoneTerrorToken_TLC_433t;
                     case ReliquaryOfSouls: return ReliquaryOfSouls_ReliquaryPrimeToken;
+                    case ReachEquilibrium_CleanseTheShadowToken_TLC_817t: return ReachEquilibrium_SoletosLifesBreathToken_TLC_817t3;
+                    case ReachEquilibrium_CorruptTheLightToken_TLC_817t2: return ReachEquilibrium_SoletosDeathsTouchToken_TLC_817t4;
                     case RemoteControlledGolem_SW_097: return RemoteControlledGolem_GolemPartsToken;
                     case Rhonin: return ArcaneMissilesLegacy;
                     case RinTheFirstDisciple_TheFinalSealToken: return RinTheFirstDisciple_AzariTheDevourerToken;
@@ -471,6 +476,7 @@ namespace HearthstoneReplays.Events
                     case RinTheFirstDisciple: return RinTheFirstDisciple_TheFirstSealToken;
                     case RiseToTheOccasion_AvengeTheFallenToken: return RiseToTheOccasion_LightbornCarielToken;
                     case RisingWinds: return Eagle_RisingWinds;
+                    case Rockskipper_TLC_427: return KoboldMiner_RockToken_WW_001t;
                     case RuleModifier_ApproachingNightmareToken_TTN_002t14: return YoggSaronHopesEnd_OG_134;
                     case RuleModifier_ShiftingFateToken_TTN_002t50: return GearShift;
                     case RuleModifier_ShiftingFuturesToken_TTN_002t36: return ShifterZerus_OG_123;
@@ -515,7 +521,7 @@ namespace HearthstoneReplays.Events
                     case SpiritOfTheMountain_TLC_229: return SpiritOfTheMountain_AshalonRidgeGuardianToken_TLC_229t14;
                     case Springpaw_CORE_TRL_348: return Springpaw_LynxToken;
                     case Springpaw_TRL_348: return Springpaw_LynxToken;
-                    case StaffOfAmmunae_ULDA_041: return StaffOfAmmunae_ULDA_041ts; 
+                    case StaffOfAmmunae_ULDA_041: return StaffOfAmmunae_ULDA_041ts;
                     case Starseeker_ULDA_Elise_HP3: return MoonfireLegacy;
                     case Starshooter_WW_813: return ArcaneShotLegacy_DS1_185;
                     case SteamSurger: return FlameGeyser;
@@ -751,7 +757,12 @@ namespace HearthstoneReplays.Events
                         return null;
 
                     case ExpiredMerchant:
-                        Console.WriteLine("TODO! Implement ExpiredMerchant card guess");
+                        if (node.Parent.Type == typeof(Action))
+                        {
+                            var act = node.Parent.Object as Action;
+                            var actionEntity = gameState.CurrentEntities.GetValueOrDefault(act.Entity);
+                            return actionEntity?.CardIdsToCreate?.FirstOrDefault();
+                        }
                         return null;
 
                     case FightOverMe:

@@ -8,13 +8,13 @@ using System.Collections.Generic;
 
 namespace HearthstoneReplays.Events.Parsers
 {
-    public class ArmorChangeParser : ActionParser
+    public class ImmolateChangedParser : ActionParser
     {
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
         private StateFacade StateFacade { get; set; }
 
-        public ArmorChangeParser(ParserState ParserState, StateFacade facade)
+        public ImmolateChangedParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
             this.GameState = ParserState.GameState;
@@ -23,9 +23,13 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
+            if (StateFacade.IsBattlegrounds())
+            {
+                return false;
+            }
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.ARMOR;
+                && ((node.Object as TagChange).Name == (int)GameTag.IMMOLATESTAGE || (node.Object as TagChange).Name == (int)GameTag.IMMOLATING);
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -42,39 +46,37 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
-            // When playing a hero card, the ARMOR tag changes on the card itself, but we're actually interested
-            // only in changes to the hero's armor
-            if (!StateFacade.IsBattlegrounds())
+            var initialData1 = entity.GetTag(GameTag.IMMOLATESTAGE, 0);
+            var initialData2 = entity.GetTag(GameTag.IMMOLATING, 0);
+            int newData1 = initialData1;
+            int newData2 = initialData2;
+            if (tagChange.Name == (int)GameTag.IMMOLATESTAGE)
             {
-                var controller = entity.GetController();
-                var playerEntity = ParserState.GetPlayerForController(controller);
-                var fullEntity = GameState.CurrentEntities.GetValueOrDefault(playerEntity.Id);
-                var heroEntity = fullEntity.GetTag(GameTag.HERO_ENTITY);
-                if (heroEntity != tagChange.Entity)
-                {
-                    return null;
-                }
+                newData1 = tagChange.Value;
+            }
+            if (tagChange.Name == (int)GameTag.IMMOLATING)
+            {
+                newData2 = tagChange.Value;
+            }
+            if (initialData1 == newData1 && initialData2 == newData2)
+            {
+                return null;
             }
 
-            // TODO: also indicate whether you're paying with your armor
-            var initialArmor = entity.GetTag(GameTag.ARMOR, 0);
-            var newArmor = tagChange.Value;
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
-                 "ARMOR_CHANGED",
+                 "IMMOLATE_CHANGED",
                 GameEvent.CreateProvider(
-                    "ARMOR_CHANGED",
+                    "IMMOLATE_CHANGED",
                     cardId,
                     controllerId,
                     entity.Id,
                     StateFacade,
-                    //null,
                     new {
-                        PlayerId = entity.GetTag(GameTag.PLAYER_ID),
-                        ArmorChange = newArmor - initialArmor,
-                        TotalArmor = newArmor,
+                        Stage = newData1, 
+                        Immolating = newData2
                     }),
                 true,
                 node) };

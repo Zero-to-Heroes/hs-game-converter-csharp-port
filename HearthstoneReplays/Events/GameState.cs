@@ -530,6 +530,24 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             LastCardDrawnEntityId = entityId;
         }
 
+        public void OnCardDiscarded(int discardedEntityId, string discardedCardId, FullEntity source)
+        {
+            if (source == null)
+            {
+                return;
+            }
+
+            switch (source.CardId)
+            {
+                case CardIds.ExpiredMerchant:
+                case CardIds.FelsoulJailer:
+                case CardIds.FelsoulJailerLegacy:
+                case CardIds.AmorphousSlime:
+                    source.CardIdsToCreate.Add(discardedCardId);
+                    break;
+            }
+        }
+
         public void OnNewTurn()
         {
             if (CurrentTurn % 2 == 1)
@@ -557,5 +575,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
             return CurrentEntities.Values.Where(e => e.GetTag(GameTag.ATTACHED) == entity).ToList();
         }
+
     }
 }
