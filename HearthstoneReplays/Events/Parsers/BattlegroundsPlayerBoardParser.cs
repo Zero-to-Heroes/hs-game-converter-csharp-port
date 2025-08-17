@@ -402,6 +402,8 @@ namespace HearthstoneReplays.Events.Parsers
             // GameState.CurrentEntities[playerEntityId]?.GetTag(GameTag.NUM_SPELLS_PLAYED_THIS_GAME, 0) ?? 0;
             // Includes Anub'arak, Nerubian Deathswarmer
             var undeadAttackBonus = GetPlayerEnchantmentValue(playerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, currentEntities);
+            var hauntedCarapaceAttackBonus = GetPlayerEnchantmentValue(playerId, CardIds.HauntedCarapacePlayerEnchantDntEnchantment_BG33_112pe, currentEntities);
+            var hauntedCarapaceHealthBonus = GetPlayerEnchantmentValue(playerId, CardIds.HauntedCarapacePlayerEnchantDntEnchantment_BG33_112pe, currentEntities, GameTag.TAG_SCRIPT_DATA_NUM_2);
             var astralAutomatonBonus = GetPlayerEnchantmentValue(playerId, CardIds.AstralAutomatonPlayerEnchantDntEnchantment_BG_TTN_401pe, currentEntities);
             var beetleArmy = GetTupleEnchantmentValue(playerId, CardIds.BeetleArmyPlayerEnchantDntEnchantment_BG31_808pe, currentEntities);
             var sanlyanScribesDeadThisGame = GetTupleEnchantmentValue(playerId, CardIds.SanlaynScribePlayerEnchantDntEnchantment_BGDUO31_208pe, currentEntities);
@@ -436,6 +438,8 @@ namespace HearthstoneReplays.Events.Parsers
                 EternalKnightsDeadThisGame = eternalKnightBonus,
                 TavernSpellsCastThisGame = tavernSpellsCastThisGame,
                 UndeadAttackBonus = undeadAttackBonus,
+                HauntedCarapaceAttackBonus = hauntedCarapaceAttackBonus,
+                HauntedCarapaceHealthBonus = hauntedCarapaceHealthBonus,
                 FrostlingBonus = frostlingBonus,
                 PiratesSummonedThisGame = piratesSummonedThisGame,
                 BeastsSummonedThisGame = beastsSummonedThisGame,
@@ -623,7 +627,7 @@ namespace HearthstoneReplays.Events.Parsers
             return withEnchants;
         }
 
-        internal static int GetPlayerEnchantmentValue(int playerId, string enchantment, List<FullEntity> currentEntities)
+        internal static int GetPlayerEnchantmentValue(int playerId, string enchantment, List<FullEntity> currentEntities, GameTag gameTag = GameTag.TAG_SCRIPT_DATA_NUM_1)
         {
             return currentEntities
                 .Where(entity => 
@@ -631,7 +635,7 @@ namespace HearthstoneReplays.Events.Parsers
                     entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
                     entity.CardId == enchantment)
                 .FirstOrDefault()
-                ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
+                ?.GetTag(gameTag) ?? 0;
         }
 
         internal static Tuple<int, int> GetTupleEnchantmentValue(int playerId, string enchantment, List<FullEntity> currentEntities)
@@ -765,6 +769,8 @@ namespace HearthstoneReplays.Events.Parsers
             public int PiratesSummonedThisGame { get; set; }
             public int BeastsSummonedThisGame { get; set; }
             public int UndeadAttackBonus { get; set; }
+            public int HauntedCarapaceAttackBonus { get; set; }
+            public int HauntedCarapaceHealthBonus { get; set; }
             public int FrostlingBonus { get; set; }
             public int AstralAutomatonsSummonedThisGame { get; set; }
             public int BloodGemAttackBonus { get; set; }

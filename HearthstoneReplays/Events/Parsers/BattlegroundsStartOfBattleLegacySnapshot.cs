@@ -37,8 +37,8 @@ namespace HearthstoneReplays.Events.Parsers
         };
 
         private static List<string> START_OF_COMBAT_MINION_EFFECT = new List<string>() {
-            RedWhelp_BGS_019,
-            RedWhelp_TB_BaconUps_102,
+            //RedWhelp_BGS_019,
+            //RedWhelp_TB_BaconUps_102,
             PrizedPromoDrake_BG21_014,
             PrizedPromoDrake_BG21_014_G,
             CorruptedMyrmidon_BG23_012,
@@ -53,8 +53,8 @@ namespace HearthstoneReplays.Events.Parsers
             AmberGuardian_BG24_500_G,
             ChoralMrrrglr_BG26_354,
             ChoralMrrrglr_BG26_354_G,
-            SanctumRester_BG26_356,
-            SanctumRester_BG26_356_G,
+            //SanctumRester_BG26_356,
+            //SanctumRester_BG26_356_G,
             CarbonicCopy_BG27_503,
             CarbonicCopy_BG27_503_G,
             HawkstriderHerald_BG27_079,
@@ -73,8 +73,8 @@ namespace HearthstoneReplays.Events.Parsers
             ThousandthPaperDrake_BG29_810_G,
             YulonFortuneGranter_BG29_811,
             YulonFortuneGranter_BG29_811_G,
-            HoardingHatespawn_BG29_872,
-            HoardingHatespawn_BG29_872_G,
+            //HoardingHatespawn_BG29_872,
+            //HoardingHatespawn_BG29_872_G,
             TheUninvitedGuest_BG29_875,
             TheUninvitedGuest_BG29_875_G,
             Sandy_BGDUO_125,

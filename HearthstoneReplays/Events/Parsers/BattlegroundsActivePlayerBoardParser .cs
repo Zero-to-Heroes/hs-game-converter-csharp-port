@@ -256,6 +256,8 @@ namespace HearthstoneReplays.Events.Parsers
                 var spellsCastThisGame = GameState.CurrentEntities[player.Id]?.GetTag(GameTag.NUM_SPELLS_PLAYED_THIS_GAME, 0) ?? 0;
                 // Includes Anub'arak, Nerubian Deathswarmer
                 var undeadAttackBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, GameState);
+                var hauntedCarapaceAttackBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.HauntedCarapacePlayerEnchantDntEnchantment_BG33_112pe, GameState);
+                var hauntedCarapaceHealthBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.HauntedCarapacePlayerEnchantDntEnchantment_BG33_112pe, GameState, GameTag.TAG_SCRIPT_DATA_NUM_2);
                 // Looks like the enchantment isn't used anymore, at least for the opponent?
                 var frostlingBonus = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, GameState);
                 var piratesSummonedThisGame = GetPlayerTag(player.Id, GameTag.BACON_PIRATES_SUMMONED_THIS_GAME, GameState);
@@ -319,6 +321,8 @@ namespace HearthstoneReplays.Events.Parsers
                         EternalKnightsDeadThisGame = eternalKnightBonus,
                         TavernSpellsCastThisGame = tavernSpellsCastThisGame,
                         UndeadAttackBonus = undeadAttackBonus,
+                        HauntedCarapaceAttackBonus = hauntedCarapaceAttackBonus,
+                        HauntedCarapaceHealthBonus = hauntedCarapaceHealthBonus,
                         FrostlingBonus = frostlingBonus,
                         PiratesSummonedThisGame = piratesSummonedThisGame,
                         BeastsSummonedThisGame = beastsSummonedThisGame,
@@ -327,6 +331,8 @@ namespace HearthstoneReplays.Events.Parsers
                         BloodGemAttackBonus = bloodGemAttackBonus,
                         BloodGemHealthBonus = bloodGemHealthBonus,
                         // TODO: always show the base version, even for golden
+                        // Update 25-08-08: not sure what this comment is about, as it seems to include the total
+                        // stats
                         ChoralAttackBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0,
                         ChoralHealthBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0,
                         BeetleAttackBuff = beetleArmy.Item1,
@@ -418,14 +424,14 @@ namespace HearthstoneReplays.Events.Parsers
             return clone;
         }
 
-        internal static int GetPlayerEnchantmentValue(int playerId, string enchantment, GameState GameState)
+        internal static int GetPlayerEnchantmentValue(int playerId, string enchantment, GameState GameState, GameTag gameTag = GameTag.TAG_SCRIPT_DATA_NUM_1)
         {
             return GameState.CurrentEntities.Values
                 .Where(entity => entity.GetEffectiveController() == playerId)
                 .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                 .Where(entity => entity.CardId == enchantment)
                 .FirstOrDefault()
-                ?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0;
+                ?.GetTag(gameTag) ?? 0;
         }
 
         internal static int GetPlayerTag(int playerEntityId, GameTag tag, GameState GameState)
