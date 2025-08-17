@@ -332,7 +332,7 @@ namespace HearthstoneReplays.Events.Parsers
                         BloodGemHealthBonus = bloodGemHealthBonus,
                         // TODO: always show the base version, even for golden
                         // Update 25-08-08: not sure what this comment is about, as it seems to include the total
-                        // stats
+                        // stats (so double for golden)
                         ChoralAttackBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0,
                         ChoralHealthBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0,
                         BeetleAttackBuff = beetleArmy.Item1,
