@@ -275,6 +275,8 @@ namespace HearthstoneReplays.Events.Parsers
                     .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment)
                     .Where(e => board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)));
                 var choralEnchantment = choralEnchantments.FirstOrDefault();
+                var choralSource = choralEnchantment == null ? null : GameState.CurrentEntities.GetValueOrDefault(choralEnchantment.GetTag(GameTag.ATTACHED));
+                var isChoralPremium = choralSource?.GetTag(GameTag.PREMIUM) == 1;
                 var beetleArmy = GetTupleEnchantmentValue(playerId, CardIds.BeetleArmyPlayerEnchantDntEnchantment_BG31_808pe, currentEntities);
                 var sanlaynScribesDeadThisGame = GetTupleEnchantmentValue(playerId, CardIds.SanlaynScribePlayerEnchantDntEnchantment_BGDUO31_208pe, currentEntities);
                 var battlecriesTriggeredThisGame = GetPlayerTag(player.Id, GameTag.BATTLECRIES_TRIGGERED_THIS_GAME, GameState);
@@ -333,8 +335,9 @@ namespace HearthstoneReplays.Events.Parsers
                         // TODO: always show the base version, even for golden
                         // Update 25-08-08: not sure what this comment is about, as it seems to include the total
                         // stats (so double for golden)
-                        ChoralAttackBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0,
-                        ChoralHealthBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0,
+                        // Update 2025-08-20: fix this to include always the base, so that it works with golden + non-golden
+                        ChoralAttackBuff = (choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0) / (isChoralPremium ? 2 : 1),
+                        ChoralHealthBuff = (choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0) / (isChoralPremium ? 2 : 1),
                         BeetleAttackBuff = beetleArmy.Item1,
                         BeetleHealthBuff = beetleArmy.Item2,
                         ElementalHealthBuff = elementalHealthBuff,

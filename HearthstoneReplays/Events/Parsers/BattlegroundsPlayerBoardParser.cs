@@ -417,6 +417,8 @@ namespace HearthstoneReplays.Events.Parsers
             var elementalAttackBuff = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTAL_BUFFATKVALUE, currentEntities);
             var tavernSpellHealthBuff = GetPlayerTag(playerEntityId, GameTag.TAVERN_SPELL_HEALTH_INCREASE, currentEntities);
             var tavernSpellAttackBuff = GetPlayerTag(playerEntityId, GameTag.TAVERN_SPELL_ATTACK_INCREASE, currentEntities);
+            var debugPlayerEntity = currentEntities.Find(e => e.Entity == playerEntityId);
+            var debugTags = debugPlayerEntity.TagsHistory.Where(t => t.Name == (int)GameTag.TAVERN_SPELL_ATTACK_INCREASE).ToList();
             var bloodGemEnchant = currentEntities
                 .Where(entity => 
                     entity.GetEffectiveController() == playerId &&
@@ -433,6 +435,8 @@ namespace HearthstoneReplays.Events.Parsers
                 .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment && board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)))
                 .ToList();
             var choralEnchantment = choralEnchantments.FirstOrDefault();
+            var choralSource = choralEnchantment == null ? null : GameState.CurrentEntities.GetValueOrDefault(choralEnchantment.GetTag(GameTag.ATTACHED));
+            var isChoralPremium = choralSource?.GetTag(GameTag.PREMIUM) == 1;
             return new BgsPlayerGlobalInfo()
             {
                 EternalKnightsDeadThisGame = eternalKnightBonus,
@@ -448,8 +452,8 @@ namespace HearthstoneReplays.Events.Parsers
                 PiratesPlayedThisGame = piratesPlayedThisGame,
                 BloodGemAttackBonus = bloodGemAttackBonus,
                 BloodGemHealthBonus = bloodGemHealthBonus,
-                ChoralAttackBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0,
-                ChoralHealthBuff = choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0,
+                ChoralAttackBuff = (choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0) / (isChoralPremium ? 2 : 1),
+                ChoralHealthBuff = (choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0) / (isChoralPremium ? 2 : 1),
                 BeetleAttackBuff = beetleArmy.Item1,
                 BeetleHealthBuff = beetleArmy.Item2,
                 ElementalHealthBuff = elementalHealthBuff,
