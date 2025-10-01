@@ -195,6 +195,7 @@ namespace HearthstoneReplays.Events
             SubSpell subSpellInEffect = null
         )
         {
+            var debug = creatorCardId == PrimalSabretooth_TLC_247;
             if (inputCardId != null && inputCardId.Length > 0)
             {
                 return inputCardId;
@@ -544,6 +545,7 @@ namespace HearthstoneReplays.Events
                     case TheDarkness_LOOT_526: return TheDarkness_DarknessCandleToken;
                     case TheDemonSeed_CompleteTheRitualToken: return TheDemonSeed_BlightbornTamsinToken;
                     case TheForestsAid_DAL_256: return TheForestsAid_DAL_256ts;
+                    case TheForbiddenSequence_TLC_460: return TheForbiddenSequence_TheOriginStoneToken_TLC_460t;
                     case TheHandOfRafaam: return CurseOfRafaam_CursedToken;
                     case TheLastKaleidosaur: return TheLastKaleidosaur_GalvadonToken;
                     case TheMarshQueen_QueenCarnassaToken: return TheMarshQueen_CarnassasBroodToken;
@@ -957,6 +959,12 @@ namespace HearthstoneReplays.Events
                             .SelectMany(d => d.MetaInfo)
                             .Select(i => i.Id)
                             .FirstOrDefault();
+                        var entity = gameState.CurrentEntities.GetValueOrDefault(entityId);
+                        return entity?.CardId;
+                    }
+                    else if (actionEntity?.CardId == PrimalSabretooth_TLC_247)
+                    {
+                        var entityId = actionEntity.GetTag(GameTag.CARD_TARGET);
                         var entity = gameState.CurrentEntities.GetValueOrDefault(entityId);
                         return entity?.CardId;
                     }

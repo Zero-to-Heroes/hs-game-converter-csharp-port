@@ -25,7 +25,8 @@ namespace HearthstoneReplays.Events.Parsers
         {
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(TagChange)
-                && (node.Object as TagChange).Name == (int)GameTag.PLAYSTATE;
+                && ((node.Object as TagChange).Name == (int)GameTag.PLAYSTATE 
+                    || (ParserState.IsBattlegrounds() && (node.Object as TagChange).Name == (int)GameTag.TAG_PLAYER_CONCEDED_OR_DISCONNECTED));
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -36,7 +37,7 @@ namespace HearthstoneReplays.Events.Parsers
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
             var tagChange = node.Object as TagChange;
-            if (tagChange.Value == (int)PlayState.WON)
+            if (tagChange.Name == (int)GameTag.PLAYSTATE && tagChange.Value == (int)PlayState.WON)
             {
                 var winner = (PlayerEntity)ParserState.GetEntity(tagChange.Entity);
                 if (winner == null)
@@ -64,7 +65,7 @@ namespace HearthstoneReplays.Events.Parsers
                        true,
                        node) };
             }
-            else if (tagChange.Value == (int)PlayState.TIED)
+            else if (tagChange.Name == (int)GameTag.PLAYSTATE && tagChange.Value == (int)PlayState.TIED)
             {
                 return new List<GameEventProvider> { GameEventProvider.Create(
                        tagChange.TimeStamp,
@@ -75,6 +76,33 @@ namespace HearthstoneReplays.Events.Parsers
                        },
                        true,
                        node) };
+            }
+            else if (tagChange.Name == (int)GameTag.TAG_PLAYER_CONCEDED_OR_DISCONNECTED)
+            {
+                var isPlayer = tagChange.Entity == StateFacade.LocalPlayer.Id;
+                if (!isPlayer)
+                {
+                    return null;
+                }
+                return new List<GameEventProvider> { GameEventProvider.Create(
+                       tagChange.TimeStamp,
+                       "WINNER",
+                       () => {
+                            //Logger.Log("Providing game event for WinnerParser", node.CreationLogLine);
+                            return new GameEvent
+                            {
+                                Type = "WINNER",
+                                Value = new
+                                {
+                                    Winner = StateFacade.OpponentPlayer,
+                                    LocalPlayer = StateFacade.LocalPlayer,
+                                    OpponentPlayer = StateFacade.OpponentPlayer,
+                                }
+                            };
+                       },
+                       true,
+                       node) };
+
             }
             return null;
         }

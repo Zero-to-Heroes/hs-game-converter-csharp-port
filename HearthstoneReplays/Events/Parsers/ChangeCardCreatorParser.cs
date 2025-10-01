@@ -58,6 +58,7 @@ namespace HearthstoneReplays.Events.Parsers
                         //gameState,
                         new {
                             CreatorCardId = creatorCardId,
+                            CreatorEntityId = tagChange.Value,
                         }),
                     true,
                     node) };

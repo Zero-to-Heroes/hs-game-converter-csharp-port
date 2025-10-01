@@ -12,6 +12,7 @@ using HearthstoneReplays.Parser.ReplayData.Meta.Options;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using HearthstoneReplays.Enums;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
+using System.Collections;
 
 #endregion
 
@@ -203,6 +204,20 @@ namespace HearthstoneReplays.Parser
 
             _isBattlegrounds = null;
             _cachedPlayers = new List<PlayerEntity>();
+        }
+
+        public void PartialReset()
+        {
+            var gameEntity = CurrentGame.Data.Where(d => d is GameEntity).Select(d => d as GameEntity).FirstOrDefault();
+            var playerEntities = getPlayers();
+            var keysToKeep = new HashSet<int> { gameEntity.Id }; // Exemple : clés à conserver
+            foreach (var player in playerEntities)
+            {
+                keysToKeep.Add(player.Id);
+            }
+            GameState.CurrentEntities = GameState.CurrentEntities
+                .Where(kvp => keysToKeep.Contains(kvp.Key))
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
 
         public void CreateNewNode(Node newNode)

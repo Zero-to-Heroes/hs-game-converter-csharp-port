@@ -159,7 +159,7 @@ namespace HearthstoneReplays.Events.Parsers
             var currentEntities = GameState.CurrentEntities.Values;
 
             var potentialHeroes = currentEntities
-                .Where(entity => 
+                .Where(entity =>
                     entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO &&
                     // Issue: when the player is a ghost, it can be in the REMOVEDFROMGAME zone
                     entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
@@ -182,7 +182,7 @@ namespace HearthstoneReplays.Events.Parsers
                 //var linkedEntityId = hero.GetTag(GameTag.LINKED_ENTITY);
                 //var linkedEntity = GameState.CurrentEntities.GetValueOrDefault(linkedEntityId);
                 var heroesForTargetPlayerId = currentEntities
-                    .Where(entity => 
+                    .Where(entity =>
                         entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO &&
                         entity.GetTag(GameTag.PLAYER_ID) == playerId &&
                         !entity.IsBaconBartender() &&
@@ -226,7 +226,7 @@ namespace HearthstoneReplays.Events.Parsers
                         entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
                     .ToList();
                 var board = currentEntities
-                    .Where(entity => 
+                    .Where(entity =>
                         entity.GetEffectiveController() == playerPlayerId &&
                         entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
                         entity.TakesBoardSpace() &&
@@ -238,7 +238,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Select(entity => EnhanceEntities(entity.Clone(), GameState, StateFacade))
                     .ToList();
                 var secrets = currentEntities
-                    .Where(entity => 
+                    .Where(entity =>
                         entity.GetEffectiveController() == playerPlayerId &&
                         entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET &&
                         entity.GetTag(GameTag.BACON_IS_BOB_QUEST) != 1 &&
@@ -248,7 +248,7 @@ namespace HearthstoneReplays.Events.Parsers
                     .Select(entity => BuildEntityWithCardIdFromTheFuture(entity.Clone(), StateFacade.GsState.GameState))
                     .ToList();
                 var hand = currentEntities
-                    .Where(entity => 
+                    .Where(entity =>
                         entity.GetEffectiveController() == playerPlayerId &&
                         entity.GetTag(GameTag.ZONE) == (int)Zone.HAND)
                     .OrderBy(entity => entity.GetTag(GameTag.ZONE_POSITION))
@@ -293,7 +293,7 @@ namespace HearthstoneReplays.Events.Parsers
                     })
                     .ToList();
                 var questEntities = currentEntities
-                    .Where(entity => 
+                    .Where(entity =>
                         entity.GetEffectiveController() == playerPlayerId &&
                         entity.GetTag(GameTag.ZONE) == (int)Zone.SECRET &&
                         entity.GetTag(GameTag.CARDTYPE) == (int)CardType.SPELL &&
@@ -313,7 +313,7 @@ namespace HearthstoneReplays.Events.Parsers
 
 
                 var heroPowerEntities = currentEntities
-                    .Where(entity => 
+                    .Where(entity =>
                         entity.GetEffectiveController() == playerPlayerId &&
                         entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
                         entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER)
@@ -332,12 +332,23 @@ namespace HearthstoneReplays.Events.Parsers
                         Used = hp?.GetTag(GameTag.BACON_HERO_POWER_ACTIVATED) == 1,
                         Info = hp?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? 0,
                         Info2 = hp?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2) ?? 0,
+                        Info3 = hp?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_3) ?? 0,
+                        Info4 = hp?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_4) ?? 0,
+                        Info5 = hp?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_5) ?? 0,
+                        Info6 = hp?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_6) ?? 0,
+                        ScoreValue1 = hp?.GetTag(GameTag.SCORE_VALUE_1) ?? 0,                        
+                        ScoreValue2 = hp?.GetTag(GameTag.SCORE_VALUE_2) ?? 0,                        
+                        ScoreValue3 = hp?.GetTag(GameTag.SCORE_VALUE_3) ?? 0,                        
+                        Locked = hp?.GetTag(GameTag.LOCK_VISUAL) ?? 0,
                         CreatedEntity = null,
                     })
                     .ToList();
 
+                var debugHp = heroPowers.Any(hp => hp.EntityId == 220);
+
                 UpdateEmbraceYourRageTarget(StateFacade, heroPowers);
                 UpdateRebornRitesTarget(StateFacade, heroPowers);
+                UpdateLockAndLoadMinion(StateFacade, heroPowers);
 
                 return new PlayerBoard()
                 {
@@ -375,7 +386,7 @@ namespace HearthstoneReplays.Events.Parsers
                 .ToList();
             var debug = debugTrinkets.Any(t => t.Entity == 9529);
             return gameState.CurrentEntities.Values
-                .Where(entity => 
+                .Where(entity =>
                     entity.GetEffectiveController() == playerPlayerId &&
                     entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
                     entity.GetCardType() == (int)CardType.BATTLEGROUND_TRINKET)
@@ -396,9 +407,9 @@ namespace HearthstoneReplays.Events.Parsers
             var currentEntities = GameState.CurrentEntities.Values.ToList();
             var currentEntitiesGs = StateFacade.GsState.GameState.CurrentEntities.Values.ToList();
             var eternalKnightBonus = GetPlayerEnchantmentValue(playerId, CardIds.EternalKnightPlayerEnchantEnchantment, currentEntities);
-            var tavernSpellsCastThisGame = GetPlayerTag(playerEntityId, GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME, currentEntities); 
+            var tavernSpellsCastThisGame = GetPlayerTag(playerEntityId, GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME, currentEntities);
             //GameState.CurrentEntities[playerEntityId]?.GetTag(GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME, 0) ?? 0;
-            var spellsCastThisGame = GetPlayerTag(playerEntityId, GameTag.NUM_SPELLS_PLAYED_THIS_GAME, currentEntities); 
+            var spellsCastThisGame = GetPlayerTag(playerEntityId, GameTag.NUM_SPELLS_PLAYED_THIS_GAME, currentEntities);
             // GameState.CurrentEntities[playerEntityId]?.GetTag(GameTag.NUM_SPELLS_PLAYED_THIS_GAME, 0) ?? 0;
             // Includes Anub'arak, Nerubian Deathswarmer
             var undeadAttackBonus = GetPlayerEnchantmentValue(playerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, currentEntities);
@@ -417,10 +428,11 @@ namespace HearthstoneReplays.Events.Parsers
             var elementalAttackBuff = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTAL_BUFFATKVALUE, currentEntities);
             var tavernSpellHealthBuff = GetPlayerTag(playerEntityId, GameTag.TAVERN_SPELL_HEALTH_INCREASE, currentEntities);
             var tavernSpellAttackBuff = GetPlayerTag(playerEntityId, GameTag.TAVERN_SPELL_ATTACK_INCREASE, currentEntities);
+            var goldSpentThisGame = GetPlayerTag(playerEntityId, GameTag.NUM_RESOURCES_SPENT_THIS_GAME, currentEntities);
             var debugPlayerEntity = currentEntities.Find(e => e.Entity == playerEntityId);
             var debugTags = debugPlayerEntity.TagsHistory.Where(t => t.Name == (int)GameTag.TAVERN_SPELL_ATTACK_INCREASE).ToList();
             var bloodGemEnchant = currentEntities
-                .Where(entity => 
+                .Where(entity =>
                     entity.GetEffectiveController() == playerId &&
                     // Don't use the PLAY zone, as it could cause issues with teammate state in Duos? To be tested
                     entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
@@ -464,6 +476,7 @@ namespace HearthstoneReplays.Events.Parsers
                 FriendlyMinionsDeadLastCombat = friendlyMinionsDeadLastCombat,
                 SanlaynScribesDeadThisGame = sanlyanScribesDeadThisGame?.Item1 ?? 0,
                 SpellsCastThisGame = spellsCastThisGame,
+                GoldSpentThisGame = goldSpentThisGame,
             };
         }
 
@@ -482,6 +495,46 @@ namespace HearthstoneReplays.Events.Parsers
                         .Reverse()
                         .FirstOrDefault();
                     heroPower.Info = createdEntity?.CardId;
+                    return;
+                }
+            }
+        }
+
+        internal static void UpdateLockAndLoadMinion(StateFacade stateFacade, List<BgsHeroPower> heroPowers)
+        {
+            foreach (var heroPower in heroPowers)
+            {
+                bool heroPowerUsed = heroPower.Used;
+                string heroPowerCardId = heroPower.CardId;
+                int? heroPowerEntityId = heroPower.EntityId;
+                if (heroPowerUsed && heroPowerCardId == CardIds.LockAndLoadToken_BG22_HERO_000p_Alt)
+                {
+                    var entities = stateFacade.GsState.GameState.CurrentEntities.Values.ToList();
+                    // Ptl works for the player, but not for the opponent
+                    var createdEntity = stateFacade.PtlState.GameState.CurrentEntities.Values.ToList()
+                        .Where(e => e.GetTag(GameTag.CREATOR) == heroPowerEntityId && e.GetCardType() == (int)CardType.MINION)
+                        .Reverse()
+                        .FirstOrDefault();
+                    if (createdEntity != null)
+                    {
+                        heroPower.Info = createdEntity;
+                    }
+                    else
+                    {
+                        // Probably not enough, as it will include all the changes from the combat itself, then revert back to vanilla
+                        // Let's update this with future bug reports
+                        var createdEntity2 = stateFacade.GsState.GameState.CurrentEntities.Values.ToList()
+                            .Where(e => e.GetTag(GameTag.CREATOR) == heroPowerEntityId && e.GetCardType() == (int)CardType.MINION)
+                            .Reverse()
+                            .FirstOrDefault();
+                        var clone = createdEntity2.Clone();
+                        var takeUntilTag = GameTag.SPAWN_TIME_COUNT;
+                        OverrideTagWithHistory(clone, GameTag.HEALTH, takeUntilTag);
+                        OverrideTagWithHistory(clone, GameTag.ATK, takeUntilTag);
+                        OverrideTagWithHistory(clone, GameTag.LITERALLY_UNPLAYABLE, takeUntilTag);
+                        OverrideTagWithHistory(clone, GameTag.UNPLAYABLE_VISUALS, takeUntilTag);
+                        heroPower.Info = clone;
+                    }
                     return;
                 }
             }
@@ -545,7 +598,7 @@ namespace HearthstoneReplays.Events.Parsers
             var serenadedEnchantments = StateFacade.GsState.Replay.Games[StateFacade.GsState.Replay.Games.Count - 1]
                 .FilterGameData(typeof(ShowEntity))
                 .Select(d => d as ShowEntity)
-                .Where(e => 
+                .Where(e =>
                     e.CardId == CardIds.LovesickBalladist_SerenadedEnchantment &&
                     e.GetTag(GameTag.CREATOR) == entity.Id &&
                     e.GetTag(GameTag.ATTACHED) > 0)
@@ -571,12 +624,12 @@ namespace HearthstoneReplays.Events.Parsers
             return entity;
         }
 
-        private static void OverrideTagWithHistory(FullEntity entity, GameTag tag)
+        private static void OverrideTagWithHistory(FullEntity entity, GameTag tag, GameTag takeUntilTag = GameTag.SHOW_ENTITY_START)
         {
             var tags = entity.TagsHistory
                 // When a minion is summoned from hand in combat, there is a SHOW_ENTITY node with the buffed value,
                 // which includes the buffs from combat
-                .TakeWhile(t => t.Name != (int)GameTag.SHOW_ENTITY_START)
+                .TakeWhile(t => t.Name != (int)takeUntilTag)
                 .Where(t => t.Name == (int)tag)
                 .ToList();
             var tagInHand = tags.Count == 1
@@ -615,8 +668,8 @@ namespace HearthstoneReplays.Events.Parsers
                 // Not sure why it can be REMOVEDFROMGAME
                 //.Where(entity => entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME)
                 //.ToList();
-            //var debug = StateFacade.GsState.GameState.CurrentEntities.Values
-            //    .Where(entity => entity.GetTag(GameTag.ATTACHED) == id)
+                //var debug = StateFacade.GsState.GameState.CurrentEntities.Values
+                //    .Where(entity => entity.GetTag(GameTag.ATTACHED) == id)
                 .ToList();
             if (enchantments.Any(e => e.CardId == ExpeditionPlans_UnplayableEnchantment))
             {
@@ -634,7 +687,7 @@ namespace HearthstoneReplays.Events.Parsers
         internal static int GetPlayerEnchantmentValue(int playerId, string enchantment, List<FullEntity> currentEntities, GameTag gameTag = GameTag.TAG_SCRIPT_DATA_NUM_1)
         {
             return currentEntities
-                .Where(entity => 
+                .Where(entity =>
                     entity.GetEffectiveController() == playerId &&
                     entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
                     entity.CardId == enchantment)
@@ -645,7 +698,7 @@ namespace HearthstoneReplays.Events.Parsers
         internal static Tuple<int, int> GetTupleEnchantmentValue(int playerId, string enchantment, List<FullEntity> currentEntities)
         {
             var ench = currentEntities
-                .Where(entity => 
+                .Where(entity =>
                     entity.GetEffectiveController() == playerId &&
                     entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY &&
                     entity.CardId == enchantment)
@@ -701,7 +754,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var enchantmentEntities = currentEntities.Values
-                .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id 
+                .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id
                     && (allowRemovedFromGame || entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME))
                 .ToList();
             // Recursive enchantments in case of magnetic
@@ -751,6 +804,14 @@ namespace HearthstoneReplays.Events.Parsers
             public bool Used { get; set; }
             public dynamic Info { get; set; }
             public int Info2 { get; set; }
+            public int Info3 { get; set; }
+            public int Info4 { get; set; }
+            public int Info5 { get; set; }
+            public int Info6 { get; set; }
+            public int ScoreValue1 { get; set; }
+            public int ScoreValue2 { get; set; }
+            public int ScoreValue3 { get; set; }
+            public int Locked { get; set; }
             public string CreatedEntity { get; set; }
         }
 
@@ -791,6 +852,7 @@ namespace HearthstoneReplays.Events.Parsers
             public int FriendlyMinionsDeadLastCombat { get; set; }
             public int MagnetizedThisGame { get; set; }
             public int SanlaynScribesDeadThisGame { get; set; }
+            public int GoldSpentThisGame { get; set; }
         }
 
         internal class QuestReward

@@ -78,6 +78,7 @@ namespace HearthstoneReplays.Events.Parsers
                     //gameState,
                     new {
                         CreatorCardId = creatorEntityCardId,
+                        CreatorEntityId = creatorEntityId,
                         Tags = entity.Tags,
                     }
                 ),
@@ -141,6 +142,7 @@ namespace HearthstoneReplays.Events.Parsers
                     new
                     {
                         CreatorCardId = creatorEntityCardId,
+                        CreatorEntityId = creatorEntityId,
                         Tags = fullEntity.Tags,
                     }
                 ),
@@ -174,6 +176,7 @@ namespace HearthstoneReplays.Events.Parsers
                     //gameState,
                     new {
                         CreatorCardId = creatorEntityCardId,
+                        CreatorEntityId = creatorEntityId,
                         Tags = showEntity.Tags,
                     }
                 ),

@@ -17,6 +17,12 @@ namespace HearthstoneReplays.Events.Parsers
         private ParserState ParserState { get; set; }
         private StateFacade StateFacade { get; set; }
 
+        private List<string> Cards = new List<string>()
+        {
+            CardIds.DragToBuy,
+            CardIds.DragToBuySpell_TB_BaconShop_DragBuy_Spell,
+        };
+
         public BattlegroundsMinionsBoughtParser(ParserState ParserState, StateFacade facade)
         {
             this.ParserState = ParserState;
@@ -36,7 +42,7 @@ namespace HearthstoneReplays.Events.Parsers
                 && node.Type == typeof(Action)
                 && (node.Object as Action).Type == (int)BlockType.POWER
                 && GameState.CurrentEntities.ContainsKey((node.Object as Action).Entity)
-                && GameState.CurrentEntities[((node.Object as Action).Entity)].CardId == CardIds.DragToBuy;
+                && Cards.Contains(GameState.CurrentEntities[((node.Object as Action).Entity)].CardId);
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)

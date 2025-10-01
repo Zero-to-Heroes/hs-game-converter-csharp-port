@@ -63,9 +63,13 @@ namespace HearthstoneReplays.Parser.Handlers
             var indentLevel = data.Length - trimmed.Length;
             data = trimmed;
 
+            if (data == "RESET_GAME")
+            {
+                state.PartialReset();
+            }
             // Additional handlers for specific cases
             // Take care of leftover log lines from a possible previous game
-            if (NewGameHandler.HandleNewGame(timestamp, data, state, previousTimestamp, stateType, stateFacade, currentGameSeed, metadata, helper))
+            else if (NewGameHandler.HandleNewGame(timestamp, data, state, previousTimestamp, stateType, stateFacade, currentGameSeed, metadata, helper))
             {
                 return;
             }

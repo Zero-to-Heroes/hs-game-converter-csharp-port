@@ -106,6 +106,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             BattlegroundsPlayerBoardParser.UpdateEmbraceYourRageTarget(StateFacade, playerBoard.HeroPowers);
             BattlegroundsPlayerBoardParser.UpdateRebornRitesTarget(StateFacade, playerBoard.HeroPowers);
+            BattlegroundsPlayerBoardParser.UpdateLockAndLoadMinion(StateFacade, playerBoard.HeroPowers);
         }
     }
 }

@@ -45,7 +45,6 @@ namespace HearthstoneReplays.Events.Parsers
                 && (!GameState.CurrentEntities.ContainsKey((node.Object as FullEntity).Id)
                     || (GameState.CurrentEntities[(node.Object as FullEntity).Id].GetTag(GameTag.ZONE) != (int)Zone.DECK
                         && GameState.CurrentEntities[(node.Object as FullEntity).Id].GetTag(GameTag.ZONE) != (int)Zone.HAND));
-            var debug = node.Type == typeof(FullEntity) && (node.Object as FullEntity).Id == 68;
             return stateType == StateType.PowerTaskList
                 && (appliesToShowEntity || appliesToFullEntity);
         }

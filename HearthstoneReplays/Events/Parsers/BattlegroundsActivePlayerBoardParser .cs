@@ -260,6 +260,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var hauntedCarapaceHealthBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.HauntedCarapacePlayerEnchantDntEnchantment_BG33_112pe, GameState, GameTag.TAG_SCRIPT_DATA_NUM_2);
                 // Looks like the enchantment isn't used anymore, at least for the opponent?
                 var frostlingBonus = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, GameState);
+                var piratesPlayedThisGame = GetPlayerTag(player.Id, GameTag.BACON_PIRATES_PLAYED_THIS_GAME, GameState);
                 var piratesSummonedThisGame = GetPlayerTag(player.Id, GameTag.BACON_PIRATES_SUMMONED_THIS_GAME, GameState);
                 var beastsSummonedThisGame = GetPlayerTag(player.Id, GameTag.BACON_BEASTS_SUMMONED_THIS_GAME, GameState);
                 var magnetizedThisGame = GetPlayerTag(player.Id, GameTag.BACON_NUM_MAGNETIZE_THIS_GAME, GameState);
@@ -285,6 +286,7 @@ namespace HearthstoneReplays.Events.Parsers
                 var elementalAttackBuff = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTAL_BUFFATKVALUE, GameState);
                 var tavernSpellHealthBuff = GetPlayerTag(player.Id, GameTag.TAVERN_SPELL_HEALTH_INCREASE, GameState);
                 var tavernSpellAttackBuff = GetPlayerTag(player.Id, GameTag.TAVERN_SPELL_ATTACK_INCREASE, GameState);
+                var goldSpentThisGame = GetPlayerTag(player.Id, GameTag.NUM_RESOURCES_SPENT_THIS_GAME, GameState);
 
                 var trinkets = BattlegroundsPlayerBoardParser.BuildTrinkets(player.PlayerId, GameState);
 
@@ -330,6 +332,7 @@ namespace HearthstoneReplays.Events.Parsers
                         BeastsSummonedThisGame = beastsSummonedThisGame,
                         MagnetizedThisGame = magnetizedThisGame,
                         AstralAutomatonsSummonedThisGame = astralAutomatonBonus,
+                        PiratesPlayedThisGame = piratesPlayedThisGame,
                         BloodGemAttackBonus = bloodGemAttackBonus,
                         BloodGemHealthBonus = bloodGemHealthBonus,
                         // TODO: always show the base version, even for golden
@@ -348,6 +351,7 @@ namespace HearthstoneReplays.Events.Parsers
                         FriendlyMinionsDeadLastCombat = friendlyMinionsDeadLastCombat,
                         SpellsCastThisGame = spellsCastThisGame,
                         SanlaynScribesDeadThisGame = sanlaynScribesDeadThisGame?.Item1 ?? 0,
+                        GoldSpentThisGame = goldSpentThisGame,
                     }
                 };
             }

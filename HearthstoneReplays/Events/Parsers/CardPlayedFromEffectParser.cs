@@ -57,7 +57,8 @@ namespace HearthstoneReplays.Events.Parsers
 
             ShowEntity fullEntity = null;
             bool cardPlayed = node.Type == typeof(ShowEntity)
-                && (fullEntity = node.Object as ShowEntity).GetZone() == (int)Zone.PLAY;
+                && (fullEntity = node.Object as ShowEntity).GetZone() == (int)Zone.PLAY
+                && fullEntity.GetCardType() != (int)CardType.ENCHANTMENT;
             return stateType == StateType.PowerTaskList
                 && isPowerPhase
                 && cardPlayed;

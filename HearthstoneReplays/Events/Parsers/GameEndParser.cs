@@ -23,10 +23,13 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
+            TagChange tagChange = null;
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(TagChange)
-                && (((node.Object as TagChange).Name == (int)GameTag.STATE
-                                && (node.Object as TagChange).Value == (int)State.COMPLETE));
+                && (
+                    ((tagChange = node.Object as TagChange).Name == (int)GameTag.STATE && tagChange.Value == (int)State.COMPLETE)
+                    || (ParserState.IsBattlegrounds() && tagChange.Name == (int)GameTag.TAG_PLAYER_CONCEDED_OR_DISCONNECTED && tagChange.Value == 1)
+                );
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -38,6 +41,14 @@ namespace HearthstoneReplays.Events.Parsers
         {
             Logger.Log("Parsing end game", node.CreationLogLine);
             var tagChange = node.Object as TagChange;
+            if (tagChange.Name == (int)GameTag.TAG_PLAYER_CONCEDED_OR_DISCONNECTED)
+            {
+                var isPlayer = tagChange.Entity == StateFacade.LocalPlayer.Id;
+                if (!isPlayer)
+                {
+                    return null;
+                }
+            }
             var replayCopy = StateFacade.GSReplay;
             // Update the name info
             foreach (var player in ParserState.getPlayers())
