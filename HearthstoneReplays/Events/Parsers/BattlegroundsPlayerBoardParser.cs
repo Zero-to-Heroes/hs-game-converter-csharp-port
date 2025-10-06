@@ -336,9 +336,9 @@ namespace HearthstoneReplays.Events.Parsers
                         Info4 = hp?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_4) ?? 0,
                         Info5 = hp?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_5) ?? 0,
                         Info6 = hp?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_6) ?? 0,
-                        ScoreValue1 = hp?.GetTag(GameTag.SCORE_VALUE_1) ?? 0,                        
-                        ScoreValue2 = hp?.GetTag(GameTag.SCORE_VALUE_2) ?? 0,                        
-                        ScoreValue3 = hp?.GetTag(GameTag.SCORE_VALUE_3) ?? 0,                        
+                        ScoreValue1 = hp?.GetTag(GameTag.SCORE_VALUE_1, 0) ?? 0,                        
+                        ScoreValue2 = hp?.GetTag(GameTag.SCORE_VALUE_2, 0) ?? 0,                        
+                        ScoreValue3 = hp?.GetTag(GameTag.SCORE_VALUE_3, 0) ?? 0,                        
                         Locked = hp?.GetTag(GameTag.LOCK_VISUAL) ?? 0,
                         CreatedEntity = null,
                     })
@@ -428,9 +428,15 @@ namespace HearthstoneReplays.Events.Parsers
             var elementalAttackBuff = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTAL_BUFFATKVALUE, currentEntities);
             var tavernSpellHealthBuff = GetPlayerTag(playerEntityId, GameTag.TAVERN_SPELL_HEALTH_INCREASE, currentEntities);
             var tavernSpellAttackBuff = GetPlayerTag(playerEntityId, GameTag.TAVERN_SPELL_ATTACK_INCREASE, currentEntities);
-            var goldSpentThisGame = GetPlayerTag(playerEntityId, GameTag.NUM_RESOURCES_SPENT_THIS_GAME, currentEntities);
+            var goldSpentThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_GOLD_SPENT_THIS_GAME, currentEntities);
+            //if (goldSpentThisGame == 0)
+            //{
+            //    // For opponent
+            //    goldSpentThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_GOLD_SPENT_THIS_GAME, currentEntities);
+            //}
             var debugPlayerEntity = currentEntities.Find(e => e.Entity == playerEntityId);
             var debugTags = debugPlayerEntity.TagsHistory.Where(t => t.Name == (int)GameTag.TAVERN_SPELL_ATTACK_INCREASE).ToList();
+            var debug2 = board.Any(e => e.Entity == 5169);
             var bloodGemEnchant = currentEntities
                 .Where(entity =>
                     entity.GetEffectiveController() == playerId &&
@@ -440,7 +446,6 @@ namespace HearthstoneReplays.Events.Parsers
                 .LastOrDefault();
             var bloodGemAttackBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0;
             var bloodGemHealthBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0;
-            var debug2 = board.Any(e => e.Entity == 7656);
             var battlecriesTriggeredThisGame = GetPlayerTag(playerEntityId, GameTag.BATTLECRIES_TRIGGERED_THIS_GAME, currentEntities);
             var friendlyMinionsDeadLastCombat = GetPlayerTag(playerEntityId, GameTag.NUM_FRIENDLY_MINIONS_THAT_DIED_LAST_TURN, currentEntities);
             var choralEnchantments = currentEntitiesGs
@@ -528,7 +533,7 @@ namespace HearthstoneReplays.Events.Parsers
                             .Reverse()
                             .FirstOrDefault();
                         var clone = createdEntity2.Clone();
-                        var takeUntilTag = GameTag.SPAWN_TIME_COUNT;
+                        var takeUntilTag = GameTag.COPIED_FROM_ENTITY_ID;
                         OverrideTagWithHistory(clone, GameTag.HEALTH, takeUntilTag);
                         OverrideTagWithHistory(clone, GameTag.ATK, takeUntilTag);
                         OverrideTagWithHistory(clone, GameTag.LITERALLY_UNPLAYABLE, takeUntilTag);
@@ -639,7 +644,7 @@ namespace HearthstoneReplays.Events.Parsers
                     // If the card in hand has no enchantments whatsoever, we should still have a "reset" at the end
                     .Skip(1)
                     .FirstOrDefault()?.Value;
-            entity.SetTag(tag, tagInHand ?? entity.GetTag(tag));
+            entity.SetTag(tag, tagInHand ?? entity.GetTag(tag, 0));
         }
 
         internal static BgsPlayerBoardEntity GetEntitySpawnedFromHand(int id, List<FullEntity> board, StateFacade StateFacade)

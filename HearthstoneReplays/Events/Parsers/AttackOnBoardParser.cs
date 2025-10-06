@@ -99,9 +99,12 @@ namespace HearthstoneReplays.Events.Parsers
             var hero = entitiesForPlayer.FirstOrDefault(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO);
             var isActivePlayer = playerEntity.GetTag(GameTag.CURRENT_PLAYER) == 1;
 
+            //var debug = entitiesForPlayer.Any(e => e.Id == 45) && playerId == 1;
+            //var debugEntity = entitiesForPlayer.FirstOrDefault(e => e.Id == 45);
             // Board
             var entitiesOnBoardThatCanAttack = entitiesForPlayer
                 .Where(e => e.IsMinionLike() && e.GetTag(GameTag.ATK) > 0 && CanAttack(e, isActivePlayer, false));
+            //var debugEntities = entitiesOnBoardThatCanAttack.ToList();
             int totalAttackOnBoard = entitiesOnBoardThatCanAttack.Select(e => GetAttack(e)).Sum();
 
             // Hero
@@ -136,7 +139,7 @@ namespace HearthstoneReplays.Events.Parsers
             var hasSummoningSickness =
                 !isHero &&
                 isActivePlayer &&
-                !e.HasTag(GameTag.CHARGE)
+                !e.HasTag(GameTag.CHARGE) && !e.HasTag(GameTag.NON_KEYWORD_CHARGE)
                 && (exhausted || e.HasTag(GameTag.JUST_PLAYED) || e.HasTag(GameTag.ATTACKABLE_BY_RUSH));
             return !isDormant && !hasSummoningSickness && !isFrozen && !cantAttack && canTitanAttack && canStarshipAttack;
         }

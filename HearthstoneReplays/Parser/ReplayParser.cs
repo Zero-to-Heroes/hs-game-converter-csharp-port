@@ -16,6 +16,8 @@ using HearthstoneReplays.Events;
 using System.Xml.Linq;
 using System.Diagnostics.Eventing;
 using System.Globalization;
+using System.Runtime.Remoting.Messaging;
+using System.Runtime.CompilerServices;
 
 #endregion
 
@@ -36,6 +38,8 @@ namespace HearthstoneReplays.Parser
         private OptionsHandler optionsHandler;
         private PowerProcessorHandler powerProcessorHandler;
 
+        private Helper helper;
+
         private DateTime previousTimestamp;
 
         private List<string> processedLines = new List<string>();
@@ -44,7 +48,7 @@ namespace HearthstoneReplays.Parser
         public ReplayParser()
         {
             State = new CombinedState();
-            Helper helper = new Helper(State);
+            this.helper = new Helper(State);
             dataHandler = new DataHandler(helper);
             powerDataHandler = new PowerDataHandler(helper);
             choicesHandler = new ChoicesHandler(helper);
@@ -89,8 +93,8 @@ namespace HearthstoneReplays.Parser
             {
                 var line = lines[i];
                 //var debug = line.Contains("D 12:50:21.9664526 PowerTaskList.DebugPrintPower() -     TAG_CHANGE Entity=[entityName=Molten Rock id=524 zone=PLAY zonePos=1 cardId=BGS_127 player=12] tag=ZONE value=GRAVEYARD");
-                var debug = i == 7975;
-                ReadLine(line, this.CurrentGameSeed);
+                var debug = i == 3458;
+                ReadLine(line, this.CurrentGameSeed, i);
             }
         }
 
@@ -101,12 +105,85 @@ namespace HearthstoneReplays.Parser
             //State.Reset();
         }
 
-        public void ReadLine(string line, long gameSeed)
+        private bool resettingGame;
+        private int currentResetBlockIndex;
+        private List<dynamic> resettingGames = new List<dynamic>();
+        private bool ignoringAlternateTimeline;
+        private bool inResetBlock;
+
+        public void ReadLine(string line, long gameSeed, int lineIndex)
         {
             if (gameSeed != 0)
             {
                 this.CurrentGameSeed = gameSeed;
             }
+
+            var debug = this.resettingGame && line.Contains("RESET");
+            debug = line.Contains("GDB_145");
+            if (debug)
+            {
+                var x = 0;
+            }
+            if (!this.resettingGame)
+            {
+                Match resetStartMatch = Regexes.ResetStartMatchRegex.Match(line);
+                if (resetStartMatch.Success)
+                {
+                    this.resettingGame = true;
+                    this.currentResetBlockIndex = 0;
+                    // TODO: Enqueue reset game event
+                    var rawEntity = resetStartMatch.Groups[1].Value;
+                    var entityId = helper.ParseEntity(rawEntity);
+                    // Only the latest reset appears here, as the previous ones have been removed from the alternate timeline
+                    // So we only need to keep the latest "reset" info
+                    this.resettingGames.Clear();
+                    this.resettingGames.Add(new { originEntity = entityId, index = lineIndex });
+                    var linesCopy = this.processedLines.ToArray();
+                    this.processedLines.Clear();
+                    Read(linesCopy);
+                    return;
+                }
+            }
+
+            if (this.resettingGame)
+            {
+                var currentEntityIdBlockToIgnore = this.resettingGames[this.currentResetBlockIndex];
+                var debug2 = line.Contains("BLOCK_START BlockType=PLAY Entity=[entityName=Portal Vanguard id=37 zone=HAND");
+                if (debug2)
+                {
+                    var y = 0;
+                }
+
+                if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity}"))
+                {
+                    this.ignoringAlternateTimeline = true;
+                }
+
+
+                Match resetStartMatch = Regexes.ResetStartMatchRegex.Match(line);
+                if (resetStartMatch.Success)
+                {
+                    this.inResetBlock = true;
+                }
+
+                if (this.inResetBlock && line.Contains("BLOCK_END"))
+                {
+                    this.inResetBlock = false;
+                    this.ignoringAlternateTimeline = false;
+                    this.currentResetBlockIndex++;
+                    if (this.currentResetBlockIndex == this.resettingGames.Count)
+                    {
+                        this.resettingGame = false;
+                    }
+                }
+            }
+
+            if (this.ignoringAlternateTimeline)
+            {
+                return;
+            }
+
+            this.processedLines.Add(line);
             Match match = Regexes.PowerlogLineRegex.Match(line);
             if (!match.Success)
             {
@@ -121,7 +198,11 @@ namespace HearthstoneReplays.Parser
                 return;
             }
 
+            //if (!this.resettingGame)
+            //{
+            //}
             AddData(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value, gameSeed);
+
         }
 
         public void AskForGameStateUpdate()
@@ -159,13 +240,14 @@ namespace HearthstoneReplays.Parser
 
         private void AddData(string timestamp, string method, string data, long gameSeed)
         {
+
             var normalizedTimestamp = NormalizeTimestamp(timestamp);
             switch (method)
             {
                 case "GameState.DebugPrintPower":
                 case "GameState.DebugPrintGame":
                 case "Spectator":
-                    dataHandler.Handle(normalizedTimestamp, data, State.GSState, StateType.GameState, previousTimestamp, State.StateFacade, gameSeed);
+                    dataHandler.Handle(normalizedTimestamp, data, State.GSState, StateType.GameState, previousTimestamp, State.StateFacade, gameSeed, this.resettingGame);
                     previousTimestamp = normalizedTimestamp;
                     State.StateFacade.LastProcessedGSLine = data;
                     break;
@@ -194,7 +276,7 @@ namespace HearthstoneReplays.Parser
                     break;
                 case "PowerTaskList.DebugPrintPower":
                     // Process the actual stuff
-                    dataHandler.Handle(normalizedTimestamp, data, State.PTLState, StateType.PowerTaskList, previousTimestamp, State.StateFacade, gameSeed);
+                    dataHandler.Handle(normalizedTimestamp, data, State.PTLState, StateType.PowerTaskList, previousTimestamp, State.StateFacade, gameSeed, this.resettingGame);
                     // Update entity names
                     powerDataHandler.Handle(normalizedTimestamp, data, State.PTLState);
                     // See comment in OptionsHandler
@@ -243,7 +325,7 @@ namespace HearthstoneReplays.Parser
                 var logDateTime = DateTime.ParseExact(timestamp, "HH:mm:ss.fffffff", null);
                 // Avoid unnecessary comparison if the timestamp is already valid
                 return logDateTime < start ? logDateTime.AddDays(1) : logDateTime;
-            } 
+            }
             // Sometimes the logs contain some poorly-formatted timestamps (saw that once)
             catch (Exception e)
             {

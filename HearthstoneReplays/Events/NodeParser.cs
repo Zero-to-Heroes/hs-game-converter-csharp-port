@@ -159,6 +159,8 @@ namespace HearthstoneReplays.Events
             {
                 return new List<ActionParser>()
                 {
+                    new GameResetParser(ParserState, StateFacade),
+
                     // Ordering is important,
                     new HideEntityParser(ParserState, StateFacade),
                     new ShowEntityParser(ParserState, StateFacade),

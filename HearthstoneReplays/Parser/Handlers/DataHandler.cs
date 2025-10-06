@@ -56,20 +56,17 @@ namespace HearthstoneReplays.Parser.Handlers
             };
         }
 
-        public void Handle(DateTime timestamp, string data, ParserState state, StateType stateType, DateTime previousTimestamp, StateFacade stateFacade, long currentGameSeed)
+        public void Handle(DateTime timestamp, string data, ParserState state, StateType stateType, DateTime previousTimestamp, StateFacade stateFacade, 
+            long currentGameSeed, bool resettingGame)
         {
             var trimmed = data.Trim();
             //Logger.Log("trimmed", trimmed);
             var indentLevel = data.Length - trimmed.Length;
             data = trimmed;
 
-            if (data == "RESET_GAME")
-            {
-                state.PartialReset();
-            }
             // Additional handlers for specific cases
             // Take care of leftover log lines from a possible previous game
-            else if (NewGameHandler.HandleNewGame(timestamp, data, state, previousTimestamp, stateType, stateFacade, currentGameSeed, metadata, helper))
+            if (NewGameHandler.HandleNewGame(timestamp, data, state, previousTimestamp, stateType, stateFacade, currentGameSeed, resettingGame, metadata, helper))
             {
                 return;
             }

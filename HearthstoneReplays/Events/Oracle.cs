@@ -427,6 +427,7 @@ namespace HearthstoneReplays.Events
                     case MiracleSalesman_WW_331: return MiracleSalesman_SnakeOilToken_WW_331t;
                     case MisterMukla_ETC_836: return KingMukla_BananasLegacyToken;
                     case MonkeyBusiness_WORK_020: return KingMukla_BananasLegacyToken;
+                    case RemixedDispenseOBot_MoneyDispenseOBotToken: return TheCoinCore;
                     case MuklaTyrantOfTheVale: return KingMukla_BananasLegacyToken;
                     case MurgurMurgurgle: return MurgurMurgurgle_MurgurglePrimeToken;
                     case MurlocGrowfin_MIS_307: return MurlocGrowfin_MurlocGrowfinToken_MIS_307t1;
@@ -468,6 +469,8 @@ namespace HearthstoneReplays.Events
                     case ReliquaryOfSouls: return ReliquaryOfSouls_ReliquaryPrimeToken;
                     case ReachEquilibrium_CleanseTheShadowToken_TLC_817t: return ReachEquilibrium_SoletosLifesBreathToken_TLC_817t3;
                     case ReachEquilibrium_CorruptTheLightToken_TLC_817t2: return ReachEquilibrium_SoletosDeathsTouchToken_TLC_817t4;
+                    case ReachEquilibrium_SoletosLifesBreathToken_TLC_817t3: return ReachEquilibrium_SoletosCyclesRebirthToken_TLC_817t5;
+                    case ReachEquilibrium_SoletosDeathsTouchToken_TLC_817t4: return ReachEquilibrium_SoletosCyclesRebirthToken_TLC_817t5;
                     case RemoteControlledGolem_SW_097: return RemoteControlledGolem_GolemPartsToken;
                     case Rhonin: return ArcaneMissilesLegacy;
                     case RinTheFirstDisciple_TheFinalSealToken: return RinTheFirstDisciple_AzariTheDevourerToken;

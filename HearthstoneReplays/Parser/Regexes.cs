@@ -15,9 +15,13 @@ namespace HearthstoneReplays.Parser
 		//public static readonly Regex OutputlogLineRegex = new Regex(@"\[Power\] ()([^(]+)\(\) - (.+)$", RegexOptions.Compiled);
 		public static readonly Regex EntityRegex = new Regex(@"\[.*\s*id=(\d+)\s*.*\]", RegexOptions.Compiled);
 
-		//public static readonly Regex ChoicesChoiceRegex_OLD =
-  //          new Regex(@"id=(\d+) PlayerId=(\d+) ChoiceType=(\w+) CountMin=(\d+) CountMax=(\d+)$");
-		public static readonly Regex ChoicesChoiceRegex =
+        public static readonly Regex ResetStartMatchRegex =
+            new Regex(string.Format(@"BLOCK_START BlockType=GAME_RESET Entity={0}", Entity), RegexOptions.Compiled);
+
+
+        //public static readonly Regex ChoicesChoiceRegex_OLD =
+        //          new Regex(@"id=(\d+) PlayerId=(\d+) ChoiceType=(\w+) CountMin=(\d+) CountMax=(\d+)$");
+        public static readonly Regex ChoicesChoiceRegex =
 			new Regex(string.Format(@"id=(\d+) Player={0} TaskList=(\d+)? ChoiceType=(\w+) CountMin=(\d+) CountMax=(\d+)$", Entity), RegexOptions.Compiled);
 		public static readonly Regex ChoicesSourceRegex = new Regex(string.Format(@"Source={0}$", Entity), RegexOptions.Compiled);
 		public static readonly Regex ChoicesEntitiesRegex = new Regex(@"Entities\[(\d+)\]=(\[.+\])$", RegexOptions.Compiled);

@@ -16,14 +16,15 @@ namespace HearthstoneReplays.Parser.Handlers
     internal class NewGameHandler
     {
         public static bool HandleNewGame(
-            DateTime timestamp, string data, ParserState state, DateTime previousTimestamp, StateType stateType, StateFacade gameInfoHelper, long currentGameSeed, GameMetaData metadata, Helper helper)
+            DateTime timestamp, string data, ParserState state, DateTime previousTimestamp, StateType stateType, StateFacade gameInfoHelper, 
+            long currentGameSeed, bool resettingGame, GameMetaData metadata, Helper helper)
         {
             if (data == "CREATE_GAME")
             {
                 state.NodeParser.ClearQueue();
 
                 Logger.Log("Handling create game", "");
-                var isReconnecting = stateType == StateType.GameState ? state.IsReconnecting(currentGameSeed) : gameInfoHelper.GsState.ReconnectionOngoing;
+                var isReconnecting = !resettingGame && (stateType == StateType.GameState ? state.IsReconnecting(currentGameSeed) : gameInfoHelper.GsState.ReconnectionOngoing);
                 if (isReconnecting)
                 {
                     // Move all entities to REMOVEDFROMGAME. Entities that are not in that zone will (hopefully?) be given

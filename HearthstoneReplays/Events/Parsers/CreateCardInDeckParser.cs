@@ -143,7 +143,7 @@ namespace HearthstoneReplays.Events.Parsers
             // The timing for this is super weird, as the entity is created in deck before the Portal triggers
             // Also, according to the devs, it shouldn't even be able to create itself
             // https://x.com/MyntyPhresh/status/1845246521916391798
-            if (creator.Item1 == CardIds.Kiljaeden_GDB_145)
+            if (creator?.Item1 == CardIds.Kiljaeden_GDB_145)
             {
                 return null;
             }

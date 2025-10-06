@@ -94,7 +94,10 @@ namespace HearthstoneReplays
                     //Logger.Log("computing game seed", parser.State?.GSState == null);
                     var gameSeed = parser.ExtractGameSeed(logLines);
                     //Logger.Log("realtimeLogProcessing", parser.State?.GSState == null);
-                    Array.ForEach(logLines, logLine => parser.ReadLine(logLine, gameSeed));
+                    for (var i = 0; i < logLines.Length; i++)
+                    {
+                        parser.ReadLine(logLines[i], gameSeed, i);
+                    }
                     callback(null);
                 }
                 catch (Exception e)
