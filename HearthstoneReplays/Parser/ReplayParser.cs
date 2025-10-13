@@ -118,6 +118,12 @@ namespace HearthstoneReplays.Parser
                 this.CurrentGameSeed = gameSeed;
             }
 
+            if (!this.resettingGame && line.Contains("GameState") && line.Contains("CREATE_GAME"))
+            {
+                Logger.Log($"Clearing {this.processedLines.Count} processed lines", line);
+                this.processedLines.Clear();
+            }
+
             var debug = this.resettingGame && line.Contains("RESET");
             debug = line.Contains("GDB_145");
             if (debug)
@@ -148,13 +154,14 @@ namespace HearthstoneReplays.Parser
             if (this.resettingGame)
             {
                 var currentEntityIdBlockToIgnore = this.resettingGames[this.currentResetBlockIndex];
-                var debug2 = line.Contains("BLOCK_START BlockType=PLAY Entity=[entityName=Portal Vanguard id=37 zone=HAND");
+                var debug2 = line.Contains("BLOCK_START BlockType=GAME_RESET Entity=[entityName=Portal Vanguard id=5 zone=PLAY");
                 if (debug2)
                 {
                     var y = 0;
                 }
 
-                if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity}"))
+                // The whitespace is important, otherwise an entity=5 can be triggered by id=54
+                if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} "))
                 {
                     this.ignoringAlternateTimeline = true;
                 }

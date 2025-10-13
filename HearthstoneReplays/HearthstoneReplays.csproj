@@ -362,6 +362,7 @@
     <Compile Include="ReplayData\GameActions\Tag.cs" />
     <Compile Include="ReplayData\GameActions\TagChange.cs" />
     <Compile Include="ReplayConverter.cs" />
+    <Compile Include="StaticReplayConverterWrapper.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
