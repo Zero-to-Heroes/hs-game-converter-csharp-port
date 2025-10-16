@@ -258,6 +258,8 @@ namespace HearthstoneReplays.Events.Parsers
                 var undeadAttackBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, GameState);
                 var hauntedCarapaceAttackBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.HauntedCarapacePlayerEnchantDntEnchantment_BG33_112pe, GameState);
                 var hauntedCarapaceHealthBonus = GetPlayerEnchantmentValue(player.PlayerId, CardIds.HauntedCarapacePlayerEnchantDntEnchantment_BG33_112pe, GameState, GameTag.TAG_SCRIPT_DATA_NUM_2);
+                var goldrinnBuffAtk = GetPlayerEnchantmentValue(player.PlayerId, CardIds.GoldrinnPlayerEnchantEnchantment_BGS_018pe, GameState);
+                var goldrinnBuffHealth = GetPlayerEnchantmentValue(player.PlayerId, CardIds.GoldrinnPlayerEnchantEnchantment_BGS_018pe, GameState, GameTag.TAG_SCRIPT_DATA_NUM_2);
                 // Looks like the enchantment isn't used anymore, at least for the opponent?
                 var frostlingBonus = GetPlayerTag(player.Id, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, GameState);
                 var piratesPlayedThisGame = GetPlayerTag(player.Id, GameTag.BACON_PIRATES_PLAYED_THIS_GAME, GameState);
@@ -352,6 +354,8 @@ namespace HearthstoneReplays.Events.Parsers
                         SpellsCastThisGame = spellsCastThisGame,
                         SanlaynScribesDeadThisGame = sanlaynScribesDeadThisGame?.Item1 ?? 0,
                         GoldSpentThisGame = goldSpentThisGame,
+                        GoldrinnBuffAtk = goldrinnBuffAtk,
+                        GoldrinnBuffHealth = goldrinnBuffHealth,
                     }
                 };
             }

@@ -415,6 +415,8 @@ namespace HearthstoneReplays.Events.Parsers
             var undeadAttackBonus = GetPlayerEnchantmentValue(playerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, currentEntities);
             var hauntedCarapaceAttackBonus = GetPlayerEnchantmentValue(playerId, CardIds.HauntedCarapacePlayerEnchantDntEnchantment_BG33_112pe, currentEntities);
             var hauntedCarapaceHealthBonus = GetPlayerEnchantmentValue(playerId, CardIds.HauntedCarapacePlayerEnchantDntEnchantment_BG33_112pe, currentEntities, GameTag.TAG_SCRIPT_DATA_NUM_2);
+            var goldrinnBuffAtk = GetPlayerEnchantmentValue(playerId, CardIds.GoldrinnPlayerEnchantEnchantment_BGS_018pe, currentEntities);
+            var goldrinnBuffHealth = GetPlayerEnchantmentValue(playerId, CardIds.GoldrinnPlayerEnchantEnchantment_BGS_018pe, currentEntities, GameTag.TAG_SCRIPT_DATA_NUM_2);
             var astralAutomatonBonus = GetPlayerEnchantmentValue(playerId, CardIds.AstralAutomatonPlayerEnchantDntEnchantment_BG_TTN_401pe, currentEntities);
             var beetleArmy = GetTupleEnchantmentValue(playerId, CardIds.BeetleArmyPlayerEnchantDntEnchantment_BG31_808pe, currentEntities);
             var sanlyanScribesDeadThisGame = GetTupleEnchantmentValue(playerId, CardIds.SanlaynScribePlayerEnchantDntEnchantment_BGDUO31_208pe, currentEntities);
@@ -482,6 +484,8 @@ namespace HearthstoneReplays.Events.Parsers
                 SanlaynScribesDeadThisGame = sanlyanScribesDeadThisGame?.Item1 ?? 0,
                 SpellsCastThisGame = spellsCastThisGame,
                 GoldSpentThisGame = goldSpentThisGame,
+                GoldrinnBuffAtk = goldrinnBuffAtk,
+                GoldrinnBuffHealth = goldrinnBuffHealth,
             };
         }
 
@@ -858,6 +862,8 @@ namespace HearthstoneReplays.Events.Parsers
             public int MagnetizedThisGame { get; set; }
             public int SanlaynScribesDeadThisGame { get; set; }
             public int GoldSpentThisGame { get; set; }
+            public int GoldrinnBuffAtk { get; set; }
+            public int GoldrinnBuffHealth { get; set; }
         }
 
         internal class QuestReward

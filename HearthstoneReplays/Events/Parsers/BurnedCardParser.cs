@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System;
 using System.Linq;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -29,9 +30,16 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
+            MetaData metadata = null;
+            Action parentAction = null;
             return stateType == StateType.PowerTaskList
                 && node.Type == typeof(MetaData)
-                && (node.Object as MetaData).Meta == (int)MetaDataType.BURNED_CARD;
+                && ((metadata = node.Object as MetaData).Meta == (int)MetaDataType.BURNED_CARD ||
+                    (metadata.Meta == (int)MetaDataType.TARGET
+                        && node.Parent?.Object is Action
+                        && (parentAction = node.Parent.Object as Action).Type == (int)BlockType.POWER
+                        && ParserState.GameState.CurrentEntities.GetValueOrDefault(parentAction.Entity)?.CardId == CardIds.EscapeTheUnderfel_UnderfelRiftToken_TLC_446t1));
+
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)

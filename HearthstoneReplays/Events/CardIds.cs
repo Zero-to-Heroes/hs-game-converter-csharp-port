@@ -33009,6 +33009,14 @@
         public const string FlesheatingGhoul_CannibalizeLegacyEnchantment_tt_004o = "tt_004o";
         public const string SpellbenderLegacy = "tt_010";
         public const string Spellbender_SpellbenderLegacy = "tt_010a";
+        public const string HighborneMentor = "HighborneMentor";
+        public const string HighbornePupil = "HighbornePupil";
+        public const string KingMaluk = "KingMaluk";
+        public const string InfiniteBanana = "InfiniteBanana";
+        public const string MuradinHighKing = "MuradinHighKing";
+        public const string HighKingsHammer = "HighKingsHammer";
+        public const string TimelessChest = "TimelessChest";
+        public const string TimeSkipper = "TimeSkipper";
     }
 
 }

@@ -21,6 +21,16 @@ namespace HearthstoneReplays
         public event Action<object, object> onGlobalEvent;
         public event Action<string> onGameEvent;
 
+        public void setGameEventCallback(Action<object> callback)
+        {
+            this.onGameEvent += callback;
+        }
+        public void setLogger(Action<object, object> callback)
+        {
+            this.onGlobalEvent += callback;
+            Logger.Log = callback;
+        }
+
 
         // plugin.get().convertLogsToXml(xmlLogs, function(result) {
         //   console.log(result);
