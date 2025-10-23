@@ -374,7 +374,7 @@ namespace HearthstoneReplays.Events
                     case HauntedCurio: return CursedCurio;
                     case HeadcrackLegacy: return HeadcrackLegacy;
                     case HeadcrackVanilla: return HeadcrackVanilla;
-                    case HighborneMentor: return HighbornePupil;
+                    case HighborneMentor_TIME_704: return HighborneMentor_HighbornePupilToken_TIME_704t;
                     case HighPriestessJeklik_CORE_TRL_252: return HighPriestessJeklik_CORE_TRL_252;
                     case HighPriestessJeklik_TRL_252: return HighPriestessJeklik_TRL_252;
                     case HoardingDragon_LOOT_144: return TheCoinCore;
@@ -399,8 +399,8 @@ namespace HearthstoneReplays.Events
                     case KangorDancingKing: return KangorDancingKing;
                     case KanrethadEbonlocke: return KanrethadEbonlocke_KanrethadPrimeToken;
                     case KargathBladefist_BT_123: return KargathBladefist_KargathPrimeToken;
-                    case KingMaluk: return InfiniteBanana;
-                    case InfiniteBanana: return InfiniteBanana;
+                    case KingMaluk_TIME_042: return KingMaluk_InfiniteBananaToken_TIME_042t;
+                    case KingMaluk_InfiniteBananaToken_TIME_042t: return KingMaluk_InfiniteBananaToken_TIME_042t;
                     case KingMukla_CORE_EX1_014: return KingMukla_BananasLegacyToken;
                     case KingMuklaLegacy: return KingMukla_BananasLegacyToken;
                     case KingMuklaVanilla: return KingMukla_BananasLegacyToken;
@@ -432,7 +432,7 @@ namespace HearthstoneReplays.Events
                     case MonkeyBusiness_WORK_020: return KingMukla_BananasLegacyToken;
                     case RemixedDispenseOBot_MoneyDispenseOBotToken: return TheCoinCore;
                     case MuklaTyrantOfTheVale: return KingMukla_BananasLegacyToken;
-                    case MuradinHighKing: return HighKingsHammer;
+                    case MuradinHighKing_TIME_209: return MuradinHighKing_HighKingsHammerToken_TIME_209t;
                     case MurgurMurgurgle: return MurgurMurgurgle_MurgurglePrimeToken;
                     case MurlocGrowfin_MIS_307: return MurlocGrowfin_MurlocGrowfinToken_MIS_307t1;
                     case MysteryEgg_TOY_351: return MysteryEgg_MysteryEggToken_TOY_351t;
@@ -560,8 +560,8 @@ namespace HearthstoneReplays.Events
                     case TheRyecleaver_VAC_525: return TheRyecleaver_SliceOfBreadToken_VAC_525t1;
                     case ThrowGlaive: return ThrowGlaive; // TO CHECK
                     case TigressPlushy_TOY_811: return TigressPlushy_TigressPlushyToken_TOY_811t;
-                    case TimelessChest: return TheCoinCore;
-                    case TimeSkipper: return TheCoinCore;
+                    case TimeAdmralHooktail_TimelessChestToken_TIME_713t: return TheCoinCore;
+                    case TimeSkipper_TIME_054: return TheCoinCore;
                     case TinyThimbleTavernBrawl: return TinyThimble_RegularSizeThimbleTavernBrawl;
                     case TombPillager_CORE_LOE_012: return TheCoinCore;
                     case TombPillager_LOE_012: return TheCoinCore;
