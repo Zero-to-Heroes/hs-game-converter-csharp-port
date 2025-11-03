@@ -348,7 +348,7 @@ namespace HearthstoneReplays.Events.Parsers
                         ElementalHealthBuff = elementalHealthBuff,
                         ElementalAttackBuff = elementalAttackBuff,
                         TavernSpellHealthBuff = tavernSpellHealthBuff,
-                        TavernSpellAttackBuff = tavernSpellAttackBuff,
+                        TavernSpellAttackBuff = tavernSpellAttackBuff, 
                         BattlecriesTriggeredThisGame = battlecriesTriggeredThisGame,
                         FriendlyMinionsDeadLastCombat = friendlyMinionsDeadLastCombat,
                         SpellsCastThisGame = spellsCastThisGame,

@@ -55,6 +55,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         [XmlIgnore]
         public List<string> CardIdsToCreate = new List<string>();
+        [XmlIgnore]
+        public int CreatedIndex = 0;
 
         [XmlIgnore]
         public SubSpell SubSpellInEffect { get; set; }

@@ -64,6 +64,14 @@ namespace HearthstoneReplays.Events.Parsers
                 guessedTags = Oracle.GuessTags(GameState, creator?.Item1, creator?.Item2 ?? -1, node, null, StateFacade);
             }
 
+            var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creator?.Item2 ?? -1);
+            int? createdIndex = null;
+            if (creatorEntity != null)
+            {
+                createdIndex = creatorEntity.CreatedIndex;
+                creatorEntity.CreatedIndex++;
+            }
+
             var lastInfluencedByCardId = GameState.CurrentEntities.GetValueOrDefault((node.Parent?.Object as Action)?.Entity ?? -1)?.CardId;
             entity.PlayedWhileInHand.Clear();
             var position = entity.GetZonePosition();
@@ -81,6 +89,7 @@ namespace HearthstoneReplays.Events.Parsers
                     new {
                         CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
                         CreatorEntityId = creator?.Item2,
+                        CreatedIndex = createdIndex,
                         LastInfluencedByCardId = lastInfluencedByCardId,
                         IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
                         Position = position,
@@ -109,6 +118,13 @@ namespace HearthstoneReplays.Events.Parsers
             ShowEntity showEntity = node.Object as ShowEntity;
             //Logger.Log("Will add creator " + showEntity.GetTag(GameTag.CREATOR) + " //" + showEntity.GetTag(GameTag.DISPLAYED_CREATOR), "");
             var creator = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
+            var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creator?.Item2 ?? -1);
+            int? createdIndex = null;
+            if (creatorEntity != null)
+            {
+                createdIndex = creatorEntity.CreatedIndex;
+                creatorEntity.CreatedIndex++;
+            }
             //var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, showEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creator.Item1, creator.Item2, node, showEntity.CardId);
             var controllerId = showEntity.GetEffectiveController();
@@ -132,6 +148,7 @@ namespace HearthstoneReplays.Events.Parsers
                         new {
                             CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
                             CreatorEntityId = creator?.Item2,
+                            CreatedIndex = createdIndex,
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1,
                             DataNum1 = dataNum1,
                             DataNum2 = dataNum2,
@@ -199,6 +216,14 @@ namespace HearthstoneReplays.Events.Parsers
                         // We do it here because of Diligent Notetaker - we have to know the last
                         // card played before assigning anything
                         var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
+                        var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creator?.Item2 ?? -1);
+                        int? createdIndex = null;
+                        if (creatorEntity != null)
+                        {
+                            createdIndex = creatorEntity.CreatedIndex;
+                            creatorEntity.CreatedIndex++;
+                        }
+
                         var creatorCardId = creator?.Item1;
                         var creatorEntityId = creator?.Item2;
                         //var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, fullEntity, node);
@@ -246,6 +271,7 @@ namespace HearthstoneReplays.Events.Parsers
                                     // For the initial coin
                                     CreatorCardId = creatorCardId ?? (fullEntity.GetTag(GameTag.CREATOR) > 0 ? "Unknown" : null),
                                     CreatorEntityId = creatorEntityId ?? fullEntity.GetTag(GameTag.CREATOR),
+                                    CreatedIndex = createdIndex,
                                     IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1,
                                     BuffingEntityCardId = buffingCardEntityCardId,
                                     BuffCardId = buffCardId,
