@@ -114,7 +114,9 @@ namespace HearthstoneReplays.Events.Parsers
                 var weapon = entitiesForPlayer.FirstOrDefault(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.WEAPON);
                 var baseHeroAttack = isActivePlayer ? hero.GetTag(GameTag.ATK, 0) : (weapon?.GetTag(GameTag.ATK, 0) ?? 0);
                 var windfuryMultiplier = GetWindfuryMultiplier(hero);
-                var attacksForWeapon = Math.Max(0, (weapon?.GetTag(GameTag.HEALTH) ?? 1) - (weapon?.GetTag(GameTag.DAMAGE, 0) ?? 0));
+                var attacksForWeapon = weapon == null 
+                    ? windfuryMultiplier
+                    : Math.Max(0, weapon.GetTag(GameTag.HEALTH) - weapon.GetTag(GameTag.DAMAGE, 0));
                 var maxAttacks = Math.Min(windfuryMultiplier, attacksForWeapon);
                 var attacksLeft = isActivePlayer ? maxAttacks - hero.GetTag(GameTag.NUM_ATTACKS_THIS_TURN, 0) : windfuryMultiplier;
                 heroAttack = CanAttack(hero, isActivePlayer, true) ? attacksLeft * baseHeroAttack : 0;
@@ -128,6 +130,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         private bool CanAttack(FullEntity e, bool isActivePlayer, bool isHero)
         {
+            var debug = e.GetTag(GameTag.ATK) == 10;
             var isDormant = e.HasTag(GameTag.DORMANT);
             var cantAttack = e.HasTag(GameTag.CANT_ATTACK);
             var isFrozen = e.HasTag(GameTag.FROZEN);
@@ -147,7 +150,7 @@ namespace HearthstoneReplays.Events.Parsers
         private int GetAttack(FullEntity e)
         {
             var windfuryMultiplier = GetWindfuryMultiplier(e);
-            var availableAttacks = Math.Max(0, windfuryMultiplier - e.GetTag(GameTag.NUM_ATTACKS_THIS_TURN, 0));
+            var availableAttacks = Math.Max(0, windfuryMultiplier - e.GetTag(GameTag.NUM_ATTACKS_THIS_TURN, 0) + e.GetTag(GameTag.EXTRA_ATTACKS_THIS_TURN, 0));
             // TODO: Neptulon
             var entityAttack = e.GetTag(GameTag.ATK, 0);
             return entityAttack * availableAttacks;

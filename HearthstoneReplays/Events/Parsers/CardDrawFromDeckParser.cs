@@ -95,6 +95,14 @@ namespace HearthstoneReplays.Events.Parsers
                 drawnByCardId = drawerEntity?.CardId;
                 drawnByEntityId = parentAction.Entity;
             }
+
+            int? createdIndex = null;
+            if (drawnByEntityId != null)
+            {
+                var drawnByEntity = GameState.CurrentEntities.GetValueOrDefault(drawnByEntityId.Value);
+                createdIndex = drawnByEntity.CreatedIndex;
+                drawnByEntity.CreatedIndex++;
+            }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -134,6 +142,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 IsPremium = shouldObfuscate ? false : entity.GetTag(GameTag.PREMIUM) == 1,
                                 CreatorCardId = shouldObfuscate ? null : creator?.Item1,
                                 CreatorEntityId = shouldObfuscate ? null : creator?.Item2,
+                                CreatedIndex = createdIndex,
                                 LastInfluencedByCardId = shouldObfuscate ? null : lastInfluencedByCardId,
                                 DataTag1 = shouldObfuscate ? 0 : dataTag1,
                                 Cost = shouldObfuscate ? 0 : cost,
@@ -183,6 +192,14 @@ namespace HearthstoneReplays.Events.Parsers
                 drawnByCardId = drawerEntity?.CardId;
                 drawnByEntityId = parentAction.Entity;
             }
+
+            int? createdIndex = null;
+            if (drawnByEntityId != null)
+            {
+                var drawnByEntity = GameState.CurrentEntities.GetValueOrDefault(drawnByEntityId.Value);
+                createdIndex = drawnByEntity.CreatedIndex;
+                drawnByEntity.CreatedIndex++;
+            }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -213,6 +230,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1,
                                 CreatorCardId = creatorCardId?.Item1,
                                 CreatorEntityId = creatorCardId?.Item2,
+                                CreatedIndex = createdIndex,
                                 LastInfluencedByCardId = lastInfluencedByCardId?.Item1,
                                 DataTag1 = dataTag1,
                                 Cost = cost,
@@ -254,6 +272,14 @@ namespace HearthstoneReplays.Events.Parsers
                 drawnByCardId = drawerEntity?.CardId;
                 drawnByEntityId = parentAction.Entity;
             }
+
+            int? createdIndex = null;
+            if (drawnByEntityId != null)
+            {
+                var drawnByEntity = GameState.CurrentEntities.GetValueOrDefault(drawnByEntityId.Value);
+                createdIndex = drawnByEntity.CreatedIndex;
+                drawnByEntity.CreatedIndex++;
+            }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -278,6 +304,7 @@ namespace HearthstoneReplays.Events.Parsers
                                 IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1 || fullEntity.GetTag(GameTag.PREMIUM) == 1,
                                 CreatorCardId = creator?.Item1,
                                 CreatorEntityId = creator?.Item2,
+                                CreatedIndex = createdIndex,
                                 LastInfluencedByCardId = lastInfluencedByCardId,
                                 DataTag1 = dataTag1,
                                 Cost = cost,

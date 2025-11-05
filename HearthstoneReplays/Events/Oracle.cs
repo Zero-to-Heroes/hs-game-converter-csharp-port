@@ -399,6 +399,7 @@ namespace HearthstoneReplays.Events
                     case KangorDancingKing: return KangorDancingKing;
                     case KanrethadEbonlocke: return KanrethadEbonlocke_KanrethadPrimeToken;
                     case KargathBladefist_BT_123: return KargathBladefist_KargathPrimeToken;
+                    case GaronaHalforcen_KingLlaneToken_TIME_875t: return GaronaHalforcen_KingLlaneToken_TIME_875t;
                     case KingMaluk_TIME_042: return KingMaluk_InfiniteBananaToken_TIME_042t;
                     case KingMaluk_InfiniteBananaToken_TIME_042t: return KingMaluk_InfiniteBananaToken_TIME_042t;
                     case KingMukla_CORE_EX1_014: return KingMukla_BananasLegacyToken;
@@ -1642,6 +1643,42 @@ namespace HearthstoneReplays.Events
                     if (actionEntity == null)
                     {
                         return null;
+                    }
+
+                    if (actionEntity.CardId == FacelessEnigma_TIME_860)
+                    {
+                        var actionControllerId = actionEntity.GetController();
+                        if (actionEntity.KnownEntityIds.Count == 0)
+                        {
+                            // Find all secrets currently in play
+                            var allSecrets = action.Data
+                                .Where(e => e is FullEntity)
+                                .Select(e => e as FullEntity)
+                                .Where(e => e.GetController() == actionControllerId)
+                                .Where(e => e.GetTag(GameTag.SECRET) == 1)
+                                .ToList();
+                            actionEntity.KnownEntityIds = allSecrets
+                                .Select(e => e.Entity)
+                                .ToList();
+                        }
+
+                        if (actionEntity.KnownEntityIds.Count > 0)
+                        {
+                            var currentSecretCardIds = gameState.CurrentEntities.Values
+                                .Where(e => e.GetController() == actionControllerId)
+                                .Where(e => e.GetZone() == (int)Zone.SECRET)
+                                .Where(e => e.GetTag(GameTag.SECRET) == 1)
+                                .OrderBy(e => e.GetTag(GameTag.ZONE_POSITION))
+                                .Select(e => e.CardId)
+                                .ToList();
+                            var entities = actionEntity.KnownEntityIds
+                                .Select(entityId => gameState.CurrentEntities.GetValueOrDefault(entityId))
+                                .Where(e => e != null && !currentSecretCardIds.Contains(e.CardId))
+                                .ToList();
+                            var nextCard = entities[0].CardId;
+                            actionEntity.KnownEntityIds.Remove(entities[0].Entity);
+                            return nextCard;
+                        }
                     }
 
                     if (actionEntity.CardId == HordeOperative)

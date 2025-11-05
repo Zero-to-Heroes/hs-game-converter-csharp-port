@@ -38,6 +38,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 return null;
             }
+
             // Dark gifts show the "dark gift" as the source of the choices, instead of the entity that triggers the choices
             var isDarkGift = sourceEntity.CardId == CardIds.DarkGiftToken_EDR_102t;
             if (isDarkGift)
