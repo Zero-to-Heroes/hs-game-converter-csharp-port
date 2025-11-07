@@ -194,6 +194,7 @@ namespace HearthstoneReplays.Events.Parsers
                             TargetControllerId = targetControllerId,
                             TargetCardId = targetCardId,
                             Damage = 0,
+                            Hits = 0,
                             Timestamp = info.TimeStamp,
                             IsPayingWithHealth = isPayingWithHealth
                         };
@@ -201,6 +202,7 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                     // FIXME: this doesn't work when armor is involved?
                     currentTargetDamages.Damage = currentTargetDamages.Damage + damageTag.Data;
+                    currentTargetDamages.Hits += 1;
                 }
             }
 
@@ -297,6 +299,7 @@ namespace HearthstoneReplays.Events.Parsers
             public int TargetControllerId;
             public string TargetCardId;
             public int Damage;
+            public int Hits;
             public DateTime Timestamp;
             public bool IsPayingWithHealth;
 
