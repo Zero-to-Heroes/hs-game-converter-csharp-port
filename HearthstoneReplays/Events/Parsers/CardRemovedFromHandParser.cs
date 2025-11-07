@@ -66,7 +66,7 @@ namespace HearthstoneReplays.Events.Parsers
                 cardId = null;
             }
 
-            if (entity.GetTag(GameTag.CASTS_WHEN_DRAWN) == 1)
+            if (entity.GetTag(GameTag.CASTS_WHEN_DRAWN) == 1 || entity.GetTag(GameTag.SUMMONED_WHEN_DRAWN) == 1)
             {
                 return null;
             }
