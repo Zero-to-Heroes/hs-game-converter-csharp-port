@@ -38,6 +38,7 @@ namespace HearthstoneReplays.Events.Parsers
                 && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.DECK
                 // We don't want to include the entities created when the game starts
                 && node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action);
+            var debug = appliesOnFullEntity && (node.Object as FullEntity).Entity == 181;
             return stateType == StateType.PowerTaskList
                 && (appliesOnShowEntity || appliesOnFullEntity);
         }

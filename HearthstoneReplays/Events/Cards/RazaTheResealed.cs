@@ -25,7 +25,11 @@ namespace HearthstoneReplays.Events.Cards
             if (actionEntity.CardIdsToCreate.Count == 0)
             {
                 var subSpell = (node.Object as FullEntity).SubSpellInEffect;
-                actionEntity.CardIdsToCreate = subSpell.Targets.Select(t => gameState.CurrentEntities.GetValueOrDefault(t)?.CardId).ToList();
+                // No targets when the opponent plays it
+                if (subSpell?.Targets != null)
+                {
+                    actionEntity.CardIdsToCreate = subSpell.Targets.Select(t => gameState.CurrentEntities.GetValueOrDefault(t)?.CardId).ToList();
+                }
             }
 
             if (actionEntity.CardIdsToCreate.Count > 0)
