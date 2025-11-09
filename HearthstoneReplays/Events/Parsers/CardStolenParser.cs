@@ -89,16 +89,6 @@ namespace HearthstoneReplays.Events.Parsers
                             }
                         };
                     },
-                    //GameEvent.CreateProvider(
-                    //    "CARD_STOLEN",
-                    //    cardId,
-                    //    controllerId,
-                    //    entity.Id,
-                    //    StateFacade,
-                    //    gameState,
-                    //    new {
-                    //        newControllerId = tagChange.Value
-                    //    }),
                     true,
                     node) };
             }
@@ -123,17 +113,35 @@ namespace HearthstoneReplays.Events.Parsers
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,
                     "CARD_STOLEN",
-                    GameEvent.CreateProvider(
-                        "CARD_STOLEN",
-                        cardId,
-                        controllerId,
-                        showEntity.Entity,
-                        StateFacade,
-                        //gameState,
-                        new {
-                            newControllerId = showEntity.GetEffectiveController(),
-                            zone = zone,
-                        }),
+                    () => {
+                        // For Doommaiden, the stealing enchantment is revealed only after the ShowEntity
+                        string stolenByCardId = null;
+                        int? stolenByEntityId = null;
+                        if (node.Parent?.Type == typeof(Action))
+                        {
+                            Action parentAction = node.Parent.Object as Action;
+                            stolenByEntityId = parentAction.Entity;
+                            stolenByCardId = GameState.CurrentEntities.GetValueOrDefault(parentAction.Entity)?.CardId;
+                        }
+                        return new GameEvent
+                        {
+                            Type =  "CARD_STOLEN",
+                            Value = new
+                            {
+                                CardId = cardId,
+                                ControllerId = controllerId,
+                                LocalPlayer = StateFacade.LocalPlayer,
+                                OpponentPlayer = StateFacade.OpponentPlayer,
+                                EntityId = showEntity.Entity,
+                                AdditionalProps = new {
+                                    newControllerId = showEntity.GetEffectiveController(),
+                                    StolenByCardId = stolenByCardId,
+                                    StolenByEntityId = stolenByEntityId,
+                                    zone = zone,
+                                }
+                            }
+                        };
+                    },
                     true,
                     node) };
             }
