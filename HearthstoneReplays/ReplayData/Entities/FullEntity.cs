@@ -21,6 +21,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         public static IList<string> MANUAL_DREDGE = new List<string>()
         {
             CardIds.FromTheDepths,
+            CardIds.Waveshaping_TIME_701,
         };
 
         [XmlAttribute("cardID")]
