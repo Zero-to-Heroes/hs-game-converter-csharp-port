@@ -93,7 +93,7 @@ namespace HearthstoneReplays
 
         public async Task<object> realtimeLogProcessing(dynamic input)
         {
-            string[] logLines = input.logLines;
+            string[] logLines = ExtractLogLines(input);
             var tcs = new TaskCompletionSource<object>();
             object result = null;
 
@@ -107,6 +107,7 @@ namespace HearthstoneReplays
                 }
                 catch (Exception ex)
                 {
+                    Logger.Log("Game-Events-CSharp Exception", $"{ex}");
                     tcs.TrySetException(ex);
                 }
             });
@@ -121,6 +122,31 @@ namespace HearthstoneReplays
         {
             GetStaticPlugin()?.askForGameStateUpdate();
             return null;
+        }
+
+        private static string[] ExtractLogLines(dynamic input)
+        {
+            if (input == null)
+            {
+                return Array.Empty<string>();
+            }
+
+            if (input.logLines is string[] typed)
+            {
+                return typed;
+            }
+
+            if (input.logLines is object[] boxed)
+            {
+                return boxed.Select(x => x?.ToString() ?? string.Empty).ToArray();
+            }
+
+            if (input.logLines is IEnumerable<object> enumerable)
+            {
+                return enumerable.Select(x => x?.ToString() ?? string.Empty).ToArray();
+            }
+
+            return Array.Empty<string>();
         }
     }
 }
