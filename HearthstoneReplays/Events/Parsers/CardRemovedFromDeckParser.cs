@@ -68,10 +68,12 @@ namespace HearthstoneReplays.Events.Parsers
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
 
             string removedByCardId = null;
+            int? removedByEntityId = null;
             if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
             {
                 var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
                 removedByCardId = GameState.CurrentEntities.GetValueOrDefault(act.Entity)?.CardId;
+                removedByEntityId = act.Entity;
             }
 
             return new List<GameEventProvider> { GameEventProvider.Create(
@@ -86,6 +88,7 @@ namespace HearthstoneReplays.Events.Parsers
                     //gameState,
                     new {
                         RemovedByCardId = removedByCardId,
+                        RemovedByEntityId = removedByEntityId,
                     }),
                 true,
                 node) };
@@ -112,6 +115,7 @@ namespace HearthstoneReplays.Events.Parsers
             // handled via the duplicatePredicate of the BurnedCard provider, but I'm 
             // keeping this here just in case
             string removedByCardId = null;
+            int? removedByEntityId = null;
             if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
             {
                 var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
@@ -126,6 +130,7 @@ namespace HearthstoneReplays.Events.Parsers
                     return null;
                 }
                 removedByCardId = GameState.CurrentEntities.GetValueOrDefault(act.Entity)?.CardId;
+                removedByEntityId = act.Entity;
             }
 
             // Void Contract shows the cards in the sidebar even though SUPPRESS_MILL_ANIMATION == 1 and IGNORE_SUPPRESS_MILL_ANIMATION is not set
@@ -149,6 +154,7 @@ namespace HearthstoneReplays.Events.Parsers
                         // Needed to properly remove the Dragons created by Prestor when we play Kazalusan afterwards
                         Cost = showEntity.GetCost(),
                         RemovedByCardId = removedByCardId,
+                        RemovedByEntityId = removedByEntityId,
                     }),
                 true,
                 node) };
