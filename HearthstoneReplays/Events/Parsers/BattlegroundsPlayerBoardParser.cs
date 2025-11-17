@@ -739,7 +739,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         private static List<Enchantment> BuildEnchantments(Dictionary<int, FullEntity> currentEntities, FullEntity fullEntity, bool allowRemovedFromGame = false)
         {
-            var debug = fullEntity.Entity == 4331;
+            var debug = fullEntity.Entity == 14064;
             var enchantmentEntities = BuildEnchantmentEntities(currentEntities, fullEntity, allowRemovedFromGame);
             var enchantments = enchantmentEntities
                 .Select(entity => new Enchantment
@@ -762,6 +762,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return new List<FullEntity>();
             }
 
+            var debug = fullEntity.Id == 12471;
             var enchantmentEntities = currentEntities.Values
                 .Where(entity => entity.GetTag(GameTag.ATTACHED) == fullEntity.Id
                     && (allowRemovedFromGame || entity.GetTag(GameTag.ZONE) != (int)Zone.REMOVEDFROMGAME))
@@ -772,7 +773,7 @@ namespace HearthstoneReplays.Events.Parsers
             {
                 if (enchant.GetTag(GameTag.MAGNETIC) == 1)
                 {
-                    var subEnchants = BuildEnchantmentEntities(currentEntities, currentEntities.GetValueOrDefault(enchant.GetTag(GameTag.CREATOR)))
+                    var subEnchants = BuildEnchantmentEntities(currentEntities, currentEntities.GetValueOrDefault(enchant.GetTag(GameTag.CREATOR)), allowRemovedFromGame)
                         .Where(e => e.GetTag(GameTag.MAGNETIC) == 1)
                         .ToList();
                     newEnchantEntities.AddRange(subEnchants);
