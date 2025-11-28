@@ -420,6 +420,7 @@ namespace HearthstoneReplays.Events.Parsers
             var astralAutomatonBonus = GetPlayerEnchantmentValue(playerId, CardIds.AstralAutomatonPlayerEnchantDntEnchantment_BG_TTN_401pe, currentEntities);
             var beetleArmy = GetTupleEnchantmentValue(playerId, CardIds.BeetleArmyPlayerEnchantDntEnchantment_BG31_808pe, currentEntities);
             var sanlyanScribesDeadThisGame = GetTupleEnchantmentValue(playerId, CardIds.SanlaynScribePlayerEnchantDntEnchantment_BGDUO31_208pe, currentEntities);
+            var deepBluesPlayed = GetPlayerEnchantmentValue(playerId, CardIds.DeepBlueCroonerPlayerEnchantDntEnchantment, currentEntities);
             // Looks like the enchantment isn't used anymore, at least for the opponent?
             var frostlingBonus = GetPlayerTag(playerEntityId, GameTag.BACON_ELEMENTALS_PLAYED_THIS_GAME, currentEntities);
             var piratesPlayedThisGame = GetPlayerTag(playerEntityId, GameTag.BACON_PIRATES_PLAYED_THIS_GAME, currentEntities);
@@ -486,6 +487,7 @@ namespace HearthstoneReplays.Events.Parsers
                 GoldSpentThisGame = goldSpentThisGame,
                 GoldrinnBuffAtk = goldrinnBuffAtk,
                 GoldrinnBuffHealth = goldrinnBuffHealth,
+                DeepBluesPlayed = deepBluesPlayed,
             };
         }
 
@@ -865,6 +867,7 @@ namespace HearthstoneReplays.Events.Parsers
             public int GoldSpentThisGame { get; set; }
             public int GoldrinnBuffAtk { get; set; }
             public int GoldrinnBuffHealth { get; set; }
+            public int DeepBluesPlayed { get; set; }
         }
 
         internal class QuestReward
