@@ -19,6 +19,7 @@ namespace HearthstoneReplays.Events.Parsers
             CardIds.OrderInTheCourt,
             CardIds.SphereOfSapience,
             CardIds.CityChiefEsho_TLC_110,
+            CardIds.TimelessCausality_TIME_061,
         };
 
         private GameState GameState { get; set; }
