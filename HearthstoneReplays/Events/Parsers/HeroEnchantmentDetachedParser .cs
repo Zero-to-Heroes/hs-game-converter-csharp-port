@@ -28,7 +28,8 @@ namespace HearthstoneReplays.Events.Parsers
                 && node.Type == typeof(TagChange)
                 && (tagChange = node.Object as TagChange).Name == (int)GameTag.ZONE
                 && tagChange.Value == (int)Zone.GRAVEYARD
-                && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity).GetCardType() == (int)CardType.ENCHANTMENT
+                // Because of some Rewind shennanigans this can be null in some cases
+                && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity)?.GetCardType() == (int)CardType.ENCHANTMENT
                 && GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity).GetZone() == (int)Zone.PLAY;
         }
 

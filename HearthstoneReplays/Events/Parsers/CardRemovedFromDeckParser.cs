@@ -32,7 +32,8 @@ namespace HearthstoneReplays.Events.Parsers
                 // Patchwerk puts the destroyed minion in the Graveyard. I think this is a bug, 
                 // but for now that's how it is
                 && (tagChange.Value == (int)Zone.SETASIDE || tagChange.Value == (int)Zone.GRAVEYARD)
-                && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.DECK;
+                // Because of Rewind, can be null
+                && GameState.CurrentEntities.GetValueOrDefault((node.Object as TagChange).Entity)?.GetTag(GameTag.ZONE) == (int)Zone.DECK;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)

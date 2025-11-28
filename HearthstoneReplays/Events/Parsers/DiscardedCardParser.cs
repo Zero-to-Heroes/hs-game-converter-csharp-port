@@ -28,14 +28,15 @@ namespace HearthstoneReplays.Events.Parsers
                 && node.Type == typeof(TagChange)
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && (node.Object as TagChange).Value == (int)Zone.GRAVEYARD
-                && GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.ZONE) == (int)Zone.HAND;
+                // Because of some Rewind shennanigans this can be null in some cases
+                && GameState.CurrentEntities.GetValueOrDefault((node.Object as TagChange).Entity)?.GetTag(GameTag.ZONE) == (int)Zone.HAND;
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
         {
             return node.Type == typeof(ShowEntity)
                 && (node.Object as ShowEntity).GetTag(GameTag.ZONE) == (int)Zone.GRAVEYARD
-                && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) == (int)Zone.HAND;
+                && GameState.CurrentEntities.GetValueOrDefault((node.Object as ShowEntity).Entity)?.GetTag(GameTag.ZONE) == (int)Zone.HAND;
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
