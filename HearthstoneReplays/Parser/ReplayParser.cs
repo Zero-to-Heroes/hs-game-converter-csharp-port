@@ -118,23 +118,24 @@ namespace HearthstoneReplays.Parser
                 this.CurrentGameSeed = gameSeed;
             }
 
+            Match match = Regexes.PowerlogLineRegex.Match(line);
+
             if (!this.resettingGame && line.Contains("GameState") && line.Contains("CREATE_GAME"))
             {
                 Logger.Log($"Clearing {this.processedLines.Count} processed lines", line);
                 this.processedLines.Clear();
             }
 
-            var debug = this.resettingGame && line.Contains("RESET");
-            debug = line.Contains("GDB_145");
-            if (debug)
-            {
-                var x = 0;
-            }
+            Match resetStartMatch = Regexes.ResetStartMatchRegex.Match(line);
             if (!this.resettingGame)
             {
-                Match resetStartMatch = Regexes.ResetStartMatchRegex.Match(line);
-                if (resetStartMatch.Success)
+                if (resetStartMatch.Success && line.Contains("GameState.DebugPrintPower()"))
                 {
+                    //Logger.Log("askForGameStateUpdate", "built provider");
+                    var timestamp = match.Success ? NormalizeTimestamp(match.Groups[1].Value) : DateTime.Now;
+                    State.PTLState.NodeParser.EnqueueGameEvent(new List<GameEventProvider> {
+                        GameEventProvider.Create(timestamp, "REWIND_STARTED", () => new GameEvent { Type = "REWIND_STARTED" }, true, null)
+                    });
                     this.resettingGame = true;
                     this.currentResetBlockIndex = 0;
                     // TODO: Enqueue reset game event
@@ -144,6 +145,9 @@ namespace HearthstoneReplays.Parser
                     // So we only need to keep the latest "reset" info
                     this.resettingGames.Clear();
                     this.resettingGames.Add(new { originEntity = entityId, index = lineIndex });
+                    // We keep the "RESET_GAME" line so that we know when we need to start ignoring the "recreate game" effect
+                    // and when it ends
+                    this.processedLines.Add(line);
                     var linesCopy = this.processedLines.ToArray();
                     this.processedLines.Clear();
                     Read(linesCopy);
@@ -151,14 +155,14 @@ namespace HearthstoneReplays.Parser
                 }
             }
 
+            if (resetStartMatch.Success)
+            {
+                this.inResetBlock = true;
+            }
+
             if (this.resettingGame)
             {
                 var currentEntityIdBlockToIgnore = this.resettingGames[this.currentResetBlockIndex];
-                var debug2 = line.Contains("BLOCK_START BlockType=GAME_RESET Entity=[entityName=Portal Vanguard id=5 zone=PLAY");
-                if (debug2)
-                {
-                    var y = 0;
-                }
 
                 // The whitespace is important, otherwise an entity=5 can be triggered by id=54
                 if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} "))
@@ -166,32 +170,37 @@ namespace HearthstoneReplays.Parser
                     this.ignoringAlternateTimeline = true;
                 }
 
-
-                Match resetStartMatch = Regexes.ResetStartMatchRegex.Match(line);
-                if (resetStartMatch.Success)
-                {
-                    this.inResetBlock = true;
-                }
-
                 if (this.inResetBlock && line.Contains("BLOCK_END"))
                 {
-                    this.inResetBlock = false;
+                    //this.inResetBlock = false;
                     this.ignoringAlternateTimeline = false;
                     this.currentResetBlockIndex++;
                     if (this.currentResetBlockIndex == this.resettingGames.Count)
                     {
                         this.resettingGame = false;
+                        var timestamp = match.Success ? NormalizeTimestamp(match.Groups[1].Value) : DateTime.Now;
+                        State.PTLState.NodeParser.EnqueueGameEvent(new List<GameEventProvider> {
+                            GameEventProvider.Create(timestamp, "REWIND_OVER", () => new GameEvent { Type = "REWIND_OVER" }, true, null)
+                        });
                     }
                 }
             }
 
-            if (this.ignoringAlternateTimeline)
+            // We need to also handle the case where the "RESET_GAME" in PTL appears *after* the PTL discovery block
+            // This probably shouldn't happen in the first case, but we see this behavior if the user picks the
+            // "rewind timeline" option quickly
+            if (this.inResetBlock && line.Contains("BLOCK_END"))
+            {
+                this.inResetBlock = false;
+                return;
+            }
+
+            if (this.ignoringAlternateTimeline || this.inResetBlock)
             {
                 return;
             }
 
             this.processedLines.Add(line);
-            Match match = Regexes.PowerlogLineRegex.Match(line);
             if (!match.Success)
             {
                 if (line.Contains("End Spectator Mode") || (line.Contains("Begin Spectating") && !line.Contains("2nd")))
