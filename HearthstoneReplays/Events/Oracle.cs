@@ -332,6 +332,7 @@ namespace HearthstoneReplays.Events
                     case EliteTaurenChampion: return EliteTaurenChampion_MoltenPickOfRockToken;
                     case EncumberedPackMule: return EncumberedPackMule;
                     case EscapeTheUnderfel_TLC_446: return EscapeTheUnderfel_UnderfelRiftToken_TLC_446t;
+                    case EverburningPhoenix_EverburningEnchantment_FIR_919e: return EverburningPhoenix_FIR_919;
                     case DopEmergencyEnchant2Enchantment_DOP_002e: return EverburningPhoenix_FIR_919;
                     case Roach_SC_012: return Roach_SC_012;
                     case ExcavatedEvil: return ExcavatedEvil;
@@ -541,6 +542,7 @@ namespace HearthstoneReplays.Events
                     case SwarmOfLightbugs_WW_052: return SwarmOfLightbugs_BottledLightbugsToken_WW_052t2;
                     //case SweetenedSnowflurry_TOY_307: return SweetenedSnowflurry_SweetenedSnowflurryToken_TOY_307t;
                     case TabletopRoleplayer_TOY_915: return TabletopRoleplayer_TabletopRoleplayerToken_TOY_915t;
+                    case TalanjiOfTheGraves_TIME_619: return TalanjiOfTheGraves_BwonsamdiToken_TIME_619t;
                     case Talgath_GDB_472: return BackstabCore;
                     case TentacleGrip_YOG_526: return ChaoticTendril_YOG_514;
                     case TentacleTender_YOG_517: return ChaoticTendril_YOG_514;
@@ -691,6 +693,7 @@ namespace HearthstoneReplays.Events
                                 TheReplicatorInator_TheReplicatorInatorToken_MIS_025t1,
                             });
                     case YseraTheDreamerCore:
+                    case YseraTheDreamer_LEG_CS3_033:
                         return AddMultipleKnownCards(gameState, node, new List<string>()
                             {
                                 NightmareLegacy,
