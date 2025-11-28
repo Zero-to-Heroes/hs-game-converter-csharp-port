@@ -38,7 +38,7 @@ namespace HearthstoneReplays.Events.Parsers
         {
             var tagChange = node.Object as TagChange;
             var entity = GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity);
-            if (!entity?.IsLocation() ?? false)
+            if (entity == null || !entity.IsLocation())
             {
                 return null;
             }
