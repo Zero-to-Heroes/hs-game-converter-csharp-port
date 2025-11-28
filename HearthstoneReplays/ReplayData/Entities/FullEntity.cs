@@ -142,7 +142,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         internal int GetZonePosition()
         {
-            if (GetTag(GameTag.FAKE_ZONE_POSITION) != -1)
+            if (GetTag(GameTag.FAKE_ZONE_POSITION) >= 0)
             {
                 return GetTag(GameTag.FAKE_ZONE_POSITION);
             }
