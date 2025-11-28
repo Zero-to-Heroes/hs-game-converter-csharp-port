@@ -5,6 +5,7 @@ using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -43,6 +44,14 @@ namespace HearthstoneReplays.Events.Parsers
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
+            int? sourceEntityId = null;
+            string sourceCardId = null;
+            if (node.Parent != null && node.Parent.Object is Action)
+            {
+                var parentAction = node.Parent.Object as Action;
+                sourceEntityId = parentAction.Entity;
+                sourceCardId = GameState.CurrentEntities.GetValueOrDefault(parentAction.Entity)?.CardId;
+            }
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "MINION_ON_BOARD_ATTACK_UPDATED",
@@ -56,6 +65,8 @@ namespace HearthstoneReplays.Events.Parsers
                     new {
                         InitialAttack = initialAttack,
                         NewAttack = newAttack,
+                        SourceEntityId = sourceEntityId,
+                        SourceCardId = sourceCardId,
                     }
                 ),
                 true,
