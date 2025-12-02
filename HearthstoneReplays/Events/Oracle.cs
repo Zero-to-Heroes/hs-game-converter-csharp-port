@@ -570,7 +570,7 @@ namespace HearthstoneReplays.Events
                     case TombPillager_LOE_012: return TheCoinCore;
                     case TombPillager_WON_340: return TheCoinCore;
                     case ToyCaptainTarim_TOY_813: return ToyCaptainTarim_ToyCaptainTarimToken_TOY_813t;
-                    case ToysnatchingGeist_MIS_006: return ToysnatchingGeist_ToysnatchingGeistToken_MIS_006t;
+                    //case ToysnatchingGeist_MIS_006: return ToysnatchingGeist_ToysnatchingGeistToken_MIS_006t;
                     case TradePrinceGallywix_GVG_028: return TradePrinceGallywix_GallywixsCoinToken;
                     case TramMechanic_WW_044: return TramMechanic_BarrelOfSludgeToken_WW_044t;
                     case TwinSlice_BT_175: return TwinSlice_SecondSliceToken;
