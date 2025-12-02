@@ -451,12 +451,15 @@ namespace HearthstoneReplays.Events.Parsers
             var bloodGemHealthBonus = bloodGemEnchant?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0;
             var battlecriesTriggeredThisGame = GetPlayerTag(playerEntityId, GameTag.BATTLECRIES_TRIGGERED_THIS_GAME, currentEntities);
             var friendlyMinionsDeadLastCombat = GetPlayerTag(playerEntityId, GameTag.NUM_FRIENDLY_MINIONS_THAT_DIED_LAST_TURN, currentEntities);
+            var volumizerAttackBuff = GetPlayerTag(playerEntityId, GameTag.BACON_VOLUMIZER_ATTACK_BUFF, currentEntities);
+            var volumizerHealthBuff = GetPlayerTag(playerEntityId, GameTag.BACON_VOLUMIZER_HEALTH_BUFF, currentEntities);
             var choralEnchantments = currentEntitiesGs
                 .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment && board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)))
                 .ToList();
             var choralEnchantment = choralEnchantments.FirstOrDefault();
             var choralSource = choralEnchantment == null ? null : GameState.CurrentEntities.GetValueOrDefault(choralEnchantment.GetTag(GameTag.ATTACHED));
             var isChoralPremium = choralSource?.GetTag(GameTag.PREMIUM) == 1;
+
             return new BgsPlayerGlobalInfo()
             {
                 EternalKnightsDeadThisGame = eternalKnightBonus,
@@ -488,6 +491,8 @@ namespace HearthstoneReplays.Events.Parsers
                 GoldrinnBuffAtk = goldrinnBuffAtk,
                 GoldrinnBuffHealth = goldrinnBuffHealth,
                 DeepBluesPlayed = deepBluesPlayed,
+                VolumizerAttackBuff = volumizerAttackBuff,
+                VolumizerHealthBuff = volumizerHealthBuff,
             };
         }
 
@@ -868,6 +873,8 @@ namespace HearthstoneReplays.Events.Parsers
             public int GoldrinnBuffAtk { get; set; }
             public int GoldrinnBuffHealth { get; set; }
             public int DeepBluesPlayed { get; set; }
+            public int VolumizerAttackBuff { get; set; }
+            public int VolumizerHealthBuff { get; set; }
         }
 
         internal class QuestReward

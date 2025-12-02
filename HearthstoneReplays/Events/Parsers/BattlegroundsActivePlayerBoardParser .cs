@@ -290,6 +290,8 @@ namespace HearthstoneReplays.Events.Parsers
                 var tavernSpellAttackBuff = GetPlayerTag(player.Id, GameTag.TAVERN_SPELL_ATTACK_INCREASE, GameState);
                 var goldSpentThisGame = GetPlayerTag(player.Id, GameTag.NUM_RESOURCES_SPENT_THIS_GAME, GameState);
                 var deepBluesPlayed = GetPlayerEnchantmentValue(player.Id, CardIds.DeepBlueCroonerPlayerEnchantDntEnchantment, GameState);
+                var volumizerAttackBuff = GetPlayerTag(player.Id, GameTag.BACON_VOLUMIZER_ATTACK_BUFF, GameState);
+                var volumizerHealthBuff = GetPlayerTag(player.Id, GameTag.BACON_VOLUMIZER_HEALTH_BUFF, GameState);
 
                 var trinkets = BattlegroundsPlayerBoardParser.BuildTrinkets(player.PlayerId, GameState);
 
@@ -358,6 +360,8 @@ namespace HearthstoneReplays.Events.Parsers
                         GoldrinnBuffAtk = goldrinnBuffAtk,
                         GoldrinnBuffHealth = goldrinnBuffHealth,
                         DeepBluesPlayed = deepBluesPlayed,
+                        VolumizerAttackBuff = volumizerAttackBuff,
+                        VolumizerHealthBuff = volumizerHealthBuff,
                     }
                 };
             }
