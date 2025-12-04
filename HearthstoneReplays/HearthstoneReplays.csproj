@@ -113,6 +113,7 @@
   <ItemGroup>
     <Compile Include="Enums.cs" />
     <Compile Include="Events\AbstractActionParser.cs" />
+    <Compile Include="Events\Cards\TimewarpedNelliesShip.cs" />
     <Compile Include="Events\Cards\DemonicProject.cs" />
     <Compile Include="Events\Cards\Mimicry.cs" />
     <Compile Include="Events\Cards\RazaTheResealed.cs" />

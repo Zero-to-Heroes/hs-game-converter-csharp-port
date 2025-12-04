@@ -57,6 +57,8 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
         [XmlIgnore]
         public List<string> CardIdsToCreate = new List<string>();
         [XmlIgnore]
+        public List<object> DynamicInfo = new List<object>();
+        [XmlIgnore]
         public int CreatedIndex = 0;
 
         [XmlIgnore]

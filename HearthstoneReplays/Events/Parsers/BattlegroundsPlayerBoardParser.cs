@@ -12,6 +12,7 @@ using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 using HearthstoneReplays.Parser.ReplayData.Meta;
 using static HearthstoneReplays.Events.Parsers.BattlegroundsPlayerBoardParser;
 using HearthstoneReplays.Events.Parsers.Utils;
+using HearthstoneReplays.Events.Cards;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -408,9 +409,7 @@ namespace HearthstoneReplays.Events.Parsers
             var currentEntitiesGs = StateFacade.GsState.GameState.CurrentEntities.Values.ToList();
             var eternalKnightBonus = GetPlayerEnchantmentValue(playerId, CardIds.EternalKnightPlayerEnchantEnchantment, currentEntities);
             var tavernSpellsCastThisGame = GetPlayerTag(playerEntityId, GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME, currentEntities);
-            //GameState.CurrentEntities[playerEntityId]?.GetTag(GameTag.TAVERN_SPELLS_PLAYED_THIS_GAME, 0) ?? 0;
             var spellsCastThisGame = GetPlayerTag(playerEntityId, GameTag.NUM_SPELLS_PLAYED_THIS_GAME, currentEntities);
-            // GameState.CurrentEntities[playerEntityId]?.GetTag(GameTag.NUM_SPELLS_PLAYED_THIS_GAME, 0) ?? 0;
             // Includes Anub'arak, Nerubian Deathswarmer
             var undeadAttackBonus = GetPlayerEnchantmentValue(playerId, CardIds.UndeadBonusAttackPlayerEnchantDntEnchantment, currentEntities);
             var hauntedCarapaceAttackBonus = GetPlayerEnchantmentValue(playerId, CardIds.HauntedCarapacePlayerEnchantDntEnchantment_BG33_112pe, currentEntities);
@@ -606,6 +605,9 @@ namespace HearthstoneReplays.Events.Parsers
                 case LovesickBalladist_BG26_814:
                 case LovesickBalladist_BG26_814_G:
                     return EnhanceLovesickBalladist(entity, StateFacade);
+                case TimewarpedNelliesShipToken_BG34_Giant_074t:
+                case TimewarpedNelliesShip_BG34_Giant_074t_G:
+                    return TimewarpedNelliesShip.EnhanceEntity(entity, StateFacade);
                 default:
                     return entity;
             }
@@ -742,6 +744,7 @@ namespace HearthstoneReplays.Events.Parsers
                 Tags = fullEntity.GetTagsCopy(),
                 TimeStamp = fullEntity.TimeStamp,
                 Enchantments = enchantments,
+                DynamicInfo = fullEntity.DynamicInfo,
             };
             return result;
         }
@@ -842,6 +845,7 @@ namespace HearthstoneReplays.Events.Parsers
             public List<Tag> Tags;
             public DateTime TimeStamp;
             public List<Enchantment> Enchantments;
+            public List<object> DynamicInfo;
         }
 
         public class BgsPlayerGlobalInfo
