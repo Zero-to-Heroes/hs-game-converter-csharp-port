@@ -53,6 +53,7 @@ namespace HearthstoneReplays.Events.Parsers
                              BattlegroundsBuddies = (node.Object as GameEntity).GetTag(GameTag.BACON_BUDDY_ENABLED) == 1,
                              BattlegroundsTrinkets = (node.Object as GameEntity).GetTag(GameTag.BACON_TRINKETS_ACTIVE) == 1,
                              BattlegroundsAnomalies = new List<int>() { (node.Object as GameEntity).GetTag(GameTag.BACON_GLOBAL_ANOMALY_DBID) },
+                             BattlegroundsTimewarped = (node.Object as GameEntity).GetTag(GameTag.BACON_ALT_TAVERN_SYSTEM_ACTIVE) == 1,
                         },
                     },
                     false,
