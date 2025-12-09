@@ -221,11 +221,6 @@ namespace HearthstoneReplays.Events.Parsers
             if (cardId != null)
             {
                 // We don't use the game state builder here because we really need the full entities
-                var debug = currentEntities
-                    .Where(entity =>
-                        entity.GetEffectiveController() == playerPlayerId &&
-                        entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
-                    .ToList();
                 var board = currentEntities
                     .Where(entity =>
                         entity.GetEffectiveController() == playerPlayerId &&
@@ -320,6 +315,8 @@ namespace HearthstoneReplays.Events.Parsers
                         entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER)
                     .Select(entity => entity.Clone())
                     .ToList();
+                var debugHp = currentEntities.FirstOrDefault(e => e.Entity == 120);
+                var debug2 = board[0].Entity == 5708;
                 if (heroPowerEntities.Count == 0)
                 {
                     Logger.Log("WARNING: could not find hero power", "");
@@ -344,8 +341,6 @@ namespace HearthstoneReplays.Events.Parsers
                         CreatedEntity = null,
                     })
                     .ToList();
-
-                var debugHp = heroPowers.Any(hp => hp.EntityId == 220);
 
                 UpdateEmbraceYourRageTarget(StateFacade, heroPowers);
                 UpdateRebornRitesTarget(StateFacade, heroPowers);
@@ -440,7 +435,6 @@ namespace HearthstoneReplays.Events.Parsers
             //}
             var debugPlayerEntity = currentEntities.Find(e => e.Entity == playerEntityId);
             var debugTags = debugPlayerEntity.TagsHistory.Where(t => t.Name == (int)GameTag.TAVERN_SPELL_ATTACK_INCREASE).ToList();
-            var debug2 = board.Any(e => e.Entity == 5169);
             var bloodGemEnchant = currentEntities
                 .Where(entity =>
                     entity.GetEffectiveController() == playerId &&
@@ -454,12 +448,16 @@ namespace HearthstoneReplays.Events.Parsers
             var friendlyMinionsDeadLastCombat = GetPlayerTag(playerEntityId, GameTag.NUM_FRIENDLY_MINIONS_THAT_DIED_LAST_TURN, currentEntities);
             var volumizerAttackBuff = GetPlayerTag(playerEntityId, GameTag.BACON_VOLUMIZER_ATTACK_BUFF, currentEntities);
             var volumizerHealthBuff = GetPlayerTag(playerEntityId, GameTag.BACON_VOLUMIZER_HEALTH_BUFF, currentEntities);
+            var debug2 = board.Any(e => e.Entity == 18254);
+
             var choralEnchantments = currentEntitiesGs
                 .Where(e => e.CardId == CardIds.ChoralMrrrglr_ChorusEnchantment && board.Select(b => b.Id).Contains(e.GetTag(GameTag.ATTACHED)))
                 .ToList();
             var choralEnchantment = choralEnchantments.FirstOrDefault();
-            var choralSource = choralEnchantment == null ? null : GameState.CurrentEntities.GetValueOrDefault(choralEnchantment.GetTag(GameTag.ATTACHED));
+            var choralSource = choralEnchantment == null ? null : GameState.CurrentEntities.GetValueOrDefault(choralEnchantment.GetTag(GameTag.CREATOR));
             var isChoralPremium = choralSource?.GetTag(GameTag.PREMIUM) == 1;
+            var choralAttackBuff = (choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0) / (isChoralPremium ? 2 : 1);
+            var choralHealthBuff = (choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0) / (isChoralPremium ? 2 : 1);
 
             return new BgsPlayerGlobalInfo()
             {
@@ -476,8 +474,8 @@ namespace HearthstoneReplays.Events.Parsers
                 PiratesPlayedThisGame = piratesPlayedThisGame,
                 BloodGemAttackBonus = bloodGemAttackBonus,
                 BloodGemHealthBonus = bloodGemHealthBonus,
-                ChoralAttackBuff = (choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0) ?? 0) / (isChoralPremium ? 2 : 1),
-                ChoralHealthBuff = (choralEnchantment?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2, 0) ?? 0) / (isChoralPremium ? 2 : 1),
+                ChoralAttackBuff = choralAttackBuff,
+                ChoralHealthBuff = choralHealthBuff,
                 BeetleAttackBuff = beetleArmy.Item1,
                 BeetleHealthBuff = beetleArmy.Item2,
                 ElementalHealthBuff = elementalHealthBuff,
