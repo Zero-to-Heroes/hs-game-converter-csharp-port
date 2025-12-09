@@ -415,6 +415,7 @@ namespace HearthstoneReplays.Events
                     case LicensedAdventurer: return TheCoinCore;
                     case LifesavingAura_VAC_922: return Grillmaster_SunscreenToken_VAC_917t;
                     case LightforgedBlessing_DAL_568: return LightforgedBlessing_DAL_568ts;
+                    case LightOfTheNewMoon_LightOfTheFullMoonToken_FIR_918t: return LightOfTheNewMoon_FIR_918;
                     case LoanShark: return TheCoinCore;
                     case Locuuuusts_ONY_005tb3: return Locuuuusts_GiantLocustToken_ONY_005tb3t2;
                     case Locuuuusts_ULDA_036: return GiantLocust_Locuuuusts;
@@ -583,6 +584,7 @@ namespace HearthstoneReplays.Events
                     case UrzulHorror: return UrzulHorror_LostSoulToken;
                     case VioletSpellwing: return ArcaneMissilesLegacy;
                     case VioletSpellwing_CORE_DRG_107: return ArcaneMissilesLegacy;
+                    case VolleyMaul_VAC_921: return Grillmaster_SunscreenToken_VAC_917t;
                     case Wanted: return Coin;
                     case Waxadred: return Waxadred_WaxadredsCandleToken;
                     case WeaselTunneler: return WeaselTunneler;

@@ -30,7 +30,9 @@ namespace HearthstoneReplays.Events.Parsers
                 && (node.Object as TagChange).Name == (int)GameTag.ZONE
                 && ((node.Object as TagChange).Value == (int)Zone.GRAVEYARD
                     // For BG quests
-                    || (node.Object as TagChange).Value == (int)Zone.REMOVEDFROMGAME)
+                    || (node.Object as TagChange).Value == (int)Zone.REMOVEDFROMGAME
+                    // For the Priest quest that splits in two
+                    || (node.Object as TagChange).Value == (int)Zone.SETASIDE)
                 && GameState.CurrentEntities.GetValueOrDefault((node.Object as TagChange).Entity)?.GetTag(GameTag.ZONE) == (int)Zone.SECRET;
         }
 
@@ -57,6 +59,12 @@ namespace HearthstoneReplays.Events.Parsers
             }
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
+            if (tagChange.Value == (int)Zone.SETASIDE && entity.GetZone() != (int)Zone.SECRET)
+            {
+                // This is to handle the Priest quest that splits in two
+                return null;
+            }
+
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
             var eventName = entity.GetTag(GameTag.SECRET) == 1
                 ? "SECRET_DESTROYED"

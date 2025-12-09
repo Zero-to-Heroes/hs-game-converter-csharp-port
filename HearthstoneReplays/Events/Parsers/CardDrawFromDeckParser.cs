@@ -16,6 +16,9 @@ namespace HearthstoneReplays.Events.Parsers
             CardIds.DeathBlossomWhomper,
             CardIds.Mimicry_EDR_522,
         };
+        private static List<string> SHOULD_USE_ORACLE_TO_IDENTIFY_DRAWN_CARD = new List<string>() { 
+            CardIds.TalanjiOfTheGraves_TIME_619
+        };
         private GameState GameState { get; set; }
         private ParserState ParserState { get; set; }
         private StateFacade StateFacade { get; set; }
@@ -117,6 +120,11 @@ namespace HearthstoneReplays.Events.Parsers
                     var lastInfluencedByCard = Oracle.FindCardCreator(GameState, entity, node);
                     var lastInfluencedByCardId = lastInfluencedByCard?.Item1;
                     var predictedCardId = Oracle.PredictCardId(GameState, creator?.Item1, -1, node, cardId, StateFacade);
+                    if(SHOULD_USE_ORACLE_TO_IDENTIFY_DRAWN_CARD.Contains(drawnByCardId))
+                    {
+                        predictedCardId = predictedCardId
+                            ?? Oracle.PredictCardId(GameState, drawnByCardId, drawnByEntityId ?? -1, node, cardId, StateFacade, entityId);
+                    }
                     // Issue: if a card creates a card and draws one, this will flag them both (while the draw could be something else)
                     // This was introduced to flag the cards created by the Suspicious* cards
                     if (SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW.Contains(lastInfluencedByCardId)) 
