@@ -49,6 +49,11 @@ namespace HearthstoneReplays.Events.Parsers
                 && (node.Object as ShowEntity).IsMinionLike()
                 && GameState.CurrentEntities.ContainsKey((node.Object as ShowEntity).Entity)
                 && GameState.CurrentEntities[(node.Object as ShowEntity).Entity].GetTag(GameTag.ZONE) != (int)Zone.PLAY;
+            var timeWarped = node.Type == typeof(FullEntity) 
+                && GameState.GetGameEntity()?.GetTag(GameTag.BACON_ALT_TAVERN_IN_PROGRESS) == 1
+                && (node.Object as FullEntity).GetTag(GameTag.ZONE) == (int)Zone.SETASIDE
+                && (node.Object as FullEntity).IsMinionLike()
+                && (node.Object as FullEntity).GetTag(GameTag.BACON_TIMEWARPED) == 1;
             return stateType == StateType.PowerTaskList
                 && (createFromFullEntity || createFromShowEntity);
         }

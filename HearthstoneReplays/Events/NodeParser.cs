@@ -275,6 +275,7 @@ namespace HearthstoneReplays.Events
                     //new BattlegroundsExtraGoldNextTurnParser(ParserState, StateFacade),
                     new BattlegroundsTrinketSelectedParser(ParserState, StateFacade),
                     new BattlegroundsTrinketSelectionParser(ParserState, StateFacade),
+                    new BattlegroundsTimewarpedTavernActiveParser(ParserState, StateFacade),
 
                     new DecklistUpdateParser(ParserState, StateFacade),
                     new GameRunningParser(ParserState, StateFacade),

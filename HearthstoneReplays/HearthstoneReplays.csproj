@@ -125,6 +125,7 @@
     <Compile Include="Events\GameStateShort.cs" />
     <Compile Include="Events\Obfuscator.cs" />
     <Compile Include="Events\Parsers\AbstractBasicTagChangeParser.cs" />
+    <Compile Include="Events\Parsers\BattlegroundsTimewarpedTavernActiveParser.cs" />
     <Compile Include="Events\Parsers\GameResetParser.cs" />
     <Compile Include="Events\Parsers\CorpsesChangedParser.cs" />
     <Compile Include="Events\Parsers\CardsShuffledIntoDeckParser.cs" />
