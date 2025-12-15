@@ -28,11 +28,6 @@ namespace HearthstoneReplays.Events.Cards
 
             var actionEntity = gameState.CurrentEntities.GetValueOrDefault(act.Entity);
             var controller = actionEntity.GetController();
-            // Avoid info leaks, as the card is revealed in the logs
-            if (controller != stateFacade.LocalPlayer.PlayerId)
-            {
-                return null;
-            }
 
             var triggerAction = act.Data
                 .Where(d => d is Action)
@@ -45,10 +40,20 @@ namespace HearthstoneReplays.Events.Cards
             }
 
             // First ShowEntity is the card we've picked?
-            return triggerAction.Data
+            var showEntity = triggerAction.Data
                 .Where(d => d is ShowEntity)
                 .Select(d => d as ShowEntity)
-                .FirstOrDefault()?.CardId;
+                .FirstOrDefault();
+
+            // Avoid info leaks, as the card is revealed in the logs
+            // UNLESS the card is CAST_WHEN_DRAWN / SUMMONED_WHEN_DRAWN
+            var canReveal = showEntity.GetTag(GameTag.CASTS_WHEN_DRAWN) == 1 || showEntity.GetTag(GameTag.SUMMONED_WHEN_DRAWN) == 1;
+            if (controller != stateFacade.LocalPlayer.PlayerId && !canReveal)
+            {
+                return null;
+            }
+
+            return showEntity?.CardId;
         }
     }
 }
