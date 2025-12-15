@@ -95,12 +95,12 @@ namespace HearthstoneReplays.Events.Parsers
 
         private AttackOnBoardForPlayer BuildAttackOnBoardForPlayer(int playerId, FullEntity playerEntity, List<FullEntity> allEntities)
         {
-            var entitiesForPlayer = allEntities.Where(e => e.IsInPlay() && e.GetEffectiveController() == playerId);
+            var entitiesForPlayer = allEntities.Where(e => e.IsInPlay() && e.GetEffectiveController() == playerId).ToList();
             var hero = entitiesForPlayer.FirstOrDefault(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO);
             var isActivePlayer = playerEntity.GetTag(GameTag.CURRENT_PLAYER) == 1;
 
-            //var debug = entitiesForPlayer.Any(e => e.Id == 45) && playerId == 1;
-            //var debugEntity = entitiesForPlayer.FirstOrDefault(e => e.Id == 45);
+            var sleeper = entitiesForPlayer.FirstOrDefault(e => e.CardId == "TOY_866");
+            var debug = sleeper != null && sleeper.GetTag(GameTag.DORMANT) != 1 && isActivePlayer;
             // Board
             var entitiesOnBoardThatCanAttack = entitiesForPlayer
                 .Where(e => e.IsMinionLike() && e.GetTag(GameTag.ATK) > 0 && CanAttack(e, isActivePlayer, false));
@@ -144,7 +144,10 @@ namespace HearthstoneReplays.Events.Parsers
                 !isHero &&
                 isActivePlayer &&
                 !e.HasTag(GameTag.CHARGE) && !e.HasTag(GameTag.NON_KEYWORD_CHARGE)
-                && (exhausted || e.HasTag(GameTag.JUST_PLAYED) || e.HasTag(GameTag.ATTACKABLE_BY_RUSH));
+                // e.HasTag(GameTag.JUST_PLAYED) || 
+                // Removing the JUST_PLAYED, because Corridor Sleeper has is =1 after being waken up.
+                // The NUM_TURNS_IN_PLAY check above should be enough to cover summoning sickness
+                && (exhausted || e.HasTag(GameTag.ATTACKABLE_BY_RUSH));
             return !isDormant && !hasSummoningSickness && !isFrozen && !cantAttack && canTitanAttack && canStarshipAttack;
         }
 
