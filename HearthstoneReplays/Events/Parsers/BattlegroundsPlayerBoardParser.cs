@@ -315,8 +315,6 @@ namespace HearthstoneReplays.Events.Parsers
                         entity.GetTag(GameTag.CARDTYPE) == (int)CardType.HERO_POWER)
                     .Select(entity => entity.Clone())
                     .ToList();
-                var debugHp = currentEntities.FirstOrDefault(e => e.Entity == 120);
-                var debug2 = board[0].Entity == 5708;
                 if (heroPowerEntities.Count == 0)
                 {
                     Logger.Log("WARNING: could not find hero power", "");
