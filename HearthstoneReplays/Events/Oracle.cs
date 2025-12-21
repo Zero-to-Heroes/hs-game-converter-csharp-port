@@ -1680,6 +1680,11 @@ namespace HearthstoneReplays.Events
                                 .Select(entityId => gameState.CurrentEntities.GetValueOrDefault(entityId))
                                 .Where(e => e != null && !currentSecretCardIds.Contains(e.CardId))
                                 .ToList();
+                            // Happens when opponent plays it - we don't know their secret
+                            if (entities.Count == 0)
+                            {
+                                return null;
+                            }
                             var nextCard = entities[0].CardId;
                             actionEntity.KnownEntityIds.Remove(entities[0].Entity);
                             return nextCard;
