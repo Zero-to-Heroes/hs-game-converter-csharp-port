@@ -183,24 +183,24 @@ namespace HearthstoneReplays.Events.Parsers
                         .Select(e => GetEntitySpawnedFromHand(e.Id, board, StateFacade) ?? e)
                         .Select(e => e.SetTag(GameTag.DAMAGE, 0).SetTag(GameTag.ZONE, (int)Zone.HAND) as FullEntity)
                         .ToList();
-                    var debugEntity = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425);
-                    var debugEntityOrigin = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425);
-                    var debugEntityOriginHealth = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
-                        .Where(t => t.Name == (int)GameTag.HEALTH)
-                        .ToList();
-                    var debugEntityOriginHealth2 = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
-                        .TakeWhile(t => t.Name != (int)GameTag.SHOW_ENTITY_START)
-                        .Where(t => t.Name == (int)GameTag.HEALTH)
-                        .ToList();
+                    //var debugEntity = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425);
+                    //var debugEntityOrigin = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425);
+                    //var debugEntityOriginHealth = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
+                    //    .Where(t => t.Name == (int)GameTag.HEALTH)
+                    //    .ToList();
+                    //var debugEntityOriginHealth2 = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
+                    //    .TakeWhile(t => t.Name != (int)GameTag.SHOW_ENTITY_START)
+                    //    .Where(t => t.Name == (int)GameTag.HEALTH)
+                    //    .ToList();
                     //var debugEntityOriginHealth2 = StateFacade.GsState.GameState.CurrentEntities.GetValueOrDefault(5425)?.TagsHistory
                     //    .TakeWhile(t => t.Name != (int)GameTag.SHOW_ENTITY_START)
                     //    .Where(t => t.Name == (int)GameTag.HEALTH)
                     //    .ToList();
                     hand = revealedHand;
                 }
-                var debug = currentEntities
-                    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
-                    .ToList();
+                //var debug = currentEntities
+                //    .Where(entity => entity.GetEffectiveController() == player.PlayerId)
+                //    .ToList();
                 var heroPower = currentEntities
                     .Where(entity => entity.GetEffectiveController() == player.PlayerId)
                     .Where(entity => entity.GetTag(GameTag.ZONE) == (int)Zone.PLAY)
