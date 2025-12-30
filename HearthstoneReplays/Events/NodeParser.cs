@@ -321,6 +321,7 @@ namespace HearthstoneReplays.Events
                     // Needs to happen after EntityUpdate, because somsetimes the event is sent from the 
                     // SHOW_ENTITY block that triggers the ENTITY_UPDATE event
                     new CopiedFromEntityIdParser(ParserState, StateFacade),
+                    new SpecialTargetParser(ParserState, StateFacade),
                 };
             }
         }
