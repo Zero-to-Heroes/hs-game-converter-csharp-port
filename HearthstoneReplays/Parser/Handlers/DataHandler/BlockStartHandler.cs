@@ -18,6 +18,11 @@ namespace HearthstoneReplays.Parser.Handlers
         public static bool HandleBlockStart(DateTime timestamp, string data, ParserState state, int indentLevel, Helper helper)
         {
             var debug = data.StartsWith("BLOCK_START BlockType=DEATHS Entity=GameEntity EffectCardId=System.Collections.Generic.List`1[System.String] EffectIndex=0 Target=0 SubOption=-1");
+            // Early check: only run regex if line contains "BLOCK_START"
+            if (!data.Contains("BLOCK_START"))
+            {
+                return false;
+            }
             var match = Regexes.ActionStartRegex.Match(data);
             if (match.Success)
             {

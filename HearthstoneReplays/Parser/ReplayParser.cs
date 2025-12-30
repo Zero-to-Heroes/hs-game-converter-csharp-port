@@ -118,7 +118,32 @@ namespace HearthstoneReplays.Parser
                 this.CurrentGameSeed = gameSeed;
             }
 
-            Match match = Regexes.PowerlogLineRegex.Match(line);
+            // Manual parsing for PowerlogLineRegex - much faster than regex for the common case
+            // Format: "D [timestamp] [method]() - [content]"
+            string timestamp = null;
+            string method = null;
+            string content = null;
+            bool matchSuccess = false;
+
+            if (line.Length >= 3 && line[0] == 'D' && line[1] == ' ')
+            {
+                // Find the first space after "D " (start of timestamp)
+                int timestampStart = 2;
+                int timestampEnd = line.IndexOf(' ', timestampStart);
+                if (timestampEnd > timestampStart)
+                {
+                    timestamp = line.Substring(timestampStart, timestampEnd - timestampStart);
+                    
+                    // Find "() - " pattern to split method and content
+                    int methodEnd = line.IndexOf("() - ", timestampEnd + 1);
+                    if (methodEnd > timestampEnd)
+                    {
+                        method = line.Substring(timestampEnd + 1, methodEnd - timestampEnd - 1);
+                        content = line.Substring(methodEnd + 5); // Skip "() - "
+                        matchSuccess = true;
+                    }
+                }
+            }
 
             if (!this.resettingGame && line.Contains("GameState") && line.Contains("CREATE_GAME"))
             {
@@ -126,15 +151,20 @@ namespace HearthstoneReplays.Parser
                 this.processedLines.Clear();
             }
 
-            Match resetStartMatch = Regexes.ResetStartMatchRegex.Match(line);
+            // Only check ResetStartMatchRegex if line contains "BLOCK_START"
+            Match resetStartMatch = null;
+            if (line.Contains("BLOCK_START"))
+            {
+                resetStartMatch = Regexes.ResetStartMatchRegex.Match(line);
+            }
             if (!this.resettingGame)
             {
-                if (resetStartMatch.Success && line.Contains("GameState.DebugPrintPower()"))
+                if (resetStartMatch != null && resetStartMatch.Success && line.Contains("GameState.DebugPrintPower()"))
                 {
                     //Logger.Log("askForGameStateUpdate", "built provider");
-                    var timestamp = match.Success ? NormalizeTimestamp(match.Groups[1].Value) : DateTime.Now;
+                    var normalizedTimestamp = matchSuccess ? NormalizeTimestamp(timestamp) : DateTime.Now;
                     State.PTLState.NodeParser.EnqueueGameEvent(new List<GameEventProvider> {
-                        GameEventProvider.Create(timestamp, "REWIND_STARTED", () => new GameEvent { Type = "REWIND_STARTED" }, true, null)
+                        GameEventProvider.Create(normalizedTimestamp, "REWIND_STARTED", () => new GameEvent { Type = "REWIND_STARTED" }, true, null)
                     });
                     this.resettingGame = true;
                     this.currentResetBlockIndex = 0;
@@ -155,7 +185,7 @@ namespace HearthstoneReplays.Parser
                 }
             }
 
-            if (resetStartMatch.Success)
+            if (resetStartMatch != null && resetStartMatch.Success)
             {
                 this.inResetBlock = true;
             }
@@ -178,9 +208,9 @@ namespace HearthstoneReplays.Parser
                     if (this.currentResetBlockIndex == this.resettingGames.Count)
                     {
                         this.resettingGame = false;
-                        var timestamp = match.Success ? NormalizeTimestamp(match.Groups[1].Value) : DateTime.Now;
+                        var normalizedTimestamp = matchSuccess ? NormalizeTimestamp(timestamp) : DateTime.Now;
                         State.PTLState.NodeParser.EnqueueGameEvent(new List<GameEventProvider> {
-                            GameEventProvider.Create(timestamp, "REWIND_OVER", () => new GameEvent { Type = "REWIND_OVER" }, true, null)
+                            GameEventProvider.Create(normalizedTimestamp, "REWIND_OVER", () => new GameEvent { Type = "REWIND_OVER" }, true, null)
                         });
                     }
                 }
@@ -201,7 +231,7 @@ namespace HearthstoneReplays.Parser
             }
 
             this.processedLines.Add(line);
-            if (!match.Success)
+            if (!matchSuccess)
             {
                 if (line.Contains("End Spectator Mode") || (line.Contains("Begin Spectating") && !line.Contains("2nd")))
                 {
@@ -217,7 +247,7 @@ namespace HearthstoneReplays.Parser
             //if (!this.resettingGame)
             //{
             //}
-            AddData(match.Groups[1].Value, match.Groups[2].Value, match.Groups[3].Value, gameSeed);
+            AddData(timestamp, method, content, gameSeed);
 
         }
 
@@ -354,7 +384,6 @@ namespace HearthstoneReplays.Parser
 
         public long ExtractGameSeed(string[] lines)
         {
-            string pattern = @"tag=GAME_SEED value=(\d+)";
             bool isGameCreation = false;
             for (int i = 0; i < lines.Length; i++)
             {
@@ -368,12 +397,23 @@ namespace HearthstoneReplays.Parser
                     continue;
                 }
 
-                Match match = Regex.Match(line, pattern);
-                if (match.Success)
+                // Manual parsing instead of regex: "tag=GAME_SEED value=(\d+)"
+                int valueIndex = line.IndexOf("tag=GAME_SEED value=");
+                if (valueIndex >= 0)
                 {
-                    string someValue = match.Groups[1].Value;
-                    Logger.Log($"Extracted seed", someValue);
-                    return long.Parse(someValue);
+                    int valueStart = valueIndex + "tag=GAME_SEED value=".Length;
+                    int valueEnd = valueStart;
+                    // Find the end of the number (space, end of line, or non-digit)
+                    while (valueEnd < line.Length && char.IsDigit(line[valueEnd]))
+                    {
+                        valueEnd++;
+                    }
+                    if (valueEnd > valueStart)
+                    {
+                        string seedValue = line.Substring(valueStart, valueEnd - valueStart);
+                        Logger.Log($"Extracted seed", seedValue);
+                        return long.Parse(seedValue);
+                    }
                 }
             }
             // Special status if this includes a CREATE_GAME log but doesn't have the game seed, because

@@ -58,7 +58,7 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var parent = node.Parent;
-            136if (parent.Type != typeof(Action))
+            if (parent.Type != typeof(Action))
             {
                 return null;
             }

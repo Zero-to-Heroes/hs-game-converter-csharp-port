@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="1a4dc4d6-b7e1-4d0a-bd7b-4d61140b6e12" name="sebas@SEB-LAPTOP-LENO 2025-12-30 16:06:35" runUser="SEB-LAPTOP-LENO\sebas" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-12-30T16:06:35.1965317+01:00" queuing="2025-12-30T16:06:35.1965317+01:00" start="2025-12-30T16:06:33.3154164+01:00" finish="2025-12-30T16:06:35.2234584+01:00" />
+  <TestSettings name="default" id="65c92f2b-620a-40f5-ada4-111dededa417">
+    <Deployment runDeploymentRoot="sebas_SEB-LAPTOP-LENO_2025-12-30_16_06_35" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="e7befb52-ed4b-44e6-b501-65c84678d757" testId="2714085a-040a-7d13-1888-b23718789c26" testName="BenchmarkFullParse" computerName="SEB-LAPTOP-LENO" duration="00:00:01.5921809" startTime="2025-12-30T16:06:33.4536675+01:00" endTime="2025-12-30T16:06:35.1581675+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e7befb52-ed4b-44e6-b501-65c84678d757">
+      <Output>
+        <StdOut>Loaded 77470 lines from perf_ranked.txt&#xD;
+=== Full Parse Benchmark ===&#xD;
+Calling reset from ParserState constructor, GameState&#xD;
+Calling reset from ParserState constructor, PowerTaskList&#xD;
+ReplayParser constructor over, False&#xD;
+Calling reset from ReplayParser.init(), &#xD;
+Extracted seed, 1947879353&#xD;
+Extracted game seed = 1947879353, &#xD;
+Clearing 1 processed lines, D 11:44:27.1160876 GameState.DebugPrintPower() - CREATE_GAME&#xD;
+Handling create game, &#xD;
+Is reconnecting?, statType=GameState, ended=False, creates=0, spectating=False, gameSeed=, currentGameSeed=1947879353&#xD;
+resetting game state, ended is now Ended=False, GameState&#xD;
+will emit NEW_GAME event, CREATE_GAME&#xD;
+Created a new game, GameState 12/31/2025 11:44:27 AM,1/1/0001 12:00:00 AM&#xD;
+No show entity, fallback to fullentity in hand, &#xD;
+No full entity in hand, fallback to fullentity, &#xD;
+Tried to assign player name, PlayerID=4, PlayerName=Daedin#2991&#xD;
+Tried to assign player name, PlayerID=12, PlayerName=GhostPants&#xD;
+Handling create game, &#xD;
+resetting game state, ended is now Ended=False, PowerTaskList&#xD;
+Created a new game, PowerTaskList 12/31/2025 11:44:27 AM,12/31/2025 11:44:27 AM&#xD;
+will consider hero selection event, 4&#xD;
+will emit hero selection event, &#xD;
+Calling reset from ParserState constructor, GameState&#xD;
+Calling reset from ParserState constructor, PowerTaskList&#xD;
+ReplayParser constructor over, False&#xD;
+Calling reset from ReplayParser.init(), &#xD;
+Extracted seed, 1947879353&#xD;
+Extracted game seed = 1947879353, &#xD;
+Clearing 1 processed lines, D 11:44:27.1160876 GameState.DebugPrintPower() - CREATE_GAME&#xD;
+Handling create game, &#xD;
+Is reconnecting?, statType=GameState, ended=False, creates=0, spectating=False, gameSeed=, currentGameSeed=1947879353&#xD;
+resetting game state, ended is now Ended=False, GameState&#xD;
+will emit NEW_GAME event, CREATE_GAME&#xD;
+Created a new game, GameState 12/31/2025 11:44:27 AM,1/1/0001 12:00:00 AM&#xD;
+No show entity, fallback to fullentity in hand, &#xD;
+No full entity in hand, fallback to fullentity, &#xD;
+Tried to assign player name, PlayerID=4, PlayerName=Daedin#2991&#xD;
+Tried to assign player name, PlayerID=12, PlayerName=GhostPants&#xD;
+Handling create game, &#xD;
+resetting game state, ended is now Ended=False, PowerTaskList&#xD;
+Created a new game, PowerTaskList 12/31/2025 11:44:27 AM,12/31/2025 11:44:27 AM&#xD;
+will consider hero selection event, 4&#xD;
+will emit hero selection event, &#xD;
+Prep BATTLEGROUNDS_RECRUIT_PHASE, &#xD;
+Prep BATTLEGROUNDS_COMBAT_START, &#xD;
+Starting to build player boards, TAG_CHANGE Entity=GameEntity tag=2022 value=0&#xD;
+Building opponent board for playerPlayerId=12, playerEntityId=12, &#xD;
+Player boards built, &#xD;
+Prep BATTLEGROUNDS_RECRUIT_PHASE, &#xD;
+Prep BATTLEGROUNDS_COMBAT_START, &#xD;
+Starting to build player boards, TAG_CHANGE Entity=GameEntity tag=2022 value=0&#xD;
+Building opponent board for playerPlayerId=12, playerEntityId=12, &#xD;
+Player boards built, &#xD;
+Prep BATTLEGROUNDS_RECRUIT_PHASE, &#xD;
+Prep BATTLEGROUNDS_COMBAT_START, &#xD;
+Starting to build player boards, TAG_CHANGE Entity=GameEntity tag=2022 value=0&#xD;
+Building opponent board for playerPlayerId=12, playerEntityId=12, &#xD;
+Player boards built, &#xD;
+Prep BATTLEGROUNDS_RECRUIT_PHASE, &#xD;
+Prep BATTLEGROUNDS_COMBAT_START, &#xD;
+Starting to build player boards, TAG_CHANGE Entity=GameEntity tag=2022 value=0&#xD;
+Building opponent board for playerPlayerId=12, playerEntityId=12, &#xD;
+Player boards built, &#xD;
+Prep BATTLEGROUNDS_RECRUIT_PHASE, &#xD;
+Prep BATTLEGROUNDS_COMBAT_START, &#xD;
+Starting to build player boards, TAG_CHANGE Entity=GameEntity tag=2022 value=0&#xD;
+Building opponent board for playerPlayerId=12, playerEntityId=12, &#xD;
+Player boards built, &#xD;
+Prep BATTLEGROUNDS_RECRUIT_PHASE, &#xD;
+Providing player board events 12/31/2025 11:46:29 AM TAG_CHANGE Entity=GameEntity tag=2022 value=0, player:  opponent: BG25_001&#xD;
+Providing player board events 12/31/2025 11:47:23 AM TAG_CHANGE Entity=GameEntity tag=2022 value=0, player:  opponent: &#xD;
+Providing player board events 12/31/2025 11:48:25 AM TAG_CHANGE Entity=GameEntity tag=2022 value=0, player:  opponent: BGS_115'BG20_100&#xD;
+No match, D 11:53:40.7886294 ChoiceCardMgr.DoesLocalChoiceMatchPacket(): Null list passed in! localChoices=, packetChoices=System.Collections.Generic.List`1[System.Int32].&#xD;
+Providing player board events 12/31/2025 11:49:43 AM TAG_CHANGE Entity=GameEntity tag=2022 value=0, player:  opponent: BG20_203'BG27_028'BG32_235&#xD;
+Providing player board events 12/31/2025 11:51:15 AM TAG_CHANGE Entity=GameEntity tag=2022 value=0, player:  opponent: BG33_886'BG33_886'BG20_100'BG20_100'BG27_028&#xD;
+Prep BATTLEGROUNDS_COMBAT_START, &#xD;
+Starting to build player boards, TAG_CHANGE Entity=GameEntity tag=2022 value=0&#xD;
+Building opponent board for playerPlayerId=12, playerEntityId=12, &#xD;
+Player boards built, &#xD;
+Prep BATTLEGROUNDS_RECRUIT_PHASE, &#xD;
+Prep BATTLEGROUNDS_COMBAT_START, &#xD;
+Starting to build player boards, TAG_CHANGE Entity=GameEntity tag=2022 value=0&#xD;
+Building opponent board for playerPlayerId=12, playerEntityId=12, &#xD;
+Player boards built, &#xD;
+Prep BATTLEGROUNDS_RECRUIT_PHASE, &#xD;
+Prep BATTLEGROUNDS_COMBAT_START, &#xD;
+Ending current game in GS, TAG_CHANGE Entity=GameEntity tag=STATE value=COMPLETE&#xD;
+Game Ended in type=GameState, Ended=True&#xD;
+Starting to build player boards, TAG_CHANGE Entity=GameEntity tag=2022 value=0&#xD;
+Building opponent board for playerPlayerId=12, playerEntityId=12, &#xD;
+Player boards built, &#xD;
+Parsing end game, TAG_CHANGE Entity=GameEntity tag=STATE value=COMPLETE&#xD;
+Will convert to xml, &#xD;
+XML converted, &#xD;
+gameStateReport built, &#xD;
+Enqueuing GAME_END event, &#xD;
+Game Ended in type=PowerTaskList, Ended=True&#xD;
+Clearing 40540 processed lines, D 12:06:08.0932187 GameState.DebugPrintPower() - CREATE_GAME&#xD;
+Providing player board events 12/31/2025 11:53:51 AM TAG_CHANGE Entity=GameEntity tag=2022 value=0, player:  opponent: &#xD;
+Providing player board events 12/31/2025 11:55:48 AM TAG_CHANGE Entity=GameEntity tag=2022 value=0, player:  opponent: BG28_300_G'BG34_Giant_332'BG26_ICC_901&#xD;
+Providing player board events 12/31/2025 11:57:43 AM TAG_CHANGE Entity=GameEntity tag=2022 value=0, player:  opponent: BG33_111'BG25_010'BGS_071'BG31_177_G'BGS_066'BG34_170&#xD;
+Handling create game, &#xD;
+Is reconnecting?, statType=GameState, ended=True, creates=1, spectating=False, gameSeed=1947879353, currentGameSeed=1947879353&#xD;
+Probable reconnect detected GameState 12/31/2025 12:06:08 PM // 12/31/2025 11:57:50 AM // True // 1 // False // GameState // CREATE_GAME, 00:08:17.2282534&#xD;
+Exceptionw while assigning player name, PlayerID=2, PlayerName=Daedin#2991&#xD;
+Exceptionw while assigning player name, PlayerID=10, PlayerName=MagicTurtle&#xD;
+Handling create game, &#xD;
+will consider hero selection event, 0&#xD;
+ERROR: Exception while parsing node, The given key was not present in the dictionary.&#xD;
+Entities[0]=[entityName=Lady Vashj id=90 zone=HAND zonePos=2 cardId=BG23_HERO_304 player=2], &#xD;
+   at System.ThrowHelper.ThrowKeyNotFoundException()&#xD;
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)&#xD;
+   at HearthstoneReplays.Events.Parsers.BattlegroundsHeroSelectedParser.CreateGameEventProviderFromNew(Node node) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\Parsers\BattlegroundsHeroSelectedParser.cs:line 82&#xD;
+   at HearthstoneReplays.Events.NodeParser.NewNode(Node node, StateType stateType) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\NodeParser.cs:line 79, &#xD;
+ERROR: Exception while parsing node, Object reference not set to an instance of an object.&#xD;
+SHOW_ENTITY - Updating Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=589 zone=PLAY zonePos=0 cardId= player=10] CardID=BG29_813e, &#xD;
+   at HearthstoneReplays.Events.Parsers.HeroEnchantmentAttachedParser.CreateGameEventProviderFromClose(Node node) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\Parsers\HeroEnchantmentAttachedParser.cs:line 88&#xD;
+   at HearthstoneReplays.Events.NodeParser.CloseNode(Node node, StateType stateType) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\NodeParser.cs:line 107, &#xD;
+ERROR: Exception while parsing node, Object reference not set to an instance of an object.&#xD;
+SHOW_ENTITY - Updating Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=590 zone=PLAY zonePos=0 cardId= player=10] CardID=Bacon_TagTransferPlayerE, &#xD;
+   at HearthstoneReplays.Events.Parsers.HeroEnchantmentAttachedParser.CreateGameEventProviderFromClose(Node node) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\Parsers\HeroEnchantmentAttachedParser.cs:line 88&#xD;
+   at HearthstoneReplays.Events.NodeParser.CloseNode(Node node, StateType stateType) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\NodeParser.cs:line 107, &#xD;
+Starting to build player boards, TAG_CHANGE Entity=GameEntity tag=2022 value=0&#xD;
+WARNING: could not find hero power, &#xD;
+Building opponent board for playerPlayerId=12, playerEntityId=12, &#xD;
+WARNING: could not find hero power, &#xD;
+Player boards built, &#xD;
+ERROR: Exception while parsing node, Object reference not set to an instance of an object.&#xD;
+SHOW_ENTITY - Updating Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=989 zone=PLAY zonePos=0 cardId= player=10] CardID=BG29_813e, &#xD;
+   at HearthstoneReplays.Events.Parsers.HeroEnchantmentAttachedParser.CreateGameEventProviderFromClose(Node node) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\Parsers\HeroEnchantmentAttachedParser.cs:line 88&#xD;
+   at HearthstoneReplays.Events.NodeParser.CloseNode(Node node, StateType stateType) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\NodeParser.cs:line 107, &#xD;
+ERROR: Exception while parsing node, Object reference not set to an instance of an object.&#xD;
+SHOW_ENTITY - Updating Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=990 zone=PLAY zonePos=0 cardId= player=10] CardID=Bacon_TagTransferPlayerE, &#xD;
+   at HearthstoneReplays.Events.Parsers.HeroEnchantmentAttachedParser.CreateGameEventProviderFromClose(Node node) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\Parsers\HeroEnchantmentAttachedParser.cs:line 88&#xD;
+   at HearthstoneReplays.Events.NodeParser.CloseNode(Node node, StateType stateType) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\NodeParser.cs:line 107, &#xD;
+Starting to build player boards, TAG_CHANGE Entity=GameEntity tag=2022 value=0&#xD;
+WARNING: could not find hero power, &#xD;
+Building opponent board for playerPlayerId=12, playerEntityId=12, &#xD;
+WARNING: could not find hero power, &#xD;
+Player boards built, &#xD;
+ERROR: Exception while parsing node, Object reference not set to an instance of an object.&#xD;
+SHOW_ENTITY - Updating Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=1517 zone=PLAY zonePos=0 cardId= player=10] CardID=BG29_813e, &#xD;
+   at HearthstoneReplays.Events.Parsers.HeroEnchantmentAttachedParser.CreateGameEventProviderFromClose(Node node) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\Parsers\HeroEnchantmentAttachedParser.cs:line 88&#xD;
+   at HearthstoneReplays.Events.NodeParser.CloseNode(Node node, StateType stateType) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\NodeParser.cs:line 107, &#xD;
+ERROR: Exception while parsing node, Object reference not set to an instance of an object.&#xD;
+SHOW_ENTITY - Updating Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=1518 zone=PLAY zonePos=0 cardId= player=10] CardID=Bacon_TagTransferPlayerE, &#xD;
+   at HearthstoneReplays.Events.Parsers.HeroEnchantmentAttachedParser.CreateGameEventProviderFromClose(Node node) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\Parsers\HeroEnchantmentAttachedParser.cs:line 88&#xD;
+   at HearthstoneReplays.Events.NodeParser.CloseNode(Node node, StateType stateType) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\NodeParser.cs:line 107, &#xD;
+ERROR: Exception while parsing node, Object reference not set to an instance of an object.&#xD;
+SHOW_ENTITY - Updating Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=1519 zone=PLAY zonePos=0 cardId= player=10] CardID=BG26_159pe, &#xD;
+   at HearthstoneReplays.Events.Parsers.HeroEnchantmentAttachedParser.CreateGameEventProviderFromClose(Node node) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\Parsers\HeroEnchantmentAttachedParser.cs:line 88&#xD;
+   at HearthstoneReplays.Events.NodeParser.CloseNode(Node node, StateType stateType) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\NodeParser.cs:line 107, &#xD;
+Starting to build player boards, TAG_CHANGE Entity=GameEntity tag=2022 value=0&#xD;
+WARNING: could not find hero power, &#xD;
+Building opponent board for playerPlayerId=12, playerEntityId=12, &#xD;
+WARNING: could not find hero power, &#xD;
+Player boards built, &#xD;
+ERROR: Exception while parsing node, Object reference not set to an instance of an object.&#xD;
+SHOW_ENTITY - Updating Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=2077 zone=PLAY zonePos=0 cardId= player=10] CardID=BG29_813e, &#xD;
+   at HearthstoneReplays.Events.Parsers.HeroEnchantmentAttachedParser.CreateGameEventProviderFromClose(Node node) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\Parsers\HeroEnchantmentAttachedParser.cs:line 88&#xD;
+   at HearthstoneReplays.Events.NodeParser.CloseNode(Node node, StateType stateType) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\NodeParser.cs:line 107, &#xD;
+ERROR: Exception while parsing node, Object reference not set to an instance of an object.&#xD;
+SHOW_ENTITY - Updating Entity=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=2078 zone=PLAY zonePos=0 cardId= player=10] CardID=Bacon_TagTransferPlayerE, &#xD;
+   at HearthstoneReplays.Events.Parsers.HeroEnchantmentAttachedParser.CreateGameEventProviderFromClose(Node node) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\Parsers\HeroEnchantmentAttachedParser.cs:line 88&#xD;
+   at HearthstoneReplays.Events.NodeParser.CloseNode(Node node, StateType stateType) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\NodeParser.cs:line 107, &#xD;
+Warning: Exception during parsing: NullReferenceException - Object reference not set to an instance of an object.&#xD;
+Stack trace:    at HearthstoneReplays.Parser.ReplayData.Entities.GameState.PlayerIdFromEntityName(String data) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Events\GameState.cs:line 389&#xD;
+   at HearthstoneReplays.Parser.Helper.GetPlayerIdFromName(String data) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Parser\Helper.cs:line 191&#xD;
+   at HearthstoneReplays.Parser.Helper.ParseEntity(String data) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Parser\Helper.cs:line 59&#xD;
+   at HearthstoneReplays.Parser.Handlers.BlockStartHandler.HandleBlockStart(DateTime timestamp, String data, ParserState state, Int32 indentLevel, Helper helper) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Parser\Handlers\DataHandler\BlockStartHandler.cs:line 35&#xD;
+   at HearthstoneReplays.Parser.Handlers.DataHandler.&lt;&gt;c__DisplayClass3_0.&lt;.ctor&gt;b__3(DateTime timestamp, String data, ParserState state, StateType stateType, StateFacade facade, Int32 indent) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Parser\Handlers\DataHandler.cs:line 37&#xD;
+   at HearthstoneReplays.Parser.Handlers.DataHandler.Handle(DateTime timestamp, String data, ParserState state, StateType stateType, DateTime previousTimestamp, StateFacade stateFacade, Int64 currentGameSeed, Boolean resettingGame) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Parser\Handlers\DataHandler.cs:line 82&#xD;
+   at HearthstoneReplays.Parser.ReplayParser.AddData(String timestamp, String method, String data, Int64 gameSeed) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Parser\ReplayParser.cs:line 295&#xD;
+   at HearthstoneReplays.Parser.ReplayParser.ReadLine(String line, Int64 gameSeed, Int32 lineIndex) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Parser\ReplayParser.cs:line 220&#xD;
+   at HearthstoneReplays.Parser.ReplayParser.Read(String[] lines) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Parser\ReplayParser.cs:line 97&#xD;
+   at HearthstoneReplays.Parser.ReplayParser.FromString(IEnumerable`1 lines, GameType[] gameTypes) in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplays\Parser\ReplayParser.cs:line 66&#xD;
+   at HearthstoneReplayTests.PerformanceBenchmarkTest.BenchmarkFullParse() in D:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplayTests\PerformanceBenchmarkTest.cs:line 62&#xD;
+Wall Clock Time: 1125 ms (1.13 s)&#xD;
+CPU Time: 1125.00 ms (1.13 s)&#xD;
+Memory Used: 20.86 MB&#xD;
+Lines Processed: 77470&#xD;
+Lines/Second: 68862&#xD;
+Memory per Line: 0.28 KB&#xD;
+Final Memory (after GC): 33.08 MB&#xD;
+WARNING: Parsing completed with errors, but performance metrics are still valid.</StdOut>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="BenchmarkFullParse" storage="d:\sources\firestone\hs-game-converter-csharp-port\hearthstonereplaytests\bin\release\hearthstonereplaytests.dll" id="2714085a-040a-7d13-1888-b23718789c26">
+      <Execution id="e7befb52-ed4b-44e6-b501-65c84678d757" />
+      <TestMethod codeBase="d:\sources\firestone\hs-game-converter-csharp-port\HearthstoneReplayTests\bin\Release\HearthstoneReplayTests.dll" adapterTypeName="executor://mstestadapter/v2" className="HearthstoneReplayTests.PerformanceBenchmarkTest" name="BenchmarkFullParse" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="2714085a-040a-7d13-1888-b23718789c26" executionId="e7befb52-ed4b-44e6-b501-65c84678d757" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="1" executed="1" passed="1" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+  </ResultSummary>
+</TestRun>

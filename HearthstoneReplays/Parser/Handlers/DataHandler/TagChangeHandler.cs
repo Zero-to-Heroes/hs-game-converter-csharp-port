@@ -18,6 +18,11 @@ namespace HearthstoneReplays.Parser.Handlers
 
         public static bool HandleTagChange(DateTime timestamp, string data, ParserState state, StateType stateType, StateFacade gameHelper, int indentLevel, Helper helper)
         {
+            // Early check: only run regex if line contains "TAG_CHANGE"
+            if (!data.Contains("TAG_CHANGE"))
+            {
+                return false;
+            }
             var match = Regexes.ActionTagChangeRegex.Match(data);
             if (match.Success)
             {
