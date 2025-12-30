@@ -66,11 +66,11 @@ namespace HearthstoneReplays.Parser
             set
             {
                 var isLastLineToBeConsidered = value != null
-                    && !Regexes.BuildNumber.Match(value).Success
-                    && !Regexes.GameType.Match(value).Success
-                    && !Regexes.FormatType.Match(value).Success
-                    && !Regexes.ScenarioID.Match(value).Success
-                    && !Regexes.PlayerNameAssignment.Match(value).Success;
+                    && !(value.Contains("BuildNumber=") && Regexes.BuildNumber.Match(value).Success)
+                    && !(value.Contains("GameType=") && Regexes.GameType.Match(value).Success)
+                    && !(value.Contains("FormatType=") && Regexes.FormatType.Match(value).Success)
+                    && !(value.Contains("ScenarioID=") && Regexes.ScenarioID.Match(value).Success)
+                    && !(value.Contains("PlayerID=") && value.Contains("PlayerName=") && Regexes.PlayerNameAssignment.Match(value).Success);
                 if (isLastLineToBeConsidered)
                 {
                     this._lastProcessedGSLine = value;

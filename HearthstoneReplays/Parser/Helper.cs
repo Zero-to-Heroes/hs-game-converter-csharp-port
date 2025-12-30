@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
@@ -48,8 +49,13 @@ namespace HearthstoneReplays.Parser
         {
             if (string.IsNullOrEmpty(data))
                 return 0;
-            var match = Regexes.EntityRegex.Match(data);
-            if (match.Success)
+            // Early check: EntityRegex looks for "[...id=(\d+)...]", so check for "id=" and "["
+            Match match = null;
+            if (data.Contains("id=") && data.Contains("["))
+            {
+                match = Regexes.EntityRegex.Match(data);
+            }
+            if (match != null && match.Success)
                 return int.Parse(match.Groups[1].Value);
             if (data == "GameEntity")
                 return State.GSState.CurrentGame.Data.Where(d => d is GameEntity).Select(d => d as GameEntity).FirstOrDefault().Id;
