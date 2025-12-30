@@ -24,7 +24,10 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
-            return false;
+            return stateType == StateType.PowerTaskList
+                && !StateFacade.IsBattlegrounds()
+                && node.Type == typeof(TagChange)
+                && ((node.Object as TagChange).Name == (int)GameTag.ATK);
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
@@ -36,7 +39,36 @@ namespace HearthstoneReplays.Events.Parsers
 
         public List<GameEventProvider> CreateGameEventProviderFromNew(Node node)
         {
-            return null;
+            var tagChange = node.Object as TagChange;
+            var entity = GameState.CurrentEntities.GetValueOrDefault(tagChange.Entity);
+            if (entity?.GetZone() != (int)Zone.PLAY)
+            {
+                return null;
+            }
+
+            AttackOnBoard attackOnBoard = BuildAttackOnBoard();
+            if (attackOnBoard == null)
+            {
+                return null;
+            }
+
+            return new List<GameEventProvider> { GameEventProvider.Create(
+                (node.Object as TagChange).TimeStamp,
+                "TOTAL_ATTACK_ON_BOARD",
+                GameEvent.CreateProvider(
+                    "TOTAL_ATTACK_ON_BOARD",
+                    null,
+                    -1,
+                    -1,
+                    StateFacade,
+                    new
+                    {
+                        AttackOnBoard = attackOnBoard,
+                    }
+                ),
+                true,
+                node
+            )};
         }
 
         public List<GameEventProvider> CreateGameEventProviderFromClose(Node node)
