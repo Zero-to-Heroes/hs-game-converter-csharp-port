@@ -351,6 +351,7 @@ namespace HearthstoneReplays.Events
                     case FishyFlyer: return FishyFlyer_SpectralFlyerToken;
                     case FlameGeyser: return FireFly_FlameElementalToken;
                     case FlameGeyserCore: return FireFly_FlameElementalToken;
+                    case FinalPortalToArgus_FleeingTerrorguardToken_TIME_020t5t: return Broxigar_TIME_020;
                     case FlickeringLightbot_MIS_918: return FlickeringLightbot_FlickeringLightbotToken_MIS_918t;
                     case FloppyHydra_TOY_897: return FloppyHydra_TOY_897;
                     case ForgottenTorch: return ForgottenTorch_RoaringTorchToken;
@@ -563,8 +564,10 @@ namespace HearthstoneReplays.Events
                     case TheMarshQueen: return TheMarshQueen_QueenCarnassaToken;
                     case TheRyecleaver_VAC_525: return TheRyecleaver_SliceOfBreadToken_VAC_525t1;
                     case ThrowGlaive: return ThrowGlaive; // TO CHECK
+                    case Thunderquake_TIME_215: return StaticShock_TIME_218;
                     case TigressPlushy_TOY_811: return TigressPlushy_TigressPlushyToken_TOY_811t;
                     case TimeAdmralHooktail_TimelessChestToken_TIME_713t: return TheCoinCore;
+                    case TimelooperToki_LoopingTimeEnchantment_TIME_861e1: return TimelooperToki_TIME_861;
                     case TimeSkipper_TIME_054: return TheCoinCore;
                     case TinyThimbleTavernBrawl: return TinyThimble_RegularSizeThimbleTavernBrawl;
                     case TombPillager_CORE_LOE_012: return TheCoinCore;
