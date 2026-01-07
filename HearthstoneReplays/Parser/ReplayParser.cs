@@ -133,7 +133,7 @@ namespace HearthstoneReplays.Parser
                 if (timestampEnd > timestampStart)
                 {
                     timestamp = line.Substring(timestampStart, timestampEnd - timestampStart);
-                    
+
                     // Find "() - " pattern to split method and content
                     int methodEnd = line.IndexOf("() - ", timestampEnd + 1);
                     if (methodEnd > timestampEnd)
@@ -153,12 +153,12 @@ namespace HearthstoneReplays.Parser
 
             // Only check ResetStartMatchRegex if line contains "BLOCK_START"
             Match resetStartMatch = null;
-            if (line.Contains("BLOCK_START"))
-            {
-                resetStartMatch = Regexes.ResetStartMatchRegex.Match(line);
-            }
             if (!this.resettingGame)
             {
+                if (line.Contains("BLOCK_START"))
+                {
+                    resetStartMatch = Regexes.ResetStartMatchRegex.Match(line);
+                }
                 if (resetStartMatch != null && resetStartMatch.Success && line.Contains("GameState.DebugPrintPower()"))
                 {
                     //Logger.Log("askForGameStateUpdate", "built provider");
