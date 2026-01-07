@@ -15,23 +15,23 @@ namespace HearthstoneReplays.Parser.Handlers
     {
         public static bool HandleTag(DateTime timestamp, string data, ParserState state, Helper helper)
         {
+            // This is not supported yet
+            if (data.Contains("CACHED_TAG_FOR_DORMANT_CHANGE"))
+            {
+                return false;
+            }
+
+            // When in reconnect, we don't parse the GameEntity and 
+            // PlayerEntity nodes, so the tags think they are parsed while 
+            // under the Game root node
+            if (state.Node.Type == typeof(Game))
+            {
+                return false;
+            }
+
             var match = Regexes.ActionTagRegex.Match(data);
             if (match.Success)
             {
-                // This is not supported yet
-                if (data.Contains("CACHED_TAG_FOR_DORMANT_CHANGE"))
-                {
-                    return false;
-                }
-
-                // When in reconnect, we don't parse the GameEntity and 
-                // PlayerEntity nodes, so the tags think they are parsed while 
-                // under the Game root node
-                if (state.Node.Type == typeof(Game))
-                {
-                    return false;
-                }
-
                 var tagName = match.Groups[1].Value;
                 var value = match.Groups[2].Value;
                 //var debug = value == "BATTLEGROUND_TRINKET";
