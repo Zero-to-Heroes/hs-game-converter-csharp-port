@@ -414,6 +414,7 @@ namespace HearthstoneReplays.Events
                     case LadyVashj_BT_109: return LadyVashj_VashjPrimeToken;
                     case LakkariSacrifice: return LakkariSacrifice_NetherPortalToken_UNG_829t1;
                     case LicensedAdventurer: return TheCoinCore;
+                    case LieInWait_TLC_513: return LieInWait_MasterDuskToken_TLC_513t;
                     case LifesavingAura_VAC_922: return Grillmaster_SunscreenToken_VAC_917t;
                     case LightforgedBlessing_DAL_568: return LightforgedBlessing_DAL_568ts;
                     case LightOfTheNewMoon_LightOfTheFullMoonToken_FIR_918t: return LightOfTheNewMoon_FIR_918;
