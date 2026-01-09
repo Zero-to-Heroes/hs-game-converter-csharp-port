@@ -87,7 +87,8 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var controllerId = entity.GetEffectiveController();
-            if (GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE) == (int)CardType.ENCHANTMENT)
+            var cardType = GameState.CurrentEntities[tagChange.Entity].GetTag(GameTag.CARDTYPE);
+            if (cardType == (int)CardType.ENCHANTMENT || cardType == (int)CardType.HERO_POWER)
             {
                 return null;
             }
@@ -184,7 +185,8 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = node.Object as ShowEntity;
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
-            if (cardId.Length == 0 || GameState.CurrentEntities[entity.Entity].GetTag(GameTag.CARDTYPE) == (int)CardType.ENCHANTMENT)
+            var cardType = entity.GetTag(GameTag.CARDTYPE);
+            if (cardId.Length == 0 || cardType == (int)CardType.ENCHANTMENT || cardType == (int)CardType.HERO_POWER)
             {
                 return null;
             }
