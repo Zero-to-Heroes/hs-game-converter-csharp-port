@@ -125,6 +125,8 @@ namespace HearthstoneReplays.Parser
             string content = null;
             bool matchSuccess = false;
 
+            var debugLine = lineIndex == 9624 || lineIndex == 9604;
+
             if (line.Length >= 3 && line[0] == 'D' && line[1] == ' ')
             {
                 // Find the first space after "D " (start of timestamp)
@@ -198,6 +200,33 @@ namespace HearthstoneReplays.Parser
                 if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} "))
                 {
                     this.ignoringAlternateTimeline = true;
+                }
+
+                // BLOCK_END is not enough - if the reset triggers a block with a choice, it can end in GameState without a BLOCK_END
+                /*
+                    * D 10:04:16.6645154 GameState.DebugPrintPower() -             tag=CONTROLLER value=1
+                D 10:04:16.6645154 GameState.DebugPrintPower() -             tag=ENTITY_ID value=142
+                D 10:04:16.7396242 GameState.DebugPrintEntityChoices() - id=6 Player=Naith#21657 TaskList=360 ChoiceType=GENERAL CountMin=1 CountMax=1
+                D 10:04:16.7396242 GameState.DebugPrintEntityChoices() -   Source=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=13 zone=HAND zonePos=4 cardId= player=1]
+                D 10:04:16.7396242 GameState.DebugPrintEntityChoices() -   Entities[0]=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=141 zone=SETASIDE zonePos=0 cardId= player=1]
+                D 10:04:16.7396242 GameState.DebugPrintEntityChoices() -   Entities[1]=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=142 zone=SETASIDE zonePos=0 cardId= player=1]
+                D 10:04:16.7396242 ChoiceCardMgr.WaitThenShowChoices() - id=6 WAIT for taskList 360
+                D 10:04:16.7460948 PowerProcessor.EndCurrentTaskList() - m_currentTaskList=348
+                D 10:04:16.7522232 PowerTaskList.DebugDump() - ID=349 ParentID=0 PreviousID=345 TaskCount=3
+                D 10:04:16.7522232 PowerTaskList.DebugDump() - Block Start=(null)
+                D 10:04:16.7522232 PowerTaskList.DebugPrintPower() -     TAG_CHANGE Entity=[entityName=Precursory Strike id=24 zone=PLAY zonePos=0 cardId=TIME_750 player=1] tag=1068 value=4 
+                D 10:04:16.7522232 PowerTaskList.DebugPrintPower() -     TAG_CHANGE Entity=[entityName=Precursory Strike id=24 zone=PLAY zonePos=0 cardId=TIME_750 player=1] tag=1068 value=0 
+                D 10:04:16.7522232 PowerTaskList.DebugPrintPower() -     TAG_CHANGE Entity=[entityName=Precursory Strike id=24 zone=PLAY zonePos=0 cardId=TIME_750 player=1] tag=ZONE value=GRAVEYARD 
+                D 10:04:16.7522232 PowerTaskList.DebugDump() - Block End=(null)
+                D 10:04:16.7522232 PowerProcessor.PrepareHistoryForCurrentTaskList() - m_currentTaskList=349
+                D 10:04:16.7522232 PowerProcessor.DoTaskListForCard() - unhandled BlockType PLAY for sourceEntity [entityName=Precursory Strike id=24 zone=PLAY zonePos=0 cardId=TIME_750 player=1]
+                D 10:04:16.7646769 PowerProcessor.EndCurrentTaskList() - m_currentTaskList=349
+                D 10:04:16.7710789 PowerTaskList.DebugDump() - ID=350 ParentID=345 PreviousID=0 TaskCount=15
+                */
+                // Cut short, usually the GameState is interrupted, something happens on PTL, and the alternative timeline choice starts again on PTL
+                if (this.ignoringAlternateTimeline && line.Contains("ChoiceCardMgr.WaitThenShowChoices()"))
+                {
+                    this.ignoringAlternateTimeline = false;
                 }
 
                 if (this.inResetBlock && line.Contains("BLOCK_END"))
@@ -274,11 +303,11 @@ namespace HearthstoneReplays.Parser
                 };
             };
             var provider = GameEventProvider.Create(
-                DateTime.Now,
-                "GAME_STATE_UPDATE",
-                eventSupplier,
-                true,
-                null
+            DateTime.Now,
+            "GAME_STATE_UPDATE",
+            eventSupplier,
+            true,
+            null
             );
             //Logger.Log("askForGameStateUpdate", "built provider");
             State.PTLState.NodeParser.EnqueueGameEvent(new List<GameEventProvider> { provider });
