@@ -125,7 +125,7 @@ namespace HearthstoneReplays.Parser
             string content = null;
             bool matchSuccess = false;
 
-            var debugLine = lineIndex == 9624 || lineIndex == 9604;
+            //var debugLine = lineIndex == 9624 || lineIndex == 9604;
 
             if (line.Length >= 3 && line[0] == 'D' && line[1] == ' ')
             {
@@ -224,10 +224,14 @@ namespace HearthstoneReplays.Parser
                 D 10:04:16.7710789 PowerTaskList.DebugDump() - ID=350 ParentID=345 PreviousID=0 TaskCount=15
                 */
                 // Cut short, usually the GameState is interrupted, something happens on PTL, and the alternative timeline choice starts again on PTL
-                if (this.ignoringAlternateTimeline && line.Contains("ChoiceCardMgr.WaitThenShowChoices()"))
-                {
-                    this.ignoringAlternateTimeline = false;
-                }
+                // This doesn't work, as you could have some leftover PTL lines after this, like a DEATHS block
+                // Maybe logs should be parsed separately for GameState and PTL in case of reset, but the logs parser is not constructed to work like 
+                // that at the moment
+                // I would need the split the parsers into one parser for GameState (server-side state), and one parser for the rest
+                //if (this.ignoringAlternateTimeline && line.Contains("ChoiceCardMgr.WaitThenShowChoices()"))
+                //{
+                //    this.ignoringAlternateTimeline = false;
+                //}
 
                 if (this.inResetBlock && line.Contains("BLOCK_END"))
                 {
