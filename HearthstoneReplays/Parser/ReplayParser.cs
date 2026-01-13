@@ -228,12 +228,16 @@ namespace HearthstoneReplays.Parser
                 // Maybe logs should be parsed separately for GameState and PTL in case of reset, but the logs parser is not constructed to work like 
                 // that at the moment
                 // I would need the split the parsers into one parser for GameState (server-side state), and one parser for the rest
+                // However the resets should be kept in sync, so that the code that relies on GameState is still accurate
                 //if (this.ignoringAlternateTimeline && line.Contains("ChoiceCardMgr.WaitThenShowChoices()"))
                 //{
                 //    this.ignoringAlternateTimeline = false;
                 //}
 
-                if (this.inResetBlock && line.Contains("BLOCK_END"))
+                // Restricting to PTL might mean we miss some info from GameState though...
+                // But otherwise we can have the end of the GameState reset block, then info about the Rewind Timeline being showing in PTL
+                // then the PTL reset block. This causes the Rewind Timeline to be part of the parsed logs
+                if (this.inResetBlock && line.Contains("BLOCK_END") && line.Contains("PowerTaskList"))
                 {
                     //this.inResetBlock = false;
                     this.ignoringAlternateTimeline = false;
