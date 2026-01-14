@@ -108,9 +108,14 @@ namespace HearthstoneReplays.Parser
         private bool resettingGame;
         private int currentResetBlockIndex;
         private List<dynamic> resettingGames = new List<dynamic>();
-        private bool ignoringAlternateTimeline;
-        private int alternateTimelineBlockDepth; // Track nesting depth for alternate timeline blocks
-        private bool inResetBlock;
+        // Track ignoring state and block depth SEPARATELY for each log stream
+        // GameState and PowerTaskList are asynchronous - GS can finish its reset while PTL is still in alternate timeline
+        private bool ignoringAlternateTimelineGS;
+        private int alternateTimelineBlockDepthGS;
+        private bool ignoringAlternateTimelinePTL;
+        private int alternateTimelineBlockDepthPTL;
+        private bool inResetBlockGS;
+        private bool inResetBlockPTL;
 
         public void ReadLine(string line, long gameSeed, int lineIndex)
         {
@@ -188,97 +193,107 @@ namespace HearthstoneReplays.Parser
                 }
             }
 
+            // Determine which log stream this line belongs to
+            // GameState and PowerTaskList are ASYNCHRONOUS - GS can finish its reset while PTL is still in alternate timeline
+            bool isGameState = line.Contains("GameState.");
+            bool isPowerTaskList = line.Contains("PowerTaskList.");
+
+            // Track GAME_RESET blocks separately for each stream
             if (resetStartMatch != null && resetStartMatch.Success)
             {
-                this.inResetBlock = true;
+                if (isGameState)
+                    this.inResetBlockGS = true;
+                else if (isPowerTaskList)
+                    this.inResetBlockPTL = true;
             }
 
             if (this.resettingGame)
             {
                 var currentEntityIdBlockToIgnore = this.resettingGames[this.currentResetBlockIndex];
 
-                // The whitespace is important, otherwise an entity=5 can be triggered by id=54
-                // Rewind Timeline is always triggered from a BlockType=PLAY block (hero power or card play)
-                if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} ") && !this.ignoringAlternateTimeline)
+                // === GAMESTATE STREAM HANDLING ===
+                if (isGameState)
                 {
-                    this.ignoringAlternateTimeline = true;
-                    this.alternateTimelineBlockDepth = 1;
-                }
-                // Track nested BLOCK_START while ignoring alternate timeline
-                else if (this.ignoringAlternateTimeline && line.Contains("BLOCK_START"))
-                {
-                    this.alternateTimelineBlockDepth++;
-                }
-                // Track BLOCK_END while ignoring alternate timeline - only stop ignoring when we exit the outermost block
-                else if (this.ignoringAlternateTimeline && line.Contains("BLOCK_END"))
-                {
-                    this.alternateTimelineBlockDepth--;
-                    if (this.alternateTimelineBlockDepth == 0)
+                    // Start ignoring when we see the alternate timeline PLAY block
+                    if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} ") && !this.ignoringAlternateTimelineGS)
                     {
-                        this.ignoringAlternateTimeline = false;
+                        this.ignoringAlternateTimelineGS = true;
+                        this.alternateTimelineBlockDepthGS = 1;
+                    }
+                    // Track nested BLOCK_START
+                    else if (this.ignoringAlternateTimelineGS && line.Contains("BLOCK_START"))
+                    {
+                        this.alternateTimelineBlockDepthGS++;
+                    }
+                    // Track BLOCK_END - stop ignoring alternate timeline when we exit the outermost block
+                    else if (this.ignoringAlternateTimelineGS && line.Contains("BLOCK_END"))
+                    {
+                        this.alternateTimelineBlockDepthGS--;
+                        if (this.alternateTimelineBlockDepthGS == 0)
+                        {
+                            this.ignoringAlternateTimelineGS = false;
+                        }
+                    }
+
+                    // Handle GAME_RESET block end for GameState
+                    if (this.inResetBlockGS && line.Contains("BLOCK_END"))
+                    {
+                        this.inResetBlockGS = false;
+                    }
+
+                    // Skip this line if GameState is ignoring alternate timeline or in reset block
+                    if (this.ignoringAlternateTimelineGS || this.inResetBlockGS)
+                    {
+                        return;
                     }
                 }
 
-                // BLOCK_END is not enough - if the reset triggers a block with a choice, it can end in GameState without a BLOCK_END
-                /*
-                    * D 10:04:16.6645154 GameState.DebugPrintPower() -             tag=CONTROLLER value=1
-                D 10:04:16.6645154 GameState.DebugPrintPower() -             tag=ENTITY_ID value=142
-                D 10:04:16.7396242 GameState.DebugPrintEntityChoices() - id=6 Player=Naith#21657 TaskList=360 ChoiceType=GENERAL CountMin=1 CountMax=1
-                D 10:04:16.7396242 GameState.DebugPrintEntityChoices() -   Source=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=13 zone=HAND zonePos=4 cardId= player=1]
-                D 10:04:16.7396242 GameState.DebugPrintEntityChoices() -   Entities[0]=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=141 zone=SETASIDE zonePos=0 cardId= player=1]
-                D 10:04:16.7396242 GameState.DebugPrintEntityChoices() -   Entities[1]=[entityName=UNKNOWN ENTITY [cardType=INVALID] id=142 zone=SETASIDE zonePos=0 cardId= player=1]
-                D 10:04:16.7396242 ChoiceCardMgr.WaitThenShowChoices() - id=6 WAIT for taskList 360
-                D 10:04:16.7460948 PowerProcessor.EndCurrentTaskList() - m_currentTaskList=348
-                D 10:04:16.7522232 PowerTaskList.DebugDump() - ID=349 ParentID=0 PreviousID=345 TaskCount=3
-                D 10:04:16.7522232 PowerTaskList.DebugDump() - Block Start=(null)
-                D 10:04:16.7522232 PowerTaskList.DebugPrintPower() -     TAG_CHANGE Entity=[entityName=Precursory Strike id=24 zone=PLAY zonePos=0 cardId=TIME_750 player=1] tag=1068 value=4 
-                D 10:04:16.7522232 PowerTaskList.DebugPrintPower() -     TAG_CHANGE Entity=[entityName=Precursory Strike id=24 zone=PLAY zonePos=0 cardId=TIME_750 player=1] tag=1068 value=0 
-                D 10:04:16.7522232 PowerTaskList.DebugPrintPower() -     TAG_CHANGE Entity=[entityName=Precursory Strike id=24 zone=PLAY zonePos=0 cardId=TIME_750 player=1] tag=ZONE value=GRAVEYARD 
-                D 10:04:16.7522232 PowerTaskList.DebugDump() - Block End=(null)
-                D 10:04:16.7522232 PowerProcessor.PrepareHistoryForCurrentTaskList() - m_currentTaskList=349
-                D 10:04:16.7522232 PowerProcessor.DoTaskListForCard() - unhandled BlockType PLAY for sourceEntity [entityName=Precursory Strike id=24 zone=PLAY zonePos=0 cardId=TIME_750 player=1]
-                D 10:04:16.7646769 PowerProcessor.EndCurrentTaskList() - m_currentTaskList=349
-                D 10:04:16.7710789 PowerTaskList.DebugDump() - ID=350 ParentID=345 PreviousID=0 TaskCount=15
-                */
-                // Cut short, usually the GameState is interrupted, something happens on PTL, and the alternative timeline choice starts again on PTL
-                // This doesn't work, as you could have some leftover PTL lines after this, like a DEATHS block
-                // Maybe logs should be parsed separately for GameState and PTL in case of reset, but the logs parser is not constructed to work like 
-                // that at the moment
-                // I would need the split the parsers into one parser for GameState (server-side state), and one parser for the rest
-                // However the resets should be kept in sync, so that the code that relies on GameState is still accurate
-                //if (this.ignoringAlternateTimeline && line.Contains("ChoiceCardMgr.WaitThenShowChoices()"))
-                //{
-                //    this.ignoringAlternateTimeline = false;
-                //}
-
-                // Handle the end of the GAME_RESET block - this completes the reset process
-                // The GAME_RESET block itself contains the "correct" game state after rewinding
-                if (this.inResetBlock && line.Contains("BLOCK_END"))
+                // === POWERTASKLIST STREAM HANDLING ===
+                if (isPowerTaskList)
                 {
-                    this.currentResetBlockIndex++;
-                    if (this.currentResetBlockIndex == this.resettingGames.Count)
+                    // Start ignoring when we see the alternate timeline PLAY block
+                    if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} ") && !this.ignoringAlternateTimelinePTL)
                     {
-                        this.resettingGame = false;
-                        var normalizedTimestamp = matchSuccess ? NormalizeTimestamp(timestamp) : DateTime.Now;
-                        State.PTLState.NodeParser.EnqueueGameEvent(new List<GameEventProvider> {
-                            GameEventProvider.Create(normalizedTimestamp, "REWIND_OVER", () => new GameEvent { Type = "REWIND_OVER" }, true, null)
-                        });
+                        this.ignoringAlternateTimelinePTL = true;
+                        this.alternateTimelineBlockDepthPTL = 1;
+                    }
+                    // Track nested BLOCK_START
+                    else if (this.ignoringAlternateTimelinePTL && line.Contains("BLOCK_START"))
+                    {
+                        this.alternateTimelineBlockDepthPTL++;
+                    }
+                    // Track BLOCK_END - stop ignoring alternate timeline when we exit the outermost block
+                    else if (this.ignoringAlternateTimelinePTL && line.Contains("BLOCK_END"))
+                    {
+                        this.alternateTimelineBlockDepthPTL--;
+                        if (this.alternateTimelineBlockDepthPTL == 0)
+                        {
+                            this.ignoringAlternateTimelinePTL = false;
+                        }
+                    }
+
+                    // Handle GAME_RESET block end for PowerTaskList - this completes the reset process
+                    if (this.inResetBlockPTL && line.Contains("BLOCK_END"))
+                    {
+                        this.inResetBlockPTL = false;
+                        // Only mark reset as complete when PTL finishes (it's always last)
+                        this.currentResetBlockIndex++;
+                        if (this.currentResetBlockIndex == this.resettingGames.Count)
+                        {
+                            this.resettingGame = false;
+                            var normalizedTimestamp = matchSuccess ? NormalizeTimestamp(timestamp) : DateTime.Now;
+                            State.PTLState.NodeParser.EnqueueGameEvent(new List<GameEventProvider> {
+                                GameEventProvider.Create(normalizedTimestamp, "REWIND_OVER", () => new GameEvent { Type = "REWIND_OVER" }, true, null)
+                            });
+                        }
+                    }
+
+                    // Skip this line if PowerTaskList is ignoring alternate timeline or in reset block
+                    if (this.ignoringAlternateTimelinePTL || this.inResetBlockPTL)
+                    {
+                        return;
                     }
                 }
-            }
-
-            // We need to also handle the case where the "RESET_GAME" in PTL appears *after* the PTL discovery block
-            // This probably shouldn't happen in the first case, but we see this behavior if the user picks the
-            // "rewind timeline" option quickly
-            if (this.inResetBlock && line.Contains("BLOCK_END"))
-            {
-                this.inResetBlock = false;
-                return;
-            }
-
-            if (this.ignoringAlternateTimeline || this.inResetBlock)
-            {
-                return;
             }
 
             this.processedLines.Add(line);
