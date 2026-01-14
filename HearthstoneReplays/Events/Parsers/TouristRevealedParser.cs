@@ -51,6 +51,20 @@ namespace HearthstoneReplays.Events.Parsers
                 .FirstOrDefault();
             if (touristEntity == null)
             {
+                var parent = node.Parent;
+                if (parent.Type == typeof(Action))
+                {
+                    var parentAction = node.Parent.Object as Action;
+                    var maybeTourist = GameState.CurrentEntities.GetValueOrDefault(parentAction.Entity);
+                    if (maybeTourist.GetTag(GameTag.TOURIST) > 0)
+                    {
+                        touristEntity = maybeTourist;
+                    }
+                }
+            }
+
+            if (touristEntity == null)
+            {
                 return null;
             }
 

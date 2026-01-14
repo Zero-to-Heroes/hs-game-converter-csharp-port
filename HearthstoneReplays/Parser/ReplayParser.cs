@@ -109,6 +109,7 @@ namespace HearthstoneReplays.Parser
         private int currentResetBlockIndex;
         private List<dynamic> resettingGames = new List<dynamic>();
         private bool ignoringAlternateTimeline;
+        private int alternateTimelineBlockDepth; // Track nesting depth for alternate timeline blocks
         private bool inResetBlock;
 
         public void ReadLine(string line, long gameSeed, int lineIndex)
@@ -197,9 +198,25 @@ namespace HearthstoneReplays.Parser
                 var currentEntityIdBlockToIgnore = this.resettingGames[this.currentResetBlockIndex];
 
                 // The whitespace is important, otherwise an entity=5 can be triggered by id=54
-                if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} "))
+                // Rewind Timeline is always triggered from a BlockType=PLAY block (hero power or card play)
+                if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} ") && !this.ignoringAlternateTimeline)
                 {
                     this.ignoringAlternateTimeline = true;
+                    this.alternateTimelineBlockDepth = 1;
+                }
+                // Track nested BLOCK_START while ignoring alternate timeline
+                else if (this.ignoringAlternateTimeline && line.Contains("BLOCK_START"))
+                {
+                    this.alternateTimelineBlockDepth++;
+                }
+                // Track BLOCK_END while ignoring alternate timeline - only stop ignoring when we exit the outermost block
+                else if (this.ignoringAlternateTimeline && line.Contains("BLOCK_END"))
+                {
+                    this.alternateTimelineBlockDepth--;
+                    if (this.alternateTimelineBlockDepth == 0)
+                    {
+                        this.ignoringAlternateTimeline = false;
+                    }
                 }
 
                 // BLOCK_END is not enough - if the reset triggers a block with a choice, it can end in GameState without a BLOCK_END
@@ -234,13 +251,10 @@ namespace HearthstoneReplays.Parser
                 //    this.ignoringAlternateTimeline = false;
                 //}
 
-                // Restricting to PTL might mean we miss some info from GameState though...
-                // But otherwise we can have the end of the GameState reset block, then info about the Rewind Timeline being showing in PTL
-                // then the PTL reset block. This causes the Rewind Timeline to be part of the parsed logs
-                if (this.inResetBlock && line.Contains("BLOCK_END") && line.Contains("PowerTaskList"))
+                // Handle the end of the GAME_RESET block - this completes the reset process
+                // The GAME_RESET block itself contains the "correct" game state after rewinding
+                if (this.inResetBlock && line.Contains("BLOCK_END"))
                 {
-                    //this.inResetBlock = false;
-                    this.ignoringAlternateTimeline = false;
                     this.currentResetBlockIndex++;
                     if (this.currentResetBlockIndex == this.resettingGames.Count)
                     {
