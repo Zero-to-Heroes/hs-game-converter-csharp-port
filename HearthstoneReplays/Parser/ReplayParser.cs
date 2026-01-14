@@ -112,10 +112,8 @@ namespace HearthstoneReplays.Parser
         // GameState and PowerTaskList are asynchronous - GS can finish its reset while PTL is still in alternate timeline
         private bool ignoringAlternateTimelineGS;
         private int alternateTimelineBlockDepthGS;
-        private bool alternateTimelineProcessedGS; // True once we've finished ignoring the alternate timeline
         private bool ignoringAlternateTimelinePTL;
         private int alternateTimelineBlockDepthPTL;
-        private bool alternateTimelineProcessedPTL; // True once we've finished ignoring the alternate timeline
         private bool inResetBlockGS;
         private bool inResetBlockPTL;
 
@@ -181,19 +179,42 @@ namespace HearthstoneReplays.Parser
                     // Reset all stream-specific state for the new reset cycle
                     this.ignoringAlternateTimelineGS = false;
                     this.alternateTimelineBlockDepthGS = 0;
-                    this.alternateTimelineProcessedGS = false;
                     this.ignoringAlternateTimelinePTL = false;
                     this.alternateTimelineBlockDepthPTL = 0;
-                    this.alternateTimelineProcessedPTL = false;
                     this.inResetBlockGS = false;
                     this.inResetBlockPTL = false;
                     // TODO: Enqueue reset game event
                     var rawEntity = resetStartMatch.Groups[1].Value;
                     var entityId = helper.ParseEntity(rawEntity);
-                    // Only the latest reset appears here, as the previous ones have been removed from the alternate timeline
-                    // So we only need to keep the latest "reset" info
+                    
+                    // Find the LAST PLAY block with this entity id before the GAME_RESET for EACH stream
+                    // This is the alternate timeline we need to ignore. Previous PLAY blocks with the same entity id
+                    // are from accepted timelines and should NOT be ignored.
+                    int alternatePlayIndexGS = -1;
+                    int alternatePlayIndexPTL = -1;
+                    for (int i = this.processedLines.Count - 1; i >= 0; i--)
+                    {
+                        var prevLine = this.processedLines[i];
+                        if (prevLine.Contains("BLOCK_START BlockType=PLAY") && prevLine.Contains($"id={entityId} "))
+                        {
+                            if (prevLine.Contains("GameState.") && alternatePlayIndexGS == -1)
+                            {
+                                alternatePlayIndexGS = i;
+                            }
+                            else if (prevLine.Contains("PowerTaskList.") && alternatePlayIndexPTL == -1)
+                            {
+                                alternatePlayIndexPTL = i;
+                            }
+                            // Stop if we found both
+                            if (alternatePlayIndexGS != -1 && alternatePlayIndexPTL != -1)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    
                     this.resettingGames.Clear();
-                    this.resettingGames.Add(new { originEntity = entityId, index = lineIndex });
+                    this.resettingGames.Add(new { originEntity = entityId, alternatePlayIndexGS = alternatePlayIndexGS, alternatePlayIndexPTL = alternatePlayIndexPTL });
                     // We keep the "RESET_GAME" line so that we know when we need to start ignoring the "recreate game" effect
                     // and when it ends
                     this.processedLines.Add(line);
@@ -225,9 +246,13 @@ namespace HearthstoneReplays.Parser
                 // === GAMESTATE STREAM HANDLING ===
                 if (isGameState)
                 {
-                    // Start ignoring when we see the alternate timeline PLAY block (only once per reset)
-                    if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} ") 
-                        && !this.ignoringAlternateTimelineGS && !this.alternateTimelineProcessedGS)
+                    // Only ignore the specific PLAY block that is the alternate timeline (the last one before GAME_RESET)
+                    // Previous PLAY blocks with the same entity id are from accepted timelines and should NOT be ignored
+                    bool isAlternatePlayBlock = lineIndex == currentEntityIdBlockToIgnore.alternatePlayIndexGS;
+
+                    // Start ignoring when we see THE alternate timeline PLAY block (exact line match)
+                    if (isAlternatePlayBlock && line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} ") 
+                        && !this.ignoringAlternateTimelineGS)
                     {
                         this.ignoringAlternateTimelineGS = true;
                         this.alternateTimelineBlockDepthGS = 1;
@@ -244,7 +269,6 @@ namespace HearthstoneReplays.Parser
                         if (this.alternateTimelineBlockDepthGS == 0)
                         {
                             this.ignoringAlternateTimelineGS = false;
-                            this.alternateTimelineProcessedGS = true; // Mark as processed so we don't re-trigger on new timeline
                         }
                     }
 
@@ -264,9 +288,13 @@ namespace HearthstoneReplays.Parser
                 // === POWERTASKLIST STREAM HANDLING ===
                 if (isPowerTaskList)
                 {
-                    // Start ignoring when we see the alternate timeline PLAY block (only once per reset)
-                    if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} ") 
-                        && !this.ignoringAlternateTimelinePTL && !this.alternateTimelineProcessedPTL)
+                    // Only ignore the specific PLAY block that is the alternate timeline (the last one before GAME_RESET)
+                    // Previous PLAY blocks with the same entity id are from accepted timelines and should NOT be ignored
+                    bool isAlternatePlayBlock = lineIndex == currentEntityIdBlockToIgnore.alternatePlayIndexPTL;
+
+                    // Start ignoring when we see THE alternate timeline PLAY block (exact line match)
+                    if (isAlternatePlayBlock && line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} ") 
+                        && !this.ignoringAlternateTimelinePTL)
                     {
                         this.ignoringAlternateTimelinePTL = true;
                         this.alternateTimelineBlockDepthPTL = 1;
@@ -283,7 +311,6 @@ namespace HearthstoneReplays.Parser
                         if (this.alternateTimelineBlockDepthPTL == 0)
                         {
                             this.ignoringAlternateTimelinePTL = false;
-                            this.alternateTimelineProcessedPTL = true; // Mark as processed so we don't re-trigger on new timeline
                         }
                     }
 
