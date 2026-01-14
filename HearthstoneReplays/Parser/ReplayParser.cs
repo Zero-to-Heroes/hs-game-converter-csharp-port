@@ -112,8 +112,10 @@ namespace HearthstoneReplays.Parser
         // GameState and PowerTaskList are asynchronous - GS can finish its reset while PTL is still in alternate timeline
         private bool ignoringAlternateTimelineGS;
         private int alternateTimelineBlockDepthGS;
+        private bool alternateTimelineProcessedGS; // True once we've finished ignoring the alternate timeline
         private bool ignoringAlternateTimelinePTL;
         private int alternateTimelineBlockDepthPTL;
+        private bool alternateTimelineProcessedPTL; // True once we've finished ignoring the alternate timeline
         private bool inResetBlockGS;
         private bool inResetBlockPTL;
 
@@ -176,6 +178,15 @@ namespace HearthstoneReplays.Parser
                     });
                     this.resettingGame = true;
                     this.currentResetBlockIndex = 0;
+                    // Reset all stream-specific state for the new reset cycle
+                    this.ignoringAlternateTimelineGS = false;
+                    this.alternateTimelineBlockDepthGS = 0;
+                    this.alternateTimelineProcessedGS = false;
+                    this.ignoringAlternateTimelinePTL = false;
+                    this.alternateTimelineBlockDepthPTL = 0;
+                    this.alternateTimelineProcessedPTL = false;
+                    this.inResetBlockGS = false;
+                    this.inResetBlockPTL = false;
                     // TODO: Enqueue reset game event
                     var rawEntity = resetStartMatch.Groups[1].Value;
                     var entityId = helper.ParseEntity(rawEntity);
@@ -214,8 +225,9 @@ namespace HearthstoneReplays.Parser
                 // === GAMESTATE STREAM HANDLING ===
                 if (isGameState)
                 {
-                    // Start ignoring when we see the alternate timeline PLAY block
-                    if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} ") && !this.ignoringAlternateTimelineGS)
+                    // Start ignoring when we see the alternate timeline PLAY block (only once per reset)
+                    if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} ") 
+                        && !this.ignoringAlternateTimelineGS && !this.alternateTimelineProcessedGS)
                     {
                         this.ignoringAlternateTimelineGS = true;
                         this.alternateTimelineBlockDepthGS = 1;
@@ -232,6 +244,7 @@ namespace HearthstoneReplays.Parser
                         if (this.alternateTimelineBlockDepthGS == 0)
                         {
                             this.ignoringAlternateTimelineGS = false;
+                            this.alternateTimelineProcessedGS = true; // Mark as processed so we don't re-trigger on new timeline
                         }
                     }
 
@@ -251,8 +264,9 @@ namespace HearthstoneReplays.Parser
                 // === POWERTASKLIST STREAM HANDLING ===
                 if (isPowerTaskList)
                 {
-                    // Start ignoring when we see the alternate timeline PLAY block
-                    if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} ") && !this.ignoringAlternateTimelinePTL)
+                    // Start ignoring when we see the alternate timeline PLAY block (only once per reset)
+                    if (line.Contains("BLOCK_START BlockType=PLAY") && line.Contains($"id={currentEntityIdBlockToIgnore.originEntity} ") 
+                        && !this.ignoringAlternateTimelinePTL && !this.alternateTimelineProcessedPTL)
                     {
                         this.ignoringAlternateTimelinePTL = true;
                         this.alternateTimelineBlockDepthPTL = 1;
@@ -269,6 +283,7 @@ namespace HearthstoneReplays.Parser
                         if (this.alternateTimelineBlockDepthPTL == 0)
                         {
                             this.ignoringAlternateTimelinePTL = false;
+                            this.alternateTimelineProcessedPTL = true; // Mark as processed so we don't re-trigger on new timeline
                         }
                     }
 

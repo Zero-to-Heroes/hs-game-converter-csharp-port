@@ -25,6 +25,10 @@ namespace HearthstoneReplays.Events.Parsers
 
         public bool AppliesOnNewNode(Node node, StateType stateType)
         {
+            if (stateType != StateType.PowerTaskList)
+            {
+                return false;
+            }
             // In this case, it's not a "play"
             var isTriggerPhase = (node.Parent == null
                        || node.Parent.Type != typeof(Parser.ReplayData.GameActions.Action)
@@ -46,8 +50,7 @@ namespace HearthstoneReplays.Events.Parsers
                 && (tagChangeEntity = GameState.CurrentEntities[(node.Object as TagChange).Entity]).GetTag(GameTag.ZONE) == (int)Zone.HAND
                 // The only case we actually consider the trigger phases is if we're handling a Cast When Drawn spell
                 && ((!isTriggerPhase && !isPowerPhase )|| tagChangeEntity.GetTag(GameTag.CASTS_WHEN_DRAWN) == 1);
-            return stateType == StateType.PowerTaskList
-                && (sigilPlayed || cardPlayed);
+            return (sigilPlayed || cardPlayed);
         }
 
         public bool AppliesOnCloseNode(Node node, StateType stateType)
