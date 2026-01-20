@@ -186,6 +186,8 @@ namespace HearthstoneReplays.Parser
             CurrentGame = new Game();
             this._localPlayer = null;
             this._opponentPlayer = null;
+            // Prevent an EndAction from triggering
+            _node = null;
             Node = null;
             GameData = null;
             SendChoices = null;

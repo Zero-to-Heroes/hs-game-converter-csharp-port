@@ -145,6 +145,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public void FullEntity(FullEntity entity, bool updating, string initialLog = null)
         {
+            var debug = entity.Entity == 127;
             if (updating)
             {
                 // This actually happens in a normal scenario, so we just ignore it
@@ -164,8 +165,10 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 // when reconnecting, we sometimes get udpated information on the FullEntity
                 new FullEntity
                 {
-                    CardId = CurrentEntities.GetValueOrDefault(entity.Id)?.CardId?.Length > 0 ? CurrentEntities.GetValueOrDefault(entity.Id).CardId : entity.CardId,
-                    Id = CurrentEntities.GetValueOrDefault(entity.Id)?.Id ?? entity.Id,
+                    // Do that the other way around - first get the value from the incoming Entity
+                    // Otherwise, when handling Rewinds, where the same entity ID gets reassigned, we run into issues
+                    CardId = entity.CardId != null && entity.CardId.Length > 0 ? entity.CardId : CurrentEntities.GetValueOrDefault(entity.Id)?.CardId,
+                    Id = entity.Id > 0 ? entity.Id : CurrentEntities.GetValueOrDefault(entity.Id)?.Id ?? entity.Id,
                     TimeStamp = entity.TimeStamp
                 };
             fullEntity.Tags = newTags;
@@ -175,7 +178,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
                 CurrentEntities.Remove(entity.Id);
             }
             CurrentEntities.Add(entity.Id, fullEntity);
-            var debug = CurrentEntities.GetValueOrDefault(entity.Id);
 
             //if (this.ParserState.StateType == StateType.PowerTaskList)
             //{
@@ -185,6 +187,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public void ShowEntity(ShowEntity entity)
         {
+            var debug = entity.Entity == 48;
             if (!CurrentEntities.ContainsKey(entity.Entity))
             {
                 Logger.Log("error while parsing, showentity doesn't have an entity in memory yet", "" + entity.Entity);
@@ -213,7 +216,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
             oldTagsToKeep.AddRange(newTags);
             CurrentEntities[entity.Entity].Tags = oldTagsToKeep;
-            var debug = CurrentEntities.GetValueOrDefault(entity.Entity);
             //if (this.ParserState.StateType == StateType.PowerTaskList)
             //{
             //    Logger.Log($"After adding show Entity {entity.CardId}, existingZone={CurrentEntities[entity.Entity].GetZone()}", "");
@@ -284,6 +286,7 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
 
         public void ChangeEntity(ChangeEntity entity)
         {
+            var debug = entity.Entity == 127;
             if (!CurrentEntities.ContainsKey(entity.Entity))
             {
                 Logger.Log("error while parsing, changeEntity doesn't have an entity in memory yet", "" + entity.Entity);
@@ -307,7 +310,6 @@ namespace HearthstoneReplays.Parser.ReplayData.Entities
             }
             oldTagsToKeep.AddRange(newTags);
             CurrentEntities[entity.Entity].Tags = oldTagsToKeep;
-            var debug = CurrentEntities.GetValueOrDefault(entity.Entity);
             //if (this.ParserState.StateType == StateType.PowerTaskList)
             //{
             //    Logger.Log($"After ChangeEntity {entity.CardId}, existingZone={CurrentEntities[entity.Entity].GetZone()}", "");

@@ -131,8 +131,6 @@ namespace HearthstoneReplays.Parser
             string content = null;
             bool matchSuccess = false;
 
-            //var debugLine = lineIndex == 9624 || lineIndex == 9604;
-
             if (line.Length >= 3 && line[0] == 'D' && line[1] == ' ')
             {
                 // Find the first space after "D " (start of timestamp)
@@ -197,18 +195,20 @@ namespace HearthstoneReplays.Parser
                         var prevLine = this.processedLines[i];
                         if (prevLine.Contains("BLOCK_START BlockType=PLAY") && prevLine.Contains($"id={entityId} "))
                         {
+                            // GameState always happens earlier than PTL. So later in the processing, since
+                            // we go in reverse order
+                            // This means that if we process a GameState line and haven't processed a PTL line,
+                            // the GAME_RESET occurred before the PTL line for the play happened, and trying to 
+                            // find a PTL line can cause us to get something incorrect
+                            // So we stop as soon as we find the GS info
                             if (prevLine.Contains("GameState.") && alternatePlayIndexGS == -1)
                             {
                                 alternatePlayIndexGS = i;
+                                break;
                             }
                             else if (prevLine.Contains("PowerTaskList.") && alternatePlayIndexPTL == -1)
                             {
                                 alternatePlayIndexPTL = i;
-                            }
-                            // Stop if we found both
-                            if (alternatePlayIndexGS != -1 && alternatePlayIndexPTL != -1)
-                            {
-                                break;
                             }
                         }
                     }
