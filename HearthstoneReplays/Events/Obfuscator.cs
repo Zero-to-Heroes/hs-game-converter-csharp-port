@@ -8,8 +8,9 @@ namespace HearthstoneReplays.Events
 {
     internal class Obfuscator
     {
-        internal static bool shouldObfuscateCardDraw(FullEntity entity, GameState gameState, Node node, bool isPlayer)
+        internal static bool shouldObfuscateCardDraw(FullEntity entity, GameState gameState, Node node, bool isPlayer, bool revealed = false)
         {
+            var updatedEntity = gameState.CurrentEntities.GetValueOrDefault(entity.Id);
             if (node?.Parent?.Type == typeof(Action))
             {
                 var action = node.Parent.Object as Action;
@@ -31,7 +32,8 @@ namespace HearthstoneReplays.Events
             if (!isPlayer && entity.AllPreviousTags.Find(t => t.Name == (int)GameTag.IS_USING_TRADE_OPTION && t.Value == 1) != null) {
                 return true;
             }
-            if (!isPlayer && entity.Hidden && (entity.GetTag(GameTag.CASTS_WHEN_DRAWN) != 1 && entity.GetTag(GameTag.SUMMONED_WHEN_DRAWN) != 1))
+            // What can happen is the card is revealed when drawn (eg Temporal Anomaly), then immediately hidden again
+            if (!isPlayer && entity.Hidden && !revealed && (entity.GetTag(GameTag.CASTS_WHEN_DRAWN) != 1 && entity.GetTag(GameTag.SUMMONED_WHEN_DRAWN) != 1))
             {
                 return true;
             }

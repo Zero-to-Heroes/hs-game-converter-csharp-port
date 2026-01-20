@@ -297,6 +297,7 @@ namespace HearthstoneReplays.Events
                     case ConfectionCyclone: return ConfectionCyclone_SugarElementalToken;
                     case ConjureManaBiscuit: return ConjureManaBiscuit_ManaBiscuitToken;
                     case ConjurersCalling_DAL_177: return ConjurersCalling_DAL_177ts;
+                    case ConsiderThePast_ConsiderThePastEnchantment_TOT_341e: return ConsiderThePast;
                     case CoppertailSnoop_CoppertailSnoopEnchantment: return TheCoinCore;
                     case CoppertailSnoop: return TheCoinCore;
                     case CreepyCurio_HauntedCurioTavernBrawl: return CreepyCurio_CursedCurioTavernBrawl;
@@ -586,6 +587,7 @@ namespace HearthstoneReplays.Events
                     case UnleashTheBeast_DAL_378: return UnleashTheBeast_DAL_378ts;
                     case UnleashTheColossus_TLC_631: return UnleashTheColossus_GorishiColossusToken_TLC_631t;
                     case UrzulHorror: return UrzulHorror_LostSoulToken;
+                    case VictoriousVrykul: return VictoriousVrykul_VictoriousValkyrToken;
                     case VioletSpellwing: return ArcaneMissilesLegacy;
                     case VioletSpellwing_CORE_DRG_107: return ArcaneMissilesLegacy;
                     case VolleyMaul_VAC_921: return Grillmaster_SunscreenToken_VAC_917t;
@@ -621,6 +623,7 @@ namespace HearthstoneReplays.Events
                     case HealthDrink_HealthDrinkToken_VAC_951t: return HealthDrink_HealthDrinkToken_VAC_951t2;
                     case AdaptiveAmalgam_VAC_958: return AdaptiveAmalgam_VAC_958;
                     case Corpsicle_CorpsicleEnchantment_VAC_427e: return Corpsicle_VAC_427;
+                    case EternalFirebolt_EternalFireboltEnchantment_END_025e: return EternalFirebolt_END_025;
                     case LineCook_VAC_337: return LineCook_VAC_337;
 
                     // Action targets

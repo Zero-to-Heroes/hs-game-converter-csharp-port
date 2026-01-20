@@ -106,6 +106,7 @@ namespace HearthstoneReplays.Events.Parsers
                 createdIndex = drawnByEntity.CreatedIndex;
                 drawnByEntity.CreatedIndex++;
             }
+            var revealed = entity.GetTag(GameTag.REVEALED) == 1;
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "CARD_DRAW_FROM_DECK",
@@ -134,7 +135,7 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                     GameState.OnCardDrawn(entity.Entity);
                     var finalCardId = cardId != null && cardId.Length > 0 ? cardId : predictedCardId;
-                    var shouldObfuscate = Obfuscator.shouldObfuscateCardDraw(entity, GameState, node, controllerId == StateFacade.LocalPlayer.PlayerId);
+                    var shouldObfuscate = Obfuscator.shouldObfuscateCardDraw(entity, GameState, node, controllerId == StateFacade.LocalPlayer.PlayerId, revealed: revealed);
                     return new GameEvent
                     {
                         Type =  "CARD_DRAW_FROM_DECK",
