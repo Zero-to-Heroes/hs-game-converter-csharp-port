@@ -46,26 +46,35 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
-            AttackOnBoard attackOnBoard = BuildAttackOnBoard();
-            if (attackOnBoard == null)
-            {
-                return null;
-            }
 
             return new List<GameEventProvider> { GameEventProvider.Create(
                 (node.Object as TagChange).TimeStamp,
                 "TOTAL_ATTACK_ON_BOARD",
-                GameEvent.CreateProvider(
-                    "TOTAL_ATTACK_ON_BOARD",
-                    null,
-                    -1,
-                    -1,
-                    StateFacade,
-                    new
+                () =>
+                {
+                    // Do it here, so that if the tag change is an ATK tag, it has already been processed
+                    AttackOnBoard attackOnBoard = BuildAttackOnBoard();
+                    if (attackOnBoard == null)
                     {
-                        AttackOnBoard = attackOnBoard,
+                        return null;
                     }
-                ),
+                    return new GameEvent
+                    {
+                        Type = "TOTAL_ATTACK_ON_BOARD",
+                        Value = new 
+                        {
+                            CardId = null as string,
+                            ControllerId = -1,
+                            LocalPlayer = null as Player,
+                            OpponentPlayer = null as Player,
+                            EntityId = -1,
+                            AdditionalProps = new
+                            {
+                                AttackOnBoard = attackOnBoard,
+                            }
+                        }
+                    };
+                },
                 true,
                 node
             )};
