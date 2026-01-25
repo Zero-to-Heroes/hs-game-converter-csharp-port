@@ -11,12 +11,12 @@ namespace HearthstoneReplays.Events.Parsers
 {
     public class CardDrawFromDeckParser : ActionParser
     {
-        private static List<string> SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW = new List<string>() { 
+        private static List<string> SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW = new List<string>() {
             CardIds.SuspiciousAlchemist_AMysteryEnchantment,
             CardIds.DeathBlossomWhomper,
             CardIds.Mimicry_EDR_522,
         };
-        private static List<string> SHOULD_USE_ORACLE_TO_IDENTIFY_DRAWN_CARD = new List<string>() { 
+        private static List<string> SHOULD_USE_ORACLE_TO_IDENTIFY_DRAWN_CARD = new List<string>() {
             CardIds.TalanjiOfTheGraves_TIME_619
         };
         private GameState GameState { get; set; }
@@ -83,6 +83,7 @@ namespace HearthstoneReplays.Events.Parsers
                 return null;
             }
 
+            var debug = entityId == 40;
             var dataTag1 = entity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1, 0);
             // Cost is needed for cards like Lady Prestor, which use the cost of the drawn card to remove the right card from the deck
             var cost = entity.GetCost();
@@ -91,12 +92,17 @@ namespace HearthstoneReplays.Events.Parsers
             // Useful for Finley
             string drawnByCardId = null;
             int? drawnByEntityId = null;
+            bool isTrade = false;
             if (parentAction != null)
             {
                 var drawerEntityId = parentAction.Entity;
                 var drawerEntity = GameState.CurrentEntities.GetValueOrDefault(drawerEntityId);
-                drawnByCardId = drawerEntity?.CardId;
-                drawnByEntityId = parentAction.Entity;
+                isTrade = drawerEntity?.GetTag(GameTag.TRADEABLE) == 1 && drawerEntity?.GetTag(GameTag.IS_USING_TRADE_OPTION) == 1;
+                if (!isTrade)
+                {
+                    drawnByCardId = drawerEntity?.CardId;
+                    drawnByEntityId = parentAction.Entity;
+                }
             }
 
             int? createdIndex = null;
@@ -119,7 +125,7 @@ namespace HearthstoneReplays.Events.Parsers
                     var creator = wasInDeck ? null : Oracle.FindCardCreator(GameState, entity, node, false);
                     // Always return this info, and the client has a list of public card creators they are allowed to show
                     var lastInfluencedByCard = Oracle.FindCardCreator(GameState, entity, node);
-                    var lastInfluencedByCardId = lastInfluencedByCard?.Item1;
+                    var lastInfluencedByCardId = isTrade ? null : lastInfluencedByCard?.Item1;
                     var predictedCardId = Oracle.PredictCardId(GameState, creator?.Item1, -1, node, cardId, StateFacade);
                     if(SHOULD_USE_ORACLE_TO_IDENTIFY_DRAWN_CARD.Contains(drawnByCardId))
                     {
@@ -128,9 +134,9 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                     // Issue: if a card creates a card and draws one, this will flag them both (while the draw could be something else)
                     // This was introduced to flag the cards created by the Suspicious* cards
-                    if (SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW.Contains(lastInfluencedByCardId)) 
+                    if (SHOULD_USE_ADVANCED_PREDICTION_FOR_CARD_DRAW.Contains(lastInfluencedByCardId))
                     {
-                        predictedCardId = predictedCardId 
+                        predictedCardId = predictedCardId
                             ?? Oracle.PredictCardId(GameState, lastInfluencedByCardId, lastInfluencedByCard?.Item2 ?? -1, node, cardId, StateFacade, entityId);
                     }
                     GameState.OnCardDrawn(entity.Entity);

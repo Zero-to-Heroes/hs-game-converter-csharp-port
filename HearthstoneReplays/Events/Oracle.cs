@@ -119,6 +119,12 @@ namespace HearthstoneReplays.Events
                 var creator = GameState.CurrentEntities[creatorTag];
                 return new Tuple<string, int>(creator?.CardId, creator?.Entity ?? -1);
             }
+            var parentEntity = FindParentEntity(GameState, node);
+            return parentEntity;
+        }
+
+        public static Tuple<string, int> FindParentEntity(GameState GameState, Node node)
+        {
             if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
             {
                 var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;

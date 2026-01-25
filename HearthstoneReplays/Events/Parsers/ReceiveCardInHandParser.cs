@@ -72,7 +72,9 @@ namespace HearthstoneReplays.Events.Parsers
                 creatorEntity.CreatedIndex++;
             }
 
-            var lastInfluencedByCardId = GameState.CurrentEntities.GetValueOrDefault((node.Parent?.Object as Action)?.Entity ?? -1)?.CardId;
+            // This is different from the creator. A card can be created by Rangari Scout, played, then sent back to hand
+            // by Youthful Brewmaster. In that case, the creator is still Rangari Scout but the last influenced by is Youthful Brewmaster.
+            var lastInfluencedByCardId = GameState.CurrentEntities.GetValueOrDefault((node.Parent?.Object as Action)?.Entity ?? -1)?.CardId ?? creator?.Item1;
             entity.PlayedWhileInHand.Clear();
             var position = entity.GetZonePosition();
 
@@ -134,6 +136,9 @@ namespace HearthstoneReplays.Events.Parsers
             var dataNum1 = showEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1);
             var dataNum2 = showEntity.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_2);
             var position = showEntity.GetZonePosition();
+
+            var lastInfluencedBy = Oracle.FindParentEntity(GameState, node);
+            var lastInfluencedByCardId = lastInfluencedBy != null ? lastInfluencedBy?.Item1 : creator?.Item1;
             // Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, showEntity.CardId);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,
@@ -149,6 +154,7 @@ namespace HearthstoneReplays.Events.Parsers
                             CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
                             CreatorEntityId = creator?.Item2,
                             CreatedIndex = createdIndex,
+                            LastInfluencedByCardId = lastInfluencedByCardId,
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1,
                             DataNum1 = dataNum1,
                             DataNum2 = dataNum2,
@@ -226,6 +232,9 @@ namespace HearthstoneReplays.Events.Parsers
 
                         var creatorCardId = creator?.Item1;
                         var creatorEntityId = creator?.Item2;
+
+                        var lastInfluencedBy = Oracle.FindParentEntity(GameState, node);
+                        var lastInfluencedByCardId = lastInfluencedBy != null ? lastInfluencedBy?.Item1 : creator?.Item1;
                         //var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, fullEntity, node);
                         // The delay is also needed for Fight Over Me, because the DEATHS block is processed after the entities
                         // are actually added to hand (which I think is a bug on HS)
@@ -272,6 +281,7 @@ namespace HearthstoneReplays.Events.Parsers
                                     CreatorCardId = creatorCardId ?? (fullEntity.GetTag(GameTag.CREATOR) > 0 ? "Unknown" : null),
                                     CreatorEntityId = creatorEntityId ?? fullEntity.GetTag(GameTag.CREATOR),
                                     CreatedIndex = createdIndex,
+                                    LastInfluencedByCardId = lastInfluencedByCardId,
                                     IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1,
                                     BuffingEntityCardId = buffingCardEntityCardId,
                                     BuffCardId = buffCardId,
