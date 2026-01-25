@@ -61,7 +61,7 @@ namespace HearthstoneReplays.Events.Parsers
                     return new GameEvent
                     {
                         Type = "TOTAL_ATTACK_ON_BOARD",
-                        Value = new 
+                        Value = new
                         {
                             CardId = null as string,
                             ControllerId = -1,
@@ -153,16 +153,19 @@ namespace HearthstoneReplays.Events.Parsers
             if (hero != null)
             {
                 var weapon = entitiesForPlayer.FirstOrDefault(entity => entity.GetTag(GameTag.CARDTYPE) == (int)CardType.WEAPON);
-                var baseHeroAttack = isActivePlayer ? hero.GetTag(GameTag.ATK, 0) : (weapon?.GetTag(GameTag.ATK, 0) ?? 0);
-                var windfuryMultiplier = GetWindfuryMultiplier(hero);
-                var attacksForWeapon = weapon == null 
-                    ? windfuryMultiplier
-                    : Math.Max(0, weapon.GetTag(GameTag.HEALTH, 0) - weapon.GetTag(GameTag.DAMAGE, 0));
-                var maxAttacks = Math.Min(windfuryMultiplier, attacksForWeapon);
-                var attacksLeft = isActivePlayer 
-                    ? maxAttacks - hero.GetTag(GameTag.NUM_ATTACKS_THIS_TURN, 0) + hero.GetTag(GameTag.EXTRA_ATTACKS_THIS_TURN, 0) 
-                    : windfuryMultiplier;
-                heroAttack = CanAttack(hero, isActivePlayer, true) ? attacksLeft * baseHeroAttack : 0;
+                if (weapon == null || weapon.GetTag(GameTag.CANNOT_ATTACK_HEROES) != 1)
+                {
+                    var baseHeroAttack = isActivePlayer ? hero.GetTag(GameTag.ATK, 0) : (weapon?.GetTag(GameTag.ATK, 0) ?? 0);
+                    var windfuryMultiplier = GetWindfuryMultiplier(hero);
+                    var attacksForWeapon = weapon == null
+                        ? windfuryMultiplier
+                        : Math.Max(0, weapon.GetTag(GameTag.HEALTH, 0) - weapon.GetTag(GameTag.DAMAGE, 0));
+                    var maxAttacks = Math.Min(windfuryMultiplier, attacksForWeapon);
+                    var attacksLeft = isActivePlayer
+                        ? maxAttacks - hero.GetTag(GameTag.NUM_ATTACKS_THIS_TURN, 0) + hero.GetTag(GameTag.EXTRA_ATTACKS_THIS_TURN, 0)
+                        : windfuryMultiplier;
+                    heroAttack = CanAttack(hero, isActivePlayer, true) ? attacksLeft * baseHeroAttack : 0;
+                }
             }
             return new AttackOnBoardForPlayer()
             {
@@ -173,6 +176,11 @@ namespace HearthstoneReplays.Events.Parsers
 
         private bool CanAttack(FullEntity e, bool isActivePlayer, bool isHero)
         {
+            if (e.HasTag(GameTag.CANNOT_ATTACK_HEROES))
+            {
+                return false;
+            }
+
             var isDormant = e.HasTag(GameTag.DORMANT);
             var cantAttack = e.HasTag(GameTag.CANT_ATTACK);
             var isFrozen = e.HasTag(GameTag.FROZEN);
