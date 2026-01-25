@@ -13,8 +13,10 @@ namespace HearthstoneReplays
 {
     public class GameEvent
     {
+
         public string Type { get; set; }
         public Object Value { get; set; }
+        public GameEventDebug Debug { get; set; }
 
         public override string ToString()
         {
@@ -338,5 +340,13 @@ namespace HearthstoneReplays
                 tags = entity.GetTagsCopy()
             };
         }
+    }
+
+    public class GameEventDebug
+    {
+        public string CreationLogLine;
+        public DateTime Timestamp;
+        public int Index;
+
     }
 }

@@ -9,6 +9,8 @@ using HearthstoneReplays.Parser.ReplayData.Entities;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Parser;
 using HearthstoneReplays.Events.Parsers;
+using System.Diagnostics;
+using System.Linq.Expressions;
 #endregion
 
 namespace HearthstoneReplays.Events
@@ -46,157 +48,42 @@ namespace HearthstoneReplays.Events
                 return;
             }
 
-            // Filter null providers without creating a new list if possible
-            int nullCount = 0;
-            for (int i = 0; i < providers.Count; i++)
-            {
-                if (providers[i] == null)
-                {
-                    nullCount++;
-                }
-            }
-
-            // Remove outstanding events - check before filtering to avoid unnecessary work
-            bool hasCreateGame = false;
-            if (eventQueue.Count > 0)
-            {
-                for (int i = 0; i < providers.Count; i++)
-                {
-                    var provider = providers[i];
-                    if (provider != null && provider.CreationLogLine?.Contains("CREATE_GAME") == true)
-                    {
-                        hasCreateGame = true;
-                        break;
-                    }
-                }
-                if (hasCreateGame)
-                {
-                    ClearQueue();
-                }
-            }
-
-            // Filter nulls and collect duplicate predicates in a single pass
-            List<GameEventProvider> validProviders = nullCount > 0 
-                ? new List<GameEventProvider>(providers.Count - nullCount) 
-                : providers;
-            List<Func<GameEventProvider, bool>> duplicatePredicates = null;
-
-            for (int i = 0; i < providers.Count; i++)
-            {
-                var provider = providers[i];
-                if (provider != null)
-                {
-                    if (nullCount > 0)
-                    {
-                        validProviders.Add(provider);
-                    }
-                    if (provider.isDuplicatePredicate != null)
-                    {
-                        if (duplicatePredicates == null)
-                        {
-                            duplicatePredicates = new List<Func<GameEventProvider, bool>>();
-                        }
-                        duplicatePredicates.Add(provider.isDuplicatePredicate);
-                    }
-                }
-            }
-
-            if (validProviders == null)
-            {
-                validProviders = providers;
-            }
+            providers = providers.Where(provider => provider != null).ToList();
 
             lock (listLock)
             {
-                // Remove duplicate events using collected predicates
-                if (duplicatePredicates != null && duplicatePredicates.Count > 0 && eventQueue.Count > 0)
+                // Remove outstanding events
+                if (providers.Any(provider => (provider.CreationLogLine?.Contains("CREATE_GAME")) ?? false) && eventQueue.Count > 0)
                 {
-                    // Use a more efficient removal approach - iterate backwards to allow safe removal
-                    for (int i = eventQueue.Count - 1; i >= 0; i--)
-                    {
-                        var queued = eventQueue[i];
-                        if (queued == null)
-                        {
-                            eventQueue.RemoveAt(i);
-                            continue;
-                        }
+                    ClearQueue();
+                }
 
-                        // Check against all predicates
-                        for (int j = 0; j < duplicatePredicates.Count; j++)
-                        {
-                            if (duplicatePredicates[j](queued))
-                            {
-                                eventQueue.RemoveAt(i);
-                                break;
-                            }
-                        }
+                // Remove duplicate events
+                // As we process the queue when the animation is ready, we should not have a race condition 
+                // here, but it's still risky (vs preventing the insertion if a future event is a duplicate, but 
+                // which requires a lot of reengineering of the loop)
+                if (eventQueue != null && eventQueue.Count > 0)
+                {
+                    var shouldUnqueuePredicates = providers
+                        .Where(provider => provider.isDuplicatePredicate != null)
+                        .Select(provider => provider.isDuplicatePredicate)
+                        .ToList();
+
+                    if (shouldUnqueuePredicates.Count > 0)
+                    {
+                        eventQueue = eventQueue
+                            .Where(queued => queued != null && !shouldUnqueuePredicates.Any(predicate => predicate(queued)))
+                            .ToList();
                     }
                 }
 
-                // Use binary search insertion instead of full sort for better performance
-                // This is O(log n) per insertion instead of O(n log n) for full sort
-                for (int i = 0; i < validProviders.Count; i++)
+                eventQueue.AddRange(providers);
+                eventQueue.Sort((a, b) =>
                 {
-                    var provider = validProviders[i];
-                    InsertInSortedOrder(provider);
-                }
+                    int timestampComparison = a.Timestamp.CompareTo(b.Timestamp);
+                    return timestampComparison != 0 ? timestampComparison : a.Index.CompareTo(b.Index);
+                });
             }
-        }
-
-        // Insert a provider in sorted order using binary search for O(log n) insertion
-        private void InsertInSortedOrder(GameEventProvider provider)
-        {
-            if (eventQueue.Count == 0)
-            {
-                eventQueue.Add(provider);
-                return;
-            }
-
-            // Binary search for insertion point
-            int left = 0;
-            int right = eventQueue.Count - 1;
-            int insertIndex = eventQueue.Count;
-
-            // Cache timestamp and index to avoid repeated property access
-            DateTime providerTimestamp = provider.Timestamp;
-            int providerIndex = provider.Index;
-
-            while (left <= right)
-            {
-                int mid = (left + right) / 2;
-                var midProvider = eventQueue[mid];
-                
-                // Cache mid provider's timestamp and index
-                DateTime midTimestamp = midProvider.Timestamp;
-                int timestampComparison = providerTimestamp.CompareTo(midTimestamp);
-                
-                if (timestampComparison < 0)
-                {
-                    insertIndex = mid;
-                    right = mid - 1;
-                }
-                else if (timestampComparison > 0)
-                {
-                    left = mid + 1;
-                }
-                else
-                {
-                    // Same timestamp, compare by Index
-                    int midIndex = midProvider.Index;
-                    int indexComparison = providerIndex.CompareTo(midIndex);
-                    if (indexComparison < 0)
-                    {
-                        insertIndex = mid;
-                        right = mid - 1;
-                    }
-                    else
-                    {
-                        left = mid + 1;
-                    }
-                }
-            }
-
-            eventQueue.Insert(insertIndex, provider);
         }
 
         public void ClearQueue()
@@ -296,6 +183,12 @@ namespace HearthstoneReplays.Events
             // have the full meta data, like dungeon run step
             if (gameEvent != null)
             {
+                gameEvent.Debug = new GameEventDebug()
+                {
+                    CreationLogLine = provider.CreationLogLine,
+                    Timestamp = provider.Timestamp,
+                    Index = provider.Index,
+                };
                 //Logger.Log("Handling game event", gameEvent.Type);
                 GameEventHandler.Handle(gameEvent, false);
             }
