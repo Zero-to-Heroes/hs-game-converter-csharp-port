@@ -344,6 +344,9 @@ namespace HearthstoneReplays.Events
                     case Roach_SC_012: return Roach_SC_012;
                     case ExcavatedEvil: return ExcavatedEvil;
                     case ExploreUngoro: return ExploreUngoro_ChooseYourPathToken;
+                    case ExplorersHat: return ExplorersHat;
+                    case ExplorersHat_ExplorersHatEnchantment: return ExplorersHat;
+                    case ExplorersHat_WON_022: return ExplorersHat_WON_022;
                     case ExtraArms: return ExtraArms_MoreArmsToken;
                     case EyeOfChaos_YOG_515: return ChaoticTendril_YOG_514;
                     case FactoryAssemblybot_TOY_601: return FactoryAssemblybot_FactoryAssemblybotToken_TOY_601t;
@@ -550,7 +553,6 @@ namespace HearthstoneReplays.Events
                     case SurlyMob: return AngryMob;
                     case SurlyMobTavernBrawl: return SurlyMob_AngryMobTavernBrawl;
                     case SwarmOfLightbugs_WW_052: return SwarmOfLightbugs_BottledLightbugsToken_WW_052t2;
-                    //case SweetenedSnowflurry_TOY_307: return SweetenedSnowflurry_SweetenedSnowflurryToken_TOY_307t;
                     case TabletopRoleplayer_TOY_915: return TabletopRoleplayer_TabletopRoleplayerToken_TOY_915t;
                     case TalanjiOfTheGraves_TIME_619: return TalanjiOfTheGraves_BwonsamdiToken_TIME_619t;
                     case Talgath_GDB_472: return BackstabCore;
@@ -582,7 +584,6 @@ namespace HearthstoneReplays.Events
                     case TombPillager_LOE_012: return TheCoinCore;
                     case TombPillager_WON_340: return TheCoinCore;
                     case ToyCaptainTarim_TOY_813: return ToyCaptainTarim_ToyCaptainTarimToken_TOY_813t;
-                    //case ToysnatchingGeist_MIS_006: return ToysnatchingGeist_ToysnatchingGeistToken_MIS_006t;
                     case TradePrinceGallywix_GVG_028: return TradePrinceGallywix_GallywixsCoinToken;
                     case TramMechanic_WW_044: return TramMechanic_BarrelOfSludgeToken_WW_044t;
                     case TwinSlice_BT_175: return TwinSlice_SecondSliceToken;
@@ -605,7 +606,6 @@ namespace HearthstoneReplays.Events
                     case WildGrowthCore: return WildGrowth_ExcessManaLegacyToken;
                     case WildGrowthLegacy: return WildGrowth_ExcessManaLegacyToken;
                     case WildGrowthVanilla: return WildGrowth_ExcessManaLegacyToken;
-                    //case WindowShopper_TOY_652: return WindowShopper_WindowShopperToken_TOY_652t;
                     case WitchwoodApple: return WitchwoodApple_TreantToken;
                     case WitchwoodAppleCore: return WitchwoodApple_TreantToken;
                     case WorkForTogwaggle_WorkForTogwaggleEnchantTavernBrawlEnchantment: return TheCoinCore;
