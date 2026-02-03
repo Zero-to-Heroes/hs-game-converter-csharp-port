@@ -24,6 +24,7 @@ namespace HearthstoneReplays.Parser.Handlers
                 var shuffleNode = new ShuffleDeck
                 {
                     PlayerId = int.Parse(playerId),
+                    TimeStamp = timestamp,
                 };
                 state.UpdateCurrentNode(typeof(Game), typeof(Action));
                 state.CreateNewNode(new Node(typeof(ShuffleDeck), shuffleNode, indentLevel, state.Node, data));
