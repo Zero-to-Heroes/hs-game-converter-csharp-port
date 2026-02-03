@@ -530,7 +530,11 @@ namespace HearthstoneReplays.Events.Parsers
                         .FirstOrDefault();
                     if (createdEntity != null)
                     {
-                        heroPower.Info = createdEntity;
+                        var withEnchants = AddEchantments(
+                            stateFacade.GsState.GameState.CurrentEntities,
+                            createdEntity
+                        );
+                        heroPower.Info = withEnchants;
                     }
                     else
                     {
@@ -546,7 +550,12 @@ namespace HearthstoneReplays.Events.Parsers
                         OverrideTagWithHistory(clone, GameTag.ATK, takeUntilTag);
                         OverrideTagWithHistory(clone, GameTag.LITERALLY_UNPLAYABLE, takeUntilTag);
                         OverrideTagWithHistory(clone, GameTag.UNPLAYABLE_VISUALS, takeUntilTag);
-                        heroPower.Info = clone;
+                        var withEnchants = AddEchantments(
+                            stateFacade.GsState.GameState.CurrentEntities,
+                            clone,
+                            true
+                        );
+                        heroPower.Info = withEnchants;
                     }
                     return;
                 }
