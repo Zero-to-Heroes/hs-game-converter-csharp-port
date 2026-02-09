@@ -446,6 +446,9 @@ namespace HearthstoneReplays.Events.Parsers
             var friendlyMinionsDeadLastCombat = GetPlayerTag(playerEntityId, GameTag.NUM_FRIENDLY_MINIONS_THAT_DIED_LAST_TURN, currentEntities);
             var volumizerAttackBuff = GetPlayerTag(playerEntityId, GameTag.BACON_VOLUMIZER_ATTACK_BUFF, currentEntities);
             var volumizerHealthBuff = GetPlayerTag(playerEntityId, GameTag.BACON_VOLUMIZER_HEALTH_BUFF, currentEntities);
+            var whelpAttackBuff = GetPlayerEnchantmentValue(playerId, CardIds.WhelpBuffPlayerEnchantDntEnchantment_BG34_402pe, currentEntities);
+            var whelpHealthBuff = GetPlayerEnchantmentValue(playerId, CardIds.WhelpBuffPlayerEnchantDntEnchantment_BG34_402pe, currentEntities, GameTag.TAG_SCRIPT_DATA_NUM_2);
+
             var debug2 = board.Any(e => e.Entity == 18254);
 
             var choralEnchantments = currentEntitiesGs
@@ -487,6 +490,8 @@ namespace HearthstoneReplays.Events.Parsers
                 GoldSpentThisGame = goldSpentThisGame,
                 GoldrinnBuffAtk = goldrinnBuffAtk,
                 GoldrinnBuffHealth = goldrinnBuffHealth,
+                WhelpAttackBuff = whelpAttackBuff,
+                WhelpHealthBuff = whelpHealthBuff,
                 DeepBluesPlayed = deepBluesPlayed,
                 VolumizerAttackBuff = volumizerAttackBuff,
                 VolumizerHealthBuff = volumizerHealthBuff,
@@ -886,6 +891,9 @@ namespace HearthstoneReplays.Events.Parsers
             public int DeepBluesPlayed { get; set; }
             public int VolumizerAttackBuff { get; set; }
             public int VolumizerHealthBuff { get; set; }
+            public int WhelpAttackBuff { get; set; }
+            public int WhelpHealthBuff { get; set; }
+
         }
 
         internal class QuestReward

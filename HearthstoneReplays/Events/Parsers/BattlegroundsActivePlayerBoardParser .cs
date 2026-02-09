@@ -292,6 +292,8 @@ namespace HearthstoneReplays.Events.Parsers
                 var deepBluesPlayed = GetPlayerEnchantmentValue(player.Id, CardIds.DeepBlueCroonerPlayerEnchantDntEnchantment, GameState);
                 var volumizerAttackBuff = GetPlayerTag(player.Id, GameTag.BACON_VOLUMIZER_ATTACK_BUFF, GameState);
                 var volumizerHealthBuff = GetPlayerTag(player.Id, GameTag.BACON_VOLUMIZER_HEALTH_BUFF, GameState);
+                var whelpAttackBuff = GetPlayerEnchantmentValue(player.Id, CardIds.WhelpBuffPlayerEnchantDntEnchantment_BG34_402pe, GameState);
+                var whelpHealthBuff = GetPlayerEnchantmentValue(player.Id, CardIds.WhelpBuffPlayerEnchantDntEnchantment_BG34_402pe, GameState, GameTag.TAG_SCRIPT_DATA_NUM_2);
 
                 var trinkets = BattlegroundsPlayerBoardParser.BuildTrinkets(player.PlayerId, GameState);
 
@@ -362,6 +364,8 @@ namespace HearthstoneReplays.Events.Parsers
                         DeepBluesPlayed = deepBluesPlayed,
                         VolumizerAttackBuff = volumizerAttackBuff,
                         VolumizerHealthBuff = volumizerHealthBuff,
+                        WhelpAttackBuff = whelpAttackBuff,
+                        WhelpHealthBuff = whelpHealthBuff,
                     }
                 };
             }
