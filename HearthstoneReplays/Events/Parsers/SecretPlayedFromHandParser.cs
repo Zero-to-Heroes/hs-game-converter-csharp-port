@@ -43,7 +43,10 @@ namespace HearthstoneReplays.Events.Parsers
             var entity = GameState.CurrentEntities[tagChange.Entity];
             var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
-            if (entity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT && entity.GetTag(GameTag.SIGIL) != 1)
+            if (entity.GetTag(GameTag.CARDTYPE) != (int)CardType.ENCHANTMENT
+                // Paladin Auras are logged as QUEST_PLAYED, which seems to work well enough
+                //&& entity.GetTag(GameTag.SIGIL) != 1
+            )
             {
                 var eventName = "QUEST_PLAYED";
                 if (GameState.CurrentEntities[(node.Object as TagChange).Entity].GetTag(GameTag.SECRET) == 1)
