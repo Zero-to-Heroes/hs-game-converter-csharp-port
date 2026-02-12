@@ -18,7 +18,9 @@ namespace HearthstoneReplays.Events.Parsers
 
         private List<string> CastWhenDrawnTransformers = new List<string>()
         {
-            CardIds.RunicAdornment_JotunsHasteEnchantment,
+            // 2026-02-10: Not sure what changed, but the card created by RunicAdornment isn't cast when drawn anymore, but rather a copy is made
+            // So the card itself needs to be removed
+            //CardIds.RunicAdornment_JotunsHasteEnchantment,
         };
 
         public CardRemovedFromHandParser(ParserState ParserState, StateFacade facade)
