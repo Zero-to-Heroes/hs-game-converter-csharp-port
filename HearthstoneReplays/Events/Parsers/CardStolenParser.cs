@@ -62,13 +62,15 @@ namespace HearthstoneReplays.Events.Parsers
                     stolenByEntityId = parentAction.Entity;
                     stolenByCardId = GameState.CurrentEntities.GetValueOrDefault(parentAction.Entity)?.CardId;
                 }
+                // In case the cardId is only revealed later in the block, like with Soul Seeker (the tag change doesn't know
+                // the card ID yet)
+                // UPDATE 2026-02-24: move this for now; if the card id is revealed in another block we need to handle this 
+                // separately, otherwise it can lead to info leaks
+                var cardId = entity.CardId;
                 return new List<GameEventProvider> { GameEventProvider.Create(
                     tagChange.TimeStamp,
                     "CARD_STOLEN",
                     () => {
-                        // In case the cardId is only revealed later in the block, like with Soul Seeker (the tag change doesn't know
-                        // the card ID yet)
-                        var cardId = entity.CardId;
                         return new GameEvent
                         {
                             Type =  "CARD_STOLEN",
