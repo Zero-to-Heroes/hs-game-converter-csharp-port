@@ -654,6 +654,8 @@ namespace HearthstoneReplays.Events
                     case ZolaTheGorgon:
                     case ZolaTheGorgonCore:
                     case PuppetTheatre_MIS_919:
+                    case CardIds.Convert:
+                    case Convert_WON_342:
                         if (node.Parent.Type == typeof(Action))
                         {
                             var act = node.Parent.Object as Action;
