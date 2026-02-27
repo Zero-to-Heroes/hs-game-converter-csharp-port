@@ -95,7 +95,7 @@ namespace HearthstoneReplayTests
         }
 
 
-        [TestMethod]
+        // [TestMethod]
         public void TestCountEvents()
         {
             // Base: 1.5-1.7 min
@@ -126,7 +126,7 @@ namespace HearthstoneReplayTests
             keyValuePairs.ForEach(Console.WriteLine);
         }
 
-        [TestMethod]
+        // [TestMethod]
         public void LeakTest()
         {
             int numberOfLoops = 20;

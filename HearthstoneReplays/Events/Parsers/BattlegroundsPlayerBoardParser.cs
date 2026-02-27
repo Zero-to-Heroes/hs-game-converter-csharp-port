@@ -555,6 +555,7 @@ namespace HearthstoneReplays.Events.Parsers
                         OverrideTagWithHistory(clone, GameTag.ATK, takeUntilTag);
                         OverrideTagWithHistory(clone, GameTag.LITERALLY_UNPLAYABLE, takeUntilTag);
                         OverrideTagWithHistory(clone, GameTag.UNPLAYABLE_VISUALS, takeUntilTag);
+                        OverrideTagWithHistory(clone, GameTag.REBORN, takeUntilTag);
                         var withEnchants = AddEchantments(
                             stateFacade.GsState.GameState.CurrentEntities,
                             clone,
