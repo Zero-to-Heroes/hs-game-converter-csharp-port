@@ -1,4 +1,4 @@
-﻿using HearthstoneReplays.Parser;
+using HearthstoneReplays.Parser;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System;
@@ -830,6 +830,31 @@ namespace HearthstoneReplays.Events
                                     var nextEntity = actionEntity.KnownEntityIds[0];
                                     actionEntity.KnownEntityIds.RemoveAt(0);
                                     return gameState.CurrentEntities.GetValueOrDefault(nextEntity)?.CardId;
+                                }
+                            }
+                        }
+                        return null;
+
+                    case X21Repairbot:
+                        if (node.Parent.Type == typeof(Parser.ReplayData.GameActions.Action))
+                        {
+                            var act = node.Parent.Object as Parser.ReplayData.GameActions.Action;
+                            if (creatorEntity != null)
+                            {
+                                if (creatorEntity.KnownEntityIds.Count == 0)
+                                {
+                                    creatorEntity.KnownEntityIds = act.Data
+                                        .Where(d => d is ShowEntity)
+                                        .Select(d => d as ShowEntity)
+                                        .Where(d => d.GetTag(GameTag.CREATOR) == creatorEntityId)
+                                        .Select(d => d.Entity)
+                                        .ToList();
+                                }
+                                if (creatorEntity.KnownEntityIds.Count > 0)
+                                {
+                                    var nextEntityId = creatorEntity.KnownEntityIds[0];
+                                    creatorEntity.KnownEntityIds.RemoveAt(0);
+                                    return gameState.CurrentEntities.GetValueOrDefault(nextEntityId)?.CardId;
                                 }
                             }
                         }
