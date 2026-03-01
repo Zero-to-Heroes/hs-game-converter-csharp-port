@@ -1,10 +1,11 @@
-﻿using HearthstoneReplays.Parser;
+using HearthstoneReplays.Parser;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
+using static HearthstoneReplays.Events.CardIds;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 
 namespace HearthstoneReplays.Events.Parsers
@@ -72,6 +73,9 @@ namespace HearthstoneReplays.Events.Parsers
                     }
                     creatorCardId = GameState.CurrentEntities.GetValueOrDefault(creatorEntityId)?.CardId;
                 }
+                var resolved = ResolveDiscoverSourceCreator(creatorCardId, creatorEntityId, node);
+                creatorCardId = resolved.Item1;
+                creatorEntityId = resolved.Item2;
                 return new List<GameEventProvider> { GameEventProvider.Create(
                         tagChange.TimeStamp,
                         eventName,
@@ -130,6 +134,7 @@ namespace HearthstoneReplays.Events.Parsers
                 // This is needed for Horde Operative at least
                 cardId = Oracle.PredictSecret(GameState, creator.Item1, creator.Item2, node, fullEntity.CardId);
             }
+            var resolved = ResolveDiscoverSourceCreator(creator?.Item1, creator?.Item2 ?? -1, node);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
                 eventName,
@@ -142,8 +147,8 @@ namespace HearthstoneReplays.Events.Parsers
                     //gameState,
                     new {
                         PlayerClass = playerClass,
-                        CreatorCardId = creator?.Item1,
-                        CreatorEntityId = creator?.Item2,
+                        CreatorCardId = resolved.Item1,
+                        CreatorEntityId = resolved.Item2,
                     }),
                 true,
                 node) };
@@ -163,6 +168,7 @@ namespace HearthstoneReplays.Events.Parsers
             var eventName = showEntity.GetTag(GameTag.SECRET) == 1
                 ? "SECRET_CREATED_IN_GAME"
                 : "QUEST_CREATED_IN_GAME";
+            var resolved = ResolveDiscoverSourceCreator(creatorEntityCardId, creatorEntityId, node);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
                 eventName,
@@ -175,11 +181,27 @@ namespace HearthstoneReplays.Events.Parsers
                     //gameState,
                     new {
                         PlayerClass = playerClass,
-                        CreatorCardId = creatorEntityCardId,
-                        CreatorEntityId = creatorEntityId,
+                        CreatorCardId = resolved.Item1,
+                        CreatorEntityId = resolved.Item2,
                     }),
                 true,
                 node) };
+        }
+
+        // The Origin Stone plays the unchosen discover options. When it creates a
+        // secret, the relevant card pool is determined by the card that initiated
+        // the discover (e.g. Alter Time), not the Origin Stone itself.
+        private Tuple<string, int> ResolveDiscoverSourceCreator(string creatorCardId, int creatorEntityId, Node node)
+        {
+            if (creatorCardId == TheForbiddenSequence_TheOriginStoneToken_TLC_460t)
+            {
+                var discoverSource = Oracle.FindParentEntity(GameState, node.Parent);
+                if (discoverSource != null)
+                {
+                    return discoverSource;
+                }
+            }
+            return new Tuple<string, int>(creatorCardId, creatorEntityId);
         }
     }
 }
