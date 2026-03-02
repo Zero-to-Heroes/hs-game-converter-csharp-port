@@ -1,4 +1,4 @@
-﻿using HearthstoneReplays.Enums;
+using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
@@ -161,8 +161,9 @@ namespace HearthstoneReplays.Events.Parsers
                         ? windfuryMultiplier
                         : Math.Max(0, weapon.GetTag(GameTag.HEALTH, 0) - weapon.GetTag(GameTag.DAMAGE, 0));
                     var maxAttacks = Math.Min(windfuryMultiplier, attacksForWeapon);
+                    var rawAttacksLeft = maxAttacks - hero.GetTag(GameTag.NUM_ATTACKS_THIS_TURN, 0) + hero.GetTag(GameTag.EXTRA_ATTACKS_THIS_TURN, 0);
                     var attacksLeft = isActivePlayer
-                        ? maxAttacks - hero.GetTag(GameTag.NUM_ATTACKS_THIS_TURN, 0) + hero.GetTag(GameTag.EXTRA_ATTACKS_THIS_TURN, 0)
+                        ? Math.Min(maxAttacks, rawAttacksLeft)
                         : windfuryMultiplier;
                     heroAttack = CanAttack(hero, isActivePlayer, true) ? attacksLeft * baseHeroAttack : 0;
                 }
@@ -176,7 +177,7 @@ namespace HearthstoneReplays.Events.Parsers
 
         private bool CanAttack(FullEntity e, bool isActivePlayer, bool isHero)
         {
-            if (e.HasTag(GameTag.CANNOT_ATTACK_HEROES))
+            if (!isHero && e.HasTag(GameTag.CANNOT_ATTACK_HEROES))
             {
                 return false;
             }
