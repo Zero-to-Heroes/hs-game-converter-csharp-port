@@ -1,4 +1,4 @@
-﻿using HearthstoneReplays.Parser;
+using HearthstoneReplays.Parser;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System;
@@ -64,8 +64,13 @@ namespace HearthstoneReplays.Events.Parsers
             }
 
             var entity = GameState.CurrentEntities[tagChange.Entity];
-            var cardId = entity.CardId;
             var controllerId = entity.GetEffectiveController();
+            var isOpponent = controllerId != StateFacade.LocalPlayer?.PlayerId;
+            var cardId = isOpponent
+                && entity.GetTag(GameTag.SUPPRESS_MILL_ANIMATION) == 1
+                && entity.GetTag(GameTag.IGNORE_SUPPRESS_MILL_ANIMATION) <= 0
+                ? null
+                : entity.CardId;
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, tagChange, null);
 
             string removedByCardId = null;
@@ -134,12 +139,15 @@ namespace HearthstoneReplays.Events.Parsers
                 removedByEntityId = act.Entity;
             }
 
-            // Void Contract shows the cards in the sidebar even though SUPPRESS_MILL_ANIMATION == 1 and IGNORE_SUPPRESS_MILL_ANIMATION is not set
-            //var cardId = showEntity.GetTag(GameTag.SUPPRESS_MILL_ANIMATION) == 1 && showEntity.GetTag(GameTag.IGNORE_SUPPRESS_MILL_ANIMATION) <= 0 
-            //    ? null 
-            //    : showEntity.CardId;
-            var cardId = showEntity.CardId;
             var controllerId = showEntity.GetEffectiveController();
+            var isOpponent = controllerId != StateFacade.LocalPlayer?.PlayerId;
+            // Hide opponent's burned card identities when the mill animation is suppressed,
+            // as this information shouldn't be known to the local player
+            var cardId = isOpponent
+                && showEntity.GetTag(GameTag.SUPPRESS_MILL_ANIMATION) == 1
+                && showEntity.GetTag(GameTag.IGNORE_SUPPRESS_MILL_ANIMATION) <= 0
+                ? null
+                : showEntity.CardId;
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, showEntity);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 showEntity.TimeStamp,
@@ -178,12 +186,13 @@ namespace HearthstoneReplays.Events.Parsers
                 }
             }
 
-            // Void Contract shows the cards in the sidebar even though SUPPRESS_MILL_ANIMATION == 1 and IGNORE_SUPPRESS_MILL_ANIMATION is not set
-            //var cardId = showEntity.GetTag(GameTag.SUPPRESS_MILL_ANIMATION) == 1 && showEntity.GetTag(GameTag.IGNORE_SUPPRESS_MILL_ANIMATION) <= 0 
-            //    ? null 
-            //    : fullEntity.CardId;
-            var cardId = fullEntity.CardId;
             var controllerId = fullEntity.GetEffectiveController();
+            var isOpponent = controllerId != StateFacade.LocalPlayer?.PlayerId;
+            var cardId = isOpponent
+                && fullEntity.GetTag(GameTag.SUPPRESS_MILL_ANIMATION) == 1
+                && fullEntity.GetTag(GameTag.IGNORE_SUPPRESS_MILL_ANIMATION) <= 0
+                ? null
+                : fullEntity.CardId;
             //var gameState = GameEvent.BuildGameState(ParserState, StateFacade, GameState, null, null);
             return new List<GameEventProvider> { GameEventProvider.Create(
                 fullEntity.TimeStamp,
