@@ -485,6 +485,7 @@ namespace HearthstoneReplays.Events
                     case RazorpetalLasher: return RazorpetalVolley_RazorpetalToken;
                     case RazorpetalVolley: return RazorpetalVolley_RazorpetalToken;
                     case ReanimateTheTerror_TLC_433: return ReanimateTheTerror_TyraxBoneTerrorToken_TLC_433t;
+                    case RehgarEarthfury_CORE_CATA_004: return LightningBoltCore;
                     case ReliquaryOfSouls: return ReliquaryOfSouls_ReliquaryPrimeToken;
                     case ReachEquilibrium_CleanseTheShadowToken_TLC_817t: return ReachEquilibrium_SoletosLifesBreathToken_TLC_817t3;
                     case ReachEquilibrium_CorruptTheLightToken_TLC_817t2: return ReachEquilibrium_SoletosDeathsTouchToken_TLC_817t4;
@@ -548,6 +549,7 @@ namespace HearthstoneReplays.Events
                     case Starseeker_ULDA_Elise_HP3: return MoonfireLegacy;
                     case Starshooter_WW_813: return ArcaneShotLegacy_DS1_185;
                     case SteamSurger: return FlameGeyser;
+                    case StickybombSaboteur_CATA_186: return StickybombSaboteur_SabotageToken_CATA_186t;
                     case SunscaleRaptor: return SunscaleRaptor;
                     case SurlyMob_AngryMobTavernBrawl: return SurlyMob_CrazedMobTavernBrawl;
                     case SurlyMob: return AngryMob;
