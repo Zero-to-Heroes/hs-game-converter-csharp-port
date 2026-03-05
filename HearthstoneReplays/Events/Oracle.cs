@@ -1638,7 +1638,8 @@ namespace HearthstoneReplays.Events
                         }
                     }
                     // Doesn't really work for now because of timing issues (only works in test when there are no pauses)
-                    else if (actionEntity.CardId == CardIds.DeathBlossomWhomper)
+                    else if (actionEntity.CardId == CardIds.DeathBlossomWhomper
+                        || actionEntity.CardId == CardIds.GemstoneHoarder_CATA_897)
                     {
                         var enchantment = gameState.CurrentEntities.Values
                             .Where(e => e.GetCardType() == (int)CardType.ENCHANTMENT)
