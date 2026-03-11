@@ -585,6 +585,7 @@ namespace HearthstoneReplays.Events
                     case TombPillager_CORE_LOE_012: return TheCoinCore;
                     case TombPillager_LOE_012: return TheCoinCore;
                     case TombPillager_WON_340: return TheCoinCore;
+                    case Torch_CATA_585: return Torch_CATA_585;
                     case ToyCaptainTarim_TOY_813: return ToyCaptainTarim_ToyCaptainTarimToken_TOY_813t;
                     case TradePrinceGallywix_GVG_028: return TradePrinceGallywix_GallywixsCoinToken;
                     case TramMechanic_WW_044: return TramMechanic_BarrelOfSludgeToken_WW_044t;

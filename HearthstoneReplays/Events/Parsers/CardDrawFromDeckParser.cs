@@ -1,4 +1,4 @@
-﻿using HearthstoneReplays.Parser;
+using HearthstoneReplays.Parser;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System;
@@ -93,12 +93,17 @@ namespace HearthstoneReplays.Events.Parsers
             string drawnByCardId = null;
             int? drawnByEntityId = null;
             bool isTrade = false;
+            bool isCastsWhenDrawnReplacementDraw = false;
             if (parentAction != null)
             {
                 var drawerEntityId = parentAction.Entity;
                 var drawerEntity = GameState.CurrentEntities.GetValueOrDefault(drawerEntityId);
                 isTrade = drawerEntity?.GetTag(GameTag.TRADEABLE) == 1 && drawerEntity?.GetTag(GameTag.IS_USING_TRADE_OPTION) == 1;
-                if (!isTrade)
+                isCastsWhenDrawnReplacementDraw = parentAction.Type == (int)BlockType.TRIGGER
+                    && (parentAction.TriggerKeyword == (int)GameTag.CASTS_WHEN_DRAWN
+                        || parentAction.TriggerKeyword == (int)GameTag.TOPDECK
+                        || parentAction.TriggerKeyword == (int)GameTag.SUMMONED_WHEN_DRAWN);
+                if (!isTrade && !isCastsWhenDrawnReplacementDraw)
                 {
                     drawnByCardId = drawerEntity?.CardId;
                     drawnByEntityId = parentAction.Entity;
@@ -125,7 +130,7 @@ namespace HearthstoneReplays.Events.Parsers
                     var creator = wasInDeck ? null : Oracle.FindCardCreator(GameState, entity, node, false);
                     // Always return this info, and the client has a list of public card creators they are allowed to show
                     var lastInfluencedByCard = Oracle.FindCardCreator(GameState, entity, node);
-                    var lastInfluencedByCardId = isTrade ? null : lastInfluencedByCard?.Item1;
+                    var lastInfluencedByCardId = (isTrade || isCastsWhenDrawnReplacementDraw) ? null : lastInfluencedByCard?.Item1;
                     var predictedCardId = Oracle.PredictCardId(GameState, creator?.Item1, -1, node, cardId, StateFacade);
                     if(SHOULD_USE_ORACLE_TO_IDENTIFY_DRAWN_CARD.Contains(drawnByCardId))
                     {
@@ -200,12 +205,20 @@ namespace HearthstoneReplays.Events.Parsers
             // Useful for Finley
             string drawnByCardId = null;
             int? drawnByEntityId = null;
+            bool isCastsWhenDrawnReplacementDraw = false;
             if (parentAction != null)
             {
                 var drawerEntityId = parentAction.Entity;
                 var drawerEntity = GameState.CurrentEntities.GetValueOrDefault(drawerEntityId);
-                drawnByCardId = drawerEntity?.CardId;
-                drawnByEntityId = parentAction.Entity;
+                isCastsWhenDrawnReplacementDraw = parentAction.Type == (int)BlockType.TRIGGER
+                    && (parentAction.TriggerKeyword == (int)GameTag.CASTS_WHEN_DRAWN
+                        || parentAction.TriggerKeyword == (int)GameTag.TOPDECK
+                        || parentAction.TriggerKeyword == (int)GameTag.SUMMONED_WHEN_DRAWN);
+                if (!isCastsWhenDrawnReplacementDraw)
+                {
+                    drawnByCardId = drawerEntity?.CardId;
+                    drawnByEntityId = parentAction.Entity;
+                }
             }
 
             int? createdIndex = null;
@@ -228,7 +241,7 @@ namespace HearthstoneReplays.Events.Parsers
                     // We do it here because of Keymaster Alabaster - we need to know the last card
                     // that has been drawn
                     var creatorCardId = wasInDeck ? null : Oracle.FindCardCreatorCardId(GameState, showEntity, node);
-                    var lastInfluencedByCardId = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
+                    var lastInfluencedByCardId = isCastsWhenDrawnReplacementDraw ? null : Oracle.FindCardCreatorCardId(GameState, showEntity, node);
                     GameState.OnCardDrawn(showEntity.Entity);
                     return new GameEvent
                     {
@@ -280,12 +293,20 @@ namespace HearthstoneReplays.Events.Parsers
             // Useful for Finley
             string drawnByCardId = null;
             int? drawnByEntityId = null;
+            bool isCastsWhenDrawnReplacementDraw = false;
             if (parentAction != null)
             {
                 var drawerEntityId = parentAction.Entity;
                 var drawerEntity = GameState.CurrentEntities.GetValueOrDefault(drawerEntityId);
-                drawnByCardId = drawerEntity?.CardId;
-                drawnByEntityId = parentAction.Entity;
+                isCastsWhenDrawnReplacementDraw = parentAction.Type == (int)BlockType.TRIGGER
+                    && (parentAction.TriggerKeyword == (int)GameTag.CASTS_WHEN_DRAWN
+                        || parentAction.TriggerKeyword == (int)GameTag.TOPDECK
+                        || parentAction.TriggerKeyword == (int)GameTag.SUMMONED_WHEN_DRAWN);
+                if (!isCastsWhenDrawnReplacementDraw)
+                {
+                    drawnByCardId = drawerEntity?.CardId;
+                    drawnByEntityId = parentAction.Entity;
+                }
             }
 
             int? createdIndex = null;
@@ -302,7 +323,7 @@ namespace HearthstoneReplays.Events.Parsers
                     // We do it here because of Keymaster Alabaster - we need to know the last card
                     // that has been drawn
                     var creator = wasInDeck ? null : Oracle.FindCardCreator(GameState, fullEntity, node, false);
-                    var lastInfluencedByCardId = Oracle.FindCardCreator(GameState, fullEntity, node)?.Item1;
+                    var lastInfluencedByCardId = isCastsWhenDrawnReplacementDraw ? null : Oracle.FindCardCreator(GameState, fullEntity, node)?.Item1;
                     GameState.OnCardDrawn(fullEntity.Entity);
                     return new GameEvent
                     {
