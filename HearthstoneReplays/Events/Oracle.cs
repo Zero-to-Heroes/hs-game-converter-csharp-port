@@ -500,6 +500,7 @@ namespace HearthstoneReplays.Events
                     case RinTheFirstDisciple: return RinTheFirstDisciple_TheFirstSealToken;
                     case RiseToTheOccasion_AvengeTheFallenToken: return RiseToTheOccasion_LightbornCarielToken;
                     case RisingWinds: return Eagle_RisingWinds;
+                    case RitualOfPower_CATA_561: return RitualOfPower_BreezlingToken_CATA_561t;
                     case Rockskipper_TLC_427: return KoboldMiner_RockToken_WW_001t;
                     case RuleModifier_ApproachingNightmareToken_TTN_002t14: return YoggSaronHopesEnd_OG_134;
                     case RuleModifier_ShiftingFateToken_TTN_002t50: return GearShift;
