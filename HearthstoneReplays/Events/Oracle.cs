@@ -271,6 +271,7 @@ namespace HearthstoneReplays.Events
                     case BeneathTheGrounds: return BeneathTheGrounds_NerubianAmbushToken;
                     case BeOurGuestTavernBrawl: return TheCountess_LegendaryInvitationToken;
                     //case BlackSoulstone: return BlackSoulstone;
+                    case BlackwingExperiment_CATA_464: return BlackwingExperiment_DragonBreathToken_CATA_464t;
                     case BlessingOfTheAncients_DAL_351: return BlessingOfTheAncients_DAL_351ts;
                     case BloodsailFlybooter: return BloodsailFlybooter_SkyPirateToken;
                     case BoneBaron_CORE_ICC_065: return GrimNecromancer_SkeletonToken;
