@@ -1,4 +1,4 @@
-﻿using HearthstoneReplays.Parser;
+using HearthstoneReplays.Parser;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System;
@@ -259,11 +259,25 @@ namespace HearthstoneReplays.Events.Parsers
                         var buffingCardEntityCardId = Oracle.GetBuffingCardCardId(creator?.Item2 ?? -1, creatorCardId);
                         var buffCardId = Oracle.GetBuffCardId(creator?.Item2 ?? -1, creatorCardId);
 
+                        // For Bottled Shadeleaf (WW_393t) and similar: excess damage is set on creator (Invasive Shadeleaf) via tag 1068
+                        // but reset to 0 before the token is created. Peek at creator's TagsHistory for the last 1068 value > 0.
+                        // Add as a tag to GuessedTags so Firestone can read it like any other tag.
                         List<Tag> guessedTags = Oracle.GuessTags(GameState, creator?.Item1, creator?.Item2 ?? -1, node, null, StateFacade);
                         var tags = fullEntity.GetTagsCopy();
                         if (guessedTags != null)
                         {
                             tags.AddRange(guessedTags);
+                        }
+                        if (creatorEntity?.TagsHistory != null)
+                        {
+                            var lastExcess = creatorEntity.TagsHistory
+                                .Where(t => t.Name == 1068 && t.Value > 0)
+                                .LastOrDefault();
+                            if (lastExcess != null)
+                            {
+                                tags.RemoveAll(t => t.Name == 1068);
+                                tags.Add(new Tag { Name = 1068, Value = lastExcess.Value });
+                            }
                         }
                         return new GameEvent
                         {
