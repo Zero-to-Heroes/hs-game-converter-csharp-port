@@ -1,4 +1,4 @@
-﻿#region
+#region
 
 using System;
 using System.Threading;
@@ -94,6 +94,37 @@ namespace HearthstoneReplayTests
             //Console.Write(xml);
         }
 
+        [TestMethod]
+        public void BottledShadeleafExcessDamageInEvent()
+        {
+            var shadeEvents = new List<GameEvent>();
+            GameEventHandler.EventProvider = (GameEvent gameEvent) =>
+            {
+                if (gameEvent.Type == "RECEIVE_CARD_IN_HAND" && gameEvent.Value != null)
+                {
+                    var v = JObject.FromObject(gameEvent.Value);
+                    var cardId = v["CardId"]?.ToString();
+                    var entityId = v["EntityId"]?.ToString();
+                    if (cardId == "WW_393t" || entityId == "132")
+                    {
+                        shadeEvents.Add(gameEvent);
+                    }
+                }
+            };
+            List<string> logFile = TestDataReader.GetInputFile("shade2.txt");
+            var parser = new ReplayParser();
+            HearthstoneReplay replay = parser.FromString(logFile);
+            Thread.Sleep(5000);
+
+            Assert.IsTrue(shadeEvents.Count > 0, "Expected at least one RECEIVE_CARD_IN_HAND for Bottled Shadeleaf (WW_393t)");
+            var evt = shadeEvents[0];
+            var evtValue = JObject.FromObject(evt.Value);
+            var additionalProps = evtValue["AdditionalProps"] as JObject;
+            Assert.IsNotNull(additionalProps, "AdditionalProps should be present");
+            var storedAmount = additionalProps["StoredAmount"]?.Value<int?>();
+            Assert.IsNotNull(storedAmount, "StoredAmount should be present in AdditionalProps");
+            Assert.AreEqual(8, storedAmount.Value, $"Stored amount for Bottled Shadeleaf should be 8 (10-2). Actual: {storedAmount}");
+        }
 
         // [TestMethod]
         public void TestCountEvents()
