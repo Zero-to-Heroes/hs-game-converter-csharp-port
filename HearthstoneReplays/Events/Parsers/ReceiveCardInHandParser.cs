@@ -1,12 +1,14 @@
 using HearthstoneReplays.Parser;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
+using HearthstoneReplays.Parser.ReplayData.Meta;
 using System;
 using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using System.Collections.Generic;
 using Action = HearthstoneReplays.Parser.ReplayData.GameActions.Action;
 using System.Linq;
+using static HearthstoneReplays.Events.CardIds;
 
 namespace HearthstoneReplays.Events.Parsers
 {
@@ -78,6 +80,9 @@ namespace HearthstoneReplays.Events.Parsers
             entity.PlayedWhileInHand.Clear();
             var position = entity.GetZonePosition();
 
+            // For Bottled Shadeleaf / Bottled Springwater: excess = spellAmount - amountDealt. Tag 1068 is not reliable.
+            var excessAmount = GetExcessAmountFromCreatorBlock(node, creator?.Item1, creator?.Item2 ?? -1);
+
             return new List<GameEventProvider> { GameEventProvider.Create(
                 tagChange.TimeStamp,
                 "RECEIVE_CARD_IN_HAND",
@@ -88,7 +93,7 @@ namespace HearthstoneReplays.Events.Parsers
                     entity.Id,
                     StateFacade,
                     //gameState,
-                    new {
+                        new {
                         CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
                         CreatorEntityId = creator?.Item2,
                         CreatedIndex = createdIndex,
@@ -97,6 +102,7 @@ namespace HearthstoneReplays.Events.Parsers
                         Position = position,
                         GuessedTags = guessedTags,
                         Tags = entity.GetTagsCopy(),
+                        StoredAmount = excessAmount,
                     }),
                 true,
                 node) };
@@ -139,6 +145,7 @@ namespace HearthstoneReplays.Events.Parsers
 
             var lastInfluencedBy = Oracle.FindParentEntity(GameState, node);
             var lastInfluencedByCardId = lastInfluencedBy != null ? lastInfluencedBy?.Item1 : creator?.Item1;
+            var excessAmount = GetExcessAmountFromCreatorBlock(node, creator?.Item1, creator?.Item2 ?? -1);
             // Oracle.PredictCardId(GameState, creatorCardId, creatorEntityId, node, showEntity.CardId);
             return new List<GameEventProvider> { GameEventProvider.Create(
                     showEntity.TimeStamp,
@@ -160,6 +167,7 @@ namespace HearthstoneReplays.Events.Parsers
                             DataNum2 = dataNum2,
                             Position = position,
                             Tags = entity.GetTagsCopy(),
+                            StoredAmount = excessAmount,
                         }),
                     true,
                     node) };
@@ -259,26 +267,13 @@ namespace HearthstoneReplays.Events.Parsers
                         var buffingCardEntityCardId = Oracle.GetBuffingCardCardId(creator?.Item2 ?? -1, creatorCardId);
                         var buffCardId = Oracle.GetBuffCardId(creator?.Item2 ?? -1, creatorCardId);
 
-                        // For Bottled Shadeleaf (WW_393t) and similar: excess damage is set on creator (Invasive Shadeleaf) via tag 1068
-                        // but reset to 0 before the token is created. Peek at creator's TagsHistory for the last 1068 value > 0.
-                        // Add as a tag to GuessedTags so Firestone can read it like any other tag.
                         List<Tag> guessedTags = Oracle.GuessTags(GameState, creator?.Item1, creator?.Item2 ?? -1, node, null, StateFacade);
                         var tags = fullEntity.GetTagsCopy();
                         if (guessedTags != null)
                         {
                             tags.AddRange(guessedTags);
                         }
-                        if (creatorEntity?.TagsHistory != null)
-                        {
-                            var lastExcess = creatorEntity.TagsHistory
-                                .Where(t => t.Name == 1068 && t.Value > 0)
-                                .LastOrDefault();
-                            if (lastExcess != null)
-                            {
-                                tags.RemoveAll(t => t.Name == 1068);
-                                tags.Add(new Tag { Name = 1068, Value = lastExcess.Value });
-                            }
-                        }
+                        var excessAmount = GetExcessAmountFromCreatorBlock(node, creator?.Item1, creator?.Item2 ?? -1);
                         return new GameEvent
                         {
                             Type =  "RECEIVE_CARD_IN_HAND",
@@ -305,12 +300,62 @@ namespace HearthstoneReplays.Events.Parsers
                                     Position = position,
                                     ReferencedCardIds = referencedCardIds,
                                     GuessedTags = tags,
+                                    StoredAmount = excessAmount,
                                 }
                             }
                         };
                     },
                     true,
                     node) };
+        }
+
+        /// <summary>
+        /// For Invasive Shadeleaf (WW_393) and Holy Springwater (WW_395): compute excess damage/healing
+        /// from META_DATA in the creator's POWER block. Tag 1068 is not reliable (used for other purposes).
+        /// </summary>
+        private int? GetExcessAmountFromCreatorBlock(Node node, string creatorCardId, int creatorEntityId)
+        {
+            if (string.IsNullOrEmpty(creatorCardId) || creatorEntityId <= 0) return null;
+            // Traverse up to find PLAY block where Entity = creator (the spell that created the token)
+            var n = node.Parent;
+            Action playAction = null;
+            while (n != null)
+            {
+                if (n.Object is Action a && a.Type == (int)BlockType.PLAY && a.Entity == creatorEntityId)
+                {
+                    playAction = a;
+                    break;
+                }
+                n = n.Parent;
+            }
+            if (playAction == null) return null;
+
+            int spellAmount = 0;
+            int amountDealt = 0;
+            if (creatorCardId == InvasiveShadeleaf_WW_393)
+            {
+                spellAmount = 10;
+                var powerBlock = playAction.Data?.OfType<Action>()
+                    .FirstOrDefault(a => a.Type == (int)BlockType.POWER && a.Entity == creatorEntityId);
+                var damageMeta = powerBlock?.Data?.OfType<MetaData>()
+                    .FirstOrDefault(m => m.Meta == (int)MetaDataType.DAMAGE);
+                if (damageMeta == null) return null;
+                amountDealt = damageMeta.Data;
+            }
+            else if (creatorCardId == HolySpringwater_WW_395)
+            {
+                spellAmount = 10;
+                var powerBlock = playAction.Data?.OfType<Action>()
+                    .FirstOrDefault(a => a.Type == (int)BlockType.POWER && a.Entity == creatorEntityId);
+                var healingMeta = powerBlock?.Data?.OfType<MetaData>()
+                    .FirstOrDefault(m => m.Meta == (int)MetaDataType.HEALING);
+                if (healingMeta == null) return null;
+                amountDealt = healingMeta.Data;
+            }
+            else return null;
+
+            var excess = spellAmount - amountDealt;
+            return excess > 0 ? excess : (int?)null;
         }
     }
 }
