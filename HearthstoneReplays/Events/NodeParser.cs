@@ -1,4 +1,4 @@
-﻿#region
+#region
 using System;
 using System.Timers;
 using System.Collections.Generic;
@@ -227,6 +227,7 @@ namespace HearthstoneReplays.Events
                     new SecretDestroyedParser(ParserState, StateFacade),
                     new ArmorChangeParser(ParserState, StateFacade),
                     new CorpsesChangedParser(ParserState, StateFacade),
+                    new HeraldColossalAmountParser(ParserState, StateFacade),
                     new MaxResourcesChangedParser(ParserState, StateFacade),
                     new ExcavateTierChangedParser(ParserState, StateFacade),
                     new CardStolenParser(ParserState, StateFacade),
