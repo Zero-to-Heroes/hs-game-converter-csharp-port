@@ -1,4 +1,4 @@
-﻿using HearthstoneReplays.Parser;
+using HearthstoneReplays.Parser;
 using HearthstoneReplays.Parser.ReplayData;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using System;
@@ -100,7 +100,12 @@ namespace HearthstoneReplays.Events.Parsers
                     : "MERCENARIES_ABILITY_UPDATE"
                 : "ENTITY_UPDATE";
             var zone = showEntity.GetZone();
-            var revealed = showEntity.GetTag(GameTag.REVEALED) == 1;
+            // When a card is played, the ShowEntity is inside a PLAY block with ZONE=PLAY. Playing a card
+            // inherently reveals it to the opponent (e.g. Dryscale Deputy spell copy). The REVEALED tag may
+            // not be set, so we treat PLAY block + ZONE=PLAY as revealed.
+            var blockAction = node.Parent?.Object as Action;
+            var revealed = showEntity.GetTag(GameTag.REVEALED) == 1
+                || (blockAction != null && blockAction.Type == (int)BlockType.PLAY && zone == (int)Zone.PLAY);
             if (zone == -1)
             {
                 zone = GameState.CurrentEntities.GetValueOrDefault(showEntity.Entity)?.GetZone() ?? -1;

@@ -127,6 +127,45 @@ namespace HearthstoneReplayTests
         }
 
         [TestMethod]
+        public void DryscaleDeputySpellReveal()
+        {
+            // Bug: Spell copy created by Dryscale Deputy (WW_383) was not revealed when played.
+            // Entity 118 (DRG_318 Breath of Dreams) is played via ShowEntity in PLAY block.
+            // Fix: EntityUpdateParser sets revealed=true when ShowEntity is in PLAY block with ZONE=PLAY.
+            var entityUpdateEvents = new List<GameEvent>();
+            GameEventHandler.EventProvider = (GameEvent gameEvent) =>
+            {
+                if (gameEvent.Type == "ENTITY_UPDATE" && gameEvent.Value != null)
+                {
+                    var v = JObject.FromObject(gameEvent.Value);
+                    var cardId = v["CardId"]?.ToString();
+                    var entityId = v["EntityId"]?.ToString();
+                    if (cardId == "DRG_318" || entityId == "118")
+                    {
+                        entityUpdateEvents.Add(gameEvent);
+                    }
+                }
+            };
+            List<string> logFile = TestDataReader.GetInputFile("dryscale.txt");
+            var parser = new ReplayParser();
+            HearthstoneReplay replay = parser.FromString(logFile);
+
+            Assert.IsTrue(entityUpdateEvents.Count > 0,
+                "Expected ENTITY_UPDATE for Dryscale Deputy spell (entity 118, DRG_318 Breath of Dreams)");
+            var evt = entityUpdateEvents.First(e =>
+            {
+                var v = JObject.FromObject(e.Value);
+                return v["CardId"]?.ToString() == "DRG_318";
+            });
+            var evtValue = JObject.FromObject(evt.Value);
+            var evtAdditionalProps = evtValue["AdditionalProps"] as JObject;
+            Assert.IsNotNull(evtAdditionalProps, "AdditionalProps should be present");
+            var isRevealed = evtAdditionalProps["Revealed"]?.Value<bool?>();
+            Assert.IsTrue(isRevealed == true,
+                $"Dryscale Deputy spell should be revealed when played. Revealed={isRevealed}");
+        }
+
+        [TestMethod]
         public void TorchExcessDamageInEvent()
         {
             var torchEvents = new List<GameEvent>();
