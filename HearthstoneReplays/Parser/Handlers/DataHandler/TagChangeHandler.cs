@@ -1,4 +1,4 @@
-﻿using HearthstoneReplays.Enums;
+using HearthstoneReplays.Enums;
 using HearthstoneReplays.Parser.ReplayData.Entities;
 using HearthstoneReplays.Parser.ReplayData.GameActions;
 using HearthstoneReplays.Parser.ReplayData;
@@ -82,6 +82,14 @@ namespace HearthstoneReplays.Parser.Handlers
                 if (tag.Name == (int)GameTag.ENTITY_ID)
                 {
                     entity = UpdatePlayerEntity(state, rawEntity, tag, entity);
+                }
+
+                // Ensure FullEntity for this entity is closed before processing TagChange.
+                // When BLOCK_END is missing (e.g. DebugDump-only "Block End=(null)" between task lists),
+                // the FullEntity may still be open and the entity not in CurrentEntities (e.g. Torch 181).
+                if (state.Node?.Type == typeof(FullEntity) && (state.Node.Object as FullEntity).Id == entity)
+                {
+                    state.Node = state.Node.Parent ?? state.Node;
                 }
 
                 var tagChange = new TagChange

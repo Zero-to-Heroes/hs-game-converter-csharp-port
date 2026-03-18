@@ -310,12 +310,26 @@ namespace HearthstoneReplays.Events.Parsers
         }
 
         /// <summary>
-        /// For Invasive Shadeleaf (WW_393) and Holy Springwater (WW_395): compute excess damage/healing
+        /// Cards that store excess damage/healing in a token returned to hand.
+        /// Key: creator card ID, Value: (spell amount, meta type for amount dealt).
+        /// Tag 1068 is not reliable (used for other purposes) - use META_DATA from POWER block instead.
+        /// </summary>
+        private static readonly Dictionary<string, (int SpellAmount, MetaDataType MetaType)> ExcessAmountCardConfig = new Dictionary<string, (int, MetaDataType)>
+        {
+            { InvasiveShadeleaf_WW_393, (10, MetaDataType.DAMAGE) },
+            { HolySpringwater_WW_395, (10, MetaDataType.HEALING) },
+            { Torch_CATA_585, (8, MetaDataType.DAMAGE) },
+        };
+
+        /// <summary>
+        /// For Invasive Shadeleaf (WW_393), Holy Springwater (WW_395), and Torch (CATA_585): compute excess damage/healing
         /// from META_DATA in the creator's POWER block. Tag 1068 is not reliable (used for other purposes).
         /// </summary>
         private int? GetExcessAmountFromCreatorBlock(Node node, string creatorCardId, int creatorEntityId)
         {
             if (string.IsNullOrEmpty(creatorCardId) || creatorEntityId <= 0) return null;
+            if (!ExcessAmountCardConfig.TryGetValue(creatorCardId, out var config)) return null;
+
             // Traverse up to find PLAY block where Entity = creator (the spell that created the token)
             var n = node.Parent;
             Action playAction = null;
@@ -330,31 +344,13 @@ namespace HearthstoneReplays.Events.Parsers
             }
             if (playAction == null) return null;
 
-            int spellAmount = 0;
-            int amountDealt = 0;
-            if (creatorCardId == InvasiveShadeleaf_WW_393)
-            {
-                spellAmount = 10;
-                var powerBlock = playAction.Data?.OfType<Action>()
-                    .FirstOrDefault(a => a.Type == (int)BlockType.POWER && a.Entity == creatorEntityId);
-                var damageMeta = powerBlock?.Data?.OfType<MetaData>()
-                    .FirstOrDefault(m => m.Meta == (int)MetaDataType.DAMAGE);
-                if (damageMeta == null) return null;
-                amountDealt = damageMeta.Data;
-            }
-            else if (creatorCardId == HolySpringwater_WW_395)
-            {
-                spellAmount = 10;
-                var powerBlock = playAction.Data?.OfType<Action>()
-                    .FirstOrDefault(a => a.Type == (int)BlockType.POWER && a.Entity == creatorEntityId);
-                var healingMeta = powerBlock?.Data?.OfType<MetaData>()
-                    .FirstOrDefault(m => m.Meta == (int)MetaDataType.HEALING);
-                if (healingMeta == null) return null;
-                amountDealt = healingMeta.Data;
-            }
-            else return null;
+            var powerBlock = playAction.Data?.OfType<Action>()
+                .FirstOrDefault(a => a.Type == (int)BlockType.POWER && a.Entity == creatorEntityId);
+            var meta = powerBlock?.Data?.OfType<MetaData>()
+                .FirstOrDefault(m => m.Meta == (int)config.MetaType);
+            if (meta == null) return null;
 
-            var excess = spellAmount - amountDealt;
+            var excess = config.SpellAmount - meta.Data;
             return excess > 0 ? excess : (int?)null;
         }
     }

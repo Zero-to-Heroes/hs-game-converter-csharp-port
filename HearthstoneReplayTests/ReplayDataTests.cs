@@ -126,6 +126,39 @@ namespace HearthstoneReplayTests
             Assert.AreEqual(8, storedAmount.Value, $"Stored amount for Bottled Shadeleaf should be 8 (10-2). Actual: {storedAmount}");
         }
 
+        [TestMethod]
+        public void TorchExcessDamageInEvent()
+        {
+            var torchEvents = new List<GameEvent>();
+            GameEventHandler.EventProvider = (GameEvent gameEvent) =>
+            {
+                if (gameEvent.Type == "RECEIVE_CARD_IN_HAND" && gameEvent.Value != null)
+                {
+                    var v = JObject.FromObject(gameEvent.Value);
+                    var cardId = v["CardId"]?.ToString();
+                    var entityId = v["EntityId"]?.ToString();
+                    var creatorCardId = (v["AdditionalProps"] as JObject)?["CreatorCardId"]?.ToString();
+                    if (cardId == "CATA_585" || entityId == "181" || creatorCardId == "CATA_585")
+                    {
+                        torchEvents.Add(gameEvent);
+                    }
+                }
+            };
+            List<string> logFile = TestDataReader.GetInputFile("torch.txt");
+            var parser = new ReplayParser();
+            HearthstoneReplay replay = parser.FromString(logFile);
+            Thread.Sleep(5000);
+
+            Assert.IsTrue(torchEvents.Count > 0, "Expected at least one RECEIVE_CARD_IN_HAND for Torch (entity 181) in torch.log");
+            var evt = torchEvents[0];
+            var evtValue = JObject.FromObject(evt.Value);
+            var additionalProps = evtValue["AdditionalProps"] as JObject;
+            Assert.IsNotNull(additionalProps, "AdditionalProps should be present");
+            var storedAmount = additionalProps["StoredAmount"]?.Value<int?>();
+            Assert.IsNotNull(storedAmount, "StoredAmount should be present in AdditionalProps");
+            Assert.AreEqual(5, storedAmount.Value, $"Stored amount for Torch should be 5 (8-3). Actual: {storedAmount}");
+        }
+
         // [TestMethod]
         public void TestCountEvents()
         {

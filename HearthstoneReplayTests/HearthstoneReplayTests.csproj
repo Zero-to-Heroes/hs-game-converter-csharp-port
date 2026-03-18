@@ -129,6 +129,7 @@
   <ItemGroup>
     <EmbeddedResource Include="TestData\bugs.txt" />
     <EmbeddedResource Include="TestData\shade2.txt" />
+    <EmbeddedResource Include="TestData\torch.txt" />
     <EmbeddedResource Include="TestData\perf_ranked.txt" />
   </ItemGroup>
   <ItemGroup>
