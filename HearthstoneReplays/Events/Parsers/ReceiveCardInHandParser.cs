@@ -324,10 +324,23 @@ namespace HearthstoneReplays.Events.Parsers
         /// <summary>
         /// For Invasive Shadeleaf (WW_393), Holy Springwater (WW_395), and Torch (CATA_585): compute excess damage/healing
         /// from META_DATA in the creator's POWER block. Tag 1068 is not reliable (used for other purposes).
+        /// For Blackwing Experiment (CATA_464): Dragon Breath damage = creator's ATK at death.
         /// </summary>
         private int? GetExcessAmountFromCreatorBlock(Node node, string creatorCardId, int creatorEntityId)
         {
             if (string.IsNullOrEmpty(creatorCardId) || creatorEntityId <= 0) return null;
+
+            // Blackwing Experiment: Dragon Breath damage = creator's ATK (not excess from META_DATA)
+            if (creatorCardId == BlackwingExperiment_CATA_464)
+            {
+                var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creatorEntityId);
+                if (creatorEntity != null)
+                {
+                    var atk = creatorEntity.GetTag(GameTag.ATK);
+                    return atk > 0 ? atk : (int?)null;
+                }
+            }
+
             if (!ExcessAmountCardConfig.TryGetValue(creatorCardId, out var config)) return null;
 
             // Traverse up to find PLAY block where Entity = creator (the spell that created the token)
