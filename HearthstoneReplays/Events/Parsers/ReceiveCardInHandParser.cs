@@ -68,10 +68,12 @@ namespace HearthstoneReplays.Events.Parsers
 
             var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creator?.Item2 ?? -1);
             int? createdIndex = null;
+            int? creatorZone = null;
             if (creatorEntity != null)
             {
                 createdIndex = creatorEntity.CreatedIndex;
                 creatorEntity.CreatedIndex++;
+                creatorZone = creatorEntity.GetZone();
             }
 
             // This is different from the creator. A card can be created by Rangari Scout, played, then sent back to hand
@@ -97,6 +99,7 @@ namespace HearthstoneReplays.Events.Parsers
                         CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
                         CreatorEntityId = creator?.Item2,
                         CreatedIndex = createdIndex,
+                        CreatorZone = creatorZone,
                         LastInfluencedByCardId = lastInfluencedByCardId,
                         IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
                         Position = position,
@@ -128,10 +131,12 @@ namespace HearthstoneReplays.Events.Parsers
             var creator = Oracle.FindCardCreatorCardId(GameState, showEntity, node);
             var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creator?.Item2 ?? -1);
             int? createdIndex = null;
+            int? creatorZone = null;
             if (creatorEntity != null)
             {
                 createdIndex = creatorEntity.CreatedIndex;
                 creatorEntity.CreatedIndex++;
+                creatorZone = creatorEntity.GetZone();
             }
             //var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, showEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creator.Item1, creator.Item2, node, showEntity.CardId);
@@ -161,6 +166,7 @@ namespace HearthstoneReplays.Events.Parsers
                             CreatorCardId = creator?.Item1, // Used when there is no cardId, so we can show at least the card that created it
                             CreatorEntityId = creator?.Item2,
                             CreatedIndex = createdIndex,
+                            CreatorZone = creatorZone,
                             LastInfluencedByCardId = lastInfluencedByCardId,
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1,
                             DataNum1 = dataNum1,
@@ -232,10 +238,12 @@ namespace HearthstoneReplays.Events.Parsers
                         var creator = Oracle.FindCardCreator(GameState, fullEntity, node);
                         var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creator?.Item2 ?? -1);
                         int? createdIndex = null;
+                        int? creatorZone = null;
                         if (creatorEntity != null)
                         {
                             createdIndex = creatorEntity.CreatedIndex;
                             creatorEntity.CreatedIndex++;
+                            creatorZone = creatorEntity.GetZone();
                         }
 
                         var creatorCardId = creator?.Item1;
@@ -289,6 +297,7 @@ namespace HearthstoneReplays.Events.Parsers
                                     // For the initial coin
                                     CreatorCardId = creatorCardId ?? (fullEntity.GetTag(GameTag.CREATOR) > 0 ? "Unknown" : null),
                                     CreatorEntityId = creatorEntityId ?? fullEntity.GetTag(GameTag.CREATOR),
+                                    CreatorZone = creatorZone,
                                     CreatedIndex = createdIndex,
                                     LastInfluencedByCardId = lastInfluencedByCardId,
                                     IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1,
@@ -318,12 +327,14 @@ namespace HearthstoneReplays.Events.Parsers
         {
             { InvasiveShadeleaf_WW_393, (10, MetaDataType.DAMAGE) },
             { HolySpringwater_WW_395, (10, MetaDataType.HEALING) },
+            // Torch: 8 is fallback only; actual spell damage is read from creator's TAG_SCRIPT_DATA_NUM_1 (changes after each return).
             { Torch_CATA_585, (8, MetaDataType.DAMAGE) },
         };
 
         /// <summary>
         /// For Invasive Shadeleaf (WW_393), Holy Springwater (WW_395), and Torch (CATA_585): compute excess damage/healing
         /// from META_DATA in the creator's POWER block. Tag 1068 is not reliable (used for other purposes).
+        /// Torch uses the creator entity's TAG_SCRIPT_DATA_NUM_1 as spell amount (8 on first play, then prior excess).
         /// For Blackwing Experiment (CATA_464): Dragon Breath damage = creator's ATK at death.
         /// </summary>
         private int? GetExcessAmountFromCreatorBlock(Node node, string creatorCardId, int creatorEntityId)
@@ -363,7 +374,18 @@ namespace HearthstoneReplays.Events.Parsers
                 .FirstOrDefault(m => m.Meta == (int)config.MetaType);
             if (meta == null) return null;
 
-            var excess = config.SpellAmount - meta.Data;
+            var spellAmount = config.SpellAmount;
+            if (creatorCardId == Torch_CATA_585)
+            {
+                var torchEntity = GameState.CurrentEntities.GetValueOrDefault(creatorEntityId);
+                var scriptDamage = torchEntity?.GetTag(GameTag.TAG_SCRIPT_DATA_NUM_1) ?? -1;
+                if (scriptDamage > 0)
+                {
+                    spellAmount = scriptDamage;
+                }
+            }
+
+            var excess = spellAmount - meta.Data;
             return excess > 0 ? excess : (int?)null;
         }
     }

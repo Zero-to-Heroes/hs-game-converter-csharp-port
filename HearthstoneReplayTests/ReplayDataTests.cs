@@ -198,6 +198,40 @@ namespace HearthstoneReplayTests
             Assert.AreEqual(5, storedAmount.Value, $"Stored amount for Torch should be 5 (8-3). Actual: {storedAmount}");
         }
 
+        /// <summary>
+        /// Torch damage is TAG_SCRIPT_DATA_NUM_1 (8, then prior excess). Second play must not use hardcoded 8 for excess.
+        /// torch2.log: first return entity 176 = 8-4=4; second return entity 178 = 4-3=1.
+        /// </summary>
+        [TestMethod]
+        public void TorchSecondPlayExcessDamageInEvent()
+        {
+            var storedByEntityId = new Dictionary<int, int>();
+            GameEventHandler.EventProvider = (GameEvent gameEvent) =>
+            {
+                if (gameEvent.Type == "RECEIVE_CARD_IN_HAND" && gameEvent.Value != null)
+                {
+                    var v = JObject.FromObject(gameEvent.Value);
+                    var cardId = v["CardId"]?.ToString();
+                    var entityId = v["EntityId"]?.Value<int?>();
+                    var additionalProps = v["AdditionalProps"] as JObject;
+                    var storedAmount = additionalProps?["StoredAmount"]?.Value<int?>();
+                    if (cardId == "CATA_585" && entityId.HasValue && storedAmount.HasValue)
+                    {
+                        storedByEntityId[entityId.Value] = storedAmount.Value;
+                    }
+                }
+            };
+            List<string> logFile = TestDataReader.GetInputFile("torch2.txt");
+            var parser = new ReplayParser();
+            HearthstoneReplay replay = parser.FromString(logFile);
+            Thread.Sleep(5000);
+
+            Assert.IsTrue(storedByEntityId.ContainsKey(176), "Expected RECEIVE_CARD_IN_HAND for returned Torch entity 176 with StoredAmount");
+            Assert.IsTrue(storedByEntityId.ContainsKey(178), "Expected RECEIVE_CARD_IN_HAND for returned Torch entity 178 with StoredAmount");
+            Assert.AreEqual(4, storedByEntityId[176], "First return: 8 damage dealt 4 to minion => excess 4");
+            Assert.AreEqual(1, storedByEntityId[178], "Second return: 4 damage dealt 3 to minion => excess 1 (not 8-3=5)");
+        }
+
         // [TestMethod]
         public void TestCountEvents()
         {

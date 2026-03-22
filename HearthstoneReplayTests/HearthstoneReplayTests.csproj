@@ -130,6 +130,7 @@
     <EmbeddedResource Include="TestData\bugs.txt" />
     <EmbeddedResource Include="TestData\shade2.txt" />
     <EmbeddedResource Include="TestData\torch.txt" />
+    <EmbeddedResource Include="TestData\torch2.txt" />
     <EmbeddedResource Include="TestData\perf_ranked.txt" />
     <EmbeddedResource Include="TestData\dryscale.txt" />
   </ItemGroup>
