@@ -535,8 +535,9 @@ namespace HearthstoneReplays.Events.Parsers
                         .FirstOrDefault();
                     if (createdEntity != null)
                     {
+                        // Using GsState means that enchantments will probably be already removed from game
                         var withEnchants = AddEchantments(
-                            stateFacade.GsState.GameState.CurrentEntities,
+                            stateFacade.PtlState.GameState.CurrentEntities,
                             createdEntity
                         );
                         heroPower.Info = withEnchants;

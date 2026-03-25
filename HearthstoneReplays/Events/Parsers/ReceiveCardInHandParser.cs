@@ -69,11 +69,13 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creator?.Item2 ?? -1);
             int? createdIndex = null;
             int? creatorZone = null;
+            List<Tag> creatorTags = null;
             if (creatorEntity != null)
             {
                 createdIndex = creatorEntity.CreatedIndex;
                 creatorEntity.CreatedIndex++;
                 creatorZone = creatorEntity.GetZone();
+                creatorTags = creatorEntity.GetTagsCopy();
             }
 
             // This is different from the creator. A card can be created by Rangari Scout, played, then sent back to hand
@@ -100,6 +102,7 @@ namespace HearthstoneReplays.Events.Parsers
                         CreatorEntityId = creator?.Item2,
                         CreatedIndex = createdIndex,
                         CreatorZone = creatorZone,
+                        CreatorTags = creatorTags,
                         LastInfluencedByCardId = lastInfluencedByCardId,
                         IsPremium = entity.GetTag(GameTag.PREMIUM) == 1,
                         Position = position,
@@ -132,11 +135,13 @@ namespace HearthstoneReplays.Events.Parsers
             var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creator?.Item2 ?? -1);
             int? createdIndex = null;
             int? creatorZone = null;
+            List<Tag> creatorTags = null;
             if (creatorEntity != null)
             {
                 createdIndex = creatorEntity.CreatedIndex;
                 creatorEntity.CreatedIndex++;
                 creatorZone = creatorEntity.GetZone();
+                creatorTags = creatorEntity.GetTagsCopy();
             }
             //var creatorEntityId = Oracle.FindCardCreatorEntityId(GameState, showEntity, node);
             var cardId = Oracle.PredictCardId(GameState, creator.Item1, creator.Item2, node, showEntity.CardId);
@@ -167,6 +172,7 @@ namespace HearthstoneReplays.Events.Parsers
                             CreatorEntityId = creator?.Item2,
                             CreatedIndex = createdIndex,
                             CreatorZone = creatorZone,
+                            CreatorTags = creatorTags,
                             LastInfluencedByCardId = lastInfluencedByCardId,
                             IsPremium = entity.GetTag(GameTag.PREMIUM) == 1 || showEntity.GetTag(GameTag.PREMIUM) == 1,
                             DataNum1 = dataNum1,
@@ -239,11 +245,13 @@ namespace HearthstoneReplays.Events.Parsers
                         var creatorEntity = GameState.CurrentEntities.GetValueOrDefault(creator?.Item2 ?? -1);
                         int? createdIndex = null;
                         int? creatorZone = null;
+                        List<Tag> creatorTags = null;
                         if (creatorEntity != null)
                         {
                             createdIndex = creatorEntity.CreatedIndex;
                             creatorEntity.CreatedIndex++;
                             creatorZone = creatorEntity.GetZone();
+                            creatorTags = creatorEntity.GetTagsCopy();
                         }
 
                         var creatorCardId = creator?.Item1;
@@ -299,6 +307,7 @@ namespace HearthstoneReplays.Events.Parsers
                                     CreatorEntityId = creatorEntityId ?? fullEntity.GetTag(GameTag.CREATOR),
                                     CreatorZone = creatorZone,
                                     CreatedIndex = createdIndex,
+                                    CreatorTags = creatorTags,
                                     LastInfluencedByCardId = lastInfluencedByCardId,
                                     IsPremium = fullEntity.GetTag(GameTag.PREMIUM) == 1,
                                     BuffingEntityCardId = buffingCardEntityCardId,

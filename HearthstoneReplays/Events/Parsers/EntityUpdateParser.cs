@@ -104,7 +104,9 @@ namespace HearthstoneReplays.Events.Parsers
             // inherently reveals it to the opponent (e.g. Dryscale Deputy spell copy). The REVEALED tag may
             // not be set, so we treat PLAY block + ZONE=PLAY as revealed.
             var blockAction = node.Parent?.Object as Action;
-            var revealed = showEntity.GetTag(GameTag.REVEALED) == 1
+            // The logs have very clear info leaks: SHOW_ENTITY blocks with REVEALED=1 and ZONE=HAND for START_OF_GAME cards
+            // so we want to forcefully hide them, even if we risk not revealing something that should be revealed
+            var revealed = (showEntity.GetTag(GameTag.REVEALED) == 1 && showEntity.GetTag(GameTag.START_OF_GAME_KEYWORD) != 1)
                 || (blockAction != null && blockAction.Type == (int)BlockType.PLAY && zone == (int)Zone.PLAY);
             if (zone == -1)
             {

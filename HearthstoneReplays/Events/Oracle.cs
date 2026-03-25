@@ -359,6 +359,7 @@ namespace HearthstoneReplays.Events
                     case FireFly_CORE_UNG_809: return FireFly_FlameElementalToken;
                     case FirePlumesHeart: return FirePlumesHeart_SulfurasToken;
                     case FirstFlame: return FirstFlame_SecondFlameToken;
+                    case FirstFlame_CORE_SW_108: return FirstFlame_SecondFlameToken;
                     case FishyFlyer: return FishyFlyer_SpectralFlyerToken;
                     case FlameGeyser: return FireFly_FlameElementalToken;
                     case FlameGeyserCore: return FireFly_FlameElementalToken;
